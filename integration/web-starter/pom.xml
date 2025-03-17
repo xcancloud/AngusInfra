@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>cloud.xcan.angus</groupId>
+    <artifactId>xcan-infra.integration</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <!-- Note: Usage for Gateway excludes: JacksonAutoConfigurer | FeignAutoConfigurer | ApplicationReadyListener | ApplicationInitListener -->
+  <!-- <artifactId>xcan-infra.core-webflux-starter</artifactId>-->
+  <artifactId>xcan-infra.web-starter</artifactId>
+  <name>AngusInfra :: Integration :: Core Starter</name>
+  <packaging>jar</packaging>
+  <description>An auto-configured library for angus core.</description>
+
+  <dependencies>
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.lettucex</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.datasource</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-plugin.core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-plugin.spring</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-plugin.updater</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.l2cache-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.validator-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-undertow</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+  </dependencies>
+
+</project>

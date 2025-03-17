@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>cloud.xcan.angus</groupId>
+    <artifactId>xcan-infra.security</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>xcan-infra.auth-resource-starter</artifactId>
+  <name>AngusInfra :: Security :: Resource Authorization </name>
+  <packaging>jar</packaging>
+  <description>An auto-configured library for OAuth2 resource authorization</description>
+
+  <properties>
+    <xcan-angusgm.api.version>1.0.0</xcan-angusgm.api.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.remote</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.sdf</groupId>
+      <artifactId>xcan-angusgm.api</artifactId>
+    </dependency>
+
+    <!-- Spring Boot Starter Security -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- Spring Security OAuth2 Resource Server -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+    </dependency>
+
+    <!-- Spring Security OAuth2 Client -> Configuring Rest resource server Oauth2 client is not required -->
+    <!--<dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-client</artifactId>
+    </dependency>-->
+
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+</project>

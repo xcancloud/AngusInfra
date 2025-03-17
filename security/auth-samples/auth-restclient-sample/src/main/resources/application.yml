@@ -1,0 +1,17 @@
+server:
+  port: 9091
+
+spring:
+  security:
+    oauth2:
+      resource-server:
+        opaque-token:
+          # Preventing abuse.
+          # Authorization servers can ensure that only legitimate resource servers can verify tokens.
+          client-id: client-credentials-introspect-client
+          client-secret: secret
+          introspection-uri: http://localhost:9090/oauth2/introspect
+
+logging:
+  level:
+    org.springframework.security: trace

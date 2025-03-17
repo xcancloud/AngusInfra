@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>cloud.xcan.angus</groupId>
+    <artifactId>xcan-infra.parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../parent</relativePath>
+  </parent>
+
+  <artifactId>xcan-infra.bom</artifactId>
+  <name>AngusInfra :: BOM</name>
+  <packaging>pom</packaging>
+  <version>1.0.0</version>
+  <description>The Bill of Materials of angus infra</description>
+
+  <properties>
+    <xcan-infra.idgen.version>1.0.0</xcan-infra.idgen.version>
+    <xcan-infra.l2cache.version>1.0.0</xcan-infra.l2cache.version>
+    <xcan-infra.security.version>1.0.0</xcan-infra.security.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.spec</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.remote</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.lettucex</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.datasource</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.validator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.l2cache-core</artifactId>
+        <version>${xcan-infra.l2cache.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.l2cache-starter</artifactId>
+        <version>${xcan-infra.l2cache.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.idgen-core</artifactId>
+        <version>${xcan-infra.idgen.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.idgen-starter</artifactId>
+        <version>${xcan-infra.idgen.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.web-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!--<dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.openapi-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>-->
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.validator-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!--
+     <dependency>
+       <groupId>cloud.xcan.angus</groupId>
+       <artifactId>xcan-infra.auth-openapi-starter</artifactId>
+       <version>${xcan-infra.security.version}</version>
+     </dependency>
+
+     <dependency>
+       <groupId>cloud.xcan.angus</groupId>
+       <artifactId>xcan-infra.auth-resource-starter</artifactId>
+       <version>${xcan-infra.security.version}</version>
+       <scope>compile</scope>
+     </dependency>
+
+     <dependency>
+       <groupId>cloud.xcan.angus</groupId>
+       <artifactId>xcan-infra.auth-open2p-starter</artifactId>
+       <version>${xcan-infra.security.version}</version>
+     </dependency>-->
+    </dependencies>
+  </dependencyManagement>
+
+</project>

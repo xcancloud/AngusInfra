@@ -1,0 +1,4 @@
+abc
+abc${d}e${fg}
+wyz
+xy${zz}

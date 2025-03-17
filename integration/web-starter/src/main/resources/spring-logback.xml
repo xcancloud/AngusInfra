@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <jmxConfigurator/>
+
+  <property name="LOG_PATH" value="${LOG_PATH:- }"/>
+
+  <springProfile name="local,dev,beta">
+    <property name="LOG_PATTERN"
+      value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(->){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+  </springProfile>
+
+  <springProfile name="pre,prod">
+    <property name="LOG_PATTERN"
+      value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(->){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+  </springProfile>
+
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="STDOUT">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+  </appender>
+
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="FILE">
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_HOME}/%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <maxFileSize>256MB</maxFileSize>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+  </appender>
+
+  <appender class="ch.qos.logback.classic.AsyncAppender" name="FILE_ASYNC">
+    <discardingThreshold>0</discardingThreshold>
+    <queueSize>512</queueSize>
+    <appender-ref ref="FILE"/>
+  </appender>
+
+  <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="ERROR_FILE">
+    <file>${LOG_HOME}/error.log</file>
+    <encoder>
+      <pattern>${LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>${LOG_HOME}/error.log.%d{yyyy-MM-dd'.log'}</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+  </appender>
+
+  <springProfile name="dev,local">
+    <root level="INFO">
+      <appender-ref ref="STDOUT"/>
+      <appender-ref ref="FILE_ASYNC"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="beta">
+    <root level="INFO">
+      <appender-ref ref="STDOUT"/>
+      <appender-ref ref="FILE_ASYNC"/>
+      <appender-ref ref="ERROR_FILE"/>
+      <!-- <appender-ref ref="EMAIL"/>-->
+    </root>
+  </springProfile>
+
+  <springProfile name="pre">
+    <root level="INFO">
+      <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE_ASYNC"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <!-- <appender-ref ref="EMAIL"/>-->
+      </root>
+    </root>
+  </springProfile>
+
+  <springProfile name="prod">
+    <root level="INFO">
+      <root level="INFO">
+        <appender-ref ref="FILE_ASYNC"/>
+        <appender-ref ref="ERROR_FILE"/>
+        <!-- <appender-ref ref="EMAIL"/>-->
+      </root>
+    </root>
+  </springProfile>
+
+</configuration>

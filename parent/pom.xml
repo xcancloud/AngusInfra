@@ -1,0 +1,990 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>cloud.xcan.angus</groupId>
+  <artifactId>xcan-infra.parent</artifactId>
+  <version>1.0.0</version>
+  <name>AngusInfra :: Component :: Parent</name>
+  <packaging>pom</packaging>
+  <description>Maven dependency version management for angus components.</description>
+  <url>https://github.com/xcancloud/AngusInfra</url>
+
+  <organization>
+    <name>XCan Company</name>
+    <url>http://www.xcan.cloud</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>GPLv3</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>scm:git:https://github.com/xcancloud/AngusInfra</url>
+    <connection>scm:git:git@github.com/xcancloud/AngusInfra.git</connection>
+    <developerConnection>scm:git:https://github.com/xcancloud/AngusInfra.git</developerConnection>
+    <tag>${project.version}</tag>
+  </scm>
+
+  <issueManagement>
+    <system>gitlab</system>
+    <url>https://github.com/xcancloud/AngusInfra/-/issues</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <!-- Release -->
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+
+    <!-- Snapshot -->
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <developers>
+    <developer>
+      <id>LiuXiaoLong</id>
+      <name>LiuXiaoLong</name>
+      <email>lxl@xcan.cloud</email>
+      <organization>XCan Open Source Team</organization>
+      <organizationUrl>http://www.xcan.cloud/help</organizationUrl>
+      <roles>
+        <role>Developer</role>
+        <role>Project Manager</role>
+        <role>Architect</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <contributors/>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <java.version>17</java.version>
+    <source.property>${java.version}</source.property>
+    <target.property>${java.version}</target.property>
+
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+
+    <spring-cloud.version>2024.0.0</spring-cloud.version>
+    <spring-boot.version>3.4.0</spring-boot.version>
+    <spring-framework.version>6.2.0</spring-framework.version>
+
+    <feign-httpclient.version>10.10.1</feign-httpclient.version>
+    <okhttp3.version>4.12.0</okhttp3.version>
+
+    <mysql-connector.version>8.0.31</mysql-connector.version>
+    <postgresql.version>42.7.5</postgresql.version>
+
+    <slf4j.version>2.0.17</slf4j.version>
+    <logback.verison>1.5.17</logback.verison>
+    <janino.version>3.1.4</janino.version>
+    <lombok.version>1.18.36</lombok.version>
+    <aspectjweaver.version>1.9.6</aspectjweaver.version>
+    <google-guava.version>33.4.0-jre</google-guava.version>
+    <google-gson.version>2.12.1</google-gson.version>
+    <caffeine.version>3.2.0</caffeine.version>
+    <jna.version>5.9.0</jna.version>
+    <aspectj.version>1.9.6</aspectj.version>
+    <jackson.version>2.18.3</jackson.version>
+    <javax.activation.version>1.2.0</javax.activation.version>
+    <asm.version>9.2</asm.version>
+    <disruptor.version>3.4.4</disruptor.version>
+    <fasterxml.classmate.version>1.5.1</fasterxml.classmate.version>
+    <reflections.version>0.10.2</reflections.version>
+    <oshi-core.version>5.8.3</oshi-core.version>
+    <dom4j.version>2.1.4</dom4j.version>
+    <easyexcel.version>4.0.3</easyexcel.version>
+    <lettuce.version>6.2.5.RELEASE</lettuce.version>
+    <undertow.version>2.3.17.Final</undertow.version>
+
+    <proguard.version>6.3.0beta1</proguard.version>
+
+    <hibernate-validator.version>9.0.0.CR1</hibernate-validator.version>
+    <jakarta.validation-api.version>3.1.1</jakarta.validation-api.version>
+    <commons-validator.version>1.9.0</commons-validator.version>
+
+    <hibernate-core.version>6.6.2.Final</hibernate-core.version>
+    <hibernate-ehcache.version>6.0.0.Alpha7</hibernate-ehcache.version>
+    <hibernate-search-orm.version>5.11.9.Final</hibernate-search-orm.version>
+    <jakarta.persistence-api.version>3.2.0</jakarta.persistence-api.version>
+
+    <commons-io.version>2.18.0</commons-io.version>
+    <commons-fileupload.version>1.5</commons-fileupload.version>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <commons-math3.version>3.6.1</commons-math3.version>
+    <commons-configuration2.version>2.10.1</commons-configuration2.version>
+    <commons-text.version>1.13.0</commons-text.version>
+    <commons-codec.version>1.15</commons-codec.version>
+    <commons-collections4.version>4.4</commons-collections4.version>
+
+    <jaxb-api.version>2.3.1</jaxb-api.version>
+    <jaxb-impl.version>2.3.3</jaxb-impl.version>
+    <jakarta.xml.bind-api.version>4.0.2</jakarta.xml.bind-api.version>
+
+    <jakarta.el-api.version>6.0.1</jakarta.el-api.version>
+    <jakarta.el.version>5.0.0-M1</jakarta.el.version>
+
+    <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
+
+    <unboundid.version>6.0.0</unboundid.version>
+
+    <!--<swagger2.version>1.6.10</swagger2.version>-->
+    <swagger3.version>2.2.8</swagger3.version>
+    <swagger3-parser.version>2.1.16</swagger3-parser.version>
+    <swagger-validator.version>2.1.2</swagger-validator.version>
+    <!--<springfox-swagger2.version>3.0.0</springfox-swagger2.version>
+    <springfox-swagger-ui.version>3.0.0</springfox-swagger-ui.version>-->
+
+    <testng.version>7.11.0</testng.version>
+    <junit.version>4.13.2</junit.version>
+    <junit-jupiter.version>5.7.1</junit-jupiter.version>
+    <assertj.version>3.19.0</assertj.version>
+    <mockito.version>3.3.0</mockito.version>
+    <hamcrest-all.version>1.3</hamcrest-all.version>
+    <hamcrest.version>2.2</hamcrest.version>
+    <wiremock-junit5.version>1.3.1</wiremock-junit5.version>
+    <wiremock-jre8-standalone.version>2.35.2</wiremock-jre8-standalone.version>
+    <compile-testing.version>0.21.0</compile-testing.version>
+
+    <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+    <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
+    <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
+    <maven-site-plugin.version>3.9.1</maven-site-plugin.version>
+    <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+    <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+    <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
+    <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
+    <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+    <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
+    <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
+    <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+    <maven-checkstyle.version>10.21.4</maven-checkstyle.version>
+    <maven-jxr-plugin.version>3.0.0</maven-jxr-plugin.version>
+    <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
+    <maven-bundle-plugin.version>5.1.1</maven-bundle-plugin.version>
+    <spring-boot-maven-plugin.version>3.4.1</spring-boot-maven-plugin.version>
+    <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+    <notice-maven-plugin>1.1.0</notice-maven-plugin>
+    <sphinx-maven-plugin.version>2.10.0</sphinx-maven-plugin.version>
+    <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+    <proguard-maven-plugin.version>2.6.1</proguard-maven-plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Spring Cloud Dependencies -->
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Spring Boot Dependencies -->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${spring-boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-undertow</artifactId>
+        <version>${spring-boot.version}</version>
+      </dependency>
+
+      <!-- RPC: openfeign  -->
+      <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-jackson</artifactId>
+        <version>${feign-httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-core</artifactId>
+        <version>${feign-httpclient.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-slf4j</artifactId>
+        <version>${feign-httpclient.version}</version>
+      </dependency>
+      <!-- Feign Apache HttpClient -->
+      <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-httpclient</artifactId>
+        <version>${feign-httpclient.version}</version>
+      </dependency>
+      <!-- Feign okhttp -->
+      <dependency>
+        <groupId>io.github.openfeign</groupId>
+        <artifactId>feign-okhttp</artifactId>
+        <version>${feign-httpclient.version}</version>
+      </dependency>
+      <!-- If okhttp and okhttp-sse Version Conflict：Exception in thread "OkHttp Dispatcher" java.lang.NoSuchFieldError: instance -->
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp</artifactId>
+        <version>${okhttp3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.squareup.okhttp3</groupId>
+        <artifactId>okhttp-sse</artifactId>
+        <version>${okhttp3.version}</version>
+      </dependency>
+
+      <!-- JDBC Type 4 driver for MySQL -->
+      <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>${mysql-connector.version}</version>
+      </dependency>
+
+      <!-- PostgreSQL JDBC Driver Postgresql -->
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.version}</version>
+      </dependency>
+
+      <!-- Logger Module -->
+      <!-- Simple logging Facade for Java. -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <!--  The SLF4J API implements. -->
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.verison}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.verison}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.janino</groupId>
+        <artifactId>janino</artifactId>
+        <version>${janino.version}</version>
+      </dependency>
+
+      <!-- Automatic Resource Management -->
+      <!-- automatic generation of getters, setters, equals, hashCode and toString, and more -->
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+      </dependency>
+
+      <!-- The AspectJ weaver introduces advices to java classes -->
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>${aspectjweaver.version}</version>
+      </dependency>
+
+      <!-- Guava is a suite of core and expanded libraries that include utility classes,
+           google's collections, io classes, and much much more. -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${google-guava.version}</version>
+      </dependency>
+      <!-- Google Gson library. -->
+      <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>${google-gson.version}</version>
+      </dependency>
+
+      <!-- A high performance caching library -->
+      <dependency>
+        <groupId>com.github.ben-manes.caffeine</groupId>
+        <artifactId>caffeine</artifactId>
+        <version>${caffeine.version}</version>
+      </dependency>
+
+      <!-- JNA provides Java programs easy access to native shared libraries without writing anything but Java code
+    - no JNI or native code is required.-->
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
+      <!-- Java Native Access Platform. -->
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna-platform</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
+
+      <!-- Jackson is a suite of data-processing tools for Java (and the JVM platform) -->
+      <!-- Core Jackson processing abstractions (aka Streaming API), implementation for JSON. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <!-- Core annotations used for value types, used by Jackson data binding package. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <!-- General data-binding functionality for Jackson: works on core streaming API. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- JavaBeans(TM) Activation Framework. -->
+      <dependency>
+        <groupId>com.sun.activation</groupId>
+        <artifactId>javax.activation</artifactId>
+        <version>${javax.activation.version}</version>
+      </dependency>
+
+      <!-- ASM, a very small and fast Java bytecode manipulation framework -->
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>${asm.version}</version>
+      </dependency>
+
+      <!-- High Performance Inter-Thread Messaging Library. -->
+      <dependency>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+        <version>${disruptor.version}</version>
+      </dependency>
+
+      <!-- Library for introspecting types with full generic information including resolving of field and method types. -->
+      <dependency>
+        <groupId>com.fasterxml</groupId>
+        <artifactId>classmate</artifactId>
+        <version>${fasterxml.classmate.version}</version>
+      </dependency>
+
+      <!-- Reflections - a Java runtime metadata analysis -->
+      <dependency>
+        <groupId>org.reflections</groupId>
+        <artifactId>reflections</artifactId>
+        <version>${reflections.version}</version>
+        <scope>compile</scope>
+      </dependency>
+
+      <!-- A JNA-based (native) operating system information library for Java that aims to provide a cross-platform implementation to retrieve system information, such as version, memory, CPU, disk, battery, etc. -->
+      <dependency>
+        <groupId>com.github.oshi</groupId>
+        <artifactId>oshi-core</artifactId>
+        <version>${oshi-core.version}</version>
+      </dependency>
+
+      <!-- flexible XML framework for Java -->
+      <dependency>
+        <groupId>org.dom4j</groupId>
+        <artifactId>dom4j</artifactId>
+        <version>${dom4j.version}</version>
+      </dependency>
+
+      <!-- A excel handle tools written in Java -->
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>easyexcel</artifactId>
+        <version>${easyexcel.version}</version>
+      </dependency>
+
+      <!-- Advanced and thread-safe Java Redis client for synchronous, asynchronous, and reactive usage. Supports Cluster, Sentinel, Pipelining, Auto-Reconnect, Codecs and much more. -->
+      <dependency>
+        <groupId>io.lettuce</groupId>
+        <artifactId>lettuce-core</artifactId>
+        <version>${lettuce.version}</version>
+      </dependency>
+
+      <!-- High performance non-blocking webserver -->
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-core</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-servlet</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.undertow</groupId>
+        <artifactId>undertow-websockets-jsr</artifactId>
+        <version>${undertow.version}</version>
+      </dependency>
+
+      <!-- Hibernate's Bean Validation (JSR-380) reference implementation -->
+      <dependency>
+        <groupId>org.hibernate.validator</groupId>
+        <artifactId>hibernate-validator</artifactId>
+        <version>${hibernate-validator.version}</version>
+      </dependency>
+
+      <!-- Jakarta Validation API -->
+      <dependency>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>${jakarta.validation-api.version}</version>
+      </dependency>
+
+      <!-- Apache Commons Validator provides the building blocks for both client side validation and server side data validation. It may be used standalone or with a framework like Struts. -->
+      <dependency>
+        <groupId>commons-validator</groupId>
+        <artifactId>commons-validator</artifactId>
+        <version>${commons-validator.version}</version>
+      </dependency>
+
+      <!-- Hibernate -->
+      <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-core</artifactId>
+        <version>${hibernate-core.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate.orm</groupId>
+        <artifactId>hibernate-ehcache</artifactId>
+        <version>${hibernate-ehcache.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-search-orm</artifactId>
+        <version>${hibernate-search-orm.version}</version>
+      </dependency>
+      <!-- Jakarta Persistence API -->
+      <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>${jakarta.persistence-api.version}</version>
+      </dependency>
+
+      <!-- Apache Commons Lang, a package of Java utility classes for the classes that are in java.lang's hierarchy,or are considered to be so standard as to justify existence in java.lang.-->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
+      <!-- The Apache Commons Math project is a library of lightweight, self-contained mathematics and statistics components addressing the most common practical problems not immediately available in the Java programming language or commons-lang.-->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-math3</artifactId>
+        <version>${commons-math3.version}</version>
+      </dependency>
+      <!-- Tools to assist in the reading of configuration/preferences files in various formats; requires Java 8. -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>${commons-configuration2.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commons-text.version}</version>
+      </dependency>
+      <!-- The Apache Commons IO library contains utility classes, stream implementations, file filters, file comparators,
+           endian transformation classes, and much more. -->
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+      <!-- The Apache Commons FileUpload component provides a simple yet flexible means of adding support for multipart
+           file upload functionality to servlets and web applications. -->
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>${commons-fileupload.version}</version>
+      </dependency>
+
+      <!-- The Apache Commons Codec package contains simple encoder and decoders for various formats such as Base64 and Hexadecimal. In addition to these widely used encoders and decoders, the codec package also maintains a collection of phonetic encoding utilities. -->
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons-codec.version}</version>
+      </dependency>
+
+      <!-- The Apache Commons Collections package contains types that extend and augment the Java Collections Framework. -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-collections4</artifactId>
+        <version>${commons-collections4.version}</version>
+      </dependency>
+
+      <!-- JAXB api and impl -->
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.sun.xml.bind</groupId>
+        <artifactId>jaxb-impl</artifactId>
+        <version>${jaxb-impl.version}</version>
+      </dependency>
+      <!-- Jakarta XML Binding API -->
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${jakarta.xml.bind-api.version}</version>
+      </dependency>
+
+      <!-- Jakarta Expression Language defines an expression language for Java applications. -->
+      <dependency>
+        <groupId>jakarta.el</groupId>
+        <artifactId>jakarta.el-api</artifactId>
+        <version>${jakarta.el-api.version}</version>
+      </dependency>
+      <!-- Jakarta Expression Language Implementation. -->
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>jakarta.el</artifactId>
+        <version>${jakarta.el.version}</version>
+      </dependency>
+
+      <!-- Jakarta Servlet -->
+      <dependency>
+        <groupId>jakarta.servlet</groupId>
+        <artifactId>jakarta.servlet-api</artifactId>
+        <version>${jakarta.servlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.unboundid</groupId>
+        <artifactId>unboundid-ldapsdk</artifactId>
+        <version>${unboundid.version}</version>
+      </dependency>
+
+      <!-- Openapi Start -->
+      <!-- JSON API documentation for spring based applications -->
+      <!-- Fix:: swagger-parser-v2-converter java.lang.ClassNotFoundException: io.swagger.models.Responses-->
+      <!--<dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-models</artifactId>
+        <version>${swagger2.version}</version>
+      </dependency>-->
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>${swagger3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.core.v3</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>${swagger3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.parser.v3</groupId>
+        <artifactId>swagger-parser</artifactId>
+        <version>${swagger3-parser.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.parser.v3</groupId>
+        <artifactId>swagger-parser-v2-converter</artifactId>
+        <version>${swagger3-parser.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger.validator.v3</groupId>
+        <artifactId>swagger-validator</artifactId>
+        <version>${swagger-validator.version}</version>
+      </dependency>
+      <!-- Openapi End -->
+
+      <!-- TestNG is a unit testing framework. -->
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>${testng.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>org.beanshell</groupId>
+            <artifactId>bsh</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <!-- JUnit is a unit testing framework for Java. -->
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Module "junit-jupiter-engine" of JUnit 5. -->
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-params</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Rich and fluent assertions for testing for Java. -->
+      <dependency>
+        <groupId>org.assertj</groupId>
+        <artifactId>assertj-core</artifactId>
+        <version>${assertj.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Mockito mock objects library core API and implementation. -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- A self-contained hamcrest jar containing all of the sub-modules in a single artifact -->
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest-all</artifactId>
+        <version>${hamcrest-all.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Core API and libraries of hamcrest matcher framework (for Test). -->
+      <dependency>
+        <groupId>org.hamcrest</groupId>
+        <artifactId>hamcrest</artifactId>
+        <version>${hamcrest.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Wiremock JUnit5 Extension -->
+      <dependency>
+        <groupId>ru.lanwen.wiremock</groupId>
+        <artifactId>wiremock-junit5</artifactId>
+        <version>${wiremock-junit5.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- A web service test double for all occasions - standalone edition -->
+      <dependency>
+        <groupId>com.github.tomakehurst</groupId>
+        <artifactId>wiremock-jre8-standalone</artifactId>
+        <version>${wiremock-jre8-standalone.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Utilities for testing compilation. -->
+      <dependency>
+        <groupId>com.google.testing.compile</groupId>
+        <artifactId>compile-testing</artifactId>
+        <version>${compile-testing.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- The Compiler Plugin is used to compile the sources of your project. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version>
+        </plugin>
+        <!-- The Maven Clean Plugin is a plugin that removes files generated at build-time in a project's directory. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven-clean-plugin.version}</version>
+        </plugin>
+        <!-- Uploads the project artifacts to the internal remote repository. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+        <!-- Copies the project artifacts to the user's local repository. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>${maven-install-plugin.version}</version>
+        </plugin>
+        <!-- Builds a Java Archive (JAR) file from the compiled project classes and resources. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>${maven-jar-plugin.version}</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin>
+        <!-- The Resources Plugin handles the copying of project resources to the output directory.
+     There are two different kinds of resources: main resources and test resources. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+        </plugin>
+        <!-- The Apache Maven Javadoc Plugin is a plugin that uses the javadoc tool for generating javadocs for the specified project. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+        </plugin>
+        <!-- The Maven Site Plugin is a plugin that generates a site for the current project. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven-site-plugin.version}</version>
+        </plugin>
+        <!-- The Maven Source Plugin creates a JAR archive of the source files of the current project. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven-source-plugin.version}</version>
+        </plugin>
+        <!-- Test Runner for JUnit 3、JUnit 4、TestNG. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+        <!-- Repackages the project classes together with their dependencies into a single uber-jar,
+             optionally renaming classes or removing unused classes. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${maven-shade-plugin.version}</version>
+        </plugin>
+        <!-- A Maven plugin to create archives of your project's sources, classes, dependencies etc.
+             from flexible assembly descriptors. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven-assembly-plugin.version}</version>
+        </plugin>
+        <!-- Signs the project artifacts with GnuPG. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${maven-gpg-plugin.version}</version>
+        </plugin>
+        <!-- The Enforcer plugin provides goals to control certain environmental constraints such as Maven version,
+             JDK version and OS family along with many more built-in rules and user created rules. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>${maven-enforcer-plugin.version}</version>
+        </plugin>
+        <!-- The Maven Project Info Reports Plugin is a plugin that generates standard reports for the specified project. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>${maven-project-info-reports-plugin.version}</version>
+        </plugin>
+        <!-- Generates a report on violations of code style and optionally fails the build if violations are detected. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${maven-checkstyle-plugin.version}</version>
+        </plugin>
+        <!-- The JXR Plugin produces a cross-reference of the project's sources. The generated reports make it easier
+             for the user to reference or find specific lines of code. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <version>${maven-jxr-plugin.version}</version>
+        </plugin>
+        <!-- Provides utility goals to work with dependencies like copying, unpacking, analyzing, resolving and many more. -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${maven-dependency-plugin.version}</version>
+        </plugin>
+        <!-- Provides a maven plugin that supports creating an OSGi bundle from the contents of the compilation classpath
+             along with its resources and dependencies. Plus a zillion other features.  -->
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>${maven-bundle-plugin.version}</version>
+        </plugin>
+        <!-- Spring Boot Maven Plugin. -->
+        <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>${spring-boot-maven-plugin.version}</version>
+        </plugin>
+        <!-- A plugin to allow execution of system and Java programs. -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>${exec-maven-plugin.version}</version>
+        </plugin>
+        <!-- Generates Apache style NOTICE files. -->
+        <plugin>
+          <groupId>org.jasig.maven</groupId>
+          <artifactId>maven-notice-plugin</artifactId>
+          <version>${notice-maven-plugin}</version>
+        </plugin>
+        <!-- Maven plugin that creates the site with Sphinx. -->
+        <plugin>
+          <groupId>kr.motd.maven</groupId>
+          <artifactId>sphinx-maven-plugin</artifactId>
+          <version>${sphinx-maven-plugin.version}</version>
+        </plugin>
+        <!-- This plugin contains various small independent goals to assist with Maven build lifecycle. -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${build-helper-maven-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.github.wvengen</groupId>
+          <artifactId>proguard-maven-plugin</artifactId>
+          <version>${proguard-maven-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>${maven-source-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- The Javadoc Plugin generates javadocs using the Javadoc tool. -->
+    <profile>
+      <id>javadocs</id>
+      <build>
+        <plugins>
+          <!-- http://maven.apache.org/plugins/maven-javadoc-plugin/usage.html -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>${maven-javadoc-plugin.version}</version>
+            <configuration>
+              <show>private</show>
+              <nohelp>true</nohelp>
+              <reportOutputDirectory>${project.basedir}/docs/javadoc</reportOutputDirectory>
+              <destDir>apidocs</destDir>
+            </configuration>
+            <executions>
+              <execution>
+                <id>aggregate</id>
+                <goals>
+                  <goal>aggregate</goal>
+                </goals>
+                <phase>site</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Check google code style. -->
+    <profile>
+      <id>checkstyle</id>
+      <build>
+        <plugins>
+          <!-- Checkstyle version: for maven-checkstyle-plugin 3.1.2, Checkstyle 8.29 is used by default -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <configuration>
+              <configLocation>${project.basedir}/checkstyle/google-checks_v8.40.xml
+              </configLocation>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>${maven-checkstyle.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jxr-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Sign the released artifacts. Run command: mvn -DskipTests=true verify.-->
+    <profile>
+      <id>gpg</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

@@ -1,0 +1,67 @@
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>cloud.xcan.angus</groupId>
+    <artifactId>xcan-infra.parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>../parent</relativePath>
+  </parent>
+
+  <artifactId>xcan-infra.security</artifactId>
+  <name>AngusInfra :: Security :: Parent</name>
+  <packaging>pom</packaging>
+  <description>A library for OAuth2-based resource authentication, offering enhanced protection and auto-configuration capabilities.</description>
+
+  <modules>
+    <module>auth-resource-starter</module>
+    <module>auth-server-starter</module>
+    <module>auth-openapi-starter</module>
+    <module>auth-open2p-starter</module>
+    <module>auth-samples</module>
+  </modules>
+
+  <properties>
+    <xcan-angusgm.api.version>1.0.0</xcan-angusgm.api.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- TODO 优化成依赖 aas.model  -->
+      <dependency>
+        <groupId>cloud.xcan.sdf</groupId>
+        <artifactId>xcan-angusgm.api</artifactId>
+        <version>${xcan-angusgm.api.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+    </dependency>
+  </dependencies>
+
+</project>

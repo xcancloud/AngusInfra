@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>cloud.xcan.angus</groupId>
+    <artifactId>xcan-infra.parent</artifactId>
+    <version>1.0.0</version>
+    <relativePath>./parent</relativePath>
+  </parent>
+
+  <artifactId>AngusInfra</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+  <name>AngusInfra :: Parent</name>
+  <description>Angus SaaS Development Framework</description>
+
+  <modules>
+    <module>parent</module>
+    <module>bom</module>
+    <module>spec</module>
+    <module>validator</module>
+    <module>remote</module>
+    <module>idgen</module>
+    <module>core</module>
+    <module>datasource</module>
+    <module>lettucex</module>
+    <module>l2cache</module>
+    <module>integration</module>
+    <module>security</module>
+
+    <!-- <module>sharding</module>-->
+    <!-- <module>codegen</module>-->
+    <!-- <module>archetype</module>-->
+  </modules>
+
+  <organization>
+    <name>XCan Company</name>
+    <url>http://www.xcan.cloud</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>GPLv3</name>
+      <url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>scm:git:https://github.com/xcancloud/AngusInfra</url>
+    <connection>scm:git:git@github.com/xcancloud/AngusInfra.git</connection>
+    <developerConnection>scm:git:https://github.com/xcancloud/AngusInfra.git</developerConnection>
+    <tag>${project.version}</tag>
+  </scm>
+
+  <issueManagement>
+    <system>gitlab</system>
+    <url>https://github.com/xcancloud/AngusInfra/-/issues</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <!-- Release -->
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+
+    <!-- Snapshot -->
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <developers>
+    <developer>
+      <id>LiuXiaoLong</id>
+      <name>LiuXiaoLong</name>
+      <email>lxl@xcan.cloud</email>
+      <organization>XCan Open Source Team</organization>
+      <organizationUrl>http://www.xcan.cloud/help</organizationUrl>
+      <roles>
+        <role>Developer</role>
+        <role>Project Manager</role>
+        <role>Architect</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <contributors/>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <java.version>17</java.version>
+    <source.property>${java.version}</source.property>
+    <target.property>${java.version}</target.property>
+
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+  </properties>
+
+  <!-- Default multi-environment configuration -->
+  <profiles>
+    <profile>
+      <id>env.local</id>
+      <properties>
+        <profile.active>local</profile.active>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>cert/XCanTest.publicCert.keystore</include>
+              <include>cert/license.lic</include>
+            </includes>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+    <profile>
+      <id>env.dev</id>
+      <properties>
+        <profile.active>dev</profile.active>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>cert/XCanTest.publicCert.keystore</include>
+              <include>cert/license.lic</include>
+            </includes>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+    <profile>
+      <id>env.beta</id>
+      <properties>
+        <profile.active>beta</profile.active>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>cert/XCanTest.publicCert.keystore</include>
+              <include>cert/license.lic</include>
+            </includes>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+    <profile>
+      <id>env.prod</id>
+      <properties>
+        <profile.active>prod</profile.active>
+      </properties>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+              <include>cert/XCanCloud.publicCert.keystore</include>
+              <include>cert/XCanCloud.lic</include>
+            </includes>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+    <profile>
+      <id>db.mysql</id>
+      <properties>
+        <!-- Supporting databases: MYSQL、POSTGRES -->
+        <databaseType>MYSQL</databaseType>
+        <!-- Unused in project -->
+        <!--<databaseMode>MYSQL</databaseMode>-->
+        <databaseDialect>org.hibernate.dialect.MySQLDialect</databaseDialect>
+      </properties>
+    </profile>
+    <profile>
+      <id>db.postgres</id>
+      <properties>
+        <!-- Supporting databases: MYSQL、POSTGRES -->
+        <databaseType>POSTGRES</databaseType>
+        <databaseDialect>org.hibernate.dialect.PostgreSQL10Dialect</databaseDialect>
+      </properties>
+    </profile>
+
+    <!-- Deploy only community edition -->
+    <profile>
+      <id>dist.community</id>
+      <properties>
+        <editionType>COMMUNITY</editionType>
+        <editionName>Community</editionName>
+      </properties>
+      <modules/>
+      <dependencies/>
+    </profile>
+    <!-- Deploy only enterprise edition -->
+    <profile>
+      <id>dist.enterprise</id>
+      <properties>
+        <editionType>ENTERPRISE</editionType>
+        <editionName>Enterprise</editionName>
+      </properties>
+      <modules/>
+      <dependencies/>
+    </profile>
+    <!-- Deploy only datacenter edition -->
+    <profile>
+      <id>dist.datacenter</id>
+      <properties>
+        <editionType>DATACENTER</editionType>
+        <editionName>Datacenter</editionName>
+      </properties>
+      <modules/>
+      <dependencies/>
+    </profile>
+    <!-- Deploy only cloud service edition -->
+    <profile>
+      <id>dist.cloudService</id>
+      <properties>
+        <editionType>CLOUD_SERVICE</editionType>
+        <editionName>CloudService</editionName>
+      </properties>
+      <modules/>
+      <dependencies/>
+    </profile>
+  </profiles>
+
+  <!-- Building configuration -->
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>application-local.yml</exclude>
+          <exclude>application-dev.yml</exclude>
+          <exclude>application-beta.yml</exclude>
+          <exclude>application-prod.yml</exclude>
+        </excludes>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>application-${profile.active}.yml</include>
+          <include>spring-logback.xml</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/scripts</directory>
+        <includes>
+          <include>Dockerfile</include>
+          <include>startenv.sh</include>
+        </includes>
+        <filtering>true</filtering>
+        <targetPath>${project.basedir}/target</targetPath>
+      </resource>
+
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!-- forceJavacCompilerUse can help to show the location of exact compilation error -->
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <nonFilteredFileExtensions>
+            <nonFilteredFileExtension>xlsx</nonFilteredFileExtension>
+            <nonFilteredFileExtension>lic</nonFilteredFileExtension>
+            <nonFilteredFileExtension>cer</nonFilteredFileExtension>
+            <nonFilteredFileExtension>key</nonFilteredFileExtension>
+            <nonFilteredFileExtension>keystore</nonFilteredFileExtension>
+            <nonFilteredFileExtension>p12</nonFilteredFileExtension>
+            <nonFilteredFileExtension>pem</nonFilteredFileExtension>
+            <!--            <nonFilteredFileExtension>css</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>otf</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>eot</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>svg</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>ttf</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>woff</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>woff2</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>png</nonFilteredFileExtension>-->
+            <!--            <nonFilteredFileExtension>js</nonFilteredFileExtension>-->
+          </nonFilteredFileExtensions>
+          <delimiters>
+            <encoding>UTF-8</encoding>
+            <delimiter>@</delimiter>
+          </delimiters>
+          <outputDirectory/>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <!-- Ignore test jar -->
+              <includeScope>compile</includeScope>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-descriptor</id>
+            <goals>
+              <goal>attach-descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>true</skipTests>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,35 @@
+server:
+  port: 9090
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+      path: /pubapi/h2-console # http://localhost:9090/pubapi/h2-console
+      settings:
+        trace: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:oauth2_schema.sql
+      data-locations: classpath:oauth2_data.sql
+  security:
+    oauth2:
+      resource-server:
+        opaque-token:
+          # Preventing abuse.
+          # Authorization servers can ensure that only legitimate resource servers can verify tokens.
+          client-id: client-credentials-introspect-client
+          client-secret: secret
+          introspection-uri: http://localhost:9090/oauth2/introspect
+
+logging:
+  level:
+    org.springframework.security: trace

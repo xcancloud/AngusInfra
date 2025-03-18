@@ -2,6 +2,7 @@ package cloud.xcan.angus.security.authentication.password;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -36,6 +37,7 @@ import org.springframework.util.StringUtils;
 /**
  * Utility methods for the OAuth 2.0 {@link AuthenticationProvider}'s.
  */
+@Slf4j
 public final class OAuth2PasswordAuthenticationProviderUtils {
 
   public static final String DEFAULT_ENCODING_ID = "bcrypt";
@@ -70,6 +72,7 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
     try {
       return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
     } catch (Exception e) {
+      log.error(e.getMessage(), e);
       OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
           "The provided authorization grant (e.g., username or password) is invalid.", "");
       throw new OAuth2AuthenticationException(error);

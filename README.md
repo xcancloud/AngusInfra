@@ -8,7 +8,7 @@
 
 - **OpenAPI Support**: Fully supports and strictly adheres to the OpenAPI specification, ensuring broad community support for API development and management.
 
-- **Multi-Tenancy Support**: Designed with a shared data source multi-tenancy architecture, AngusInfra simplifies management and reduces hardware and operational costs while ensuring data isolation and security.
+- **Multi-Tenancy Support**: Designed with a shared datasource multi-tenancy architecture, AngusInfra simplifies management and reduces hardware and operational costs while ensuring data isolation and security.
 
 - **SpringBoot Based**: Leverages the SpringBoot framework for business-oriented extensions, providing robust backend functionality, mature ecosystem support, and an enhanced rapid development experience.
 

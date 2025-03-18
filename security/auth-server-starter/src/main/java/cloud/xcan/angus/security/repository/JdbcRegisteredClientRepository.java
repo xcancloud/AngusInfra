@@ -1,5 +1,9 @@
 package cloud.xcan.angus.security.repository;
 
+import static cloud.xcan.sdf.spec.utils.ObjectUtils.nullSafe;
+
+import cloud.xcan.angus.security.client.CustomOAuth2ClientRepository;
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,10 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -53,35 +53,53 @@ import org.springframework.util.StringUtils;
  * the consuming application will provide their own implementation of
  * {@code RegisteredClientRepository} that meets the performance requirements for its deployment
  * environment.
+ *
+ * @see org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository
  */
-@ImportRuntimeHints(JdbcRegisteredClientRepository.JdbcRegisteredClientRepositoryRuntimeHintsRegistrar.class)
-public class JdbcRegisteredClientRepository implements RegisteredClientRepository {
+public class JdbcRegisteredClientRepository implements CustomOAuth2ClientRepository,
+    RegisteredClientRepository {
 
   // @formatter:off
   private static final String TABLE_NAME = "oauth2_registered_client";
 
   private static final String PK_FILTER = "id = ?";
 
-	private static final String COLUMN_NAMES = "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
-			+ "client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings";
+	private static final String COLUMN_NAMES =
+      "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
+			+ "client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings, "
+      + "description, enabled, platform, source, biz_tag, tenant_id, tenant_name, created_by, created_date, last_modified_by, last_modified_date";
 
-  private static final String LOAD_REGISTERED_CLIENT_SQL = "SELECT " + COLUMN_NAMES + " FROM " + TABLE_NAME + " WHERE ";
+  private static final String ADD_COLUMN_NAMES =
+      "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
+          + "client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings";
 
-	private static final String INSERT_REGISTERED_CLIENT_SQL = "INSERT INTO " + TABLE_NAME + "(" + COLUMN_NAMES + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  private static final String LOAD_REGISTERED_CLIENT_SQL
+      = "SELECT " + COLUMN_NAMES + " FROM " + TABLE_NAME + " WHERE ";
 
-	private static final String UPDATE_REGISTERED_CLIENT_SQL = "UPDATE " + TABLE_NAME
+	private static final String INSERT_REGISTERED_CLIENT_SQL
+      = "INSERT INTO " + TABLE_NAME + "(" + ADD_COLUMN_NAMES + ") VALUES ("
+      + "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	private static final String UPDATE_REGISTERED_CLIENT_SQL
+      = "UPDATE " + TABLE_NAME
 			+ " SET client_secret = ?, client_secret_expires_at = ?, client_name = ?, client_authentication_methods = ?,"
-			+ " authorization_grant_types = ?, redirect_uris = ?, post_logout_redirect_uris = ?, scopes = ?,"
-			+ " client_settings = ?, token_settings = ?"
-			+ " WHERE " + PK_FILTER;
+			+ " authorization_grant_types = ?, redirect_uris = ?, post_logout_redirect_uris = ?, scopes = ?, client_settings = ?, token_settings = ? "
+      + " WHERE " + PK_FILTER;
 
-  private static final String COUNT_REGISTERED_CLIENT_SQL = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE ";
+  private static final String UPDATE_REGISTERED_CLIENT_INFO_SQL
+      = "UPDATE " + TABLE_NAME
+      + " SET description = ?, enabled = ?, platform = ?, source = ?, biz_tag = ?, tenant_id = ?,"
+      + " tenant_name = ?, created_by = ?, created_date = ?, last_modified_by = ?, last_modified_date = ? "
+      + " WHERE " + PK_FILTER;
+
+  private static final String COUNT_REGISTERED_CLIENT_SQL
+      = "SELECT COUNT(*) FROM " + TABLE_NAME + " WHERE ";
 
   // @formatter:on
 
   private final JdbcOperations jdbcOperations;
 
-  private RowMapper<RegisteredClient> registeredClientRowMapper;
+  private RowMapper<CustomOAuth2RegisteredClient> registeredClientRowMapper;
 
   private Function<RegisteredClient, List<SqlParameterValue>> registeredClientParametersMapper;
 
@@ -106,6 +124,16 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
     } else {
       insertRegisteredClient(registeredClient);
     }
+  }
+
+  @Override
+  public void updateClientInfo(CustomOAuth2RegisteredClient registeredClient) {
+    List<SqlParameterValue> parameters = new ArrayList<>(
+        this.registeredClientParametersMapper.apply(registeredClient));
+    SqlParameterValue id = parameters.remove(0);
+    parameters.add(id);
+    PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters.toArray());
+    this.jdbcOperations.update(UPDATE_REGISTERED_CLIENT_INFO_SQL, pss);
   }
 
   private void updateRegisteredClient(RegisteredClient registeredClient) {
@@ -157,8 +185,9 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
     return findBy("client_id = ?", clientId);
   }
 
-  private RegisteredClient findBy(String filter, Object... args) {
-    List<RegisteredClient> result = this.jdbcOperations.query(LOAD_REGISTERED_CLIENT_SQL + filter,
+  private CustomOAuth2RegisteredClient findBy(String filter, Object... args) {
+    List<CustomOAuth2RegisteredClient> result = this.jdbcOperations.query(
+        LOAD_REGISTERED_CLIENT_SQL + filter,
         this.registeredClientRowMapper, args);
     return !result.isEmpty() ? result.get(0) : null;
   }
@@ -171,7 +200,7 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
    *                                  {@code ResultSet} to {@link RegisteredClient}
    */
   public final void setRegisteredClientRowMapper(
-      RowMapper<RegisteredClient> registeredClientRowMapper) {
+      RowMapper<CustomOAuth2RegisteredClient> registeredClientRowMapper) {
     Assert.notNull(registeredClientRowMapper, "registeredClientRowMapper cannot be null");
     this.registeredClientRowMapper = registeredClientRowMapper;
   }
@@ -195,7 +224,7 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
     return this.jdbcOperations;
   }
 
-  protected final RowMapper<RegisteredClient> getRegisteredClientRowMapper() {
+  protected final RowMapper<CustomOAuth2RegisteredClient> getRegisteredClientRowMapper() {
     return this.registeredClientRowMapper;
   }
 
@@ -207,7 +236,7 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
    * The default {@link RowMapper} that maps the current row in {@code java.sql.ResultSet} to
    * {@link RegisteredClient}.
    */
-  public static class RegisteredClientRowMapper implements RowMapper<RegisteredClient> {
+  public static class RegisteredClientRowMapper implements RowMapper<CustomOAuth2RegisteredClient> {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -219,7 +248,7 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
     }
 
     @Override
-    public RegisteredClient mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public CustomOAuth2RegisteredClient mapRow(ResultSet rs, int rowNum) throws SQLException {
       Timestamp clientIdIssuedAt = rs.getTimestamp("client_id_issued_at");
       Timestamp clientSecretExpiresAt = rs.getTimestamp("client_secret_expires_at");
       Set<String> clientAuthenticationMethods = StringUtils
@@ -232,7 +261,8 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
       Set<String> clientScopes = StringUtils.commaDelimitedListToSet(rs.getString("scopes"));
 
       // @formatter:off
-			RegisteredClient.Builder builder = RegisteredClient.withId(rs.getString("id"))
+      CustomOAuth2RegisteredClient.Builder builder = CustomOAuth2RegisteredClient
+          .withId0(rs.getString("id"))
 					.clientId(rs.getString("client_id"))
 					.clientIdIssuedAt((clientIdIssuedAt != null) ? clientIdIssuedAt.toInstant() : null)
 					.clientSecret(rs.getString("client_secret"))
@@ -259,6 +289,20 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
       }
       builder.tokenSettings(tokenSettingsBuilder.build());
 
+      // AngusGM Client Info.
+      Timestamp createdDate = rs.getTimestamp("created_date");
+      Timestamp lastModifiedDate = rs.getTimestamp("last_modified_date");
+      builder.description(rs.getString("description"))
+          .enabled(rs.getBoolean("enabled"))
+          .platform(rs.getString("platform"))
+          .source(rs.getString("source"))
+          .bizTag(rs.getString("biz_tag"))
+          .tenantId(rs.getString("tenant_id"))
+          .tenantName(rs.getString("tenant_name"))
+          .createdBy(rs.getString("created_by"))
+          .createdDate(createdDate != null ? createdDate.toInstant() : null)
+          .lastModifiedBy(rs.getString("last_modified_by"))
+          .lastModifiedDate(lastModifiedDate != null ? lastModifiedDate.toInstant() : null);
       return builder.build();
     }
 
@@ -328,46 +372,75 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
     }
 
     @Override
-    public List<SqlParameterValue> apply(RegisteredClient registeredClient) {
-      Timestamp clientIdIssuedAt = (registeredClient.getClientIdIssuedAt() != null)
-          ? Timestamp.from(registeredClient.getClientIdIssuedAt()) : Timestamp.from(Instant.now());
+    public List<SqlParameterValue> apply(RegisteredClient registeredClient0) {
+      if (registeredClient0 instanceof CustomOAuth2RegisteredClient) {
+        CustomOAuth2RegisteredClient registeredClient = (CustomOAuth2RegisteredClient) registeredClient0;
+        // AngusGM Client Info.
+        Timestamp createdDate = (registeredClient.getCreatedDate() != null)
+            ? Timestamp.from(registeredClient.getCreatedDate()) : Timestamp.from(Instant.now());
+        Timestamp lastModifiedDate = (registeredClient.getLastModifiedDate() != null)
+            ? Timestamp.from(registeredClient.getLastModifiedDate())
+            : Timestamp.from(Instant.now());
 
-      Timestamp clientSecretExpiresAt = (registeredClient.getClientSecretExpiresAt() != null)
-          ? Timestamp.from(registeredClient.getClientSecretExpiresAt()) : null;
+        return Arrays.asList(
+            new SqlParameterValue(Types.VARCHAR, registeredClient0.getId()), // Query PK ID
+            // AngusGM Client Info.
+            new SqlParameterValue(Types.VARCHAR, registeredClient.getDescription()),
+            new SqlParameterValue(Types.BOOLEAN, registeredClient.isEnabled()),
+            new SqlParameterValue(Types.VARCHAR, registeredClient.getPlatform()),
+            new SqlParameterValue(Types.VARCHAR, registeredClient.getSource()),
+            new SqlParameterValue(Types.VARCHAR, registeredClient.getBizTag()),
+            new SqlParameterValue(Types.BIGINT, nullSafe(registeredClient.getTenantId(), -1L)),
+            new SqlParameterValue(Types.VARCHAR, registeredClient.getTenantName()),
+            new SqlParameterValue(Types.BIGINT, registeredClient.getCreatedBy()),
+            new SqlParameterValue(Types.TIMESTAMP, createdDate),
+            new SqlParameterValue(Types.BIGINT, registeredClient.getLastModifiedBy()),
+            new SqlParameterValue(Types.VARCHAR, lastModifiedDate)
+        );
+      } else {
+        Timestamp clientIdIssuedAt = (registeredClient0.getClientIdIssuedAt() != null)
+            ? Timestamp.from(registeredClient0.getClientIdIssuedAt())
+            : Timestamp.from(Instant.now());
 
-      List<String> clientAuthenticationMethods = new ArrayList<>(
-          registeredClient.getClientAuthenticationMethods().size());
-      registeredClient.getClientAuthenticationMethods()
-          .forEach((clientAuthenticationMethod) -> clientAuthenticationMethods
-              .add(clientAuthenticationMethod.getValue()));
+        Timestamp clientSecretExpiresAt = (registeredClient0.getClientSecretExpiresAt() != null)
+            ? Timestamp.from(registeredClient0.getClientSecretExpiresAt()) : null;
 
-      List<String> authorizationGrantTypes = new ArrayList<>(
-          registeredClient.getAuthorizationGrantTypes().size());
-      registeredClient.getAuthorizationGrantTypes()
-          .forEach((authorizationGrantType) -> authorizationGrantTypes.add(
-              authorizationGrantType.getValue()));
+        List<String> clientAuthenticationMethods = new ArrayList<>(
+            registeredClient0.getClientAuthenticationMethods().size());
+        registeredClient0.getClientAuthenticationMethods()
+            .forEach((clientAuthenticationMethod) -> clientAuthenticationMethods
+                .add(clientAuthenticationMethod.getValue()));
 
-      return Arrays.asList(new SqlParameterValue(Types.VARCHAR, registeredClient.getId()),
-          new SqlParameterValue(Types.VARCHAR, registeredClient.getClientId()),
-          new SqlParameterValue(Types.TIMESTAMP, clientIdIssuedAt),
-          new SqlParameterValue(Types.VARCHAR, registeredClient.getClientSecret()),
-          new SqlParameterValue(Types.TIMESTAMP, clientSecretExpiresAt),
-          new SqlParameterValue(Types.VARCHAR, registeredClient.getClientName()),
-          new SqlParameterValue(Types.VARCHAR,
-              StringUtils.collectionToCommaDelimitedString(clientAuthenticationMethods)),
-          new SqlParameterValue(Types.VARCHAR,
-              StringUtils.collectionToCommaDelimitedString(authorizationGrantTypes)),
-          new SqlParameterValue(Types.VARCHAR,
-              StringUtils.collectionToCommaDelimitedString(registeredClient.getRedirectUris())),
-          new SqlParameterValue(Types.VARCHAR,
-              StringUtils.collectionToCommaDelimitedString(
-                  registeredClient.getPostLogoutRedirectUris())),
-          new SqlParameterValue(Types.VARCHAR,
-              StringUtils.collectionToCommaDelimitedString(registeredClient.getScopes())),
-          new SqlParameterValue(Types.VARCHAR,
-              writeMap(registeredClient.getClientSettings().getSettings())),
-          new SqlParameterValue(Types.VARCHAR,
-              writeMap(registeredClient.getTokenSettings().getSettings())));
+        List<String> authorizationGrantTypes = new ArrayList<>(
+            registeredClient0.getAuthorizationGrantTypes().size());
+        registeredClient0.getAuthorizationGrantTypes()
+            .forEach((authorizationGrantType) -> authorizationGrantTypes.add(
+                authorizationGrantType.getValue()));
+
+        return Arrays.asList(
+            new SqlParameterValue(Types.VARCHAR, registeredClient0.getId()),
+            new SqlParameterValue(Types.VARCHAR, registeredClient0.getClientId()),
+            new SqlParameterValue(Types.TIMESTAMP, clientIdIssuedAt),
+            new SqlParameterValue(Types.VARCHAR, registeredClient0.getClientSecret()),
+            new SqlParameterValue(Types.TIMESTAMP, clientSecretExpiresAt),
+            new SqlParameterValue(Types.VARCHAR, registeredClient0.getClientName()),
+            new SqlParameterValue(Types.VARCHAR,
+                StringUtils.collectionToCommaDelimitedString(clientAuthenticationMethods)),
+            new SqlParameterValue(Types.VARCHAR,
+                StringUtils.collectionToCommaDelimitedString(authorizationGrantTypes)),
+            new SqlParameterValue(Types.VARCHAR,
+                StringUtils.collectionToCommaDelimitedString(registeredClient0.getRedirectUris())),
+            new SqlParameterValue(Types.VARCHAR,
+                StringUtils.collectionToCommaDelimitedString(
+                    registeredClient0.getPostLogoutRedirectUris())),
+            new SqlParameterValue(Types.VARCHAR,
+                StringUtils.collectionToCommaDelimitedString(registeredClient0.getScopes())),
+            new SqlParameterValue(Types.VARCHAR,
+                writeMap(registeredClient0.getClientSettings().getSettings())),
+            new SqlParameterValue(Types.VARCHAR,
+                writeMap(registeredClient0.getTokenSettings().getSettings()))
+        );
+      }
     }
 
     public final void setObjectMapper(ObjectMapper objectMapper) {
@@ -386,18 +459,6 @@ public class JdbcRegisteredClientRepository implements RegisteredClientRepositor
         throw new IllegalArgumentException(ex.getMessage(), ex);
       }
     }
-  }
-
-  static class JdbcRegisteredClientRepositoryRuntimeHintsRegistrar implements
-      RuntimeHintsRegistrar {
-
-    @Override
-    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-      hints.resources()
-          .registerResource(new ClassPathResource(
-              "org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql"));
-    }
-
   }
 
 }

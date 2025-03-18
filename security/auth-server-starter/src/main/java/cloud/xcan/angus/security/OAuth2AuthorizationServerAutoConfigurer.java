@@ -132,7 +132,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   }
 
   @Bean
-  public UserDetailsService userDetailsService(
+  public UserDetailsService userDetailsManager(
       @Qualifier("dataSource") DataSource dataSource) {
     return new JdbcUserDetailsRepository(dataSource);
   }

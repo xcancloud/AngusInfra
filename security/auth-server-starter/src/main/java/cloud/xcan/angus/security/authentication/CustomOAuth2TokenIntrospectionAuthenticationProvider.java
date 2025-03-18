@@ -2,6 +2,7 @@ package cloud.xcan.angus.security.authentication;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getAuthenticatedClientElseThrowInvalidClient;
 
+import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.sdf.spec.utils.ObjectUtils;
 import java.net.URL;
 import java.security.Principal;
@@ -17,7 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
@@ -144,7 +144,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
 
     Object principal = authorization.getAttribute(Principal.class.getName());
     if (principal != null && principal instanceof UsernamePasswordAuthenticationToken) {
-      User user = (User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+      CustomOAuth2User user = (CustomOAuth2User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
       if (ObjectUtils.isNotEmpty(user.getAuthorities())) {
         tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_SCOPE,
             user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(

@@ -1,5 +1,10 @@
 package cloud.xcan.angus.security.repository;
 
+import cloud.xcan.angus.security.model.CustomOAuth2User;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,7 +19,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,15 +28,19 @@ import org.springframework.util.Assert;
  * <tt>UserDetailsService</tt> implementation which retrieves the user details (username,
  * password, enabled flag, and authorities) from a database using JDBC queries.
  */
-public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements UserDetailsService,
-    MessageSourceAware {
+public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
+    UserDetailsService, MessageSourceAware {
 
   // @formatter:off
-  // TODO Customization definition
-  public static final String DEF_USERS_BY_USERNAME_QUERY = "select username,password,enabled from oauth2_user where username = ?";
+  public static final String DEF_USERS_BY_USERNAME_QUERY =
+      "select username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
+      + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
+      + "password_expired_date, last_modified_password_date, expired_date, deleted, "
+      + "tenant_id, tenant_name, tenant_real_name_status "
+      + "from oauth2_user where username = ? and deleted = false";
 
-  // TODO Customization definition
-	public static final String DEF_AUTHORITIES_BY_USERNAME_QUERY = "select username,authority from oauth2_authorities where username = ?";
+	public static final String DEF_AUTHORITIES_BY_USERNAME_QUERY =
+      "select username, authority from oauth2_authorities where username = ?";
 	// @formatter:on
 
   protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
@@ -90,7 +98,8 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements UserDe
       throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
           new Object[]{username}, "Username {0} not found"));
     }
-    UserDetails user = users.get(0); // contains no GrantedAuthority[]
+    UserDetails user = users.stream().filter(UserDetails::isEnabled).toList()
+        .get(0); // contains no GrantedAuthority[]
     Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
     if (this.enableAuthorities) {
       dbAuthsSet.addAll(loadUserAuthorities(user.getUsername()));
@@ -112,14 +121,44 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements UserDe
    */
   protected List<UserDetails> loadUsersByUsername(String username) {
     // @formatter:off
-		RowMapper<UserDetails> mapper = (rs, rowNum) -> {
-			String username1 = rs.getString(1);
-			String password = rs.getString(2);
-			boolean enabled = rs.getBoolean(3);
-			return new User(username1, password, enabled, true, true, true, AuthorityUtils.NO_AUTHORITIES);
-		};
+		RowMapper<UserDetails> mapper = (rs, rowNum) -> mapToUser(rs);
 		// @formatter:on
-    return getJdbcTemplate().query(this.usersByUsernameQuery, mapper, username);
+    return getJdbcTemplate().query(this.usersByUsernameQuery, mapper,
+        (Object) new String[]{username});
+  }
+
+  public CustomOAuth2User mapToUser(ResultSet rs) throws SQLException {
+    String username = rs.getString(1);
+    String password = rs.getString(2);
+    boolean enabled = rs.getBoolean(3);
+    boolean accountNonExpired = rs.getBoolean(4);
+    boolean accountNonLocked = rs.getBoolean(5);
+    boolean credentialsNonExpired = rs.getBoolean(6);
+    // AngusGM User Info.
+    String id = rs.getString(7);
+    String firstName = rs.getString(8);
+    String lastName = rs.getString(9);
+    String fullName = rs.getString(10);
+    String passwordStrength = rs.getString(11);
+    boolean sysAdmin = rs.getBoolean(12);
+    boolean toUser = rs.getBoolean(13);
+    String mobile = rs.getString(14);
+    String email = rs.getString(15);
+    Long mainDeptId = rs.getLong(16);
+    Timestamp ts1 = rs.getTimestamp(17);
+    Instant passwordExpiredDate = ts1 != null ? ts1.toInstant() : null;
+    Timestamp ts2 = rs.getTimestamp(18);
+    Instant lastModifiedPasswordDate = ts2 != null ? ts2.toInstant() : null;
+    Timestamp ts3 = rs.getTimestamp(19);
+    Instant expiredDate = ts3 != null ? ts3.toInstant() : null;
+    boolean deleted = rs.getBoolean(20);
+    String tenantId = rs.getString(21);
+    String tenantName = rs.getString(22);
+    String tenantRealNameStatus = rs.getString(23);
+    return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
+        credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
+        passwordStrength, sysAdmin, toUser, mobile, email, mainDeptId, passwordExpiredDate,
+        lastModifiedPasswordDate, expiredDate, deleted, tenantId, tenantName, tenantRealNameStatus);
   }
 
   /**
@@ -145,15 +184,14 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements UserDe
    *                            queries.
    * @return the final UserDetails which should be used in the system.
    */
-  protected UserDetails createUserDetails(String username, UserDetails userFromUserQuery,
+  protected CustomOAuth2User createUserDetails(String username, UserDetails userFromUserQuery,
       List<GrantedAuthority> combinedAuthorities) {
     String returnUsername = userFromUserQuery.getUsername();
-    if (!this.usernameBasedPrimaryKey) {
+    if (!this.usernameBasedPrimaryKey && username != null) {
       returnUsername = username;
     }
-    return new User(returnUsername, userFromUserQuery.getPassword(), userFromUserQuery.isEnabled(),
-        userFromUserQuery.isAccountNonExpired(), userFromUserQuery.isCredentialsNonExpired(),
-        userFromUserQuery.isAccountNonLocked(), combinedAuthorities);
+    return CustomOAuth2User.with(returnUsername, (CustomOAuth2User) userFromUserQuery,
+        combinedAuthorities);
   }
 
   /**
@@ -227,7 +265,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements UserDe
     this.usersByUsernameQuery = usersByUsernameQueryString;
   }
 
-  protected boolean getEnableAuthorities() {
+  public boolean getEnableAuthorities() {
     return this.enableAuthorities;
   }
 
@@ -238,7 +276,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements UserDe
     this.enableAuthorities = enableAuthorities;
   }
 
-  protected boolean getEnableGroups() {
+  public boolean getEnableGroups() {
     return this.enableGroups;
   }
 

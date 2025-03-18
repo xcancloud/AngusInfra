@@ -24,10 +24,6 @@
     <module>auth-service-samples</module>
   </modules>
 
-  <properties>
-    <xcan-angusgm.api.version>1.0.0</xcan-angusgm.api.version>
-  </properties>
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -36,13 +32,6 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <!-- TODO 优化成依赖 aas.model  -->
-      <dependency>
-        <groupId>cloud.xcan.sdf</groupId>
-        <artifactId>xcan-angusgm.api</artifactId>
-        <version>${xcan-angusgm.api.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -15,6 +15,10 @@
   <packaging>jar</packaging>
   <description>An auto-configured library for private authorization</description>
 
+  <properties>
+    <xcan-angusgm.api.version>1.0.0</xcan-angusgm.api.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
@@ -24,6 +28,7 @@
     <dependency>
       <groupId>cloud.xcan.sdf</groupId>
       <artifactId>xcan-angusgm.api</artifactId>
+      <version>${xcan-angusgm.api.version}</version>
     </dependency>
   </dependencies>
 

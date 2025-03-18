@@ -103,7 +103,12 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!--
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.auth-resource-model</artifactId>
+        <version>${xcan-infra.security.version}</version>
+      </dependency>
+
      <dependency>
        <groupId>cloud.xcan.angus</groupId>
        <artifactId>xcan-infra.auth-openapi-starter</artifactId>
@@ -121,7 +126,7 @@
        <groupId>cloud.xcan.angus</groupId>
        <artifactId>xcan-infra.auth-open2p-starter</artifactId>
        <version>${xcan-infra.security.version}</version>
-     </dependency>-->
+     </dependency>
     </dependencies>
   </dependencyManagement>
 

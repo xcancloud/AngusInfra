@@ -1,62 +1,95 @@
 package cloud.xcan.angus.security.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import cloud.xcan.angus.security.model.AccountNotFoundException;
+import cloud.xcan.angus.security.model.CustomOAuth2User;
+import cloud.xcan.angus.security.model.CustomOAuth2UserRepository;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.log.LogMessage;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.cache.NullUserCache;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.util.Assert;
 
 /**
  * Jdbc user management service, based on the same table structure as its parent class,
- * <tt>JdbcUserAuthoritiesDaoImpl</tt>.
+ * <tt>JdbcUserDetailsRepository</tt>.
  * <p>
  * Provides CRUD operations for users. Note that if the
  * {@link #setEnableAuthorities(boolean) enableAuthorities} property is set to false, calls to
  * createUser, updateUser and deleteUser will not store the authorities from the
  * <tt>UserDetails</tt> . it's important that you take this into account when using this
  * implementation for managing your users.
+ *
+ * @see JdbcUserDetailsManager
  */
 public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implements
-    UserDetailsManager {
+    UserDetailsManager, CustomOAuth2UserRepository {
 
   // @formatter:off
-  // TODO Customization definition
-  public static final String DEF_CREATE_USER_SQL = "insert into oauth2_user (username, password, enabled) values (?,?,?)";
+  public static final String DEF_CREATE_USER_SQL =
+      "insert into oauth2_user ("
+          + "username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
+          + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
+          + "password_expired_date, last_modified_password_date, expired_date, deleted, "
+          + "tenant_id, tenant_name, tenant_real_name_status"
+          + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-  public static final String DEF_DELETE_USER_SQL = "delete from oauth2_user where username = ?";
+  public static final String DEF_DELETE_USER_SQL
+      = "delete from oauth2_user where username = ?";
 
-  public static final String DEF_UPDATE_USER_SQL = "update oauth2_user set password = ?, enabled = ? where username = ?";
+  public static final String DEF_UPDATE_USER_SQL =
+      "update oauth2_user set password = ?, enabled = ?, account_non_expired = ?, account_non_locked = ?, credentials_non_expired = ?, "
+          + "first_name = ?, last_name = ?, full_name = ?, password_strength = ?, sys_admin = ?, to_user = ?, email = ?, mobile = ?, main_dept_id = ?,"
+          + "password_expired_date = ?, last_modified_password_date = ?, expired_date = ?, deleted = ?, "
+          + "tenant_id = ?, tenant_name = ?, tenant_real_name_status = ? "
+          + "where username = ?";
 
-  // TODO Customization definition
-  public static final String DEF_INSERT_AUTHORITY_SQL = "insert into oauth2_authorities (username, authority) values (?,?)";
+  public static final String DEF_INSERT_AUTHORITY_SQL
+      = "insert into oauth2_authorities (username, authority) values (?,?)";
 
-  public static final String DEF_DELETE_USER_AUTHORITIES_SQL = "delete from oauth2_authorities where username = ?";
+  public static final String DEF_DELETE_USER_AUTHORITIES_SQL
+      = "delete from oauth2_authorities where username = ?";
 
-  public static final String DEF_USER_EXISTS_SQL = "select username from oauth2_user where username = ?";
+  public static final String DEF_USER_EXISTS_SQL
+      = "select username from oauth2_user where username = ?";
 
-  public static final String DEF_CHANGE_PASSWORD_SQL = "update oauth2_user set password = ? where username = ?";
+  public static final String DEF_CHANGE_PASSWORD_SQL
+      = "update oauth2_user set password = ? where username = ?";
+
+  public static final String DEF_USERS_BY_ACCOUNT_QUERY =
+      "select username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
+          + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
+          + "password_expired_date, last_modified_password_date, expired_date, deleted, "
+          + "tenant_id, tenant_name, tenant_real_name_status "
+          + "from oauth2_user where (username = ? or email = ? or mobile = ?) and deleted = 0";
+
+  public static final String DEF_USER_ACCOUNT_EXISTS_SQL
+      = "select username from oauth2_user where username = ? or email = ? or mobile = ?";
+
+  public static final String DEF_USER_DELETED_STATUS_SQL
+      = "update oauth2_user set deleted = 1 where username = ?";
 
   // @formatter:on
 
@@ -78,6 +111,12 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   private String userExistsSql = DEF_USER_EXISTS_SQL;
 
   private String changePasswordSql = DEF_CHANGE_PASSWORD_SQL;
+
+  private String usersByAccountSql = DEF_USERS_BY_ACCOUNT_QUERY;
+
+  private String userAccountExistsSql = DEF_USER_ACCOUNT_EXISTS_SQL;
+
+  private String userDeletedStatusSql = DEF_USER_DELETED_STATUS_SQL;
 
   private AuthenticationManager authenticationManager;
 
@@ -105,40 +144,42 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
    */
   @Override
   protected List<UserDetails> loadUsersByUsername(String username) {
-    return getJdbcTemplate().query(getUsersByUsernameQuery(), this::mapToUser, username);
-  }
-
-  private UserDetails mapToUser(ResultSet rs, int rowNum) throws SQLException {
-    String userName = rs.getString(1);
-    String password = rs.getString(2);
-    boolean enabled = rs.getBoolean(3);
-    boolean accLocked = false;
-    boolean accExpired = false;
-    boolean credsExpired = false;
-    if (rs.getMetaData().getColumnCount() > 3) {
-      // NOTE: acc_locked, acc_expired and creds_expired are also to be loaded
-      accLocked = rs.getBoolean(4);
-      accExpired = rs.getBoolean(5);
-      credsExpired = rs.getBoolean(6);
-    }
-    return new User(userName, password, enabled, !accExpired, !credsExpired, !accLocked,
-        AuthorityUtils.NO_AUTHORITIES);
+    return getJdbcTemplate().query(getUsersByUsernameQuery(), (rs, rowNum) -> mapToUser(rs),
+        username);
   }
 
   @Override
-  public void createUser(final UserDetails user) {
+  public void createUser(final UserDetails user0) {
+    CustomOAuth2User user = (CustomOAuth2User) user0;
     validateUserDetails(user);
     getJdbcTemplate().update(this.createUserSql, (ps) -> {
       ps.setString(1, user.getUsername());
       ps.setString(2, user.getPassword());
       ps.setBoolean(3, user.isEnabled());
-      int paramCount = ps.getParameterMetaData().getParameterCount();
-      if (paramCount > 3) {
-        // NOTE: acc_locked, acc_expired and creds_expired are also to be inserted
-        ps.setBoolean(4, !user.isAccountNonLocked());
-        ps.setBoolean(5, !user.isAccountNonExpired());
-        ps.setBoolean(6, !user.isCredentialsNonExpired());
-      }
+      ps.setBoolean(4, !user.isAccountNonLocked());
+      ps.setBoolean(5, !user.isAccountNonExpired());
+      ps.setBoolean(6, !user.isCredentialsNonExpired());
+      // AngusGM User Info.
+      ps.setString(7, user.getFirstName());
+      ps.setString(8, user.getLastName());
+      ps.setString(9, user.getFullName());
+      ps.setString(10, user.getPasswordStrength());
+      ps.setBoolean(11, user.isSysAdmin());
+      ps.setBoolean(12, user.isToUser());
+      ps.setString(13, user.getEmail());
+      ps.setString(14, user.getMobile());
+      ps.setLong(15, user.getMainDeptId());
+      ps.setTimestamp(16, user.getPasswordExpiredDate() != null
+          ? Timestamp.from(user.getPasswordExpiredDate()) : null);
+      ps.setTimestamp(17, user.getLastModifiedPasswordDate() != null
+          ? Timestamp.from(user.getLastModifiedPasswordDate()) : null);
+      ps.setTimestamp(18, user.getExpiredDate() != null
+          ? Timestamp.from(user.getExpiredDate()) : null);
+      ps.setBoolean(19, user.isDeleted());
+      ps.setString(20, user.getTenantId());
+      ps.setString(21, user.getTenantName());
+      ps.setString(22, user.getTenantRealNameStatus());
+      ps.setString(23, user.getUsername());
     });
     if (getEnableAuthorities()) {
       insertUserAuthorities(user);
@@ -146,21 +187,36 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   }
 
   @Override
-  public void updateUser(final UserDetails user) {
+  public void updateUser(final UserDetails user0) {
+    CustomOAuth2User user = (CustomOAuth2User) user0;
     validateUserDetails(user);
     getJdbcTemplate().update(this.updateUserSql, (ps) -> {
       ps.setString(1, user.getPassword());
       ps.setBoolean(2, user.isEnabled());
-      int paramCount = ps.getParameterMetaData().getParameterCount();
-      if (paramCount == 3) {
-        ps.setString(3, user.getUsername());
-      } else {
-        // NOTE: acc_locked, acc_expired and creds_expired are also updated
-        ps.setBoolean(3, !user.isAccountNonLocked());
-        ps.setBoolean(4, !user.isAccountNonExpired());
-        ps.setBoolean(5, !user.isCredentialsNonExpired());
-        ps.setString(6, user.getUsername());
-      }
+      ps.setBoolean(3, !user.isAccountNonLocked());
+      ps.setBoolean(4, !user.isAccountNonExpired());
+      ps.setBoolean(5, !user.isCredentialsNonExpired());
+      // AngusGM User Info.
+      ps.setString(6, user.getFirstName());
+      ps.setString(7, user.getLastName());
+      ps.setString(8, user.getFullName());
+      ps.setString(9, user.getPasswordStrength());
+      ps.setBoolean(10, user.isSysAdmin());
+      ps.setBoolean(11, user.isToUser());
+      ps.setString(12, user.getEmail());
+      ps.setString(13, user.getMobile());
+      ps.setLong(14, user.getMainDeptId());
+      ps.setTimestamp(15, user.getPasswordExpiredDate() != null
+          ? Timestamp.from(user.getPasswordExpiredDate()) : null);
+      ps.setTimestamp(16, user.getLastModifiedPasswordDate() != null
+          ? Timestamp.from(user.getLastModifiedPasswordDate()) : null);
+      ps.setTimestamp(17, user.getExpiredDate() != null
+          ? Timestamp.from(user.getExpiredDate()) : null);
+      ps.setBoolean(18, user.isDeleted());
+      ps.setString(19, user.getTenantId());
+      ps.setString(20, user.getTenantName());
+      ps.setString(21, user.getTenantRealNameStatus());
+      ps.setString(22, user.getUsername());
     });
     if (getEnableAuthorities()) {
       deleteUserAuthorities(user.getUsername());
@@ -222,8 +278,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   protected Authentication createNewAuthentication(Authentication currentAuth, String newPassword) {
     UserDetails user = loadUserByUsername(currentAuth.getName());
     UsernamePasswordAuthenticationToken newAuthentication = UsernamePasswordAuthenticationToken.authenticated(
-        user,
-        null, user.getAuthorities());
+        user, null, user.getAuthorities());
     newAuthentication.setDetails(currentAuth.getDetails());
     return newAuthentication;
   }
@@ -239,9 +294,50 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
     return users.size() == 1;
   }
 
-  private GrantedAuthority mapToGrantedAuthority(ResultSet rs, int rowNum) throws SQLException {
-    String roleName = getRolePrefix() + rs.getString(3);
-    return new SimpleGrantedAuthority(roleName);
+  @Override
+  public CustomOAuth2User findByAccount(String account) throws AccountNotFoundException {
+    List<UserDetails> users = loadUsersByAccount(account);
+    if (users.isEmpty()) {
+      this.logger.debug("Query returned no results for user '" + account + "'");
+      throw new AccountNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
+          new Object[]{account}, "Account {0} not found"));
+    }
+    UserDetails user = users.stream().filter(UserDetails::isEnabled).toList()
+        .get(0); // contains no GrantedAuthority[]
+    Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
+    if (getEnableAuthorities()) {
+      dbAuthsSet.addAll(loadUserAuthorities(user.getUsername()));
+    }
+    List<GrantedAuthority> dbAuths = new ArrayList<>(dbAuthsSet);
+    addCustomAuthorities(user.getUsername(), dbAuths);
+    if (dbAuths.isEmpty()) {
+      this.logger.debug(
+          "User '" + account + "' has no authorities and will be treated as 'not found'");
+      //throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.noAuthority",
+      //    new Object[]{account}, "User {0} has no GrantedAuthority"));
+    }
+    return createUserDetails(null, user, dbAuths);
+  }
+
+  /**
+   * Executes the SQL <tt>DEF_USERS_BY_ACCOUNT_QUERY</tt> and returns a list of UserDetails objects.
+   * There should normally only be one matching user.
+   */
+  protected List<UserDetails> loadUsersByAccount(String account) {
+    RowMapper<UserDetails> mapper = (rs, rowNum) -> mapToUser(rs);
+    return getJdbcTemplate().query(this.usersByAccountSql, mapper, account, account, account);
+  }
+
+  @Override
+  public boolean accountExists(String account) {
+    List<String> usernames = getJdbcTemplate().queryForList(this.userAccountExistsSql,
+        new String[]{account, account, account}, String.class);
+    return !usernames.isEmpty();
+  }
+
+  @Override
+  public void updateToDeleted(String username) {
+    getJdbcTemplate().update(this.changePasswordSql, userDeletedStatusSql, username);
   }
 
   /**
@@ -280,7 +376,6 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
     this.createAuthoritySql = createAuthoritySql;
   }
 
-
   public void setDeleteUserAuthoritiesSql(String deleteUserAuthoritiesSql) {
     Assert.hasText(deleteUserAuthoritiesSql, "deleteUserAuthoritiesSql should have text");
     this.deleteUserAuthoritiesSql = deleteUserAuthoritiesSql;
@@ -294,6 +389,33 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   public void setChangePasswordSql(String changePasswordSql) {
     Assert.hasText(changePasswordSql, "changePasswordSql should have text");
     this.changePasswordSql = changePasswordSql;
+  }
+
+  public String getUserAccountExistsSql() {
+    return userAccountExistsSql;
+  }
+
+  public void setUserAccountExistsSql(String userAccountExistsSql) {
+    Assert.hasText(userAccountExistsSql, "userAccountExistsSql should have text");
+    this.userAccountExistsSql = userAccountExistsSql;
+  }
+
+  public String getUsersByAccountSql() {
+    return usersByAccountSql;
+  }
+
+  public void setUsersByAccountSql(String usersByAccountSql) {
+    Assert.hasText(usersByAccountSql, "usersByAccountSql should have text");
+    this.usersByAccountSql = usersByAccountSql;
+  }
+
+  public String getUserDeletedStatusSql() {
+    return userDeletedStatusSql;
+  }
+
+  public void setUserDeletedStatusSql(String userDeletedStatusSql) {
+    Assert.hasText(usersByAccountSql, "userDeletedStatusSql should have text");
+    this.userDeletedStatusSql = userDeletedStatusSql;
   }
 
   /**

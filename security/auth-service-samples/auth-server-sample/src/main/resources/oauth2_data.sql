@@ -1,12 +1,12 @@
 -- @formatter:off
 
-INSERT INTO oauth2_user (username, password, enabled)
-VALUES ('user1', '{noop}password1', true),
-       ('user2', '{noop}password2', true);
+INSERT INTO oauth2_user (username, password, enabled, id)
+VALUES ('user1', '{noop}password1', true, '1'),
+       ('user2', '{noop}password2', true, '2');
 
 INSERT INTO oauth2_authorities (username, authority)
 VALUES ('user1', 'client:list'),
-       ('user2', 'ADMIN');
+       ('user2', 'ROLE_ADMIN');
 
 -- Insert a client with password + refresh_token grant types
 INSERT INTO oauth2_registered_client (id, client_id, client_secret, client_name,

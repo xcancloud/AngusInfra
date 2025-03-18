@@ -1,7 +1,46 @@
 package cloud.xcan.angus.security.authentication;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getAuthenticatedClientElseThrowInvalidClient;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ACCOUNT_NON_EXPIRED;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ACCOUNT_NON_LOCKED;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_BIZ_TAG;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_ID_ISSUED_AT;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SECRET_EXPIRES_AT;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_COUNTRY;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CREDENTIALS_NON_EXPIRED;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DESCRIPTION;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEVICE_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_EMAIL;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ENABLED;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_EXPIRED_DATE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_FIRST_NAME;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_FULL_NAME;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_GRANT_TYPE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_LAST_MODIFIED_PASSWORD_DATE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_LAST_NAME;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MOBILE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PERMISSION;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PLATFORM;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PRINCIPAL;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SCOPES;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SYS_ADMIN;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
 
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.sdf.spec.utils.ObjectUtils;
 import java.net.URL;
@@ -26,6 +65,7 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenIntrospection;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientCredentialsAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2TokenIntrospectionAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -40,7 +80,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
   private static final TypeDescriptor LIST_STRING_TYPE_DESCRIPTOR = TypeDescriptor.collection(
       List.class, TypeDescriptor.valueOf(String.class));
 
-  public static final String INTROSPECTION_CLAIM_NAMES_SCOPE = "permissions";
 
   private final Log logger = LogFactory.getLog(getClass());
 
@@ -142,16 +181,79 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
       tokenClaims.tokenType(accessToken.getTokenType().getValue());
     }
 
+    tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE,
+        authorization.getAuthorizationGrantType().getValue());
+
     Object principal = authorization.getAttribute(Principal.class.getName());
-    if (principal != null && principal instanceof UsernamePasswordAuthenticationToken) {
-      CustomOAuth2User user = (CustomOAuth2User) ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-      if (ObjectUtils.isNotEmpty(user.getAuthorities())) {
-        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_SCOPE,
-            user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(
-                Collectors.toSet()));
+    if (principal != null) {
+      if (principal instanceof UsernamePasswordAuthenticationToken) {
+        CustomOAuth2User user = (CustomOAuth2User)
+            ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toUserPrincipalClaim(user));
+        if (ObjectUtils.isNotEmpty(user.getAuthorities())) {
+          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION,
+              user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                  .collect(Collectors.toSet()));
+        }
+      }
+      if (principal instanceof OAuth2ClientCredentialsAuthenticationToken) {
+        CustomOAuth2RegisteredClient client = (CustomOAuth2RegisteredClient)
+            ((OAuth2ClientCredentialsAuthenticationToken) principal).getPrincipal();
+        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toClientPrincipalClaim(client));
       }
     }
     return tokenClaims.build();
+  }
+
+  private static Map<String, Object> toUserPrincipalClaim(CustomOAuth2User user) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put(INTROSPECTION_CLAIM_NAMES_USERNAME, user.getUsername());
+    claims.put(INTROSPECTION_CLAIM_NAMES_ENABLED, user.isEnabled());
+    claims.put(INTROSPECTION_CLAIM_NAMES_ACCOUNT_NON_EXPIRED, user.isAccountNonExpired());
+    claims.put(INTROSPECTION_CLAIM_NAMES_ACCOUNT_NON_LOCKED, user.isAccountNonLocked());
+    claims.put(INTROSPECTION_CLAIM_NAMES_CREDENTIALS_NON_EXPIRED, user.isCredentialsNonExpired());
+    claims.put(INTROSPECTION_CLAIM_NAMES_ID, user.getId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_FIRST_NAME, user.getFirstName());
+    claims.put(INTROSPECTION_CLAIM_NAMES_LAST_NAME, user.getLastName());
+    claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, user.getFullName());
+    claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
+    claims.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, user.isSysAdmin());
+    claims.put(INTROSPECTION_CLAIM_NAMES_TO_USER, user.isToUser());
+    claims.put(INTROSPECTION_CLAIM_NAMES_MOBILE, user.getMobile());
+    claims.put(INTROSPECTION_CLAIM_NAMES_EMAIL, user.getEmail());
+    claims.put(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID, user.getMainDeptId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE, user.getPasswordExpiredDate());
+    claims.put(INTROSPECTION_CLAIM_NAMES_LAST_MODIFIED_PASSWORD_DATE,
+        user.getLastModifiedPasswordDate());
+    claims.put(INTROSPECTION_CLAIM_NAMES_EXPIRED_DATE, user.getExpiredDate());
+    claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, user.getTenantId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_NAME, user.getTenantName());
+    claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS, user.getTenantRealNameStatus());
+    claims.put(INTROSPECTION_CLAIM_NAMES_COUNTRY, user.getCountry());
+    //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, user.getClientId());
+    //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE, user.getClientSource());
+    claims.put(INTROSPECTION_CLAIM_NAMES_DEVICE_ID, user.getDeviceId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID, user.getDirectoryId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE, user.getDefaultLanguage());
+    claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE, user.getDefaultTimeZone());
+    return claims;
+  }
+
+  private static Map<String, Object> toClientPrincipalClaim(CustomOAuth2RegisteredClient client) {
+    Map<String, Object> claims = new HashMap<>();
+    claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, client.getClientId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME, client.getClientName());
+    claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID_ISSUED_AT, client.getClientIdIssuedAt());
+    claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SECRET_EXPIRES_AT,
+        client.getClientSecretExpiresAt());
+    claims.put(INTROSPECTION_CLAIM_NAMES_SCOPES, client.getScopes());
+    claims.put(INTROSPECTION_CLAIM_NAMES_DESCRIPTION, client.getDescription());
+    claims.put(INTROSPECTION_CLAIM_NAMES_PLATFORM, client.getPlatform());
+    claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE, client.getSource());
+    claims.put(INTROSPECTION_CLAIM_NAMES_BIZ_TAG, client.getBizTag());
+    claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, client.getTenantId());
+    claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_NAME, client.getTenantName());
+    return claims;
   }
 
   private static Map<String, Object> convertClaimsIfNecessary(Map<String, Object> claims) {

@@ -33,7 +33,7 @@ import static cloud.xcan.sdf.spec.principal.Principal.DEFAULT_USER_ID;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.nullSafe;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.sdf.api.commonlink.authuser.AuthUser;
+import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.sdf.api.enums.DataScope;
 import cloud.xcan.sdf.api.enums.GrantType;
 import cloud.xcan.sdf.spec.experimental.BizConstant.AuthKey;
@@ -76,9 +76,9 @@ public abstract class AbstractHoldPrincipal {
         holdSuccess = holdClientPrincipal(principal, request, auth2Auth, authRequest, grantType);
       } else {
         Object userAuth = auth2Auth.getPrincipal();
-        if (userAuth instanceof AuthUser) {
+        if (userAuth instanceof CustomOAuth2User) {
           holdSuccess = holdUserPrincipal(request, response, principal, auth2Auth, authRequest,
-              (AuthUser) userAuth, grantType);
+              (CustomOAuth2User) userAuth, grantType);
         } else {
           holdSuccess = holdUserMapPrincipal(principal, request, response, auth2Auth,
               authRequest, grantType);
@@ -90,27 +90,28 @@ public abstract class AbstractHoldPrincipal {
 
   public boolean holdUserPrincipal(HttpServletRequest request, HttpServletResponse response,
       Principal principal, Authentication auth2Auth, OAuth2AuthorizationRequest authRequest,
-      AuthUser user, GrantType grantType) {
+      CustomOAuth2User user, GrantType grantType) {
     boolean success = false;
     try {
       String clientId = authRequest.getClientId();
-      Long tenantId = user.getTenantId();
+      Long tenantId = Long.valueOf(user.getTenantId());
       success = checkRequiredInfo(response, tenantId, clientId);
       if (success) {
         principal.setAuthorization(getAuthorization(request))
             .setAuthPassed(auth2Auth.isAuthenticated())
             .setGrantType(grantType)
-            .setDefaultLanguage(user.getDefaultLanguage())
+            .setDefaultLanguage(nonNull(user.getDefaultLanguage())
+                ? SupportedLanguage.valueOf(user.getDefaultLanguage()) : null)
             .setDefaultTimeZone(user.getDefaultTimeZone())
             .setClientId(clientId)
             .setClientSource(user.getClientSource())
             .setTenantId(tenantId)
             .setTenantName(user.getTenantName())
-            .setUserId(user.getId())
-            .setUserFullname(user.getFullname())
+            .setUserId(Long.valueOf(user.getId()))
+            .setUserFullname(user.getFullName())
             .setUsername(user.getUsername())
-            .setSysAdminFlag(user.getSysAdminFlag())
-            .setToUserFlag(user.getToUserFlag())
+            .setSysAdminFlag(user.isSysAdmin())
+            .setToUserFlag(user.isToUser())
             .setMainDeptId(user.getMainDeptId())
             .setItc(user.getItc())
             .setCountry(user.getCountry())

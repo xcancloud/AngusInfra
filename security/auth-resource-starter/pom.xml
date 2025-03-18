@@ -15,10 +15,6 @@
   <packaging>jar</packaging>
   <description>An auto-configured library for OAuth2 resource authorization</description>
 
-  <properties>
-    <xcan-angusgm.api.version>1.0.0</xcan-angusgm.api.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
@@ -26,8 +22,8 @@
     </dependency>
 
     <dependency>
-      <groupId>cloud.xcan.sdf</groupId>
-      <artifactId>xcan-angusgm.api</artifactId>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.auth-resource-model</artifactId>
     </dependency>
 
     <!-- Spring Boot Starter Security -->

@@ -78,7 +78,7 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       if (authentication instanceof AnonymousAuthenticationToken) {
         writeApiResult(response, SC_BAD_REQUEST,
-            PRINCIPAL_INFO_MISSING, PRINCIPAL_INFO_MISSING_KEY, null/*TODO*/);
+            PRINCIPAL_INFO_MISSING, PRINCIPAL_INFO_MISSING_KEY, null);
         return;
       }
 

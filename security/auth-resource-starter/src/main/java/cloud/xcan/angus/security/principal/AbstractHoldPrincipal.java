@@ -75,15 +75,18 @@ public abstract class AbstractHoldPrincipal {
       Object clientId = attributes.get(OAuth2TokenIntrospectionClaimNames.CLIENT_ID).toString();
       Map<String, Object> clientPrincipal = (Map<String, Object>) attributes.get(
           INTROSPECTION_CLAIM_NAMES_PRINCIPAL);
-      Object tenantId = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_ID);
+      Object tenantId0 = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_ID);
+      // Client authentication tenant ID is not mandatory
+      Long tenantId = nonNull(tenantId0) ? Long.parseLong(tenantId0.toString()) : -1;
       if (checkRequiredInfo(tenantId, clientId)) {
         Object tenantName = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
         Object clientSource = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
         Object clientName = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
         principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
+            .setUri(request.getRequestURI()).setMethod(request.getMethod())
             .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Tenant level settings should be used
             .setDefaultTimeZone(null) // TODO Tenant level settings should be used
-            .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
+            .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
             .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
             .setUserId(-1L).setFullname(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
             .setUsername(clientId.toString()/*default*/).setSysAdmin(false).setToUser(false).setMainDeptId(-1L).setCountry(null);
@@ -122,7 +125,8 @@ public abstract class AbstractHoldPrincipal {
         Object defaultTimeZone = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
         Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
         principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
-            .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : null)
+            .setUri(request.getRequestURI()).setMethod(request.getMethod())
+            .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
             .setDefaultTimeZone(nonNull(defaultTimeZone) ? defaultTimeZone.toString() : null)
             .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
             .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)

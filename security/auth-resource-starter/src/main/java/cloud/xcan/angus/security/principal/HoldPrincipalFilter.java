@@ -13,7 +13,9 @@ import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static java.util.Objects.nonNull;
 
+import cloud.xcan.angus.security.OAuth2PrincipalHoldAutoConfigurer;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
+import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
 import cloud.xcan.sdf.api.ApiResult;
 import cloud.xcan.sdf.spec.experimental.BizConstant.Header;
 import cloud.xcan.sdf.spec.locale.MessageHolder;
@@ -35,7 +37,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Get request interface user information filter (for /api interface)
+ * Hold identity information from introspect endpoint to the current request context.
+ *
+ * @see CustomOpaqueTokenIntrospector
+ * @see OAuth2PrincipalHoldAutoConfigurer
  *
  * @author XiaoLong Liu
  */

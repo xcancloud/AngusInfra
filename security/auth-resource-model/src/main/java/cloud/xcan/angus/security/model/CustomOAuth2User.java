@@ -116,7 +116,7 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
   @Transient
   private String clientSource;
   @Transient
-  private String deviceId;
+  private String deviceId; // Signup Device ID.
   @Transient
   private Long directoryId;
   @Transient

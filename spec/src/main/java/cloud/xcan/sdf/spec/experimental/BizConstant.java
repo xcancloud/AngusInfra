@@ -277,6 +277,12 @@ public interface BizConstant {
       "/view/**"
   };
 
+  String[] AUTH_RESOURCES_IN_FILTER = {
+      "/api/*",
+      "/openapi2p/*",
+      "/view/*"
+  };
+
   String[] OPEN_AUTH_RESOURCES = {
       "/openapi/**",
       "/openview/**"

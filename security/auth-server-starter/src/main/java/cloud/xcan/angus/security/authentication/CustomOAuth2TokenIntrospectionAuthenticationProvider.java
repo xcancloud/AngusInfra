@@ -28,7 +28,6 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MOBILE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PERMISSION;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PLATFORM;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PRINCIPAL;
@@ -216,7 +215,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_FIRST_NAME, user.getFirstName());
     claims.put(INTROSPECTION_CLAIM_NAMES_LAST_NAME, user.getLastName());
     claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, user.getFullName());
-    claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
+    //claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
     claims.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, user.isSysAdmin());
     claims.put(INTROSPECTION_CLAIM_NAMES_TO_USER, user.isToUser());
     claims.put(INTROSPECTION_CLAIM_NAMES_MOBILE, user.getMobile());
@@ -241,6 +240,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
 
   private static Map<String, Object> toClientPrincipalClaim(CustomOAuth2RegisteredClient client) {
     Map<String, Object> claims = new HashMap<>();
+    //claims.put(INTROSPECTION_CLAIM_NAMES_ID, client.getId());
     claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, client.getClientId());
     claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME, client.getClientName());
     claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID_ISSUED_AT, client.getClientIdIssuedAt());

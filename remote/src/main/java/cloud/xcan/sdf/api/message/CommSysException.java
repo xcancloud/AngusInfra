@@ -182,7 +182,7 @@ public class CommSysException extends AbstractResultMessageException {
 
   public interface M {
 
-    String SERVER_ERROR_CODE = "";
+    //String SERVER_ERROR_CODE = SYSTEM_ERROR_CODE;
     String SERVER_ERROR = "xcm.server.error";
     String SERVER_ERROR_KEY = "server_error";
 

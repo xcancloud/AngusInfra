@@ -12,7 +12,7 @@ import java.util.Objects;
 @EndpointRegister
 public enum GrantType implements EnumMessage<String> {
 
-  IMPLICIT, REFRESH_TOKEN, CLIENT_CREDENTIALS, PASSWORD, MOBILE_SMS, THIRD_SOCIAL;
+  IMPLICIT, REFRESH_TOKEN, CLIENT_CREDENTIALS, PASSWORD, THIRD_SOCIAL;
 
   @Override
   public String getValue() {

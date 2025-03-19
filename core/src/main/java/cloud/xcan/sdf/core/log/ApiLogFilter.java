@@ -307,7 +307,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
         .remote(request.getRemoteAddr())
         .clientId(principal.getClientId()).clientSource(principal.getClientSource())
         .tenantId(principal.getTenantId()).tenantName(principal.getTenantName())
-        .userId(principal.getUserId()).fullname(principal.getUserFullname())
+        .userId(principal.getUserId()).fullname(principal.getFullname())
         .serviceCode(principal.getServiceCode()).serviceName(principal.getServiceName())
         .instanceId(principal.getInstanceId())
         .apiType(principal.getApiType()).method(principal.getMethod()).uri(request.getRequestURI())

@@ -8,19 +8,14 @@ import static cloud.xcan.sdf.api.message.CommSysException.M.PRINCIPAL_INFO_MISSI
 import static cloud.xcan.sdf.api.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
 import static cloud.xcan.sdf.api.message.http.Forbidden.M.FATAL_EXIT_KEY;
 import static cloud.xcan.sdf.spec.SpecConstant.DEFAULT_ENCODING;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AuthKey.CLIENT_ID_HUMP;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AuthKey.GRANT_TYPE_HUMP;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AuthKey.OAUTH2_REQUEST;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static java.util.Objects.nonNull;
 
+import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.sdf.api.ApiResult;
-import cloud.xcan.sdf.api.enums.GrantType;
 import cloud.xcan.sdf.spec.experimental.BizConstant.Header;
-import cloud.xcan.sdf.spec.http.ContentType;
 import cloud.xcan.sdf.spec.locale.MessageHolder;
 import cloud.xcan.sdf.spec.principal.Principal;
 import cloud.xcan.sdf.spec.principal.PrincipalContext;
@@ -33,16 +28,11 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
-import org.springframework.util.ObjectUtils;
 
 /**
  * Get request interface user information filter (for /api interface)
@@ -52,10 +42,10 @@ import org.springframework.util.ObjectUtils;
 @Slf4j
 public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter {
 
-  private  static ApplicationContext applicationContext;
+  private static ObjectMapper objectMapper;
 
-  public HoldPrincipalFilter(ApplicationContext applicationContext) {
-    HoldPrincipalFilter.applicationContext = applicationContext;
+  public HoldPrincipalFilter(ObjectMapper objectMapper) {
+    HoldPrincipalFilter.objectMapper = objectMapper;
   }
 
   @Override
@@ -77,31 +67,24 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
       Principal principal = PrincipalContext.get();
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       if (authentication instanceof AnonymousAuthenticationToken) {
-        writeApiResult(response, SC_BAD_REQUEST,
-            PRINCIPAL_INFO_MISSING, PRINCIPAL_INFO_MISSING_KEY, null);
+        writeApiResult(response, SC_BAD_REQUEST, PRINCIPAL_INFO_MISSING,
+            PRINCIPAL_INFO_MISSING_KEY);
         return;
       }
 
-      boolean holdSuccess = holdAuthPrincipal(response, request, principal, authentication, null/*TODO*/);
-
+      // Read identity information from endpoint(/oauth2/introspect) to the current request context
+      boolean holdSuccess = holdAuthPrincipal(request, principal, authentication);
       if (!holdSuccess) {
         return;
       }
 
-      setResponseHeader(response, principal);
-
-      Long optTenantId = nonNull(principal.getOptTenantId())
-          ? principal.getOptTenantId() : getOptTenantId(request);
-      if (nonNull(optTenantId)) {
-        principal.setOptTenantId(optTenantId);
-      }
-      if (isTenantClientOpMultiTenant(principal)) {
-        log.error(String.format("User %s access tenant %s is denied", principal.getUserId(),
-            optTenantId));
-        writeApiResult(response, SC_FORBIDDEN, DENIED_OP_TENANT_ACCESS_T,
-            FATAL_EXIT_KEY, new Object[]{String.valueOf(optTenantId)});
+      // Only allow the operating platform to access other tenants.
+      if (checkMultiTenantAccess(principal, response)) {
         return;
       }
+
+      setResponseHeader(response, principal);
+      setPrincipalTenantId(principal, request);
 
       chain.doFilter(request, response);
     } finally {
@@ -111,6 +94,18 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
 
   @Override
   public void destroy() {
+  }
+
+  private static boolean checkMultiTenantAccess(Principal principal, HttpServletResponse response)
+      throws ServletException {
+    if (isTenantClientOpMultiTenant(principal)) {
+      log.error(String.format("User %s access tenant %s is denied", principal.getUserId(),
+          principal.getOptTenantId()));
+      writeApiResult(response, SC_FORBIDDEN, DENIED_OP_TENANT_ACCESS_T,
+          FATAL_EXIT_KEY, new Object[]{principal.getOptTenantId()});
+      return true;
+    }
+    return false;
   }
 
   public static boolean isTenantClientOpMultiTenant(Principal principal) {
@@ -125,42 +120,16 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
     return XCAN_TENANT_PLATFORM_CODE.equals(principal.getClientId());
   }
 
-  public static String getClientId(OAuth2AuthorizationRequest authRequest,
-      Map<String, Map<String, Object>> detailsMap) {
-    String clientId = authRequest.getClientId();
-    if (ObjectUtils.isEmpty(clientId)) {
-      Object co = detailsMap.get(OAUTH2_REQUEST).get(CLIENT_ID_HUMP);
-      if (!ObjectUtils.isEmpty(co)) {
-        clientId = (String) co;
-      }
-    }
-    return clientId;
-  }
-
-  public static GrantType getGrantType(Authentication auth2Auth,
-      OAuth2AuthorizationRequest authRequest) {
-    String grantType = authRequest.getGrantType().getValue();
-    if (StringUtils.isNotEmpty(grantType)) {
-      return GrantType.of(grantType);
-    }
-    Object details = auth2Auth.getDetails();
-    if (details != null) {
-      if (!isEmpty(details) && details instanceof LinkedHashMap) {
-        Map<String, Map<String, Object>> detailsMap = (Map<String, Map<String, Object>>) details;
-        Object co = detailsMap.get(OAUTH2_REQUEST).get(GRANT_TYPE_HUMP);
-        if (!isEmpty(co)) {
-          grantType = (String) co;
-          return GrantType.of(grantType);
-        }
-      }
-    }
-    return null;
+  public static void writeApiResult(HttpServletResponse response, int status, String message,
+      String eKey) throws ServletException {
+    writeApiResult(response, status, message, eKey, null);
   }
 
   public static void writeApiResult(HttpServletResponse response, int status, String message,
       String eKey, Object[] messageArgs) throws ServletException {
     response.setHeader(Header.E_KEY, eKey);
-    ApiResult<?> result = new ApiResult<>().setCode(PROTOCOL_ERROR_CODE)
+    ApiResult<?> result = new ApiResult<>()
+        .setCode(PROTOCOL_ERROR_CODE)
         .setMsg(MessageHolder.message(message, messageArgs))
         .setExt(Map.of(EXT_EKEY_NAME, eKey));
     writeJsonUtf8Result(response, status, result);
@@ -168,18 +137,7 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
 
   public static void writeJsonUtf8Result(HttpServletResponse response, int status, Object result)
       throws ServletException {
-    response.setCharacterEncoding(DEFAULT_ENCODING);
-    response.setContentType(ContentType.TYPE_JSON_UTF8);
-    response.setStatus(status);
-    try {
-      if (nonNull(result)) {
-        response.getWriter().write(applicationContext.getBean(ObjectMapper.class)
-            .writeValueAsString(result));
-        response.getWriter().flush();
-      }
-    } catch (Exception e) {
-      throw new ServletException(e.getMessage());
-    }
+    CustomAuthenticationEntryPoint.writeJsonUtf8Result(objectMapper, response, status, result);
   }
 
 }

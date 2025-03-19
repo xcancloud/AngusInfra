@@ -29,6 +29,7 @@ import org.springframework.security.oauth2.server.resource.introspection.BadOpaq
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionException;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,10 +37,12 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * A Spring implementation of {@link OpaqueTokenIntrospector} that verifies and introspects a token
+ * A Custom implementation of {@link OpaqueTokenIntrospector} that verifies and introspects a token
  * using the configured
  * <a href="https://tools.ietf.org/html/rfc7662" target="_blank">OAuth 2.0 Introspection
  * Endpoint</a>.
+ *
+ * @see SpringOpaqueTokenIntrospector
  */
 public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
@@ -247,9 +250,11 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
   private OAuth2IntrospectionAuthenticatedPrincipal defaultAuthenticationConverter(
       OAuth2TokenIntrospectionClaimAccessor accessor) {
     Collection<GrantedAuthority> authorities = new ArrayList<>();
-    Collection<GrantedAuthority> scopeAuthorities = authorities(AUTHORITY_PREFIX, accessor.getScopes());
+    Collection<GrantedAuthority> scopeAuthorities = authorities(AUTHORITY_PREFIX,
+        accessor.getScopes());
     authorities.addAll(scopeAuthorities);
-    Collection<GrantedAuthority> userAuthorities = authorities("", accessor.getClaimAsStringList(INTROSPECTION_CLAIM_NAMES_SCOPE));
+    Collection<GrantedAuthority> userAuthorities = authorities("",
+        accessor.getClaimAsStringList(INTROSPECTION_CLAIM_NAMES_SCOPE));
     authorities.addAll(userAuthorities);
     return new OAuth2IntrospectionAuthenticatedPrincipal(accessor.getClaims(), authorities);
   }
@@ -265,7 +270,6 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     return finalAuthorities;
   }
 
-  // gh-7563
   private static final class ArrayListFromString extends ArrayList<String> {
 
     ArrayListFromString(String... elements) {
@@ -274,7 +278,6 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
   }
 
-  // gh-15165
   private interface ArrayListFromStringClaimAccessor extends OAuth2TokenIntrospectionClaimAccessor {
 
     @Override

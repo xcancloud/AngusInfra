@@ -105,7 +105,7 @@ public class PrincipalContext {
   }
 
   public static boolean isAuthPassed() {
-    return get().isAuthPassed();
+    return get().isAuthenticated();
   }
 
   public static GrantType getGrantType() {
@@ -161,16 +161,12 @@ public class PrincipalContext {
     return get().getUserId();
   }
 
-  public static String getUserFullname() {
-    return get().getUserFullname();
+  public static String getUserName() {
+    return get().getFullname();
   }
 
   public static String getUsername() {
     return get().getUsername();
-  }
-
-  public static String getItc() {
-    return get().getItc();
   }
 
   public static String getCountry() {
@@ -186,7 +182,7 @@ public class PrincipalContext {
   }
 
   public static List<String> getAuthorities() {
-    return get().getAuthorities();
+    return get().getPermissions();
   }
 
   public static Map<String, ?> getExtensions() {

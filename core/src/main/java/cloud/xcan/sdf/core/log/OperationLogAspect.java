@@ -184,7 +184,7 @@ public class OperationLogAspect {
   private String getOperationDescription(ApiLocaleResult<?> apiResult, OperationLog optLog,
       String message) {
     StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserFullname());
+    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserName());
     if (!EvaluationObject.NONE.equals(optLog.evaluationObject())) {
       evaluationContext.setRootObject(apiResult.getData());
     }
@@ -194,14 +194,14 @@ public class OperationLogAspect {
 
   private String getOperationDescription(String message) {
     StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserFullname());
+    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserName());
     Expression expression = parser.parseExpression(message);
     return expression.getValue(evaluationContext, String.class);
   }
 
   private String getOperationDescription(Object[] args, OperationLog optLog, String message) {
     StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserFullname());
+    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserName());
     if (EvaluationObject.NONE.equals(optLog.evaluationObject())) {
       Expression expression = parser.parseExpression(message);
       return expression.getValue(String.class);
@@ -255,7 +255,7 @@ public class OperationLogAspect {
     }
 
     StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserFullname());
+    evaluationContext.setVariable(UserKey.USER_NAME, PrincipalContext.getUserName());
     List<String> descriptions = new ArrayList<>(dto.size());
 
     // Only load operation user
@@ -349,7 +349,7 @@ public class OperationLogAspect {
         .clientId(principal.getClientId())
         .requestId(principal.getRequestId())
         .userId(principal.getUserId())
-        .fullname(principal.getUserFullname())
+        .fullname(principal.getFullname())
         .operationDate(principal.getRequestAcceptTime())
         .build();
   }

@@ -65,9 +65,12 @@ public class Principal implements Serializable {
 
   private String remoteAddress;
   private String userAgent;
+  /**
+   * Signup Device ID.
+   */
   private String deviceId;
 
-  private boolean authPassed = false;
+  private boolean authenticated = false;
   private GrantType grantType;
   private Platform platformScope;
   private ApiType apiType;
@@ -84,18 +87,18 @@ public class Principal implements Serializable {
   private String tenantName = "";
 
   private Long userId = DEFAULT_USER_ID;
-  private String userFullname = "";
+  private String fullname = "";
   private String username = "";
 
   private Long mainDeptId;
 
-  private String itc;
+  //private String itc;
   private String country;
 
-  private boolean sysAdminFlag;
-  private boolean toUserFlag;
+  private boolean sysAdmin;
+  private boolean toUser;
   @JsonIgnore
-  private List<String> authorities;
+  private List<String> permissions;
 
   /**
    * Operation tenant

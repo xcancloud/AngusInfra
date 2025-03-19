@@ -155,14 +155,14 @@ public class PrincipalContextUtils {
    */
   public static boolean isSysAdmin() {
     Principal principal = PrincipalContext.get();
-    return principal.isAuthPassed() && principal.isSysAdminFlag();
+    return principal.isAuthenticated() && principal.isSysAdmin();
   }
 
   /**
    * Check whether the platform system administrator
    */
   public static boolean isSysAdmin(Principal principal) {
-    return principal.isAuthPassed() && principal.isSysAdminFlag();
+    return principal.isAuthenticated() && principal.isSysAdmin();
   }
 
   /**
@@ -184,7 +184,7 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isToUser0(Principal principal) {
-    return principal.isAuthPassed() && principal.isToUserFlag() && isOpClient(principal);
+    return principal.isAuthenticated() && principal.isToUser() && isOpClient(principal);
   }
 
   public static boolean hasMultiTenantPermission() {
@@ -263,8 +263,8 @@ public class PrincipalContextUtils {
    */
   public static boolean isPlatformSysAdmin(String platformCode) {
     Principal principal = PrincipalContext.get();
-    return principal.isAuthPassed() && principal.getClientId().equals(platformCode)
-        && principal.isSysAdminFlag();
+    return principal.isAuthenticated() && principal.getClientId().equals(platformCode)
+        && principal.isSysAdmin();
   }
 
   /**
@@ -275,8 +275,8 @@ public class PrincipalContextUtils {
    * @see BizConstant#XCAN_TENANT_PLATFORM_CODE
    */
   public static boolean isPlatformSysAdmin(String platformCode, Principal principal) {
-    return principal.isAuthPassed() && principal.getClientId().equals(platformCode)
-        && principal.isSysAdminFlag();
+    return principal.isAuthenticated() && principal.getClientId().equals(platformCode)
+        && principal.isSysAdmin();
   }
 
   /**
@@ -290,14 +290,14 @@ public class PrincipalContextUtils {
    * Check whether the anonymous user
    */
   public static boolean isAnonymousUser(Principal principal) {
-    return !principal.isAuthPassed();
+    return !principal.isAuthenticated();
   }
 
   public static boolean hasAuthority(String authority) {
     if (nonePolicyAndAuthority(authority)) {
       return false;
     }
-    List<String> authorities = PrincipalContext.get().getAuthorities();
+    List<String> authorities = PrincipalContext.get().getPermissions();
     for (String p : authorities) {
       if (authority.equals(p)) {
         return true;
@@ -310,7 +310,7 @@ public class PrincipalContextUtils {
     if (nonePolicyAndAuthority(authorities)) {
       return false;
     }
-    List<String> authorities_ = PrincipalContext.get().getAuthorities();
+    List<String> authorities_ = PrincipalContext.get().getPermissions();
     for (String authority : authorities) {
       for (String p : authorities_) {
         if (authority.equals(p)) {
@@ -328,7 +328,7 @@ public class PrincipalContextUtils {
     if (!policy.startsWith(POLICY_PREFIX)) {
       policy = POLICY_PREFIX + policy;
     }
-    for (String p : PrincipalContext.get().getAuthorities()) {
+    for (String p : PrincipalContext.get().getPermissions()) {
       if (policy.equals(p)) {
         return true;
       }
@@ -340,7 +340,7 @@ public class PrincipalContextUtils {
     if (nonePolicyAndAuthority(policies)) {
       return false;
     }
-    List<String> allPolicies = PrincipalContext.get().getAuthorities();
+    List<String> allPolicies = PrincipalContext.get().getPermissions();
     for (String policy : policies) {
       if (!policy.startsWith(POLICY_PREFIX)) {
         policy = POLICY_PREFIX + policy;
@@ -361,7 +361,7 @@ public class PrincipalContextUtils {
     if (!policy.startsWith(POLICY_OP_PREFIX)) {
       policy = POLICY_OP_PREFIX + policy;
     }
-    for (String p : PrincipalContext.get().getAuthorities()) {
+    for (String p : PrincipalContext.get().getPermissions()) {
       if (policy.equals(p)) {
         return true;
       }
@@ -373,7 +373,7 @@ public class PrincipalContextUtils {
     if (nonePolicyAndAuthority(policies)) {
       return false;
     }
-    List<String> allPolicies = PrincipalContext.get().getAuthorities();
+    List<String> allPolicies = PrincipalContext.get().getPermissions();
     for (String policy : policies) {
       if (!policy.startsWith(POLICY_OP_PREFIX)) {
         policy = POLICY_OP_PREFIX + policy;
@@ -394,7 +394,7 @@ public class PrincipalContextUtils {
     if (!policy.startsWith(POLICY_TOP_PREFIX)) {
       policy = POLICY_TOP_PREFIX + policy;
     }
-    for (String p : PrincipalContext.get().getAuthorities()) {
+    for (String p : PrincipalContext.get().getPermissions()) {
       if (policy.equals(p)) {
         return true;
       }
@@ -406,7 +406,7 @@ public class PrincipalContextUtils {
     if (nonePolicyAndAuthority(policies)) {
       return false;
     }
-    List<String> allPolicies = PrincipalContext.get().getAuthorities();
+    List<String> allPolicies = PrincipalContext.get().getPermissions();
     for (String policy : policies) {
       if (!policy.startsWith(POLICY_TOP_PREFIX)) {
         policy = POLICY_TOP_PREFIX + policy;
@@ -425,7 +425,7 @@ public class PrincipalContextUtils {
     if (authentication == null || isEmpty(policyOrAuthority)) {
       return true;
     }
-    return isEmpty(PrincipalContext.get().getAuthorities());
+    return isEmpty(PrincipalContext.get().getPermissions());
   }
 
 

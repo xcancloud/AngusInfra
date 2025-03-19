@@ -58,13 +58,6 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
       FilterChain chain) throws IOException, ServletException {
     try {
       HttpServletRequest request = (HttpServletRequest) servletRequest;
-      String path = request.getRequestURI();
-
-      if (path.startsWith("/api/auth/user") || path.startsWith("/actuator")
-          || path.startsWith("/swagger") || "/".equals(path)) {
-        chain.doFilter(servletRequest, servletResponse);
-        return;
-      }
 
       HttpServletResponse response = (HttpServletResponse) servletResponse;
       request.setCharacterEncoding(DEFAULT_ENCODING);

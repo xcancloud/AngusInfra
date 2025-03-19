@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
  * @author XiaoLong Liu
  */
 @Configuration
-class OAuth2PrincipalHoldAutoConfigurer {
+public class OAuth2PrincipalHoldAutoConfigurer {
 
   OAuth2PrincipalHoldAutoConfigurer() {
   }

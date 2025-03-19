@@ -56,6 +56,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
@@ -180,26 +181,26 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
       tokenClaims.tokenType(accessToken.getTokenType().getValue());
     }
 
-    tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE,
-        authorization.getAuthorizationGrantType().getValue());
+    AuthorizationGrantType grantType = authorization.getAuthorizationGrantType();
+    tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE, grantType.getValue());
 
-    Object principal = authorization.getAttribute(Principal.class.getName());
-    if (principal != null) {
-      if (principal instanceof UsernamePasswordAuthenticationToken) {
-        CustomOAuth2User user = (CustomOAuth2User)
-            ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toUserPrincipalClaim(user));
-        if (ObjectUtils.isNotEmpty(user.getAuthorities())) {
-          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION,
-              user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                  .collect(Collectors.toSet()));
+    if (grantType.equals(AuthorizationGrantType.PASSWORD)){
+      Object principal = authorization.getAttribute(Principal.class.getName());
+      if (principal != null) {
+        if (principal instanceof UsernamePasswordAuthenticationToken) {
+          CustomOAuth2User user = (CustomOAuth2User)
+              ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toUserPrincipalClaim(user));
+          if (ObjectUtils.isNotEmpty(user.getAuthorities())) {
+            tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION,
+                user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toSet()));
+          }
         }
       }
-      if (principal instanceof OAuth2ClientCredentialsAuthenticationToken) {
-        CustomOAuth2RegisteredClient client = (CustomOAuth2RegisteredClient)
-            ((OAuth2ClientCredentialsAuthenticationToken) principal).getPrincipal();
-        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toClientPrincipalClaim(client));
-      }
+    } else if (grantType.equals(AuthorizationGrantType.CLIENT_CREDENTIALS)) {
+      tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toClientPrincipalClaim(
+          (CustomOAuth2RegisteredClient) authorizedClient));
     }
     return tokenClaims.build();
   }

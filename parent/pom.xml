@@ -107,6 +107,8 @@
     <oshi-core.version>5.8.3</oshi-core.version>
     <dom4j.version>2.1.4</dom4j.version>
     <easyexcel.version>4.0.3</easyexcel.version>
+    <poi.version>5.4.0</poi.version>
+    <poi-ooxml-schemas.version>4.1.2</poi-ooxml-schemas.version>
     <lettuce.version>6.2.5.RELEASE</lettuce.version>
     <undertow.version>2.3.17.Final</undertow.version>
 
@@ -439,6 +441,25 @@
         <groupId>com.alibaba</groupId>
         <artifactId>easyexcel</artifactId>
         <version>${easyexcel.version}</version>
+      </dependency>
+      <!-- Excel tools-->
+      <!-- Apache POI - Java API To Access Microsoft Format Files -->
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+      <!-- Apache POI API Based On OPC and OOXML Schemas -->
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml</artifactId>
+        <version>${poi.version}</version>
+      </dependency>
+      <!-- Apache POI - Java API To Access Microsoft Format Files -->
+      <dependency>
+        <groupId>org.apache.poi</groupId>
+        <artifactId>poi-ooxml-schemas</artifactId>
+        <version>${poi-ooxml-schemas.version}</version>
       </dependency>
 
       <!-- Advanced and thread-safe Java Redis client for synchronous, asynchronous, and reactive usage. Supports Cluster, Sentinel, Pipelining, Auto-Reconnect, Codecs and much more. -->

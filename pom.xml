@@ -56,7 +56,7 @@
   </scm>
 
   <issueManagement>
-    <system>gitlab</system>
+    <system>github</system>
     <url>https://github.com/xcancloud/AngusInfra/-/issues</url>
   </issueManagement>
 

@@ -65,7 +65,6 @@ import org.springframework.security.oauth2.server.authorization.OAuth2Authorizat
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2TokenIntrospection;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientCredentialsAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2TokenIntrospectionAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
@@ -105,10 +104,11 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    OAuth2TokenIntrospectionAuthenticationToken tokenIntrospectionAuthentication = (OAuth2TokenIntrospectionAuthenticationToken) authentication;
+    OAuth2TokenIntrospectionAuthenticationToken tokenIntrospectionAuthentication
+        = (OAuth2TokenIntrospectionAuthenticationToken) authentication;
 
-    OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(
-        tokenIntrospectionAuthentication);
+    OAuth2ClientAuthenticationToken clientPrincipal
+        = getAuthenticatedClientElseThrowInvalidClient(tokenIntrospectionAuthentication);
 
     OAuth2Authorization authorization = this.authorizationService
         .findByToken(tokenIntrospectionAuthentication.getToken(), null);

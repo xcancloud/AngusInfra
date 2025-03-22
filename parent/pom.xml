@@ -111,6 +111,8 @@
     <poi-ooxml-schemas.version>4.1.2</poi-ooxml-schemas.version>
     <lettuce.version>6.2.5.RELEASE</lettuce.version>
     <undertow.version>2.3.17.Final</undertow.version>
+    <jetty.version>12.0.15</jetty.version>
+    <jetty-websocket.version>9.4.57.v20241219</jetty-websocket.version>
 
     <proguard.version>6.3.0beta1</proguard.version>
 
@@ -484,6 +486,32 @@
         <groupId>io.undertow</groupId>
         <artifactId>undertow-websockets-jsr</artifactId>
         <version>${undertow.version}</version>
+      </dependency>
+      <!-- Eclipse Jetty Server-->
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-server</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-security</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-proxy</artifactId>
+        <version>${jetty-websocket.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-server</artifactId>
+        <version>${jetty-websocket.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.jetty.websocket</groupId>
+        <artifactId>websocket-servlet</artifactId>
+        <version>${jetty-websocket.version}</version>
       </dependency>
 
       <!-- Hibernate's Bean Validation (JSR-380) reference implementation -->

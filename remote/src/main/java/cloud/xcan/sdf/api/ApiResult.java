@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -22,6 +23,10 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+@Schema(description = "These parameters collectively create a structured response that provides a clear "
+    + "and informative way for clients to understand the result of their API calls, including the status, "
+    + "any relevant messages, the response data, processing time, and any additional context needed "
+    + "for proper handling of the response.", accessMode = AccessMode.READ_ONLY)
 @Setter
 @Getter
 @Accessors(chain = true)
@@ -29,20 +34,37 @@ import lombok.experimental.Accessors;
 @JsonInclude
 public class ApiResult<T> implements Serializable {
 
-  @Schema(description = "TenantStatus code")
+  @Schema(description = """
+      This parameter represents the `business status code` of the API response.
+      It is used to indicate the success or failure of the API request. Default code value:
+      ***S***: A code of `S` indicate success;
+      ***E0***: Protocol exception could indicate a bad request;
+      ***E1***: Business exception could indicate a bad business handle;
+      ***E2***: System exception could signify a server error;
+      ***E3***: Quota exception could indicate unauthorized quota or insufficient quota;
+      ***XXX***: Custom business status codes for content usually require secondary confirmation or processing by the caller."""
+  )
   private String code;
 
-  @Schema(description = "TenantStatus message")
+  @Schema(description = "This parameter contains a message that provides additional context "
+      + "or information about the API response. This could be a success message, an error description, "
+      + "or any other relevant information that helps the client understand the result of the request.")
   private String msg;
 
-  @Schema(description = "Data or exception trace")
+  @Schema(description = "This parameter holds the actual data returned by the API,"
+      + " which is typically the result or exception trace of the requested operation. ")
   private T data;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  @Schema(description = "Service return time")
+  @Schema(description = "This parameter represents the server's processing time for the request, formatted as a date-time string. "
+      + "This information can be useful for clients to log when the request was processed or for troubleshooting purposes, "
+      + "as it indicates how long the server took to respond.")
   private LocalDateTime datetime;
 
-  @Schema(description = "Additional data")
+  @Schema(description = "This parameter is an extensible map that can hold additional information "
+      + "related to the response that doesn't fit into the predefined fields. "
+      + "It allows for flexibility in the API response by enabling the inclusion of extra data "
+      + "that may be useful for the client.")
   private Map<String, Object> ext = new HashMap<>();
 
   public ApiResult() {

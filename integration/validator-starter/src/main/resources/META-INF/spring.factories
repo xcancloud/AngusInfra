@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cloud.xcan.sdf.web.validator.WebValidatorAutoConfigurer
+  cloud.xcan.angus.validator.WebValidatorAutoConfigurer

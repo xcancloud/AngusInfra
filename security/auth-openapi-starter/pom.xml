@@ -13,7 +13,7 @@
   <artifactId>xcan-infra.auth-openapi-starter</artifactId>
   <name>AngusInfra :: Security :: Open Authorization </name>
   <packaging>jar</packaging>
-  <description>An auto-configured library for openapi authorization</description>
+  <description>An auto-configured library for openapi authorization (ApiKey Schema).</description>
 
   <dependencies>
   </dependencies>

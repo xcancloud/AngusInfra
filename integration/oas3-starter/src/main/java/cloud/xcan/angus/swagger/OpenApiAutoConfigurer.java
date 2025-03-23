@@ -1,0 +1,190 @@
+package cloud.xcan.angus.swagger;
+
+import cloud.xcan.sdf.core.spring.boot.ApplicationInfo;
+import cloud.xcan.sdf.spec.annotations.CloudServiceEdition;
+import cloud.xcan.sdf.spec.annotations.PrivateEdition;
+import cloud.xcan.sdf.spec.experimental.Assert;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.OAuthFlow;
+import io.swagger.v3.oas.models.security.OAuthFlows;
+import io.swagger.v3.oas.models.security.Scopes;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.filters.OpenApiMethodFilter;
+import org.springdoc.core.models.GroupedOpenApi;
+import org.springdoc.core.properties.SpringDocConfigProperties;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConditionalOnProperty(name = {"springdoc.api-docs.enabled"}, matchIfMissing = true)
+@EnableConfigurationProperties({SpringDocConfigProperties.class})
+public class OpenApiAutoConfigurer {
+
+  @Value("${springdoc.oauth2.token-url: http://localhost:9090/oauth2/token}")
+  private String oauth2TokenUrl;
+
+  @Bean
+  public OpenAPI openAPI(SpringDocConfigProperties doc) {
+    OpenAPI openAPI = doc.getOpenApi();
+    Assert.assertNotNull(openAPI, "OpenAPI config should not be null");
+    return openAPI;
+  }
+
+  @Bean
+  public GroupedOpenApi userApi(@Qualifier("applicationInfo") ApplicationInfo applicationInfo) {
+    GroupedOpenApi openApi;
+    if (applicationInfo.isPrivateEdition()) {
+      // Private edition
+      openApi = GroupedOpenApi.builder()
+          .group("User Api Documentation")
+          .pathsToMatch("/api/v1/**")
+          // Exclude cloud service edition apis
+          .addOpenApiMethodFilter(notCloudServiceEditionFilter())
+          .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .build();
+    } else {
+      // Cloud service edition
+      openApi = GroupedOpenApi.builder()
+          .group("User Api Documentation")
+          .pathsToMatch("/api/v1/**")
+          // Exclude privatized edition apis
+          .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
+          .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .build();
+    }
+    return openApi;
+  }
+
+  @Bean
+  public GroupedOpenApi doorApi(@Qualifier("applicationInfo") ApplicationInfo applicationInfo) {
+    GroupedOpenApi openApi;
+    if (applicationInfo.isPrivateEdition()) {
+      // Private edition
+      openApi = GroupedOpenApi.builder()
+          .group("System Inner Api Documentation")
+          .pathsToMatch("/doorapi/v1/**")
+          // Exclude cloud service edition apis
+          .addOpenApiMethodFilter(notCloudServiceEditionFilter())
+          .addOpenApiCustomizer(globalSysSecurityCustomizer())
+          .build();
+    } else {
+      // Cloud service edition
+      openApi = GroupedOpenApi.builder()
+          .group("System Inner Api Documentation")
+          .pathsToMatch("/doorapi/v1/**")
+          // Exclude privatized edition apis
+          .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
+          .addOpenApiCustomizer(globalSysSecurityCustomizer())
+          .build();
+    }
+    return openApi;
+  }
+
+  @Bean
+  public GroupedOpenApi publicApi(@Qualifier("applicationInfo") ApplicationInfo applicationInfo) {
+    GroupedOpenApi openApi;
+    if (applicationInfo.isPrivateEdition()) {
+      // Private edition
+      openApi = GroupedOpenApi.builder()
+          .group("Public Api Documentation")
+          .pathsToMatch("/pubapi/v1/**")
+          // Exclude cloud service edition apis
+          .addOpenApiMethodFilter(notCloudServiceEditionFilter())
+          .build();
+    } else {
+      // Cloud service edition
+      openApi = GroupedOpenApi.builder()
+          .group("Public Api Documentation")
+          .pathsToMatch("/pubapi/v1/**")
+          // Exclude privatized edition apis
+          .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
+          .build();
+    }
+    return openApi;
+  }
+
+  private OpenApiMethodFilter notPrivateServiceEditionFilter() {
+    return handlerMethod -> {
+      // Check class level annotation
+      boolean hasClassAnnotation = handlerMethod.getDeclaringClass()
+          .isAnnotationPresent(PrivateEdition.class);
+      // Check method level annotation
+      boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(PrivateEdition.class);
+
+      return !hasClassAnnotation && !hasMethodAnnotation;
+    };
+  }
+
+  private OpenApiMethodFilter notCloudServiceEditionFilter() {
+    return handlerMethod -> {
+      // Check class level annotation
+      boolean hasClassAnnotation = handlerMethod.getDeclaringClass()
+          .isAnnotationPresent(CloudServiceEdition.class);
+      // Check method level annotation
+      boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(CloudServiceEdition.class);
+
+      return !hasClassAnnotation && !hasMethodAnnotation;
+    };
+  }
+
+  private OpenApiCustomizer globalUserSecurityCustomizer() {
+    return openApi -> openApi
+        // Use existing opaque tokens for authentication
+        .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
+        // Use OAuth2 opaque tokens for authentication
+        .addSecurityItem(new SecurityRequirement().addList("BearerOAuth2"))
+        .getComponents().addSecuritySchemes("BearerAuth",
+            new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("opaque")
+                .description("Use existing opaque tokens for authentication")
+        ).addSecuritySchemes("BearerOAuth2",
+            new SecurityScheme()
+                .type(Type.OAUTH2)
+                .scheme("bearer")
+                .bearerFormat("opaque")
+                .flows(new OAuthFlows()
+                    .password(new OAuthFlow()
+                        .tokenUrl(oauth2TokenUrl)
+                        .scopes(new Scopes()
+                            .addString("read", "Read Permission")
+                            .addString("write", "Write Permission"))))
+                .description("Use OAuth2 opaque tokens for authentication")
+        );
+  }
+
+  private OpenApiCustomizer globalSysSecurityCustomizer() {
+    return openApi -> openApi
+        // Use existing opaque tokens for authentication
+        .addSecurityItem(new SecurityRequirement().addList("SysBearerAuth"))
+        // Use OAuth2 opaque tokens for authentication
+        .addSecurityItem(new SecurityRequirement().addList("SysBearerOAuth2"))
+        .getComponents().addSecuritySchemes("SysBearerAuth",
+            new SecurityScheme()
+                .type(SecurityScheme.Type.HTTP)
+                .scheme("bearer")
+                .bearerFormat("opaque")
+                .description("Use existing opaque tokens for authentication")
+        ).addSecuritySchemes("SysBearerOAuth2",
+            new SecurityScheme()
+                .type(Type.OAUTH2)
+                .scheme("bearer")
+                .bearerFormat("opaque")
+                .flows(new OAuthFlows()
+                    .clientCredentials(new OAuthFlow()
+                        .tokenUrl(oauth2TokenUrl)
+                        .scopes(new Scopes()
+                            .addString("read", "Read Permission")
+                            .addString("write", "Write Permission"))))
+                .description("Use OAuth2 opaque tokens for authentication")
+        );
+  }
+}

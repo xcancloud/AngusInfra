@@ -13,9 +13,9 @@
   <!-- Note: Usage for Gateway excludes: JacksonAutoConfigurer | FeignAutoConfigurer | ApplicationReadyListener | ApplicationInitListener -->
   <!-- <artifactId>xcan-infra.core-webflux-starter</artifactId>-->
   <artifactId>xcan-infra.web-starter</artifactId>
-  <name>AngusInfra :: Integration :: Core Starter</name>
+  <name>AngusInfra :: Integration :: Web Starter</name>
   <packaging>jar</packaging>
-  <description>An auto-configured library for angus core.</description>
+  <description>A simplified and auto-configured library for angus RestFull api service.</description>
 
   <dependencies>
     <dependency>

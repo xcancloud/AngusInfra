@@ -81,6 +81,7 @@
     <spring-cloud.version>2024.0.0</spring-cloud.version>
     <spring-boot.version>3.4.0</spring-boot.version>
     <spring-framework.version>6.2.0</spring-framework.version>
+    <springdoc-openapi.version>2.7.0</springdoc-openapi.version>
 
     <feign-httpclient.version>10.10.1</feign-httpclient.version>
     <okhttp3.version>4.12.0</okhttp3.version>
@@ -228,6 +229,13 @@
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>${spring-framework.version}</version>
+      </dependency>
+
+      <!-- SpringDoc OpenAPI Starter WebMVC UI. -->
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>${springdoc-openapi.version}</version>
       </dependency>
 
       <!-- RPC: openfeign  -->

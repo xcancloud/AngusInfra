@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cloud.xcan.angus.swagger.OpenApiAutoConfigurer,\
+  cloud.xcan.angus.swagger.SwaggerUIAutoConfigurer,\
+  cloud.xcan.angus.swagger.SwaggerUISecurityAutoConfigurer

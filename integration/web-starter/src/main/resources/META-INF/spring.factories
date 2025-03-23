@@ -1,23 +1,23 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cloud.xcan.sdf.web.core.CommonAutoConfigurer,\
-  cloud.xcan.sdf.web.core.CoreAutoConfigurer,\
-  cloud.xcan.sdf.web.core.FeignAutoConfigurer,\
-  cloud.xcan.sdf.web.core.RedisAutoConfigurer,\
-  cloud.xcan.sdf.web.core.JacksonAutoConfigurer,\
-  cloud.xcan.sdf.web.core.EnumRegisterAutoConfigurer,\
-  cloud.xcan.sdf.web.core.AuditLogAutoConfigurer,\
-  cloud.xcan.sdf.web.core.SystemLogAutoConfigurer,\
-  cloud.xcan.sdf.web.core.DatasourceAndJpaAutoConfigurer,\
-  cloud.xcan.sdf.web.core.CommonLinkDatasourceAndJpaAutoConfigurer,\
-  cloud.xcan.sdf.web.core.PluginAutoConfigurer
+  cloud.xcan.angus.web.CommonAutoConfigurer,\
+  cloud.xcan.angus.web.CoreAutoConfigurer,\
+  cloud.xcan.angus.web.FeignAutoConfigurer,\
+  cloud.xcan.angus.web.RedisAutoConfigurer,\
+  cloud.xcan.angus.web.JacksonAutoConfigurer,\
+  cloud.xcan.angus.web.EnumRegisterAutoConfigurer,\
+  cloud.xcan.angus.web.AuditLogAutoConfigurer,\
+  cloud.xcan.angus.web.SystemLogAutoConfigurer,\
+  cloud.xcan.angus.web.DatasourceAndJpaAutoConfigurer,\
+  cloud.xcan.angus.web.CommonLinkDatasourceAndJpaAutoConfigurer,\
+  cloud.xcan.angus.web.PluginAutoConfigurer
 org.springframework.context.ApplicationListener=\
-  cloud.xcan.sdf.web.core.ApplicationReadyListener,\
-  cloud.xcan.sdf.web.core.ApplicationInitListener
+  cloud.xcan.angus.web.ApplicationReadyListener,\
+  cloud.xcan.angus.web.ApplicationInitListener
 ##WebFlux Core For Gateway
 #org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-#  cloud.xcan.sdf.web.core.CommonAutoConfigurer,\
-#  cloud.xcan.sdf.web.core.CoreAutoConfigurer,\
-#  cloud.xcan.sdf.web.core.RedisAutoConfigurer,\
-#  cloud.xcan.sdf.web.core.EnumRegisterAutoConfigurer,\
-#  cloud.xcan.sdf.web.core.DatasourceAndJpaAutoConfigurer,\
-#  cloud.xcan.sdf.web.core.CommonLinkDatasourceAndJpaAutoConfigurer
+#  cloud.xcan.angus.web.CommonAutoConfigurer,\
+#  cloud.xcan.angus.web.CoreAutoConfigurer,\
+#  cloud.xcan.angus.web.RedisAutoConfigurer,\
+#  cloud.xcan.angus.web.EnumRegisterAutoConfigurer,\
+#  cloud.xcan.angus.web.DatasourceAndJpaAutoConfigurer,\
+#  cloud.xcan.angus.web.CommonLinkDatasourceAndJpaAutoConfigurer

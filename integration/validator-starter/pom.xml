@@ -13,7 +13,7 @@
   <artifactId>xcan-infra.validator-starter</artifactId>
   <name>AngusInfra :: Integration :: Validator Starter</name>
   <packaging>jar</packaging>
-  <description>An auto-configured library for angus validator.</description>
+  <description>A extended validation and auto-configured library for angus validator.</description>
 
   <dependencies>
 

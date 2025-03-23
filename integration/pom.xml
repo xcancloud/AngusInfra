@@ -22,6 +22,7 @@
   </modules>
 
   <properties>
+    <xcan-infra.version>1.0.0</xcan-infra.version>
     <xcan-plugin.version>1.0.0</xcan-plugin.version>
   </properties>
 
@@ -30,7 +31,7 @@
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-infra.bom</artifactId>
-        <version>${project.version}</version>
+        <version>${xcan-infra.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

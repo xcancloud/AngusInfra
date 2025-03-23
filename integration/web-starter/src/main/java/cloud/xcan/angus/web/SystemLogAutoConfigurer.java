@@ -1,7 +1,7 @@
 package cloud.xcan.angus.web;
 
 
-import static cloud.xcan.sdf.web.core.endpoint.SystemLogEndpoint.FILE_PATH_PROPERTY;
+import static cloud.xcan.angus.web.endpoint.SystemLogEndpoint.FILE_PATH_PROPERTY;
 
 import cloud.xcan.angus.web.endpoint.SystemLogEndpoint;
 import cloud.xcan.sdf.core.log.SystemLogProperties;

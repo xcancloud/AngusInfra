@@ -17,6 +17,8 @@ package cloud.xcan.angus.security.authentication.password;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.ACCESS_TOKEN_REQUEST_ERROR_URI;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.throwError;
+import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
+import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.USERNAME;
 import static org.springframework.util.StringUtils.hasText;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -78,6 +80,10 @@ public final class OAuth2PasswordAuthenticationConverter implements Authenticati
 
     // account (REQUIRED)
     String account = parameters.getFirst(ACCOUNT);
+    if (isEmpty(account)){
+      // Important! Compatible with old parameter.
+      account = request.getParameter(USERNAME);
+    }
     if (!hasText(account) || parameters.get(ACCOUNT).size() != 1) {
       throwError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.USERNAME,
           ACCESS_TOKEN_REQUEST_ERROR_URI);

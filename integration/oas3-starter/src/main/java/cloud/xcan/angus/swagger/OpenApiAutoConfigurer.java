@@ -15,16 +15,14 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ConditionalOnProperty(name = {"springdoc.api-docs.enabled"}, matchIfMissing = true)
-@EnableConfigurationProperties({SpringDocConfigProperties.class})
+//@EnableConfigurationProperties({SpringDocConfigProperties.class})
 public class OpenApiAutoConfigurer {
 
   @Value("${springdoc.oauth2.token-url: http://localhost:9090/oauth2/token}")
@@ -38,7 +36,7 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public GroupedOpenApi userApi(@Qualifier("applicationInfo") ApplicationInfo applicationInfo) {
+  public GroupedOpenApi userApi(ApplicationInfo applicationInfo) {
     GroupedOpenApi openApi;
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
@@ -63,7 +61,7 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public GroupedOpenApi doorApi(@Qualifier("applicationInfo") ApplicationInfo applicationInfo) {
+  public GroupedOpenApi doorApi(ApplicationInfo applicationInfo) {
     GroupedOpenApi openApi;
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
@@ -88,7 +86,7 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public GroupedOpenApi publicApi(@Qualifier("applicationInfo") ApplicationInfo applicationInfo) {
+  public GroupedOpenApi publicApi(ApplicationInfo applicationInfo) {
     GroupedOpenApi openApi;
     if (applicationInfo.isPrivateEdition()) {
       // Private edition

@@ -1,20 +1,34 @@
 package cloud.xcan.angus.swagger;
 
+import jakarta.annotation.Resource;
 import java.util.List;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
 import org.springdoc.core.properties.SwaggerUiConfigProperties;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@ConditionalOnClass(WebMvcConfigurer.class)
 @ConditionalOnProperty(name = {"springdoc.swagger-ui.enabled"}, matchIfMissing = true)
-@EnableConfigurationProperties({SwaggerUiConfigProperties.class})
-public class SwaggerUIAutoConfigurer {
+//@EnableConfigurationProperties({SwaggerUiConfigProperties.class})
+public class SwaggerUIAutoConfigurer implements WebMvcConfigurer {
 
   public static final String[] DEFAULT_SUBMIT_METHODS = new String[]{
       "get", "put", "post", "delete", "options", "head", "patch", "trace"};
+
+  @Value("${server.servlet.context-path:'/'}")
+  private String contextPath;
+
+  @Resource
+  private WebProperties webProperties;
 
   @Bean
   public SwaggerUiConfigParameters swaggerUiConfigParameters(
@@ -35,4 +49,20 @@ public class SwaggerUIAutoConfigurer {
     return configParameters;
   }
 
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    String baseUrl = StringUtils.trimTrailingCharacter(contextPath, '/');
+    registry.addResourceHandler("/**")
+        .addResourceLocations(webProperties.getResources().getStaticLocations());
+    registry.addResourceHandler("/webjars/**")
+        .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    registry.addResourceHandler(baseUrl + "swagger-ui/**")
+        .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/");
+  }
+
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addViewController(contextPath + "swagger-ui/")
+        .setViewName("forward:" + contextPath + "swagger-ui/index.html");
+  }
 }

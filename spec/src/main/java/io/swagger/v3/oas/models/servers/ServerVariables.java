@@ -1,10 +1,8 @@
 package io.swagger.v3.oas.models.servers;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -18,7 +16,7 @@ public class ServerVariables extends LinkedHashMap<String, ServerVariable> {
   public ServerVariables() {
   }
 
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   public ServerVariables addServerVariable(String name, ServerVariable item) {
     this.put(name, item);
@@ -34,7 +32,8 @@ public class ServerVariables extends LinkedHashMap<String, ServerVariable> {
       return false;
     }
     ServerVariables serverVariables = (ServerVariables) o;
-    return Objects.equals(this.extensions, serverVariables.extensions) && super.equals(o);
+    return Objects.equals(this.extensions, serverVariables.extensions) &&
+        super.equals(o);
   }
 
   @Override
@@ -46,8 +45,7 @@ public class ServerVariables extends LinkedHashMap<String, ServerVariable> {
    * @deprecated As extensions don't make sense at this level
    */
   @Deprecated
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -70,7 +68,7 @@ public class ServerVariables extends LinkedHashMap<String, ServerVariable> {
    * @deprecated As extensions don't make sense at this level
    */
   @Deprecated
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
@@ -78,7 +76,7 @@ public class ServerVariables extends LinkedHashMap<String, ServerVariable> {
    * @deprecated As extensions don't make sense at this level
    */
   @Deprecated
-  public ServerVariables extensions(Map<String, Object> extensions) {
+  public ServerVariables extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

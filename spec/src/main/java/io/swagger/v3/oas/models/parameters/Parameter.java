@@ -1,11 +1,8 @@
 package io.swagger.v3.oas.models.parameters;
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_DESC_LENGTH_X4;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_PARAM_NAME_LENGTH;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNotEmpty;
 import static io.swagger.v3.oas.models.extension.ExtensionKey.VALUE_KEY;
-import static io.swagger.v3.oas.models.media.Schema.BIND_TO_VALUE;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
@@ -21,12 +18,9 @@ import io.swagger.v3.oas.models.examples.Example;
 import io.swagger.v3.oas.models.extension.ExtensionKey;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.hibernate.validator.constraints.Length;
-
 
 /**
  * Parameter
@@ -37,12 +31,8 @@ import org.hibernate.validator.constraints.Length;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Parameter {
 
-  @NotEmpty
-  @Length(max = MAX_PARAM_NAME_LENGTH)
   private String name = null;
-  @NotEmpty
   private String in = null;
-  @Length(max = DEFAULT_DESC_LENGTH_X4)
   private String description = null;
   private Boolean required = null;
   private Boolean deprecated = null;
@@ -63,10 +53,6 @@ public class Parameter {
 
     private String value;
 
-    StyleEnum(String value) {
-      this.value = value;
-    }
-
     @ThirdExtension
     @JsonValue
     public String getValue() {
@@ -82,6 +68,10 @@ public class Parameter {
         }
       }
       throw new IllegalArgumentException("Invalid value: " + value);
+    }
+
+    StyleEnum(String value) {
+      this.value = value;
     }
 
     @Override
@@ -104,6 +94,7 @@ public class Parameter {
    *
    * @return String name
    **/
+
   public String getName() {
     return name;
   }
@@ -122,6 +113,7 @@ public class Parameter {
    *
    * @return String in
    **/
+
   public String getIn() {
     return in;
   }
@@ -143,6 +135,7 @@ public class Parameter {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -161,6 +154,7 @@ public class Parameter {
    *
    * @return Boolean required
    **/
+
   public Boolean getRequired() {
     return required;
   }
@@ -179,6 +173,7 @@ public class Parameter {
    *
    * @return Boolean deprecated
    **/
+
   public Boolean getDeprecated() {
     return deprecated;
   }
@@ -197,6 +192,7 @@ public class Parameter {
    *
    * @return Boolean allowEmptyValue
    **/
+
   public Boolean getAllowEmptyValue() {
     return allowEmptyValue;
   }
@@ -215,6 +211,7 @@ public class Parameter {
    *
    * @return StyleEnum style
    **/
+
   public StyleEnum getStyle() {
     return style;
   }
@@ -233,6 +230,7 @@ public class Parameter {
    *
    * @return Boolean explode
    **/
+
   public Boolean getExplode() {
     return explode;
   }
@@ -251,6 +249,7 @@ public class Parameter {
    *
    * @return Boolean allowReserved
    **/
+
   public Boolean getAllowReserved() {
     return allowReserved;
   }
@@ -269,6 +268,7 @@ public class Parameter {
    *
    * @return Schema schema
    **/
+
   public Schema getSchema() {
     return schema;
   }
@@ -287,6 +287,7 @@ public class Parameter {
    *
    * @return Map&lt;String, Example&gt; examples
    **/
+
   public Map<String, Example> getExamples() {
     return examples;
   }
@@ -313,6 +314,7 @@ public class Parameter {
    *
    * @return String example
    **/
+
   public Object getExample() {
     return example;
   }
@@ -331,6 +333,7 @@ public class Parameter {
    *
    * @return Content content
    **/
+
   public Content getContent() {
     return content;
   }
@@ -350,7 +353,7 @@ public class Parameter {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_PARAMETERS_REF + $ref;
+      $ref = "#/components/parameters/" + $ref;
     }
     this.$ref = $ref;
   }
@@ -404,7 +407,7 @@ public class Parameter {
   @JsonAnyGetter
   public Map<String, Object> getExtensions() {
     // ---  XCan Extension ---
-    boolean bindValue = ThreadContext.contains(BIND_TO_VALUE);
+    boolean bindValue = ThreadContext.contains(io.swagger.v3.oas.models.media.Schema.BIND_TO_VALUE);
     if (bindValue) {
       boolean hasExample = false;
       if (isEmpty(extensions) || !extensions.containsKey(VALUE_KEY)) {
@@ -415,7 +418,7 @@ public class Parameter {
           addExtension(ExtensionKey.VALUE_KEY, examples.values().stream().findFirst().orElse(null));
           hasExample = true;
         }
-        if (!hasExample && nonNull(schema) && isNotEmpty(schema.getEnum())){
+        if (!hasExample && nonNull(schema) && isNotEmpty(schema.getEnum())) {
           addExtension(ExtensionKey.VALUE_KEY, schema.getEnum().get(0));
           hasExample = true;
         }

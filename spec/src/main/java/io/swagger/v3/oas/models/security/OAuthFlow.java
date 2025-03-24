@@ -1,11 +1,9 @@
 package io.swagger.v3.oas.models.security;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -16,17 +14,19 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OAuthFlow {
+
   private String authorizationUrl = null;
   private String tokenUrl = null;
   private String refreshUrl = null;
   private Scopes scopes = null;
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the authorizationUrl property from a OAuthFlow instance.
    *
    * @return String authorizationUrl
    **/
+
   public String getAuthorizationUrl() {
     return authorizationUrl;
   }
@@ -45,6 +45,7 @@ public class OAuthFlow {
    *
    * @return String tokenUrl
    **/
+
   public String getTokenUrl() {
     return tokenUrl;
   }
@@ -63,6 +64,7 @@ public class OAuthFlow {
    *
    * @return String refreshUrl
    **/
+
   public String getRefreshUrl() {
     return refreshUrl;
   }
@@ -81,6 +83,7 @@ public class OAuthFlow {
    *
    * @return Scopes scopes
    **/
+
   public Scopes getScopes() {
     return scopes;
   }
@@ -115,8 +118,7 @@ public class OAuthFlow {
     return Objects.hash(authorizationUrl, tokenUrl, refreshUrl, scopes, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -146,11 +148,11 @@ public class OAuthFlow {
     }
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public OAuthFlow extensions(Map<String, Object> extensions) {
+  public OAuthFlow extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

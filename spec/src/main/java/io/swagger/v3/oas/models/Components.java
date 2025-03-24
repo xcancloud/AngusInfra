@@ -30,6 +30,7 @@ public class Components {
    * @since 2.1.6
    */
   public static final String COMPONENTS_SCHEMAS_REF = "#/components/schemas/";
+  // @ThirdExtension start
   public static final String COMPONENTS_RESPONSES_REF = "#/components/responses/";
   public static final String COMPONENTS_PARAMETERS_REF = "#/components/parameters/";
   public static final String COMPONENTS_EXAMPLES_REF = "#/components/examples/";
@@ -39,6 +40,7 @@ public class Components {
   public static final String COMPONENTS_LINKS_REF = "#/components/links/";
   public static final String COMPONENTS_CALLBACKS_REF = "#/components/callbacks/";
   public static final String COMPONENTS_EXTENSIONS_REF = "#/components/extensions/";
+  // @ThirdExtension end
 
   private Map<String, Schema> schemas = null;
   private Map<String, ApiResponse> responses = null;
@@ -62,6 +64,7 @@ public class Components {
    *
    * @return Map&lt;String, Schema&gt; schemas
    **/
+
   public Map<String, Schema> getSchemas() {
     return schemas;
   }
@@ -88,6 +91,7 @@ public class Components {
    *
    * @return Map&lt;String, ApiResponse&gt; responses
    **/
+
   public Map<String, ApiResponse> getResponses() {
     return responses;
   }
@@ -114,6 +118,7 @@ public class Components {
    *
    * @return Map&lt;String, Parameter&gt; parameters
    **/
+
   public Map<String, Parameter> getParameters() {
     return parameters;
   }
@@ -140,6 +145,7 @@ public class Components {
    *
    * @return Map&lt;String, Example&gt; examples
    **/
+
   public Map<String, Example> getExamples() {
     return examples;
   }
@@ -166,6 +172,7 @@ public class Components {
    *
    * @return Map&lt;String, RequestBody&gt; requestBodies
    **/
+
   public Map<String, RequestBody> getRequestBodies() {
     return requestBodies;
   }
@@ -192,6 +199,7 @@ public class Components {
    *
    * @return Map&lt;String, Header&gt; headers
    **/
+
   public Map<String, Header> getHeaders() {
     return headers;
   }
@@ -218,6 +226,7 @@ public class Components {
    *
    * @return Map&lt;String, SecurityScheme&gt; securitySchemes
    **/
+
   public Map<String, SecurityScheme> getSecuritySchemes() {
     return securitySchemes;
   }
@@ -244,6 +253,7 @@ public class Components {
    *
    * @return Map&lt;String, Link&gt; links
    **/
+
   public Map<String, Link> getLinks() {
     return links;
   }
@@ -270,6 +280,7 @@ public class Components {
    *
    * @return Map&lt;String, Callback&gt; callbacks
    **/
+
   public Map<String, Callback> getCallbacks() {
     return callbacks;
   }

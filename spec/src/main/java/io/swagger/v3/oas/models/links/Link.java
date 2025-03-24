@@ -3,6 +3,7 @@ package io.swagger.v3.oas.models.links;
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import io.swagger.v3.oas.models.headers.Header;
@@ -16,13 +17,17 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#linkObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#linkObject"
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Link {
 
   private String operationRef = null;
   private String operationId = null;
   private Map<String, String> parameters = null;
   private Object requestBody = null;
+  /**
+   * @deprecated as it's not part of OpenAPI specification
+   */
+  @Deprecated
   private Map<String, Header> headers = null;
   private String description = null;
   private String $ref = null;
@@ -34,6 +39,7 @@ public class Link {
    *
    * @return Server server
    **/
+
   public Server getServer() {
     return server;
   }
@@ -52,6 +58,7 @@ public class Link {
    *
    * @return String operationRef
    **/
+
   public String getOperationRef() {
     return operationRef;
   }
@@ -70,6 +77,7 @@ public class Link {
    *
    * @return Object requestBody
    **/
+
   public Object getRequestBody() {
     return requestBody;
   }
@@ -101,6 +109,7 @@ public class Link {
    *
    * @return LinkParameters parameters
    **/
+
   public Map<String, String> getParameters() {
     return parameters;
   }
@@ -123,23 +132,34 @@ public class Link {
   }
 
   /**
-   * returns the headers property from a Link instance.
-   *
-   * @return Headers headers
-   **/
+   * @deprecated as it's not part of OpenAPI specification
+   */
+  @Deprecated
   public Map<String, Header> getHeaders() {
     return headers;
   }
 
+  /**
+   * @deprecated as it's not part of OpenAPI specification
+   */
+  @Deprecated
   public void setHeaders(Map<String, Header> headers) {
     this.headers = headers;
   }
 
+  /**
+   * @deprecated as it's not part of OpenAPI specification
+   */
+  @Deprecated
   public Link headers(Map<String, Header> headers) {
     this.headers = headers;
     return this;
   }
 
+  /**
+   * @deprecated as it's not part of OpenAPI specification
+   */
+  @Deprecated
   public Link addHeaderObject(String name, Header header) {
     if (this.headers == null) {
       headers = new LinkedHashMap<>();
@@ -153,6 +173,7 @@ public class Link {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -226,7 +247,7 @@ public class Link {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_LINKS_REF + $ref;
+      $ref = "#/components/links/" + $ref;
     }
     this.$ref = $ref;
   }

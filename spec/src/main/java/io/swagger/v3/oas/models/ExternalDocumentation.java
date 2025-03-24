@@ -3,15 +3,12 @@ package io.swagger.v3.oas.models;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_DOC_DESC_LENGTH;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import jakarta.validation.constraints.NotBlank;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -36,13 +33,14 @@ public class ExternalDocumentation {
   private String url;
 
   @Schema(description = "The extensions of the OpenAPI external documents. For more information, please see: [Specification Extensions](https://swagger.io/specification/#info-object)")
-  private Map<String, Object> extensions = new HashMap<>();
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the description property from a ExternalDocumentation instance.
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -61,6 +59,7 @@ public class ExternalDocumentation {
    *
    * @return String url
    **/
+
   public String getUrl() {
     return url;
   }
@@ -93,8 +92,7 @@ public class ExternalDocumentation {
     return Objects.hash(description, url, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -117,11 +115,11 @@ public class ExternalDocumentation {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public ExternalDocumentation extensions(Map<String, Object> extensions) {
+  public ExternalDocumentation extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

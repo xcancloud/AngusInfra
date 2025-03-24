@@ -7,16 +7,14 @@ import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_NAME_LENG
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_SUMMARY_LENGTH;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_PARAM_SIZE;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -24,6 +22,7 @@ import org.hibernate.validator.constraints.Length;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#infoObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#infoObject"
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Info {
 
   @NotEmpty
@@ -58,12 +57,12 @@ public class Info {
 
   @Size(max = MAX_PARAM_SIZE)
   @Schema(description = "The extensions of the OpenAPI info schema. For more information, please see: [Specification Extensions](https://swagger.io/specification/#info-object)")
-  private Map<String, Object> extensions = new HashMap<>();
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * @since 2.2.0 (OpenAPI 3.1.0)
    */
-  @OpenAPI31
+  @io.swagger.v3.oas.models.annotations.OpenAPI31
   @Length(max = MAX_OPENAPI_SUMMARY_LENGTH)
   @Schema(description = "A short summary of the API.", maxLength = MAX_OPENAPI_SUMMARY_LENGTH)
   private String summary = null;
@@ -73,6 +72,7 @@ public class Info {
    *
    * @return String title
    **/
+
   public String getTitle() {
     return title;
   }
@@ -91,6 +91,7 @@ public class Info {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -109,6 +110,7 @@ public class Info {
    *
    * @return String termsOfService
    **/
+
   public String getTermsOfService() {
     return termsOfService;
   }
@@ -127,6 +129,7 @@ public class Info {
    *
    * @return Contact contact
    **/
+
   public Contact getContact() {
     return contact;
   }
@@ -145,6 +148,7 @@ public class Info {
    *
    * @return License license
    **/
+
   public License getLicense() {
     return license;
   }
@@ -163,6 +167,7 @@ public class Info {
    *
    * @return String version
    **/
+
   public String getVersion() {
     return version;
   }
@@ -225,12 +230,11 @@ public class Info {
 
   @Override
   public int hashCode() {
-    return Objects
-        .hash(title, description, termsOfService, contact, license, version, extensions, summary);
+    return Objects.hash(title, description, termsOfService, contact, license, version, extensions,
+        summary);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -253,11 +257,11 @@ public class Info {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public Info extensions(Map<String, Object> extensions) {
+  public Info extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

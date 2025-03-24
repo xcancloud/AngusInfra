@@ -33,7 +33,7 @@ public enum ApisContentType implements EnumValueMessage<String> {
   }
 
   public static boolean isSupported(String contentType) {
-    if (nonNull(contentType)){
+    if (nonNull(contentType)) {
       for (ApisContentType type : values()) {
         if (type.extractable && contentType.startsWith(type.code)) {
           return true;

@@ -34,6 +34,7 @@ public class ApiResponse {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -52,6 +53,7 @@ public class ApiResponse {
    *
    * @return headers
    **/
+
   public Map<String, Header> getHeaders() {
     return headers;
   }
@@ -78,6 +80,7 @@ public class ApiResponse {
    *
    * @return Content content
    **/
+
   public Content getContent() {
     return content;
   }
@@ -96,6 +99,7 @@ public class ApiResponse {
    *
    * @return Link links
    **/
+
   public Map<String, Link> getLinks() {
     return links;
   }
@@ -132,7 +136,7 @@ public class ApiResponse {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_RESPONSES_REF + $ref;
+      $ref = "#/components/responses/" + $ref;
     }
     this.$ref = $ref;
   }

@@ -4,12 +4,10 @@ import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_EMAIL_LENGTH;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -19,6 +17,7 @@ import org.hibernate.validator.constraints.Length;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#contactObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#contactObject"
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Contact {
 
   @Length(max = DEFAULT_NAME_LENGTH_X2)
@@ -34,13 +33,14 @@ public class Contact {
   private String email = null;
 
   @Schema(description = "The extensions of the OpenAPI contact schema. For more information, please see: [Specification Extensions](https://swagger.io/specification/#info-object)")
-  private Map<String, Object> extensions = new HashMap<>();
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the name property from a Contact instance.
    *
    * @return String name
    **/
+
   public String getName() {
     return name;
   }
@@ -59,6 +59,7 @@ public class Contact {
    *
    * @return String url
    **/
+
   public String getUrl() {
     return url;
   }
@@ -77,6 +78,7 @@ public class Contact {
    *
    * @return String email
    **/
+
   public String getEmail() {
     return email;
   }
@@ -110,8 +112,7 @@ public class Contact {
     return Objects.hash(name, url, email, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -134,11 +135,11 @@ public class Contact {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public Contact extensions(Map<String, Object> extensions) {
+  public Contact extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }
@@ -147,6 +148,7 @@ public class Contact {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class Contact {\n");
+
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    url: ").append(toIndentedString(url)).append("\n");
     sb.append("    email: ").append(toIndentedString(email)).append("\n");

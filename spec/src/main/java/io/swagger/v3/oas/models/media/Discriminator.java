@@ -2,11 +2,13 @@ package io.swagger.v3.oas.models.media;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Discriminator {
 
   private String propertyName;

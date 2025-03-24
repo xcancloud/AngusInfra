@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ComposedSchema extends Schema<Object> {
 
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();

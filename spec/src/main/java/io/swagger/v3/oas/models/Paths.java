@@ -1,11 +1,9 @@
 package io.swagger.v3.oas.models;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -20,7 +18,7 @@ public class Paths extends LinkedHashMap<String, PathItem> {
   public Paths() {
   }
 
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   public Paths addPathItem(String name, PathItem item) {
     this.put(name, item);
@@ -36,7 +34,8 @@ public class Paths extends LinkedHashMap<String, PathItem> {
       return false;
     }
     Paths paths = (Paths) o;
-    return Objects.equals(this.extensions, paths.extensions) && super.equals(o);
+    return Objects.equals(this.extensions, paths.extensions) &&
+        super.equals(o);
   }
 
   @Override
@@ -44,8 +43,7 @@ public class Paths extends LinkedHashMap<String, PathItem> {
     return Objects.hash(extensions, super.hashCode());
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -68,11 +66,11 @@ public class Paths extends LinkedHashMap<String, PathItem> {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public Paths extensions(Map<String, Object> extensions) {
+  public Paths extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

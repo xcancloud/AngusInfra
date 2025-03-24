@@ -53,15 +53,15 @@ public enum ParameterType implements EnumValueMessage<String> {
     return this.equals(boolean_) ? "boolean" : this.name();
   }
 
-  public static boolean isObject(String type){
+  public static boolean isObject(String type) {
     return object.getValue().equalsIgnoreCase(type);
   }
 
-  public static boolean isArray(String type){
+  public static boolean isArray(String type) {
     return array.getValue().equalsIgnoreCase(type);
   }
 
-  public static boolean isPrimitive(String type){
-   return !isObject(type) && !isArray(type);
+  public static boolean isPrimitive(String type) {
+    return !isObject(type) && !isArray(type);
   }
 }

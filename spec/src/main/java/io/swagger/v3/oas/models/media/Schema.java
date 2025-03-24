@@ -62,7 +62,48 @@ public class Schema<T> {
   @ThirdExtension
   public static final String BIND_TO_VALUE = "bind-to-value";
 
-  @JsonProperty("default")
+  public static final String BINARY_STRING_CONVERSION_PROPERTY = "binary-string-conversion";
+
+  public enum BynaryStringConversion {
+    BINARY_STRING_CONVERSION_BASE64("base64"),
+    BINARY_STRING_CONVERSION_DEFAULT_CHARSET("default"),
+    BINARY_STRING_CONVERSION_STRING_SCHEMA("string-schema");
+    private String value;
+
+    BynaryStringConversion(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+  }
+
+  public static final String SCHEMA_RESOLUTION_PROPERTY = "schema-resolution";
+
+  public enum SchemaResolution {
+    @JsonProperty("default")
+    DEFAULT("default"),
+    @JsonProperty("inline")
+    INLINE("inline"),
+    @JsonProperty("all-of")
+    ALL_OF("all-of"),
+    @JsonProperty("all-of-ref")
+    ALL_OF_REF("all-of-ref");
+
+    private String value;
+
+    SchemaResolution(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+  }
+
   protected T _default;
 
   private String name;
@@ -186,6 +227,19 @@ public class Schema<T> {
    */
   @OpenAPI31
   private String $anchor;
+
+  /**
+   * @since 2.2.14 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  private String $vocabulary;
+
+  /**
+   * @since 2.2.14 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  private String $dynamicAnchor;
+
 
   /**
    * @since 2.2.0 (OpenAPI 3.1.0)
@@ -506,6 +560,56 @@ public class Schema<T> {
   }
 
   /**
+   * @since 2.2.8 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public String get$vocabulary() {
+    return $vocabulary;
+  }
+
+  /**
+   * @since 2.2.8 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public void set$vocabulary(String $vocabulary) {
+    this.$vocabulary = $vocabulary;
+  }
+
+  /**
+   * @since 2.2.8 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public Schema $vocabulary(String $vocabulary) {
+    this.$vocabulary = $vocabulary;
+    return this;
+  }
+
+  /**
+   * @since 2.2.8 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public String get$dynamicAnchor() {
+    return $dynamicAnchor;
+  }
+
+  /**
+   * @since 2.2.8 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public void set$dynamicAnchor(String $dynamicAnchor) {
+    this.$dynamicAnchor = $dynamicAnchor;
+  }
+
+  /**
+   * @since 2.2.8 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public Schema $dynamicAnchor(String $dynamicAnchor) {
+    this.$dynamicAnchor = $dynamicAnchor;
+    return this;
+  }
+
+  /**
    * @since 2.2.0 (OpenAPI 3.1.0)
    */
   @OpenAPI31
@@ -623,6 +727,7 @@ public class Schema<T> {
    *
    * @return List&lt;Schema&gt; allOf
    **/
+
   public List<Schema> getAllOf() {
     return allOf;
   }
@@ -649,6 +754,7 @@ public class Schema<T> {
    *
    * @return List&lt;Schema&gt; anyOf
    **/
+
   public List<Schema> getAnyOf() {
     return anyOf;
   }
@@ -675,6 +781,7 @@ public class Schema<T> {
    *
    * @return List&lt;Schema&gt; oneOf
    **/
+
   public List<Schema> getOneOf() {
     return oneOf;
   }
@@ -702,6 +809,7 @@ public class Schema<T> {
    *
    * @return Schema items
    **/
+
   public Schema<?> getItems() {
     return items;
   }
@@ -740,6 +848,7 @@ public class Schema<T> {
    *
    * @return Discriminator discriminator
    **/
+
   public Discriminator getDiscriminator() {
     return discriminator;
   }
@@ -758,6 +867,7 @@ public class Schema<T> {
    *
    * @return String title
    **/
+
   public String getTitle() {
     return title;
   }
@@ -776,6 +886,7 @@ public class Schema<T> {
    *
    * @return String _default
    **/
+
   public T getDefault() {
     return _default;
   }
@@ -811,6 +922,7 @@ public class Schema<T> {
    *
    * @return BigDecimal multipleOf
    **/
+
   public BigDecimal getMultipleOf() {
     return multipleOf;
   }
@@ -829,6 +941,7 @@ public class Schema<T> {
    *
    * @return BigDecimal maximum
    **/
+
   public BigDecimal getMaximum() {
     return maximum;
   }
@@ -868,6 +981,7 @@ public class Schema<T> {
    *
    * @return BigDecimal minimum
    **/
+
   public BigDecimal getMinimum() {
     return minimum;
   }
@@ -887,6 +1001,7 @@ public class Schema<T> {
    *
    * @return Boolean exclusiveMinimum
    **/
+
   public Boolean getExclusiveMinimum() {
     return exclusiveMinimum;
   }
@@ -908,6 +1023,7 @@ public class Schema<T> {
    *
    * @return Integer maxLength
    **/
+
   public Integer getMaxLength() {
     return maxLength;
   }
@@ -928,6 +1044,7 @@ public class Schema<T> {
    *
    * @return Integer minLength
    **/
+
   public Integer getMinLength() {
     return minLength;
   }
@@ -946,6 +1063,7 @@ public class Schema<T> {
    *
    * @return String pattern
    **/
+
   public String getPattern() {
     return pattern;
   }
@@ -966,6 +1084,7 @@ public class Schema<T> {
    *
    * @return Integer maxItems
    **/
+
   public Integer getMaxItems() {
     return maxItems;
   }
@@ -986,6 +1105,7 @@ public class Schema<T> {
    *
    * @return Integer minItems
    **/
+
   public Integer getMinItems() {
     return minItems;
   }
@@ -1004,6 +1124,7 @@ public class Schema<T> {
    *
    * @return Boolean uniqueItems
    **/
+
   public Boolean getUniqueItems() {
     return uniqueItems;
   }
@@ -1024,6 +1145,7 @@ public class Schema<T> {
    *
    * @return Integer maxProperties
    **/
+
   public Integer getMaxProperties() {
     return maxProperties;
   }
@@ -1044,6 +1166,7 @@ public class Schema<T> {
    *
    * @return Integer minProperties
    **/
+
   public Integer getMinProperties() {
     return minProperties;
   }
@@ -1062,6 +1185,7 @@ public class Schema<T> {
    *
    * @return List&lt;String&gt; required
    **/
+
   public List<String> getRequired() {
     return required;
   }
@@ -1101,6 +1225,7 @@ public class Schema<T> {
    *
    * @return String type
    **/
+
   public String getType() {
     boolean bindTypes = Boolean.valueOf(System.getProperty(BIND_TYPE_AND_TYPES, "false"));
     if (bindTypes && type == null && types != null && types.size() == 1) {
@@ -1123,6 +1248,7 @@ public class Schema<T> {
    *
    * @return Schema not
    **/
+
   public Schema getNot() {
     return not;
   }
@@ -1141,6 +1267,7 @@ public class Schema<T> {
    *
    * @return Map&lt;String, Schema&gt; properties
    **/
+
   public Map<String, Schema> getProperties() {
     return properties;
   }
@@ -1176,21 +1303,17 @@ public class Schema<T> {
    *
    * @return Object additionalProperties
    **/
+
   public Object getAdditionalProperties() {
     return additionalProperties;
   }
 
-  @ThirdExtension
   public void setAdditionalProperties(Object additionalProperties) {
-    // ---  XCan Extension ---
-    // Save apis exception and delete validation
-    //    if (additionalProperties != null && !(additionalProperties instanceof Boolean)
-    //        && !(additionalProperties instanceof Schema)) {
-    //      throw new IllegalArgumentException(
-    //          "additionalProperties must be either a Boolean or a Schema instance");
-    //    }
-    // ---  XCan Extension ---
-
+    if (additionalProperties != null && !(additionalProperties instanceof Boolean)
+        && !(additionalProperties instanceof Schema)) {
+      throw new IllegalArgumentException(
+          "additionalProperties must be either a Boolean or a Schema instance");
+    }
     this.additionalProperties = additionalProperties;
   }
 
@@ -1204,6 +1327,7 @@ public class Schema<T> {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -1222,6 +1346,7 @@ public class Schema<T> {
    *
    * @return String format
    **/
+
   public String getFormat() {
     return format;
   }
@@ -1255,12 +1380,13 @@ public class Schema<T> {
   @ThirdExtension
   public static String format$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      return Components.COMPONENTS_SCHEMAS_REF + $ref;
+      return io.swagger.v3.oas.models.Components.COMPONENTS_SCHEMAS_REF + $ref;
     }
     return $ref;
   }
 
   public Schema $ref(String $ref) {
+
     set$ref($ref);
     return this;
   }
@@ -1296,6 +1422,7 @@ public class Schema<T> {
    *
    * @return Boolean readOnly
    **/
+
   public Boolean getReadOnly() {
     return readOnly;
   }
@@ -1314,6 +1441,7 @@ public class Schema<T> {
    *
    * @return Boolean writeOnly
    **/
+
   public Boolean getWriteOnly() {
     return writeOnly;
   }
@@ -1332,6 +1460,7 @@ public class Schema<T> {
    *
    * @return String example
    **/
+
   public Object getExample() {
     return example;
   }
@@ -1353,6 +1482,7 @@ public class Schema<T> {
    *
    * @return ExternalDocumentation externalDocs
    **/
+
   public ExternalDocumentation getExternalDocs() {
     return externalDocs;
   }
@@ -1371,6 +1501,7 @@ public class Schema<T> {
    *
    * @return Boolean deprecated
    **/
+
   public Boolean getDeprecated() {
     return deprecated;
   }
@@ -1389,6 +1520,7 @@ public class Schema<T> {
    *
    * @return XML xml
    **/
+
   public XML getXml() {
     return xml;
   }
@@ -1408,6 +1540,7 @@ public class Schema<T> {
    *
    * @return boolean exampleSetFlag
    **/
+
   public boolean getExampleSetFlag() {
     return exampleSetFlag;
   }
@@ -1438,6 +1571,18 @@ public class Schema<T> {
   @OpenAPI31
   public Schema prefixItems(List<Schema> prefixItems) {
     this.prefixItems = prefixItems;
+    return this;
+  }
+
+  /**
+   * @since 2.2.12 (OpenAPI 3.1.0)
+   */
+  @OpenAPI31
+  public Schema addPrefixItem(Schema prefixItem) {
+    if (this.prefixItems == null) {
+      this.prefixItems = new ArrayList<>();
+    }
+    this.prefixItems.add(prefixItem);
     return this;
   }
 
@@ -1854,13 +1999,11 @@ public class Schema<T> {
 
   @Override
   public boolean equals(Object o) {
-    if (o == null || getClass() != o.getClass()
-      /*Fix:: !(o instanceof Schema) <- Unequal types after deserialization from database: OpenAPI#JsonSchema <> Database#StringSchema*/
-    ) {
-      return false;
-    }
     if (this == o) {
       return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
     Schema schema = (Schema) o;
     return Objects.equals(this.title, schema.title) &&
@@ -1902,6 +2045,8 @@ public class Schema<T> {
         Objects.equals(this.$id, schema.$id) &&
         Objects.equals(this.$anchor, schema.$anchor) &&
         Objects.equals(this.$schema, schema.$schema) &&
+        Objects.equals(this.$vocabulary, schema.$vocabulary) &&
+        Objects.equals(this.$dynamicAnchor, schema.$dynamicAnchor) &&
         Objects.equals(this.types, schema.types) &&
         Objects.equals(this.allOf, schema.allOf) &&
         Objects.equals(this.anyOf, schema.anyOf) &&
@@ -1932,21 +2077,21 @@ public class Schema<T> {
 
   @Override
   public int hashCode() {
-    return Objects
-        .hash(title, multipleOf, maximum, exclusiveMaximum, exclusiveMaximumValue, minimum,
-            exclusiveMinimum, exclusiveMinimumValue, maxLength, minLength, pattern, maxItems,
-            minItems, uniqueItems,
-            maxProperties, minProperties, required, type, not, properties, additionalProperties,
-            description,
-            format, $ref, nullable, readOnly, writeOnly, example, externalDocs, deprecated, xml,
-            extensions,
-            discriminator, _enum, _default, patternProperties, $id, $anchor, $schema, types, allOf,
-            anyOf, oneOf, _const,
-            contentEncoding, contentMediaType, contentSchema, propertyNames, unevaluatedProperties,
-            maxContains,
-            minContains, additionalItems, unevaluatedItems, _if, _else, then, dependentRequired,
-            dependentSchemas,
-            $comment, examples, prefixItems, items);
+    return Objects.hash(title, multipleOf, maximum, exclusiveMaximum, exclusiveMaximumValue,
+        minimum,
+        exclusiveMinimum, exclusiveMinimumValue, maxLength, minLength, pattern, maxItems, minItems,
+        uniqueItems,
+        maxProperties, minProperties, required, type, not, properties, additionalProperties,
+        description,
+        format, $ref, nullable, readOnly, writeOnly, example, externalDocs, deprecated, xml,
+        extensions,
+        discriminator, _enum, _default, patternProperties, $id, $anchor, $schema, $vocabulary,
+        $dynamicAnchor, types, allOf, anyOf, oneOf, _const,
+        contentEncoding, contentMediaType, contentSchema, propertyNames, unevaluatedProperties,
+        maxContains,
+        minContains, additionalItems, unevaluatedItems, _if, _else, then, dependentRequired,
+        dependentSchemas,
+        $comment, examples, prefixItems, items);
   }
 
   @ThirdExtension
@@ -1960,7 +2105,7 @@ public class Schema<T> {
         if (nonNull(example)) {
           addExtension(ExtensionKey.VALUE_KEY, example);
           hasExample = true;
-        } else if (isNotEmpty(examples)){
+        } else if (isNotEmpty(examples)) {
           addExtension(ExtensionKey.VALUE_KEY, examples.stream().findFirst().orElse(null));
           hasExample = true;
         }
@@ -1972,7 +2117,7 @@ public class Schema<T> {
         hasExample = true;
       }
 
-      if (!hasExample && isNotEmpty(_enum)){
+      if (!hasExample && isNotEmpty(_enum)) {
         addExtension(ExtensionKey.VALUE_KEY, _enum.stream().findFirst().orElse(null));
       }
     }
@@ -1983,8 +2128,8 @@ public class Schema<T> {
 
   @JsonAnySetter
   public void addExtension(String name, Object value) {
-    if (name == null || name.isEmpty() || (specVersion == SpecVersion.V30 && !name
-        .startsWith("x-"))) {
+    if (name == null || name.isEmpty()
+        || (specVersion == SpecVersion.V30 && !name.startsWith("x-"))) {
       return;
     }
     if (this.extensions == null) {
@@ -2048,6 +2193,8 @@ public class Schema<T> {
       sb.append("    $id: ").append(toIndentedString($id)).append("\n");
       sb.append("    $anchor: ").append(toIndentedString($anchor)).append("\n");
       sb.append("    $schema: ").append(toIndentedString($schema)).append("\n");
+      sb.append("    $vocabulary: ").append(toIndentedString($vocabulary)).append("\n");
+      sb.append("    $dynamicAnchor: ").append(toIndentedString($dynamicAnchor)).append("\n");
       sb.append("    const: ").append(toIndentedString(_const)).append("\n");
       sb.append("    contentEncoding: ").append(toIndentedString(contentEncoding)).append("\n");
       sb.append("    contentMediaType: ").append(toIndentedString(contentMediaType)).append("\n");

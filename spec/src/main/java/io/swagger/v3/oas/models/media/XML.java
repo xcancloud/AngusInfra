@@ -1,9 +1,8 @@
 package io.swagger.v3.oas.models.media;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -11,7 +10,7 @@ import java.util.Objects;
  *
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#xmlObject"
  */
-//@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class XML {
 
   private String name = null;
@@ -19,13 +18,14 @@ public class XML {
   private String prefix = null;
   private Boolean attribute = null;
   private Boolean wrapped = null;
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the name property from a XML instance.
    *
    * @return String name
    **/
+
   public String getName() {
     return name;
   }
@@ -44,6 +44,7 @@ public class XML {
    *
    * @return String namespace
    **/
+
   public String getNamespace() {
     return namespace;
   }
@@ -62,6 +63,7 @@ public class XML {
    *
    * @return String prefix
    **/
+
   public String getPrefix() {
     return prefix;
   }
@@ -80,6 +82,7 @@ public class XML {
    *
    * @return Boolean attribute
    **/
+
   public Boolean getAttribute() {
     return attribute;
   }
@@ -98,6 +101,7 @@ public class XML {
    *
    * @return Boolean wrapped
    **/
+
   public Boolean getWrapped() {
     return wrapped;
   }
@@ -133,8 +137,7 @@ public class XML {
     return Objects.hash(name, namespace, prefix, attribute, wrapped, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -157,11 +160,11 @@ public class XML {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public XML extensions(Map<String, Object> extensions) {
+  public XML extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

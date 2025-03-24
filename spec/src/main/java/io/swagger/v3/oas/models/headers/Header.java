@@ -57,6 +57,7 @@ public class Header {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -75,6 +76,7 @@ public class Header {
    *
    * @return Boolean required
    **/
+
   public Boolean getRequired() {
     return required;
   }
@@ -93,6 +95,7 @@ public class Header {
    *
    * @return Boolean deprecated
    **/
+
   public Boolean getDeprecated() {
     return deprecated;
   }
@@ -111,6 +114,7 @@ public class Header {
    *
    * @return StyleEnum style
    **/
+
   public StyleEnum getStyle() {
     return style;
   }
@@ -129,6 +133,7 @@ public class Header {
    *
    * @return Boolean explode
    **/
+
   public Boolean getExplode() {
     return explode;
   }
@@ -147,6 +152,7 @@ public class Header {
    *
    * @return Schema schema
    **/
+
   public Schema getSchema() {
     return schema;
   }
@@ -165,6 +171,7 @@ public class Header {
    *
    * @return Map&lt;String, Example&gt; examples
    **/
+
   public Map<String, Example> getExamples() {
     return examples;
   }
@@ -191,6 +198,7 @@ public class Header {
    *
    * @return String example
    **/
+
   public Object getExample() {
     return example;
   }
@@ -209,6 +217,7 @@ public class Header {
    *
    * @return Content content
    **/
+
   public Content getContent() {
     return content;
   }
@@ -281,7 +290,7 @@ public class Header {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_HEADERS_REF + $ref;
+      $ref = "#/components/headers/" + $ref;
     }
     this.$ref = $ref;
   }

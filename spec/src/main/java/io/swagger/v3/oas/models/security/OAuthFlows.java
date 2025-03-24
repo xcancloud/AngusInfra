@@ -1,10 +1,8 @@
 package io.swagger.v3.oas.models.security;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -20,13 +18,14 @@ public class OAuthFlows {
   private OAuthFlow password = null;
   private OAuthFlow clientCredentials = null;
   private OAuthFlow authorizationCode = null;
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the implicit property from a OAuthFlows instance.
    *
    * @return OAuthFlow implicit
    **/
+
   public OAuthFlow getImplicit() {
     return implicit;
   }
@@ -45,6 +44,7 @@ public class OAuthFlows {
    *
    * @return OAuthFlow password
    **/
+
   public OAuthFlow getPassword() {
     return password;
   }
@@ -63,6 +63,7 @@ public class OAuthFlows {
    *
    * @return OAuthFlow clientCredentials
    **/
+
   public OAuthFlow getClientCredentials() {
     return clientCredentials;
   }
@@ -81,6 +82,7 @@ public class OAuthFlows {
    *
    * @return OAuthFlow authorizationCode
    **/
+
   public OAuthFlow getAuthorizationCode() {
     return authorizationCode;
   }
@@ -115,8 +117,7 @@ public class OAuthFlows {
     return Objects.hash(implicit, password, clientCredentials, authorizationCode, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -139,11 +140,11 @@ public class OAuthFlows {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public OAuthFlows extensions(Map<String, Object> extensions) {
+  public OAuthFlows extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

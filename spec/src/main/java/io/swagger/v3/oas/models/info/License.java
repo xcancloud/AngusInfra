@@ -4,13 +4,12 @@ import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_CODE_LENGTH_X
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X2;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import jakarta.validation.constraints.NotEmpty;
-import java.util.Map;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -20,7 +19,7 @@ import org.hibernate.validator.constraints.Length;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#licenseObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#licenseObject"
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class License {
 
   @NotEmpty
@@ -36,20 +35,21 @@ public class License {
   /**
    * @since 2.2.0 (OpenAPI 3.1.0)
    */
-  @OpenAPI31
+  @io.swagger.v3.oas.models.annotations.OpenAPI31
   @Length(max = DEFAULT_CODE_LENGTH_X2)
   @Schema(description = "An SPDX license expression for the API. Note: The `identifier` field is mutually exclusive of the `url` field.",
       example = "Apache-2.0")
   private String identifier = null;
 
   @Schema(description = "The extensions of the OpenAPI license schema. For more information, please see: [Specification Extensions](https://swagger.io/specification/#info-object)")
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the name property from a License instance.
    *
    * @return String name
    **/
+
   public String getName() {
     return name;
   }
@@ -68,6 +68,7 @@ public class License {
    *
    * @return String url
    **/
+
   public String getUrl() {
     return url;
   }
@@ -123,8 +124,7 @@ public class License {
     return Objects.hash(name, url, identifier, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -147,11 +147,11 @@ public class License {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public License extensions(Map<String, Object> extensions) {
+  public License extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

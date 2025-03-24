@@ -40,6 +40,7 @@ public class PathItem {
    *
    * @return String summary
    **/
+
   public String getSummary() {
     return summary;
   }
@@ -58,6 +59,7 @@ public class PathItem {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -76,6 +78,7 @@ public class PathItem {
    *
    * @return Operation get
    **/
+
   public Operation getGet() {
     return get;
   }
@@ -94,6 +97,7 @@ public class PathItem {
    *
    * @return Operation put
    **/
+
   public Operation getPut() {
     return put;
   }
@@ -112,6 +116,7 @@ public class PathItem {
    *
    * @return Operation post
    **/
+
   public Operation getPost() {
     return post;
   }
@@ -130,6 +135,7 @@ public class PathItem {
    *
    * @return Operation delete
    **/
+
   public Operation getDelete() {
     return delete;
   }
@@ -148,6 +154,7 @@ public class PathItem {
    *
    * @return Operation options
    **/
+
   public Operation getOptions() {
     return options;
   }
@@ -166,6 +173,7 @@ public class PathItem {
    *
    * @return Operation head
    **/
+
   public Operation getHead() {
     return head;
   }
@@ -184,6 +192,7 @@ public class PathItem {
    *
    * @return Operation patch
    **/
+
   public Operation getPatch() {
     return patch;
   }
@@ -202,6 +211,7 @@ public class PathItem {
    *
    * @return Operation trace
    **/
+
   public Operation getTrace() {
     return trace;
   }
@@ -322,6 +332,7 @@ public class PathItem {
    *
    * @return List&lt;Server&gt; servers
    **/
+
   public List<Server> getServers() {
     return servers;
   }
@@ -348,6 +359,7 @@ public class PathItem {
    *
    * @return List&lt;Parameter&gt; parameters
    **/
+
   public List<Parameter> getParameters() {
     return parameters;
   }

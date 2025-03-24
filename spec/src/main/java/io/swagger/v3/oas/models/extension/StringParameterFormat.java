@@ -69,10 +69,10 @@ public enum StringParameterFormat implements EnumValueMessage<String> {
 
   @Override
   public String getValue() {
-    if (this.equals(_null)){
+    if (this.equals(_null)) {
       return "null";
     }
-    if (this.equals(date_time)){
+    if (this.equals(date_time)) {
       return "date-time";
     }
     return this.name();

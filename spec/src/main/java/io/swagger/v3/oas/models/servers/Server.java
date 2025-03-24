@@ -3,12 +3,9 @@ package io.swagger.v3.oas.models.servers;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNotEmpty;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNull;
-import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -16,9 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import jakarta.validation.constraints.NotBlank;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Map;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -65,7 +59,7 @@ public class Server {
   private ServerVariables variables = null;
 
   @Schema(description = "The extensions of the OpenAPI server schema. For more information, please see: [Specification Extensions](https://swagger.io/specification/#info-object)")
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   @JsonIgnore
   @ThirdExtension
@@ -107,6 +101,7 @@ public class Server {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -125,6 +120,7 @@ public class Server {
    *
    * @return ServerVariables variables
    **/
+
   public ServerVariables getVariables() {
     return variables;
   }
@@ -138,8 +134,27 @@ public class Server {
     return this;
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Server server = (Server) o;
+    return Objects.equals(this.url, server.url) &&
+        Objects.equals(this.description, server.description) &&
+        Objects.equals(this.variables, server.variables) &&
+        Objects.equals(this.extensions, server.extensions);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(url, description, variables, extensions);
+  }
+
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -162,59 +177,13 @@ public class Server {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public Server extensions(Map<String, Object> extensions) {
+  public Server extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
-  }
-
-  @ThirdExtension
-  public URL toUrl() {
-    try {
-      // Create a URL object from the OpenAPI Server object
-      String url = Objects.isNull(this.getUrl()) ? "127.0.0.1" : this.getUrl();
-      if (nonNull(variables)) {
-        // Replace the variables in the URL with their values
-        for (String name : variables.keySet()) {
-          String variableName = "{" + name + "}";
-          String variableValue = variables.get(name).getDefault();
-          // Use the first enum value as the default when no default value is specified
-          if (isNull(variableValue) && isNotEmpty(variables.get(name).getEnum())) {
-            variableValue = variables.get(name).getEnum().get(0);
-          }
-          // Ignore substitution when variable value is not found
-          if (nonNull(variableValue)) {
-            url = url.replace(variableName, variableValue);
-          }
-        }
-      }
-      return new URL(url);
-    } catch (MalformedURLException e) {
-      return null;
-    }
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Server server = (Server) o;
-    return Objects.equals(this.url, server.url) &&
-        Objects.equals(this.description, server.description) &&
-        Objects.equals(this.variables, server.variables) &&
-        Objects.equals(this.extensions, server.extensions);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(url, description, variables, extensions);
   }
 
   @Override

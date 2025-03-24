@@ -1,10 +1,8 @@
 package io.swagger.v3.oas.models.security;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -18,7 +16,7 @@ public class Scopes extends LinkedHashMap<String, String> {
   public Scopes() {
   }
 
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   public Scopes addString(String name, String item) {
     this.put(name, item);
@@ -47,8 +45,7 @@ public class Scopes extends LinkedHashMap<String, String> {
    * @deprecated As extensions don't make sense at this level
    */
   @Deprecated
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -71,7 +68,7 @@ public class Scopes extends LinkedHashMap<String, String> {
    * @deprecated As extensions don't make sense at this level
    */
   @Deprecated
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
@@ -79,7 +76,7 @@ public class Scopes extends LinkedHashMap<String, String> {
    * @deprecated As extensions don't make sense at this level
    */
   @Deprecated
-  public Scopes extensions(Map<String, Object> extensions) {
+  public Scopes extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

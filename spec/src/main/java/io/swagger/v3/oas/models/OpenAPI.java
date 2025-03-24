@@ -1,5 +1,6 @@
 package io.swagger.v3.oas.models;
 
+import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_KEY_LENGTH;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_PARAM_SIZE;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_PATH_NUM;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_TAG_NUM;
@@ -9,6 +10,8 @@ import cloud.xcan.sdf.spec.annotations.ThirdExtension;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.Schema;
@@ -32,23 +35,59 @@ import java.util.stream.Collectors;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md"
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OpenAPI {
 
   @NotEmpty
+  @io.swagger.v3.oas.annotations.media.Schema(description = "This string MUST be the semantic version number of the OpenAPI Specification version that the OpenAPI document uses. "
+      + "The openapi field SHOULD be used by tooling specifications and clients to interpret the OpenAPI document. This is not related to the API info.version string.",
+      requiredMode = RequiredMode.REQUIRED, maxLength = DEFAULT_KEY_LENGTH)
   private String openapi = "3.0.1";
+
   @NotNull
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "Provides metadata about the API. The metadata MAY be used by tooling as required.",
+      requiredMode = RequiredMode.REQUIRED)
   private Info info = null;
+
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "Additional external documentation.")
   private ExternalDocumentation externalDocs = null;
+
   @Size(max = DEFAULT_PARAM_SIZE)
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "An array of Server Objects, which provide connectivity information to a target server. "
+          + "If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.")
   private List<Server> servers = null;
+
   @Size(max = DEFAULT_PARAM_SIZE)
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "A declaration of which security mechanisms can be used across the API. "
+          + "The list of values includes alternative security requirement objects that can be used. "
+          + "Only one of the security requirement objects need to be satisfied to authorize a request. "
+          + "Individual operations can override this definition. To make security optional, "
+          + "an empty security requirement ({}) can be included in the array.")
   private List<SecurityRequirement> security = null;
+
   @Size(max = MAX_OPENAPI_TAG_NUM)
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "A list of tags used by the specification with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. "
+          + "Not all tags that are used by the Operation Object must be declared. The tags that are not declared MAY be organized randomly or based on the tools' logic. "
+          + "Each tag name in the list MUST be unique.")
   private List<Tag> tags = null;
+
   @Size(max = MAX_OPENAPI_PATH_NUM)
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "The available paths and operations for the API.")
   private Paths paths = null;
+
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "An element to hold various schemas for the specification.")
   private Components components = null;
+
   @Size(max = DEFAULT_PARAM_SIZE)
+  @io.swagger.v3.oas.annotations.media.Schema(
+      description = "Specification Extensions.")
   private Map<String, Object> extensions = null;
 
   /**
@@ -64,9 +103,9 @@ public class OpenAPI {
     this.specVersion = specVersion;
   }
 
-  @JsonIgnore
   private SpecVersion specVersion = SpecVersion.V30;
 
+  @JsonIgnore
   public SpecVersion getSpecVersion() {
     return this.specVersion;
   }
@@ -91,6 +130,7 @@ public class OpenAPI {
    *
    * @return String openapi
    **/
+
   public String getOpenapi() {
     return openapi;
   }
@@ -109,6 +149,7 @@ public class OpenAPI {
    *
    * @return Info info
    **/
+
   public Info getInfo() {
     return info;
   }
@@ -127,6 +168,7 @@ public class OpenAPI {
    *
    * @return ExternalDocumentation externalDocs
    **/
+
   public ExternalDocumentation getExternalDocs() {
     return externalDocs;
   }
@@ -173,6 +215,7 @@ public class OpenAPI {
    *
    * @return List&lt;SecurityRequirement&gt; security
    **/
+
   public List<SecurityRequirement> getSecurity() {
     return security;
   }
@@ -199,6 +242,7 @@ public class OpenAPI {
    *
    * @return List&lt;Tag&gt; tags
    **/
+
   public List<Tag> getTags() {
     return tags;
   }
@@ -225,6 +269,7 @@ public class OpenAPI {
    *
    * @return Paths paths
    **/
+
   public Paths getPaths() {
     return paths;
   }
@@ -243,6 +288,7 @@ public class OpenAPI {
    *
    * @return Components components
    **/
+
   public Components getComponents() {
     return components;
   }
@@ -259,10 +305,12 @@ public class OpenAPI {
   /*
    * helpers
    */
+
   public OpenAPI path(String name, PathItem path) {
     if (this.paths == null) {
       this.paths = new Paths();
     }
+
     this.paths.addPathItem(name, path);
     return this;
   }
@@ -289,6 +337,7 @@ public class OpenAPI {
    * @return Map&lt;String, PathItem&gt; webhooks
    * @since 2.2.0 (OpenAPI 3.1.0)
    **/
+
   @OpenAPI31
   public Map<String, PathItem> getWebhooks() {
     return webhooks;
@@ -361,9 +410,8 @@ public class OpenAPI {
 
   @Override
   public int hashCode() {
-    return Objects
-        .hash(openapi, info, externalDocs, servers, security, tags, paths, components, webhooks,
-            extensions, jsonSchemaDialect);
+    return Objects.hash(openapi, info, externalDocs, servers, security, tags, paths, components,
+        webhooks, extensions, jsonSchemaDialect);
   }
 
   @JsonAnyGetter
@@ -412,13 +460,13 @@ public class OpenAPI {
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
     sb.append("    paths: ").append(toIndentedString(paths)).append("\n");
     sb.append("    components: ").append(toIndentedString(components)).append("\n");
-    if (specVersion == SpecVersion.V31) {
-      sb.append("    webhooks: ").append(toIndentedString(webhooks)).append("\n");
-    }
-    if (specVersion == SpecVersion.V31) {
-      sb.append("    jsonSchemaDialect: ").append(toIndentedString(jsonSchemaDialect))
-          .append("\n");
-    }
+      if (specVersion == SpecVersion.V31) {
+          sb.append("    webhooks: ").append(toIndentedString(webhooks)).append("\n");
+      }
+      if (specVersion == SpecVersion.V31) {
+          sb.append("    jsonSchemaDialect: ").append(toIndentedString(jsonSchemaDialect))
+              .append("\n");
+      }
     sb.append("}");
     return sb.toString();
   }

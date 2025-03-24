@@ -1,13 +1,10 @@
 package io.swagger.v3.oas.models.security;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.Map;
 
 /**
  * SecurityScheme
@@ -21,14 +18,13 @@ public class SecurityScheme {
   /**
    * Gets or Sets type
    */
-  public enum Type{
+  public enum Type {
     APIKEY("apiKey"),
     HTTP("http"),
     OAUTH2("oauth2"),
     OPENIDCONNECT("openIdConnect"),
     MUTUALTLS("mutualTLS");
 
-    @JsonValue
     private String value;
 
     Type(String value) {
@@ -56,7 +52,6 @@ public class SecurityScheme {
 
     QUERY("query");
 
-    @JsonValue
     private String value;
 
     In(String value) {
@@ -74,13 +69,14 @@ public class SecurityScheme {
   private String bearerFormat = null;
   private OAuthFlows flows = null;
   private String openIdConnectUrl = null;
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the type property from a SecurityScheme instance.
    *
    * @return Type type
    **/
+
   public Type getType() {
     return type;
   }
@@ -99,6 +95,7 @@ public class SecurityScheme {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -117,6 +114,7 @@ public class SecurityScheme {
    *
    * @return String name
    **/
+
   public String getName() {
     return name;
   }
@@ -135,6 +133,7 @@ public class SecurityScheme {
    *
    * @return In in
    **/
+
   public In getIn() {
     return in;
   }
@@ -153,6 +152,7 @@ public class SecurityScheme {
    *
    * @return String scheme
    **/
+
   public String getScheme() {
     return scheme;
   }
@@ -171,6 +171,7 @@ public class SecurityScheme {
    *
    * @return String bearerFormat
    **/
+
   public String getBearerFormat() {
     return bearerFormat;
   }
@@ -189,6 +190,7 @@ public class SecurityScheme {
    *
    * @return OAuthFlows flows
    **/
+
   public OAuthFlows getFlows() {
     return flows;
   }
@@ -207,6 +209,7 @@ public class SecurityScheme {
    *
    * @return String openIdConnectUrl
    **/
+
   public String getOpenIdConnectUrl() {
     return openIdConnectUrl;
   }
@@ -220,8 +223,7 @@ public class SecurityScheme {
     return this;
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -251,11 +253,11 @@ public class SecurityScheme {
     }
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public SecurityScheme extensions(Map<String, Object> extensions) {
+  public SecurityScheme extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }
@@ -271,7 +273,7 @@ public class SecurityScheme {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_SECURITY_SCHEMES_REF + $ref;
+      $ref = "#/components/securitySchemes/" + $ref;
     }
     this.$ref = $ref;
   }

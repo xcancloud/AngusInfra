@@ -1,11 +1,10 @@
 package io.swagger.v3.oas.models.examples;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.Map;
 
 /**
  * Example
@@ -13,7 +12,7 @@ import java.util.Map;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#exampleObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#exampleObject"
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Example {
 
   private String summary = null;
@@ -21,7 +20,7 @@ public class Example {
   private Object value = null;
   private String externalValue = null;
   private String $ref = null;
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   private boolean valueSetFlag;
 
@@ -30,6 +29,7 @@ public class Example {
    *
    * @return String summary
    **/
+
   public String getSummary() {
     return summary;
   }
@@ -48,6 +48,7 @@ public class Example {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -66,6 +67,7 @@ public class Example {
    *
    * @return Object value
    **/
+
   public Object getValue() {
     return value;
   }
@@ -85,6 +87,7 @@ public class Example {
    *
    * @return String externalValue
    **/
+
   public String getExternalValue() {
     return externalValue;
   }
@@ -104,7 +107,7 @@ public class Example {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_EXAMPLES_REF + $ref;
+      $ref = "#/components/examples/" + $ref;
     }
     this.$ref = $ref;
   }
@@ -122,8 +125,7 @@ public class Example {
     return this;
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -146,11 +148,11 @@ public class Example {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public Example extensions(Map<String, Object> extensions) {
+  public Example extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

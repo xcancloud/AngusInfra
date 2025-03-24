@@ -3,14 +3,12 @@ package io.swagger.v3.oas.models.servers;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
 import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_PARAM_NAME_LENGTH;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -40,13 +38,14 @@ public class ServerVariable {
   private String description = null;
 
   @Schema(description = "The extensions of the OpenAPI server variable schema. For more information, please see: [Specification Extensions](https://swagger.io/specification/#info-object)")
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   /**
    * returns the _enum property from a ServerVariable instance.
    *
    * @return List&lt;String&gt; _enum
    **/
+
   public List<String> getEnum() {
     return _enum;
   }
@@ -73,6 +72,7 @@ public class ServerVariable {
    *
    * @return String _default
    **/
+
   public String getDefault() {
     return _default;
   }
@@ -91,6 +91,7 @@ public class ServerVariable {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -124,8 +125,7 @@ public class ServerVariable {
     return Objects.hash(_enum, _default, description, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -148,11 +148,11 @@ public class ServerVariable {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public ServerVariable extensions(Map<String, Object> extensions) {
+  public ServerVariable extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

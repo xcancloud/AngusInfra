@@ -25,10 +25,10 @@ public enum NumberParameterFormat implements EnumValueMessage<String> {
 
   @Override
   public String getValue() {
-    if (this.equals(_float)){
+    if (this.equals(_float)) {
       return "float";
     }
-    if (this.equals(_double)){
+    if (this.equals(_double)) {
       return "double";
     }
     return this.name();

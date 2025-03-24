@@ -1,13 +1,11 @@
 package io.swagger.v3.oas.models.parameters;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import io.swagger.v3.oas.models.media.Content;
-import java.util.Map;
 
 /**
  * RequestBody
@@ -21,7 +19,7 @@ public class RequestBody {
   private String description = null;
   private Content content = null;
   private Boolean required = null;
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
   private String $ref = null;
 
   /**
@@ -29,6 +27,7 @@ public class RequestBody {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -47,6 +46,7 @@ public class RequestBody {
    *
    * @return Content content
    **/
+
   public Content getContent() {
     return content;
   }
@@ -65,6 +65,7 @@ public class RequestBody {
    *
    * @return Boolean required
    **/
+
   public Boolean getRequired() {
     return required;
   }
@@ -78,8 +79,7 @@ public class RequestBody {
     return this;
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -102,11 +102,11 @@ public class RequestBody {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public RequestBody extensions(Map<String, Object> extensions) {
+  public RequestBody extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }
@@ -117,7 +117,7 @@ public class RequestBody {
 
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_REQUEST_BODIES_REF + $ref;
+      $ref = "#/components/requestBodies/" + $ref;
     }
     this.$ref = $ref;
   }

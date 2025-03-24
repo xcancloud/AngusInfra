@@ -1,15 +1,14 @@
 package io.swagger.v3.oas.models.links;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
-import java.util.Map;
 import java.util.Objects;
 
 /**
  * LinkParameter
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class LinkParameter {
 
   private String value;
@@ -17,7 +16,7 @@ public class LinkParameter {
   public LinkParameter() {
   }
 
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   public String getValue() {
     return value;
@@ -50,8 +49,7 @@ public class LinkParameter {
     return Objects.hash(value, extensions);
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -74,11 +72,11 @@ public class LinkParameter {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public LinkParameter extensions(Map<String, Object> extensions) {
+  public LinkParameter extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

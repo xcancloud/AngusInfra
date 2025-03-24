@@ -2,6 +2,7 @@ package io.swagger.v3.oas.models.media;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import io.swagger.v3.oas.models.headers.Header;
 import java.util.LinkedHashMap;
@@ -13,7 +14,7 @@ import java.util.Objects;
  *
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#encodingPropertyObject"
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class EncodingProperty {
 
   private String contentType = null;
@@ -53,6 +54,7 @@ public class EncodingProperty {
    *
    * @return String contentType
    **/
+
   public String getContentType() {
     return contentType;
   }
@@ -71,6 +73,7 @@ public class EncodingProperty {
    *
    * @return headers
    **/
+
   public Map<String, Header> getHeaders() {
     return headers;
   }
@@ -97,6 +100,7 @@ public class EncodingProperty {
    *
    * @return StyleEnum style
    **/
+
   public StyleEnum getStyle() {
     return style;
   }
@@ -115,6 +119,7 @@ public class EncodingProperty {
    *
    * @return Boolean explode
    **/
+
   public Boolean getExplode() {
     return explode;
   }
@@ -133,6 +138,7 @@ public class EncodingProperty {
    *
    * @return Boolean allowReserved
    **/
+
   public Boolean getAllowReserved() {
     return allowReserved;
   }

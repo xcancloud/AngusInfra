@@ -30,6 +30,7 @@ public class MediaType {
    *
    * @return Schema schema
    **/
+
   public Schema getSchema() {
     return schema;
   }
@@ -48,6 +49,7 @@ public class MediaType {
    *
    * @return Map&lt;String, Example&gt; examples
    **/
+
   public Map<String, Example> getExamples() {
     return examples;
   }
@@ -74,6 +76,7 @@ public class MediaType {
    *
    * @return String example
    **/
+
   public Object getExample() {
     return example;
   }
@@ -100,6 +103,7 @@ public class MediaType {
    *
    * @return Encoding encoding
    **/
+
   public Map<String, Encoding> getEncoding() {
     return encoding;
   }

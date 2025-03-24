@@ -1,4 +1,4 @@
-package io.swagger.v3.oas.models;
+package io.swagger.v3.oas.models.extension;
 
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.emptySafe;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
@@ -9,6 +9,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
 import cloud.xcan.sdf.spec.utils.ObjectUtils;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.servers.Server;
 import java.util.HashMap;
@@ -28,17 +31,17 @@ public class OpenAPIUtils {
   /**
    * @see swagger-parser#InlineModelResolver
    */
-  public static Map<String, Operation> flatPaths(Paths paths) {
+  public static Map<String, io.swagger.v3.oas.models.Operation> flatPaths(Paths paths) {
     if (ObjectUtils.isEmpty(paths)) {
       // Warn: Since 3.1 is not required
       return null;
     }
-    Map<String, Operation> operationsMap = new HashMap<>();
+    Map<String, io.swagger.v3.oas.models.Operation> operationsMap = new HashMap<>();
 
     // Flat operation
     for (String uri : paths.keySet()) {
-      PathItem pathItem = paths.get(uri);
-      Map<String, Operation> operations = new HashMap<>();
+      io.swagger.v3.oas.models.PathItem pathItem = paths.get(uri);
+      Map<String, io.swagger.v3.oas.models.Operation> operations = new HashMap<>();
       if (nonNull(pathItem)) {
         boolean hasContext = false;
         if (nonNull(pathItem.getGet())) {
@@ -80,7 +83,7 @@ public class OpenAPIUtils {
           log.warn("Flat paths unhand $ref: {}", pathItem.get$ref());
         }
 
-        if (isNotEmpty(operations)){
+        if (isNotEmpty(operations)) {
           addFlatOperation(pathItem, operations, hasContext);
 
           operationsMap.putAll(operations);
@@ -90,10 +93,11 @@ public class OpenAPIUtils {
     return operationsMap;
   }
 
-  private static void addFlatOperation(PathItem pathItem, Map<String, Operation> operations,
+  private static void addFlatOperation(
+      PathItem pathItem, Map<String, io.swagger.v3.oas.models.Operation> operations,
       boolean hasContext) {
     if (hasContext) {
-      for (Operation operation : operations.values()) {
+      for (io.swagger.v3.oas.models.Operation operation : operations.values()) {
         // Merge common parameters schema in pathItem
         if (nonNull(pathItem.getParameters())) {
           for (Parameter parameter : pathItem.getParameters()) {
@@ -116,7 +120,8 @@ public class OpenAPIUtils {
     }
   }
 
-  private static boolean flatToOperation(String uri, Map<String, Operation> operations,
+  private static boolean flatToOperation(String uri,
+      Map<String, io.swagger.v3.oas.models.Operation> operations,
       Operation operation, String method, List<Parameter> parameters) {
     // Safe uri
     uri = isEmpty(uri) ? "" : uri.split("\\?")[0];

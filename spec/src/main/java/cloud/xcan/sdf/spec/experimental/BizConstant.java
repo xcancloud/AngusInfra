@@ -299,6 +299,7 @@ public interface BizConstant {
 
   String[] AUTH_WHITELIST = {
       // springboot actuator
+      "/favicon.ico",
       "/actuator/**",
       // angus apis
       "/pubapi/**",
@@ -306,10 +307,9 @@ public interface BizConstant {
       //"/openapi2p/**",
       "/pubview/**",
       // -- swagger ui
-      "/swagger-ui/*",
-      "/swagger-resources/**",
-      "/v2/api-docs",
-      "/v3/api-docs",
+      "/swagger-ui.html",
+      "/swagger-ui/**",
+      "/v3/api-docs/**"
       //"/webjars/**",
       // oauth public endpoint
       //"/oauth/user/login", "/oauth/authorize"

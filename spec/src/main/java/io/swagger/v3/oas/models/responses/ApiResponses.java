@@ -1,11 +1,9 @@
 package io.swagger.v3.oas.models.responses;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -19,7 +17,7 @@ public class ApiResponses extends LinkedHashMap<String, ApiResponse> {
 
   public static final String DEFAULT = "default";
 
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   public ApiResponses addApiResponse(String name, ApiResponse item) {
     this.put(name, item);
@@ -31,21 +29,23 @@ public class ApiResponses extends LinkedHashMap<String, ApiResponse> {
    *
    * @return ApiResponse _default
    **/
+  @Deprecated
   public ApiResponse getDefault() {
     return this.get(DEFAULT);
   }
 
+  @Deprecated
   public void setDefault(ApiResponse _default) {
     addApiResponse(DEFAULT, _default);
   }
 
+  @Deprecated
   public ApiResponses _default(ApiResponse _default) {
     setDefault(_default);
     return this;
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -68,22 +68,15 @@ public class ApiResponses extends LinkedHashMap<String, ApiResponse> {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public ApiResponses extensions(Map<String, Object> extensions) {
+  public ApiResponses extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }
 
-  public static ApiResponses default_() {
-    ApiResponses responses = new ApiResponses();
-    ApiResponse response = new ApiResponse();
-    response.description("default");
-    responses.put(DEFAULT, response);
-    return responses;
-  }
 
   @Override
   public boolean equals(Object o) {

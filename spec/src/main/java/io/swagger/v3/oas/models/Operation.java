@@ -1,21 +1,12 @@
 package io.swagger.v3.oas.models;
 
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNotEmpty;
-import static io.swagger.v3.oas.models.media.Schema.BIND_TO_VALUE;
-import static java.util.Objects.nonNull;
-
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import cloud.xcan.sdf.spec.http.HttpRequestHeader;
-import cloud.xcan.sdf.spec.thread.ThreadContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import io.swagger.v3.oas.models.callbacks.Callback;
-import io.swagger.v3.oas.models.extension.ExtensionKey;
-import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -49,7 +40,6 @@ public class Operation {
   private Boolean deprecated = null;
   private List<SecurityRequirement> security = null;
   private List<Server> servers = null;
-
   private Map<String, Object> extensions = null;
 
   @ThirdExtension
@@ -73,6 +63,7 @@ public class Operation {
    *
    * @return List&lt;String&gt; tags
    **/
+
   public List<String> getTags() {
     return tags;
   }
@@ -99,6 +90,7 @@ public class Operation {
    *
    * @return String summary
    **/
+
   public String getSummary() {
     return summary;
   }
@@ -117,6 +109,7 @@ public class Operation {
    *
    * @return String description
    **/
+
   public String getDescription() {
     return description;
   }
@@ -135,6 +128,7 @@ public class Operation {
    *
    * @return ExternalDocumentation externalDocs
    **/
+
   public ExternalDocumentation getExternalDocs() {
     return externalDocs;
   }
@@ -153,6 +147,7 @@ public class Operation {
    *
    * @return String operationId
    **/
+
   public String getOperationId() {
     return operationId;
   }
@@ -171,52 +166,8 @@ public class Operation {
    *
    * @return List&lt;Parameter&gt; parameters
    **/
-  @ThirdExtension
+
   public List<Parameter> getParameters() {
-    // ---  XCan Extension ---
-    boolean bindValue = ThreadContext.contains(BIND_TO_VALUE);
-    if (bindValue) {
-      if (isNotEmpty(parameters)) {
-        for (Parameter parameter : parameters) {
-          boolean hasExample = false;
-          if (isEmpty(parameter.getExtensions())
-              || !parameter.getExtensions().containsKey(ExtensionKey.VALUE_KEY)) {
-            if (nonNull(parameter.getExample())) {
-              parameter.addExtension(ExtensionKey.VALUE_KEY, parameter.getExample());
-              hasExample = true;
-            } else if (nonNull(parameter.getExamples())) {
-              parameter.addExtension(ExtensionKey.VALUE_KEY, parameter.getExamples()
-                  .values().stream().findFirst());
-              hasExample = true;
-            }
-          }
-
-          /*Swagger 2.0 example value*/
-          if (!hasExample && isNotEmpty(parameter.getExtensions())
-              && parameter.getExtensions().containsKey("x-example")) {
-            parameter.addExtension(ExtensionKey.VALUE_KEY,
-                parameter.getExtensions().get("x-example"));
-          }
-        }
-      }
-
-      if (nonNull(requestBody) && isNotEmpty(requestBody.getContent())) {
-        boolean existed = isNotEmpty(parameters) && parameters
-            .stream().anyMatch(x -> "Content-Type".equalsIgnoreCase(x.getName()));
-        if (!existed) {
-          Parameter contentType = new Parameter();
-          contentType.setName("Content-Type");
-          contentType.setIn("header");
-          contentType.setRequired(true);
-          contentType.addExtension(ExtensionKey.ENABLED_KEY, true);
-          String contentType0 = requestBody.getContent()
-              .keySet().stream().findFirst().orElse("*/*");
-          contentType.addExtension(ExtensionKey.VALUE_KEY, contentType0);
-          addParametersItem(contentType);
-        }
-      }
-    }
-    // ---  XCan Extension ---
     return parameters;
   }
 
@@ -242,33 +193,8 @@ public class Operation {
    *
    * @return RequestBody requestBody
    **/
-  @ThirdExtension
+
   public RequestBody getRequestBody() {
-    // ---  XCan Extension ---
-    boolean bindValue = ThreadContext.contains(BIND_TO_VALUE);
-    if (bindValue) {
-      if (nonNull(requestBody) && nonNull(requestBody.getContent())) {
-        for (MediaType mediaType : requestBody.getContent().values()) {
-          if (isEmpty(mediaType.getExtensions())
-              || !mediaType.getExtensions().containsKey(ExtensionKey.VALUE_KEY)) {
-            if (nonNull(mediaType.getExample())) {
-              mediaType.addExtension(ExtensionKey.VALUE_KEY, mediaType.getExample());
-            } else if (nonNull(mediaType.getExamples())) {
-              mediaType.addExtension(ExtensionKey.VALUE_KEY,
-                  mediaType.getExamples().values().stream().findFirst());
-            } else if (nonNull(mediaType.getSchema())) {
-              if (nonNull(mediaType.getSchema().getExample())) {
-                mediaType.addExtension(ExtensionKey.VALUE_KEY, mediaType.getSchema().getExample());
-              } else if (nonNull(mediaType.getSchema().getExamples())) {
-                mediaType.addExtension(ExtensionKey.VALUE_KEY,
-                    mediaType.getSchema().getExamples().get(0));
-              }
-            }
-          }
-        }
-      }
-    }
-    // ---  XCan Extension ---
     return requestBody;
   }
 
@@ -282,44 +208,11 @@ public class Operation {
   }
 
   /**
-   * Note: Must be executed after getParameters() method serialization.
-   */
-  @ThirdExtension
-  public SecurityScheme getAuthentication() {
-    // Import Postman authentication header initialization
-    if (/*Fix:: isNull(authentication) && */isNotEmpty(parameters)) {
-      boolean bindValue = ThreadContext.contains(BIND_TO_VALUE);
-      if (bindValue) {
-        Parameter auth = parameters.stream().filter(x -> "header".equals(x.getIn())
-            && HttpRequestHeader.Authorization.getValue().equalsIgnoreCase(x.getName()))
-            .findFirst().orElse(null);
-        if (nonNull(auth) && isNotEmpty(auth.getExtensions())
-            && auth.getExtensions().containsKey(ExtensionKey.VALUE_KEY)) {
-          Object authValue = auth.getExtensions().get(ExtensionKey.VALUE_KEY);
-          if (nonNull(authValue)) {
-            if (authValue.toString().startsWith("Basic ")) {
-              authentication = new SecurityScheme();
-              authentication.setType(SecurityScheme.Type.HTTP);
-              authentication.setScheme("basic");
-              authentication.addExtension(ExtensionKey.VALUE_KEY, authValue.toString());
-            } else if (authValue.toString().startsWith("Bearer ")) {
-              authentication = new SecurityScheme();
-              authentication.setType(SecurityScheme.Type.HTTP);
-              authentication.setScheme("bearer");
-              authentication.addExtension(ExtensionKey.VALUE_KEY, authValue.toString());
-            }
-          }
-        }
-      }
-    }
-    return authentication;
-  }
-
-  /**
    * returns the responses property from a Operation instance.
    *
    * @return ApiResponses responses
    **/
+
   public ApiResponses getResponses() {
     return responses;
   }
@@ -338,6 +231,7 @@ public class Operation {
    *
    * @return Callbacks callbacks
    **/
+
   public Map<String, Callback> getCallbacks() {
     return callbacks;
   }
@@ -364,6 +258,7 @@ public class Operation {
    *
    * @return Boolean deprecated
    **/
+
   public Boolean getDeprecated() {
     return deprecated;
   }
@@ -382,6 +277,7 @@ public class Operation {
    *
    * @return List&lt;SecurityRequirement&gt; security
    **/
+
   public List<SecurityRequirement> getSecurity() {
     return security;
   }
@@ -408,6 +304,7 @@ public class Operation {
    *
    * @return List&lt;Server&gt; servers
    **/
+
   public List<Server> getServers() {
     return servers;
   }
@@ -455,9 +352,8 @@ public class Operation {
 
   @Override
   public int hashCode() {
-    return Objects
-        .hash(tags, summary, description, externalDocs, operationId, parameters, requestBody,
-            responses, callbacks, deprecated, security, servers, extensions);
+    return Objects.hash(tags, summary, description, externalDocs, operationId, parameters,
+        requestBody, responses, callbacks, deprecated, security, servers, extensions);
   }
 
   @JsonAnyGetter

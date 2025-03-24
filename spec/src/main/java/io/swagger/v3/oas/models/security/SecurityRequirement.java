@@ -1,7 +1,6 @@
 package io.swagger.v3.oas.models.security;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -14,9 +13,6 @@ import java.util.Objects;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#securityRequirementObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#securityRequirementObject"
  */
-@Schema(description = "Key is the name of security scheme, values is security requirement values. "
-    + "If the security scheme is of type `oauth2` or `openIdConnect`, then the value is a list of scope names required for the execution, "
-    + "and the list MAY be empty if authorization does not require a specified scope.")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SecurityRequirement extends LinkedHashMap<String, List<String>> {
 

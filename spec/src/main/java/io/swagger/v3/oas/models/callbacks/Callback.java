@@ -1,13 +1,12 @@
 package io.swagger.v3.oas.models.callbacks;
 
 import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -16,13 +15,13 @@ import java.util.Objects;
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.0.1/versions/3.0.1.md#callbackObject"
  * @see "https://github.com/OAI/OpenAPI-Specification/blob/3.1.0/versions/3.1.0.md#callbackObject"
  */
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Callback extends LinkedHashMap<String, PathItem> {
 
   public Callback() {
   }
 
-  private Map<String, Object> extensions = null;
+  private java.util.Map<String, Object> extensions = null;
 
   private String $ref = null;
 
@@ -38,7 +37,7 @@ public class Callback extends LinkedHashMap<String, PathItem> {
    */
   public void set$ref(String $ref) {
     if ($ref != null && ($ref.indexOf('.') == -1 && $ref.indexOf('/') == -1)) {
-      $ref = Components.COMPONENTS_CALLBACKS_REF + $ref;
+      $ref = "#/components/callbacks/" + $ref;
     }
     this.$ref = $ref;
   }
@@ -85,8 +84,7 @@ public class Callback extends LinkedHashMap<String, PathItem> {
     return Objects.hash(extensions, $ref, super.hashCode());
   }
 
-  @JsonAnyGetter
-  public Map<String, Object> getExtensions() {
+  public java.util.Map<String, Object> getExtensions() {
     return extensions;
   }
 
@@ -109,11 +107,11 @@ public class Callback extends LinkedHashMap<String, PathItem> {
     addExtension(name, value);
   }
 
-  public void setExtensions(Map<String, Object> extensions) {
+  public void setExtensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
   }
 
-  public Callback extensions(Map<String, Object> extensions) {
+  public Callback extensions(java.util.Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
   }

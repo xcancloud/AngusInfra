@@ -1,6 +1,7 @@
 package io.swagger.v3.oas.models.media;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,17 @@ public class BinarySchema extends Schema<byte[]> {
       try {
         if (value instanceof byte[]) {
           return (byte[]) value;
+        } else if (value instanceof String) {
+          if (
+              (System.getProperty(BINARY_STRING_CONVERSION_PROPERTY) != null && System.getProperty(
+                      BINARY_STRING_CONVERSION_PROPERTY)
+                  .equals(BynaryStringConversion.BINARY_STRING_CONVERSION_BASE64.toString())) ||
+                  (System.getenv(BINARY_STRING_CONVERSION_PROPERTY) != null && System.getenv(
+                          BINARY_STRING_CONVERSION_PROPERTY)
+                      .equals(BynaryStringConversion.BINARY_STRING_CONVERSION_BASE64.toString()))) {
+            return Base64.getDecoder().decode((String) value);
+          }
+          return value.toString().getBytes();
         } else {
           return value.toString().getBytes();
         }

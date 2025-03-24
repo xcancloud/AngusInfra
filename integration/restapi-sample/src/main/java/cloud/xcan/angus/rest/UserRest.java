@@ -4,6 +4,7 @@ import cloud.xcan.angus.domain.User;
 import cloud.xcan.angus.domain.UserRepo;
 import cloud.xcan.angus.rest.dto.UserAddDto;
 import cloud.xcan.sdf.api.ApiLocaleResult;
+import cloud.xcan.sdf.api.PageResult;
 import cloud.xcan.sdf.core.biz.ProtocolAssert;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,6 +15,7 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +40,7 @@ public class UserRest {
       @ApiResponse(responseCode = "409", description = "Username already exists")
   })
   @PostMapping
+  @Transactional
   public ApiLocaleResult<User> createUser(@RequestBody @Valid UserAddDto request) {
     User oldUser = userRepo.findByUsername(request.username());
     ProtocolAssert.assertResourceExisted(oldUser, request.username());
@@ -59,10 +62,10 @@ public class UserRest {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved users")
   })
   @GetMapping
-  public ApiLocaleResult<Page<User>> getUsers(
+  public ApiLocaleResult<PageResult<User>> getUsers(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    return ApiLocaleResult.success(userRepo.findAll(PageRequest.of(page, size)));
+    return ApiLocaleResult.success(PageResult.of(userRepo.findAll(PageRequest.of(page, size))));
   }
 
 }

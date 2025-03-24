@@ -39,8 +39,9 @@ import java.util.stream.Collectors;
 public class OpenAPI {
 
   @NotEmpty
-  @io.swagger.v3.oas.annotations.media.Schema(description = "This string MUST be the semantic version number of the OpenAPI Specification version that the OpenAPI document uses. "
-      + "The openapi field SHOULD be used by tooling specifications and clients to interpret the OpenAPI document. This is not related to the API info.version string.",
+  @io.swagger.v3.oas.annotations.media.Schema(description =
+      "This string MUST be the semantic version number of the OpenAPI Specification version that the OpenAPI document uses. "
+          + "The openapi field SHOULD be used by tooling specifications and clients to interpret the OpenAPI document. This is not related to the API info.version string.",
       requiredMode = RequiredMode.REQUIRED, maxLength = DEFAULT_KEY_LENGTH)
   private String openapi = "3.0.1";
 
@@ -56,8 +57,9 @@ public class OpenAPI {
 
   @Size(max = DEFAULT_PARAM_SIZE)
   @io.swagger.v3.oas.annotations.media.Schema(
-      description = "An array of Server Objects, which provide connectivity information to a target server. "
-          + "If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.")
+      description =
+          "An array of Server Objects, which provide connectivity information to a target server. "
+              + "If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.")
   private List<Server> servers = null;
 
   @Size(max = DEFAULT_PARAM_SIZE)
@@ -71,9 +73,10 @@ public class OpenAPI {
 
   @Size(max = MAX_OPENAPI_TAG_NUM)
   @io.swagger.v3.oas.annotations.media.Schema(
-      description = "A list of tags used by the specification with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. "
-          + "Not all tags that are used by the Operation Object must be declared. The tags that are not declared MAY be organized randomly or based on the tools' logic. "
-          + "Each tag name in the list MUST be unique.")
+      description =
+          "A list of tags used by the specification with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. "
+              + "Not all tags that are used by the Operation Object must be declared. The tags that are not declared MAY be organized randomly or based on the tools' logic. "
+              + "Each tag name in the list MUST be unique.")
   private List<Tag> tags = null;
 
   @Size(max = MAX_OPENAPI_PATH_NUM)
@@ -460,13 +463,13 @@ public class OpenAPI {
     sb.append("    tags: ").append(toIndentedString(tags)).append("\n");
     sb.append("    paths: ").append(toIndentedString(paths)).append("\n");
     sb.append("    components: ").append(toIndentedString(components)).append("\n");
-      if (specVersion == SpecVersion.V31) {
-          sb.append("    webhooks: ").append(toIndentedString(webhooks)).append("\n");
-      }
-      if (specVersion == SpecVersion.V31) {
-          sb.append("    jsonSchemaDialect: ").append(toIndentedString(jsonSchemaDialect))
-              .append("\n");
-      }
+    if (specVersion == SpecVersion.V31) {
+      sb.append("    webhooks: ").append(toIndentedString(webhooks)).append("\n");
+    }
+    if (specVersion == SpecVersion.V31) {
+      sb.append("    jsonSchemaDialect: ").append(toIndentedString(jsonSchemaDialect))
+          .append("\n");
+    }
     sb.append("}");
     return sb.toString();
   }

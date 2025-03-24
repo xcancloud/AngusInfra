@@ -16,8 +16,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "xcan.datasource.hikari")
 public class HikariProperties {
 
-  private int minimumIdle = -1;
-  private int maximumPoolSize = -1;
+  private int minimumIdle = 8;
+  private int maximumPoolSize = 32;
   private long maxLifetime = MINUTES.toMillis(30);
   private long connectionTimeout = SECONDS.toMillis(30);
   private long validationTimeout = SECONDS.toMillis(5);

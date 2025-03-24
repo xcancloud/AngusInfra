@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 @Setter
 @Getter
@@ -17,9 +18,6 @@ public class PageResult<T> implements Serializable {
   private static final List<?> EMPTY_LIST = Collections.unmodifiableList(new ArrayList<>(0));
   private static final PageResult<?> EMPTY_RESULT = new PageResult<>();
 
-  /**
-   * Total number
-   */
   @Schema(description = "Total number", example = "10")
   private long total;
 
@@ -28,9 +26,6 @@ public class PageResult<T> implements Serializable {
     return total <= 0 && ObjectUtils.isEmpty(list);
   }
 
-  /**
-   * Page data
-   */
   @SuppressWarnings("unchecked")
   @Schema(description = "Page data")
   private List<T> list = (List<T>) EMPTY_LIST;
@@ -44,6 +39,13 @@ public class PageResult<T> implements Serializable {
     PageResult<T> pageResult = new PageResult<T>();
     pageResult.setTotal(total);
     pageResult.setList(result);
+    return pageResult;
+  }
+
+  public static <T> PageResult<T> of(Page<T> result) {
+    PageResult<T> pageResult = new PageResult<T>();
+    pageResult.setTotal(result.getTotalElements());
+    pageResult.setList(result.toList());
     return pageResult;
   }
 

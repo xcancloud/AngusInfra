@@ -31,6 +31,10 @@ xcan:
       methods: 'POST, GET, PUT, DELETE, PATCH, HEAD'
   idgen:
     enabled: false
+  apilog:
+    enabled: false
+  optlog:
+    enabled: false
   datasource:
     enabled: true
     commonlink:
@@ -76,6 +80,7 @@ spring:
     active: '@profile.active@'
   main:
     allow-bean-definition-overriding: true
+    banner-mode: off
   datasource:
     url: jdbc:h2:mem:testdb
     username: sa
@@ -132,6 +137,10 @@ logging:
     org.springframework.web: WARN
     org.springframework.security: WARN
     org.springframework.cloud: WARN
+    org.hibernate.SQL: debug
+    org.hibernate.engine.QueryParameters: debug
+    org.hibernate.engine.query.HQLQueryPlan: debug
+    org.hibernate.type.descriptor.sql.BasicBinder: trace
   file:
     path: ${log.dir:logs}
 

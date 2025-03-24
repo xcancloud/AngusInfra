@@ -274,9 +274,9 @@ public class TenantInterceptor implements StatementInspector {
     Set<Class<?>> allClazz = getAnnotationClasses(packageName, annotation);
     Set<String> names = new HashSet<>();
     for (Class c : allClazz) {
-      Annotation a = c.getAnnotation(javax.persistence.Table.class);
+      Annotation a = c.getAnnotation(jakarta.persistence.Table.class);
       if (Objects.nonNull(a)) {
-        javax.persistence.Table t = (javax.persistence.Table) a;
+        jakarta.persistence.Table t = (jakarta.persistence.Table) a;
         names.add(t.name());
       } else {
         names.add(c.getSimpleName().toLowerCase());

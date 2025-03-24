@@ -235,18 +235,18 @@ public class AuditLogAutoConfigurer {
   //    return new AuthorizationAuditListener();
   //  }
 
-//  static final class AuditLogCondition implements Condition {
-//
-//    AuditLogCondition() {
-//    }
-//
-//    @Override
-//    public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
-//      String apiLogEnabled = context.getEnvironment().getProperty("xcan.apilog.enabled");
-//      String optLogEnabled = context.getEnvironment().getProperty("xcan.optlog.enabled");
-//      return (isNotEmpty(apiLogEnabled) && Boolean.parseBoolean(apiLogEnabled)) ||
-//          isNotEmpty(optLogEnabled) && Boolean.parseBoolean(optLogEnabled);
-//    }
-//  }
+  //  static final class AuditLogCondition implements Condition {
+  //
+  //    AuditLogCondition() {
+  //    }
+  //
+  //    @Override
+  //    public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
+  //      String apiLogEnabled = context.getEnvironment().getProperty("xcan.apilog.enabled");
+  //      String optLogEnabled = context.getEnvironment().getProperty("xcan.optlog.enabled");
+  //      return (isNotEmpty(apiLogEnabled) && Boolean.parseBoolean(apiLogEnabled)) ||
+  //          isNotEmpty(optLogEnabled) && Boolean.parseBoolean(optLogEnabled);
+  //    }
+  //  }
 
 }

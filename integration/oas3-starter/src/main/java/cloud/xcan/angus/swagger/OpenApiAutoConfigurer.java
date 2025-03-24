@@ -41,7 +41,8 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .group("User Api Documentation")
+          .displayName("/api (User Api Document)")
+          .group("user")
           .pathsToMatch("/api/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
@@ -50,7 +51,8 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .group("User Api Documentation")
+          .displayName("/api (User Api Document)")
+          .group("user")
           .pathsToMatch("/api/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
@@ -66,7 +68,8 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .group("System Inner Api Documentation")
+          .displayName("/doorapi (System Inner Api Document)")
+          .group("system")
           .pathsToMatch("/doorapi/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
@@ -75,7 +78,8 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .group("System Inner Api Documentation")
+          .displayName("/doorapi (System Inner Api Document)")
+          .group("system")
           .pathsToMatch("/doorapi/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
@@ -91,7 +95,8 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .group("Public Api Documentation")
+          .displayName("/pubapi (Public Api Document)")
+          .group("public")
           .pathsToMatch("/pubapi/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
@@ -99,7 +104,8 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .group("Public Api Documentation")
+          .displayName("/pubapi (Public Api Document)")
+          .group("public")
           .pathsToMatch("/pubapi/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
@@ -135,9 +141,9 @@ public class OpenApiAutoConfigurer {
   private OpenApiCustomizer globalUserSecurityCustomizer() {
     return openApi -> openApi
         // Use existing opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
+        .addSecurityItem(new SecurityRequirement().addList("UserBearer"))
         // Use OAuth2 opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("BearerOAuth2"))
+        .addSecurityItem(new SecurityRequirement().addList("UserBearerOAuth2"))
         .getComponents().addSecuritySchemes("BearerAuth",
             new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
@@ -162,7 +168,7 @@ public class OpenApiAutoConfigurer {
   private OpenApiCustomizer globalSysSecurityCustomizer() {
     return openApi -> openApi
         // Use existing opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("SysBearerAuth"))
+        .addSecurityItem(new SecurityRequirement().addList("SysBearer"))
         // Use OAuth2 opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList("SysBearerOAuth2"))
         .getComponents().addSecuritySchemes("SysBearerAuth",

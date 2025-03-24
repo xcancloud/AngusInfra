@@ -3,6 +3,7 @@ package cloud.xcan.angus.rest;
 import cloud.xcan.angus.domain.User;
 import cloud.xcan.angus.domain.UserRepo;
 import cloud.xcan.sdf.api.ApiLocaleResult;
+import cloud.xcan.sdf.api.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,10 +36,10 @@ public class DoorRest {
       @ApiResponse(responseCode = "200", description = "Successfully retrieved users")
   })
   @GetMapping
-  public ApiLocaleResult<Page<User>> getUsers(
+  public ApiLocaleResult<PageResult<User>> getUsers(
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "10") int size) {
-    return ApiLocaleResult.success(userRepo.findAll(PageRequest.of(page, size)));
+    return ApiLocaleResult.success(PageResult.of(userRepo.findAll(PageRequest.of(page, size))));
   }
 
 }

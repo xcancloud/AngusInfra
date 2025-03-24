@@ -75,11 +75,12 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
+      <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-oauth2-core</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Persistence -->
@@ -103,29 +104,30 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
     </dependency>
+    <!-- Hibernate Persistence providers -->
+    <!-- Important version information -> spring-data-jpa/3.4.0/spring-data-jpa-3.4.0.jar!/META-INF/maven/org.springframework.data/spring-data-jpa/pom.xml -->
+    <!--<dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-jpamodelgen</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <version>${jakarta-annotation-api.version}</version>
+    </dependency>-->
 
     <dependency>
       <groupId>org.typelevel</groupId>
       <artifactId>typelevel-dcache-core</artifactId>
       <version>2.3.0</version>
-    </dependency>
-
-    <!-- Hibernate -->
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-core</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate.orm</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-search-orm</artifactId>
     </dependency>
 
     <!-- Jackson -->

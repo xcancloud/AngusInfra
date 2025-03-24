@@ -10,11 +10,14 @@ import cloud.xcan.sdf.api.message.CommBizException;
 import cloud.xcan.sdf.spec.locale.MessageHolder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+@Schema(description = "The API response result of supporting international message.",
+    oneOf = {ApiResult.class})
 @Setter
 @Getter
 @ToString
@@ -41,7 +44,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     super(code, msg, data, ext);
   }
 
-  public static ApiLocaleResult success() {
+  public static ApiLocaleResult<?> success() {
     return new ApiLocaleResult<>();
   }
 

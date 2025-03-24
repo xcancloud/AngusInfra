@@ -1,19 +1,21 @@
 package cloud.xcan.sdf.core.jpa.repository;
 
+import static cloud.xcan.sdf.core.jpa.JpaMetadataUtils.getTableName;
+
 import cloud.xcan.sdf.api.search.SearchCriteria;
 import java.util.Set;
-import org.hibernate.persister.entity.SingleTableEntityPersister;
 
 public class SimpleSearchRepository<T> extends AbstractSearchRepository<T> {
 
   @Override
-  public StringBuilder getSqlTemplate(SingleTableEntityPersister step,
-      Set<SearchCriteria> criterias, Object[] params, String... fifs) {
+  public StringBuilder getSqlTemplate(Set<SearchCriteria> criteria, Class<T> mainClass,
+      Object[] params, String... match) {
     StringBuilder sql = new StringBuilder();
     String alias = "xc";
-    sql.append("SELECT %s FROM ").append(step.getTableName()).append(" ").append(alias)
-        .append(" WHERE 1=1")
-        .append(getCriteriaAliasCondition(step, criterias, alias, SearchMode.MATCH, true, fifs));
+    sql.append("SELECT %s FROM ").append(getTableName(entityManager, mainClass))
+        .append(" ").append(alias).append(" WHERE 1=1")
+        .append(getCriteriaAliasCondition(criteria, mainClass, alias,
+            SearchMode.MATCH, true, match));
     return sql;
   }
 

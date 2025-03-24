@@ -5,6 +5,7 @@ LOG_HOME_IS_UNDEFINED
 CATALINA_BASE_IS_UNDEFINED
 temp
 work
+cert/*.lic
 
 ### STS ###
 .apt_generated

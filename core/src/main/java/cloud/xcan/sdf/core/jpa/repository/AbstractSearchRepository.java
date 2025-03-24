@@ -2,9 +2,11 @@ package cloud.xcan.sdf.core.jpa.repository;
 
 import static cloud.xcan.sdf.api.message.CommProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
 import static cloud.xcan.sdf.api.message.CommProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
+import static cloud.xcan.sdf.core.jpa.JpaMetadataUtils.getJpaColumnName;
 import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
 import static cloud.xcan.sdf.spec.experimental.Assert.assertNotNull;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.safeStringInValue;
 import static cloud.xcan.sdf.spec.utils.ObjectUtils.safeStringValue;
 import static java.util.Objects.nonNull;
@@ -14,7 +16,6 @@ import cloud.xcan.sdf.api.search.SearchOperation;
 import cloud.xcan.sdf.core.biz.ProtocolAssert;
 import cloud.xcan.sdf.core.jpa.interceptor.TenantInterceptor;
 import cloud.xcan.sdf.spec.experimental.Value;
-import cloud.xcan.sdf.spec.utils.ObjectUtils;
 import cloud.xcan.sdf.spec.utils.ReflectionUtils;
 import cloud.xcan.sdf.spec.utils.StringUtils;
 import jakarta.annotation.Resource;
@@ -27,14 +28,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.RegExUtils;
-import org.hibernate.metamodel.internal.MetamodelImpl;
-import org.hibernate.persister.entity.EntityPersister;
 import org.hibernate.persister.entity.SingleTableEntityPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -56,38 +54,34 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
    * Non-main mainClass conditions and joins need to be assembled by themselves
    */
   @Override
-  public abstract StringBuilder getSqlTemplate(SingleTableEntityPersister step,
-      Set<SearchCriteria> criterias, Object[] params, String... fifs);
+  public abstract StringBuilder getSqlTemplate(Set<SearchCriteria> criteria, Class<T> mainClass,
+      Object[] params, String... match);
 
-  public String getReturnFieldsCondition(Set<SearchCriteria> criterias, Object[] params) {
+  public String getReturnFieldsCondition(Set<SearchCriteria> criteria, Object[] params) {
     return "*";
   }
 
-  public String getReturnCountCondition(Set<SearchCriteria> criterias, Object[] params) {
+  public String getReturnCountCondition(Set<SearchCriteria> criteria, Object[] params) {
     return "count(*)";
   }
 
   @Override
-  public Page<T> find0(Set<SearchCriteria> criterias, Pageable pageable, Class<T> mainClass,
-      Function<? super Object[], T> mapper, Object[] params, String[] fifs) {
+  public Page<T> find0(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClass,
+      Function<? super Object[], T> mapper, Object[] params, String[] match) {
     assertNotNull(pageable, "pageable is required");
     assertNotNull(mainClass, "mainClass is required");
-    MetamodelImpl metaModel = (MetamodelImpl) getEntityManager().getMetamodel();
-    Map<String, EntityPersister> entityPm = metaModel.entityPersisters();
-    SingleTableEntityPersister step = (SingleTableEntityPersister) entityPm
-        .get(mainClass.getName());
-    StringBuilder sql = getSqlTemplate(step, criterias, params, fifs);
+    StringBuilder sql = getSqlTemplate(criteria, mainClass, params, match);
     String countSql = sql.toString();
-    List<T> ts = getList(step, criterias, pageable, mainClass, mapper, params, sql);
+    List<T> ts = getList(criteria, pageable, mainClass, mapper, params, sql);
     if (ts.size() < pageable.getPageSize()) {
       return new PageImpl<>(ts, pageable, ts.size());
     }
-    long count = getCount(step, criterias, mainClass, params, countSql);
+    long count = getCount(criteria, mainClass, params, countSql);
     return new PageImpl<>(ts, pageable, count);
   }
 
   @SuppressWarnings("unchecked")
-  public List<T> getList(SingleTableEntityPersister step, Set<SearchCriteria> criterias,
+  public List<T> getList(Set<SearchCriteria> criteria,
       Pageable pageable, Class<T> mainClass, Function<? super Object[], T> mapper,
       Object[] params, StringBuilder sql) {
     Order order = pageable.getSort().get().findFirst().get();
@@ -95,11 +89,11 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         .append(order.getDirection());
     if (Objects.nonNull(mapper)) {
       Query queryList = getEntityManager().createNativeQuery(
-          sql.toString().replaceFirst("%s", getReturnFieldsCondition(criterias, params)));
+          sql.toString().replaceFirst("%s", getReturnFieldsCondition(criteria, params)));
       queryList.setFirstResult((int) pageable.getOffset());
       queryList.setMaxResults(pageable.getPageSize());
-      if (!CollectionUtils.isEmpty(criterias)) {
-        setQueryParameter(step, queryList, criterias, mainClass);
+      if (!CollectionUtils.isEmpty(criteria)) {
+        setQueryParameter(queryList, criteria, mainClass);
       }
       List<Object[]> result = (List<Object[]>) queryList.getResultList();
       if (isEmpty(result)) {
@@ -108,60 +102,59 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       return result.stream().map(mapper).collect(Collectors.toList());
     }
     Query queryList = getEntityManager().createNativeQuery(sql.toString()
-        .replaceFirst("%s", getReturnFieldsCondition(criterias, params)), mainClass);
+        .replaceFirst("%s", getReturnFieldsCondition(criteria, params)), mainClass);
     queryList.setFirstResult((int) pageable.getOffset());
     queryList.setMaxResults(pageable.getPageSize());
-    if (!CollectionUtils.isEmpty(criterias)) {
-      setQueryParameter(step, queryList, criterias, mainClass);
+    if (!CollectionUtils.isEmpty(criteria)) {
+      setQueryParameter(queryList, criteria, mainClass);
     }
     return (List<T>) queryList.getResultList();
   }
 
-  public long getCount(SingleTableEntityPersister step, Set<SearchCriteria> criterias,
+  public long getCount(Set<SearchCriteria> criteria,
       Class<?> mainClass, Object[] params, String sql) {
     Query queryCount = getEntityManager().createNativeQuery(
-        sql.replaceFirst("%s", getReturnCountCondition(criterias, params)));
-    if (!CollectionUtils.isEmpty(criterias)) {
-      setQueryParameter(step, queryCount, criterias, mainClass);
+        sql.replaceFirst("%s", getReturnCountCondition(criteria, params)));
+    if (!CollectionUtils.isEmpty(criteria)) {
+      setQueryParameter(queryCount, criteria, mainClass);
     }
     return ((BigInteger) queryCount.getSingleResult()).longValue();
   }
 
   @Override
-  public StringBuilder getCriteriaAliasCondition(SingleTableEntityPersister step,
-      Set<SearchCriteria> criterias, String alias, SearchMode mode, Boolean notDeleted,
-      String... fifs) {
+  public StringBuilder getCriteriaAliasCondition(Set<SearchCriteria> criteria, Class<T> mainClass,
+      String alias, SearchMode mode, Boolean notDeleted, String... match) {
     StringBuilder sql = new StringBuilder();
     boolean hasSearch = false;
-    if (!CollectionUtils.isEmpty(criterias)) {
-      for (SearchCriteria criteria : criterias) {
-        if (criteria.isIgnoreFields() || criteria.isNotValidCriteria()) {
+    if (!CollectionUtils.isEmpty(criteria)) {
+      for (SearchCriteria criteria0 : criteria) {
+        if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
           continue;
         }
-        String columnName = getColumnName(step, criteria.getKey());
+        String columnName = getJpaColumnName(entityManager, mainClass, criteria0.getKey());
         if (isEmpty(columnName)) {
           continue;
         }
-        String namingKey = criteria.getOp().getValue() + criteria.getKey();
-        if (criteria.isGreaterThan()) {
+        String namingKey = criteria0.getOp().getValue() + criteria0.getKey();
+        if (criteria0.isGreaterThan()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" > :").append(namingKey);
-        } else if (criteria.isLessThan()) {
+        } else if (criteria0.isLessThan()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" < :").append(namingKey);
-        } else if (criteria.isGreaterThanEqual()) {
+        } else if (criteria0.isGreaterThanEqual()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" >= :").append(namingKey);
-        } else if (criteria.isLessThanEqual()) {
+        } else if (criteria0.isLessThanEqual()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" <= :").append(namingKey);
-        } else if (criteria.isEqual()) {
+        } else if (criteria0.isEqual()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" = :").append(namingKey);
-        } else if (criteria.isNotEqual()) {
+        } else if (criteria0.isNotEqual()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" <> :").append(namingKey);
-        } else if (!hasSearch && (criteria.isMatchSearch() || criteria.isNotMatchSearch())) {
+        } else if (!hasSearch && (criteria0.isMatchSearch() || criteria0.isNotMatchSearch())) {
           if (Objects.isNull(mode)) {
             mode = getSearchMode();
           }
@@ -171,32 +164,32 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
           if (mode.equals(SearchMode.MATCH)) { // @DoInFuture("根据 Datasource 类型拼接全文检索sql")
             // Fix: Unknown column 'hahah' in 'where clause'
             // MATCH(xc.name) AGAINST (hahah IN BOOLEAN MODE) -> MATCH(xc.name) AGAINST ('hahah' IN BOOLEAN MODE)
-            String strValue = detectFulltextSearchValue(criteria.getValue().toString());
+            String strValue = detectFulltextSearchValue(criteria0.getValue().toString());
             sql.append(" AND MATCH(")
-                .append(getAliasMatchFields(step, alias, criteria, fifs))
-                .append(") AGAINST (")/*.append(criteria.isMatchSearch() ? "+" : "-")*/
+                .append(getAliasMatchFields(mainClass, alias, criteria0, match))
+                .append(") AGAINST (")/*.append(criteria0.isMatchSearch() ? "+" : "-")*/
                 // Complete progression matching
                 /*.append("\"")*/
                 .append(strValue)/*.append("\"")*/ /* Note:: Postgres uses two single quotes */
                 .append(" IN BOOLEAN MODE)");
           } else {
-            String strValue = safeStringValue(criteria.getValue().toString());
-            if (SearchOperation.MATCH.equals(criteria.getOp())) {
+            String strValue = safeStringValue(criteria0.getValue().toString());
+            if (SearchOperation.MATCH.equals(criteria0.getOp())) {
               sql.append(" AND ").append(alias).append(".")
                   .append(columnName)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" like \"%%").append(strValue).append("%%\"");
-            } else if (SearchOperation.MATCH_END.equals(criteria.getOp())) {
+            } else if (SearchOperation.MATCH_END.equals(criteria0.getOp())) {
               sql.append(" AND ").append(alias).append(".")
                   .append(columnName)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" like \"").append(strValue).append("%%\"");
-            } else if (SearchOperation.NOT_MATCH.equals(criteria.getOp())) {
+            } else if (SearchOperation.NOT_MATCH.equals(criteria0.getOp())) {
               sql.append(" AND ").append(alias).append(".")
                   .append(columnName)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" not like \"%%").append(strValue).append("%%\"");
-            } else if (SearchOperation.NOT_MATCH_END.equals(criteria.getOp())) {
+            } else if (SearchOperation.NOT_MATCH_END.equals(criteria0.getOp())) {
               sql.append(" AND ").append(alias).append(".")
                   .append(columnName)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
@@ -204,22 +197,22 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
             }
           }
           hasSearch = true;
-        } else if (criteria.isIn()) {
+        } else if (criteria0.isIn()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" in :").append(namingKey);
-        } else if (criteria.isNotIn()) {
+        } else if (criteria0.isNotIn()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" not in :").append(namingKey);
-        } else if (criteria.isNull()) {
+        } else if (criteria0.isNull()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" IS NULL ");
-        } else if (criteria.isNotNull()) {
+        } else if (criteria0.isNotNull()) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" IS NOT NULL ");
         }
       }
     }
-    if (notDeleted && hasDeletedField(step)) {
+    if (notDeleted && hasDeletedField(mainClass)) {
       sql.append(" AND ").append(alias).append(".deleted_flag = 0");
     }
     if (!isMultiTenantCtrl() || TenantInterceptor.TENANT_TABLES.isEmpty()) {
@@ -232,38 +225,37 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     return sql;
   }
 
-  public void setQueryParameter(SingleTableEntityPersister step, Query query,
-      Set<SearchCriteria> criterias, Class<?> mainClass) {
-    for (SearchCriteria criteria : criterias) {
-      if (criteria.isIgnoreFields() || criteria.isNotValidCriteria()) {
+  public void setQueryParameter(Query query, Set<SearchCriteria> criteria, Class<?> mainClass) {
+    for (SearchCriteria criteria0 : criteria) {
+      if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
         continue;
       }
-      String columnName = getColumnName(step, criteria.getKey());
+      String columnName = getJpaColumnName(entityManager, mainClass, criteria0.getKey());
       if (isEmpty(columnName)) {
         continue;
       }
-      String namingKey = criteria.getOp().getValue() + criteria.getKey();
-      if (SearchOperation.isMatchSearch(criteria)) {
+      String namingKey = criteria0.getOp().getValue() + criteria0.getKey();
+      if (SearchOperation.isMatchSearch(criteria0)) {
         continue;
       }
-      if (SearchOperation.isInSearch(criteria)) {
-        Object value = criteria.getValue();
+      if (SearchOperation.isInSearch(criteria0)) {
+        Object value = criteria0.getValue();
         if (value instanceof String) {
           query.setParameter(namingKey, new HashSet<>(
               Arrays.asList(safeStringInValue(value.toString()).split(","))));
         } else if (value.getClass().isArray()) {
-          Object[] array = (Object[]) criteria.getValue();
+          Object[] array = (Object[]) criteria0.getValue();
           query.setParameter(namingKey, List.of(array));
         } else {
           // Such as:
           // value instanceof Collection
-          query.setParameter(namingKey, criteria.getValue());
+          query.setParameter(namingKey, criteria0.getValue());
         }
       } else {
-        Field f = ReflectionUtils.getField(mainClass, criteria.getKey());
-        String strValue = safeStringValue(criteria.getValue().toString());
-        if (criteria.getValue() instanceof Value) {
-          query.setParameter(namingKey, ((Value) criteria.getValue()).getValue());
+        Field f = ReflectionUtils.getField(mainClass, criteria0.getKey());
+        String strValue = safeStringValue(criteria0.getValue().toString());
+        if (criteria0.getValue() instanceof Value) {
+          query.setParameter(namingKey, ((Value) criteria0.getValue()).getValue());
         } else if (f.getType().isEnum()) {
           Value<?>[] values = (Value<?>[]) f.getType().getEnumConstants();
           for (Value<?> value : values) {
@@ -271,8 +263,8 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
               query.setParameter(namingKey, value.getValue());
             }
           }
-        } else if (criteria.getValue() instanceof Boolean) {
-          query.setParameter(namingKey, criteria.getValue());
+        } else if (criteria0.getValue() instanceof Boolean) {
+          query.setParameter(namingKey, criteria0.getValue());
         } else if (isBooleanValue(strValue)) {
           query.setParameter(namingKey, Boolean.valueOf(strValue));
         } else {
@@ -282,28 +274,28 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     }
   }
 
-  public String getMatchFields(SingleTableEntityPersister step, SearchCriteria criteria,
-      String... fifs) {
-    ProtocolAssert.assertNotEmpty(fifs, UNSUPPORTED_FILTER_FIELD_T2, UNSUPPORTED_FILTER_FIELD_KEY,
-        new Object[]{criteria.getKey(), criteria.getOp().getValue()});
+  public String getMatchFields(SingleTableEntityPersister step, SearchCriteria criteria0,
+      String... match) {
+    ProtocolAssert.assertNotEmpty(match, UNSUPPORTED_FILTER_FIELD_T2, UNSUPPORTED_FILTER_FIELD_KEY,
+        new Object[]{criteria0.getKey(), criteria0.getOp().getValue()});
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < fifs.length; i++) {
-      sb.append(step.getPropertyColumnNames(fifs[i])[0]);
-      if (i != fifs.length - 1) {
+    for (int i = 0; i < match.length; i++) {
+      sb.append(step.getPropertyColumnNames(match[i])[0]);
+      if (i != match.length - 1) {
         sb.append(",");
       }
     }
     return sb.toString();
   }
 
-  public String getAliasMatchFields(SingleTableEntityPersister step, String alias,
-      SearchCriteria criteria, String... fifs) {
-    // fifs have the highest priority
-    if (ObjectUtils.isNotEmpty(fifs)) {
+  public String getAliasMatchFields(Class<T> mainClass, String alias, SearchCriteria criteria0,
+      String... match) {
+    // match have the highest priority
+    if (isNotEmpty(match)) {
       StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < fifs.length; i++) {
-        sb.append(alias).append(".").append(step.getPropertyColumnNames(fifs[i])[0]);
-        if (i != fifs.length - 1) {
+      for (int i = 0; i < match.length; i++) {
+        sb.append(alias).append(".").append(getJpaColumnName(entityManager, mainClass, match[i]));
+        if (i != match.length - 1) {
           sb.append(",");
         }
       }
@@ -312,16 +304,16 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
 
     // Repo overwrite
     String fields = getMatchFields();
-    if (ObjectUtils.isNotEmpty(fields)) {
+    if (isNotEmpty(fields)) {
       return fields;
     }
-    return getColumnName(step, criteria.getKey());
+    return getJpaColumnName(entityManager, mainClass, criteria0.getKey());
   }
 
-  public boolean hasDeletedField(SingleTableEntityPersister step) {
+  public boolean hasDeletedField(Class<T> mainClass) {
     try {
-      String[] names = step.getPropertyColumnNames("deletedFlag");
-      return nonNull(names) && names.length > 0;
+      String name = getJpaColumnName(entityManager, mainClass, "deletedFlag");
+      return isNotEmpty(name);
     } catch (Exception e) {
       return false;
     }
@@ -333,15 +325,6 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       return nonNull(names) && names.length > 0;
     } catch (Exception e) {
       return false;
-    }
-  }
-
-  public static String getColumnName(SingleTableEntityPersister step, String filedName) {
-    try {
-      String[] names = step.getPropertyColumnNames(filedName);
-      return nonNull(names) && names.length > 0 ? names[0] : null;
-    } catch (Exception e) {
-      return null;
     }
   }
 

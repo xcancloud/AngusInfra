@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,6 +29,7 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
       AccessDeniedHandler accessDeniedHandler, AuthenticationEntryPoint authenticationEntryPoint,
       OpaqueTokenIntrospector opaqueTokenIntrospector) throws Exception {
     http.authorizeHttpRequests(authorize -> authorize
+        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow public access
         .requestMatchers(AUTH_WHITELIST).permitAll() // Allow public access
         .anyRequest().authenticated() // Other requests require authentication
     ).oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer

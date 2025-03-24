@@ -277,6 +277,8 @@
         <configuration>
           <!-- forceJavacCompilerUse can help to show the location of exact compilation error -->
           <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <!-- Get the parameter name of the construction method to avoid the problem of invalid parameter names for arg0 and arg1 -->
+          <parameters>true</parameters>
         </configuration>
       </plugin>
 

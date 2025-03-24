@@ -13,6 +13,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -42,7 +43,9 @@ public class Components {
   public static final String COMPONENTS_EXTENSIONS_REF = "#/components/extensions/";
   // @ThirdExtension end
 
-  private Map<String, Schema> schemas = null;
+  // Fix: SpecPropertiesCustomizer#customizeComponents() NullPointerException -> Schema schemaProperties = componentsProperties.getSchemas().get(key);
+  // private Map<String, Schema> schemas = null;
+  private Map<String, Schema> schemas = new HashMap<>();
   private Map<String, ApiResponse> responses = null;
   private Map<String, Parameter> parameters = null;
   private Map<String, Example> examples = null;

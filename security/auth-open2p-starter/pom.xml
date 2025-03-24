@@ -25,6 +25,7 @@
       <artifactId>xcan-infra.core</artifactId>
     </dependency>
 
+    <!-- TODO 移除、替换成独立实现类 -->
     <dependency>
       <groupId>cloud.xcan.sdf</groupId>
       <artifactId>xcan-angusgm.api</artifactId>

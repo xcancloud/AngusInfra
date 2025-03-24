@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Setter
 @Getter
 @Accessors(chain = true)

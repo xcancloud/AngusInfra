@@ -84,7 +84,7 @@ public final class OAuth2PasswordAuthenticationConverter implements Authenticati
       // Important! Compatible with old parameter.
       account = request.getParameter(USERNAME);
     }
-    if (!hasText(account) || parameters.get(ACCOUNT).size() != 1) {
+    if (!hasText(account) /*|| parameters.get(ACCOUNT).size() != 1*/) {
       throwError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.USERNAME,
           ACCESS_TOKEN_REQUEST_ERROR_URI);
     }

@@ -50,7 +50,17 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.idgen-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-infra.l2cache-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.oas3-starter</artifactId>
     </dependency>
 
     <dependency>
@@ -95,5 +105,20 @@
     </dependency>
 
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <!-- forceJavacCompilerUse can help to show the location of exact compilation error -->
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <!-- Get the parameter name of the construction method to avoid the problem of invalid parameter names for arg0 and arg1 -->
+          <parameters>true</parameters>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

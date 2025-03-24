@@ -2,6 +2,7 @@ package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createDelegatingPasswordEncoder;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getOAuth2TokenGenerator;
+import static cloud.xcan.sdf.spec.experimental.BizConstant.AUTH_WHITELIST;
 import static org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer.authorizationServer;
 
 import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;
@@ -13,7 +14,9 @@ import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthentic
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
 import java.util.Arrays;
+import java.util.List;
 import javax.sql.DataSource;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -21,12 +24,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2Token;
@@ -43,6 +48,11 @@ import org.springframework.security.oauth2.server.authorization.web.authenticati
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenIntrospectionAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.DelegatingAuthenticationConverter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -56,7 +66,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   public SecurityFilterChain authorizationServerSecurityFilterChain(
       HttpSecurity http, RegisteredClientRepository registeredClientRepository,
       AuthorizationServerSettings authorizationServerSettings,
-      AuthenticationManager authenticationManager,
+      AuthenticationManager authenticationManager, CorsConfigurationSource oauth2CorsConfiguration,
       OAuth2AuthorizationService oauth2AuthorizationService) throws Exception {
     // @formatter:off
 
@@ -64,7 +74,12 @@ public class OAuth2AuthorizationServerAutoConfigurer {
     OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = authorizationServer();
 
     // Authorization Server
-    http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+    http.authorizeHttpRequests(authorize -> authorize
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow public access
+            .requestMatchers(AUTH_WHITELIST).permitAll() // Allow public access
+          .anyRequest().authenticated()) // Other requests require authentication
+        .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+        .cors(cors -> cors.configurationSource(oauth2CorsConfiguration))
         .with(authorizationServerConfigurer
             .tokenEndpoint(
                 oAuth2TokenEndpointConfigurer -> oAuth2TokenEndpointConfigurer
@@ -97,7 +112,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                 .authorizationEndpoint(authorizationEndpoint ->
                     authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI))
                 .oidc(Customizer.withDefaults())  // Enable OpenID Connect 1.0
-        );
+        ).csrf(AbstractHttpConfigurer::disable); // Disable CSRF protection (configure as needed)
 
     // @formatter:on
 
@@ -123,6 +138,19 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return createDelegatingPasswordEncoder();
+  }
+
+  @Bean
+  public CorsConfigurationSource oauth2CorsConfiguration() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("*"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+    config.setAllowCredentials(true);
+    config.setMaxAge(3600L);
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/oauth2/**", config);
+    return source;
   }
 
   @Bean
@@ -153,4 +181,17 @@ public class OAuth2AuthorizationServerAutoConfigurer {
         registeredClientRepository);
   }
 
+  @Bean
+  public WebMvcConfigurer oauth2CorsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(@NotNull CorsRegistry registry) {
+        registry.addMapping("/oauth2/*")
+            .allowedOrigins("*")
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+            .allowedHeaders("*")
+            .allowCredentials(true);
+      }
+    };
+  }
 }

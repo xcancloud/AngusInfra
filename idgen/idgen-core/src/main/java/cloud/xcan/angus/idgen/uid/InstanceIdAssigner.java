@@ -1,8 +1,8 @@
 package cloud.xcan.angus.idgen.uid;
 
 
-import cloud.xcan.angus.idgen.uid.impl.DefaultUidGenerator;
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
+import cloud.xcan.angus.idgen.uid.impl.DefaultUidGenerator;
 
 /**
  * Represents a instance pk assigner for {@link DefaultUidGenerator}

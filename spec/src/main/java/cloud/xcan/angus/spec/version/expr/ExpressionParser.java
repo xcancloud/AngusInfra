@@ -22,9 +22,9 @@ import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.WILDCARD;
 
 import cloud.xcan.angus.spec.version.Parser;
 import cloud.xcan.angus.spec.version.TypeStream;
+import cloud.xcan.angus.spec.version.TypeStream.ElementType;
 import cloud.xcan.angus.spec.version.UnexpectedElementException;
 import cloud.xcan.angus.spec.version.Version;
-import cloud.xcan.angus.spec.version.TypeStream.ElementType;
 import cloud.xcan.angus.spec.version.expr.Lexer.Token;
 import java.util.EnumSet;
 import java.util.Iterator;

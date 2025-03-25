@@ -1,10 +1,10 @@
 package cloud.xcan.angus.security.handler;
 
-import static cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint.writeJsonUtf8Result;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FORBIDDEN;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FORBIDDEN_KEY;
+import static cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint.writeJsonUtf8Result;
 
 import cloud.xcan.angus.remote.ApiResult;
 import cloud.xcan.angus.spec.locale.MessageHolder;

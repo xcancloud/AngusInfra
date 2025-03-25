@@ -1,5 +1,8 @@
 package cloud.xcan.angus.security.principal;
 
+import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_COUNTRY;
@@ -17,9 +20,6 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
 import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_USER_ID;

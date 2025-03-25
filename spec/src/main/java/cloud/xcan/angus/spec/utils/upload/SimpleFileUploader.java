@@ -3,10 +3,10 @@ package cloud.xcan.angus.spec.utils.upload;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
+import cloud.xcan.angus.spec.http.HttpSender.Response;
 import cloud.xcan.angus.spec.utils.IOUtils;
 import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.spec.utils.StringUtils;
-import cloud.xcan.angus.spec.http.HttpSender.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

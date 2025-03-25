@@ -6,9 +6,9 @@ import static cloud.xcan.angus.remote.message.http.Forbidden.M.FORBIDDEN;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FORBIDDEN_KEY;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.INSUFFICIENT_PERMISSIONS_KEY;
 
+import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.api.enums.EventType;
 import lombok.Getter;
 import lombok.ToString;
 

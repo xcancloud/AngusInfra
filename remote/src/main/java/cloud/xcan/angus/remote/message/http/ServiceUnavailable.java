@@ -5,9 +5,9 @@ import static cloud.xcan.angus.remote.ExceptionLevel.URGENT;
 import static cloud.xcan.angus.remote.message.http.ServiceUnavailable.M.SERVICE_UNAVAILABLE;
 import static cloud.xcan.angus.remote.message.http.ServiceUnavailable.M.SERVICE_UNAVAILABLE_KEY;
 
+import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.api.enums.EventType;
 import lombok.Getter;
 import lombok.ToString;
 

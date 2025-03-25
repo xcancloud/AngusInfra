@@ -7,9 +7,9 @@ import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.RESOURC
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.RESOURCE_NOT_FOUND_T;
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.RESOURCE_NOT_FOUND_T2;
 
+import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.api.enums.EventType;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.ToString;

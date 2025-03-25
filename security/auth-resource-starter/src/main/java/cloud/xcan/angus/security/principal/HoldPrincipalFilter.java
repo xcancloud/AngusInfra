@@ -13,10 +13,10 @@ import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static java.util.Objects.nonNull;
 
+import cloud.xcan.angus.remote.ApiResult;
 import cloud.xcan.angus.security.OAuth2PrincipalHoldAutoConfigurer;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
-import cloud.xcan.angus.remote.ApiResult;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.locale.MessageHolder;
 import cloud.xcan.angus.spec.principal.Principal;

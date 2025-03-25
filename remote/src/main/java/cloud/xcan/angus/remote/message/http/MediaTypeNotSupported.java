@@ -5,9 +5,9 @@ import static cloud.xcan.angus.remote.ExceptionLevel.IGNORABLE;
 import static cloud.xcan.angus.remote.message.http.MediaTypeNotSupported.M.MEDIA_TYPE_NOT_SUPPORTED;
 import static cloud.xcan.angus.remote.message.http.MediaTypeNotSupported.M.MEDIA_TYPE_NOT_SUPPORTED_KEY;
 
+import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.api.enums.EventType;
 import lombok.Getter;
 import lombok.ToString;
 

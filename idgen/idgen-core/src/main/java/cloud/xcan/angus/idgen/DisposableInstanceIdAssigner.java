@@ -1,10 +1,10 @@
 package cloud.xcan.angus.idgen;
 
+import cloud.xcan.angus.api.pojo.instance.InstanceType;
 import cloud.xcan.angus.idgen.dao.InstanceRepo;
 import cloud.xcan.angus.idgen.entity.Instance;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import cloud.xcan.angus.idgen.utils.NetUtils;
-import cloud.xcan.angus.api.pojo.instance.InstanceType;
 import java.util.Objects;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -7,9 +7,9 @@ import static java.net.InetAddress.getLocalHost;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.pojo.auth.SimpleHttpAuth;
-import cloud.xcan.angus.spec.http.HttpUrlConnectionSender;
 import cloud.xcan.angus.spec.http.HttpSender.Request;
 import cloud.xcan.angus.spec.http.HttpSender.Response;
+import cloud.xcan.angus.spec.http.HttpUrlConnectionSender;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Inet4Address;

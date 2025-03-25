@@ -6,9 +6,7 @@ import static cloud.xcan.angus.remote.message.UnknownException.M.UNKNOWN_ERROR;
 import static cloud.xcan.angus.remote.message.UnknownException.M.UNKNOWN_ERROR_KEY;
 
 import cloud.xcan.angus.api.enums.EventType;
-
 import cloud.xcan.angus.remote.ExceptionLevel;
-
 import lombok.Getter;
 import lombok.ToString;
 

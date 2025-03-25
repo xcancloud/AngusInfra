@@ -5,9 +5,9 @@ import static cloud.xcan.angus.remote.ExceptionLevel.IGNORABLE;
 import static cloud.xcan.angus.remote.message.http.MethodNotSupported.M.METHOD_NOT_ALLOWED;
 import static cloud.xcan.angus.remote.message.http.MethodNotSupported.M.METHOD_NOT_ALLOWED_KEY;
 
+import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.api.enums.EventType;
 import lombok.Getter;
 import lombok.ToString;
 

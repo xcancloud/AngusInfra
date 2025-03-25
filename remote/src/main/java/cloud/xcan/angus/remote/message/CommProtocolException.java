@@ -5,8 +5,8 @@ import static cloud.xcan.angus.remote.ExceptionLevel.IGNORABLE;
 import static cloud.xcan.angus.remote.message.CommProtocolException.M.PROTOCOL_ERROR;
 import static cloud.xcan.angus.remote.message.CommProtocolException.M.PROTOCOL_ERROR_KEY;
 
-import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.api.enums.EventType;
+import cloud.xcan.angus.remote.ExceptionLevel;
 import lombok.Getter;
 import lombok.ToString;
 

@@ -1,14 +1,14 @@
-package cloud.xcan.sdf.core.enums;
+package cloud.xcan.angus.core.enums;
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.GM_SERVICE;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import cloud.xcan.sdf.api.enums.GrantType;
-import cloud.xcan.sdf.core.spring.boot.ApplicationInfo;
-import cloud.xcan.sdf.spec.locale.EnumMessage;
+import cloud.xcan.angus.api.enums.GrantType;
+import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.spec.locale.EnumMessage;
 import org.junit.Test;
 
 public class EnumStoreInMemoryTest {
@@ -38,9 +38,9 @@ public class EnumStoreInMemoryTest {
 
   @Test
   public void testClassName() {
-    assertEquals("cloud.xcan.sdf.core.enums.EnumStoreInMemoryTest",
+    assertEquals("cloud.xcan.angus.core.enums.EnumStoreInMemoryTest",
         EnumStoreInMemoryTest.class.getName());
-    assertEquals("cloud.xcan.sdf.core.enums.EnumStoreInMemoryTest",
+    assertEquals("cloud.xcan.angus.core.enums.EnumStoreInMemoryTest",
         EnumStoreInMemoryTest.class.getCanonicalName());
     assertEquals("EnumStoreInMemoryTest", EnumStoreInMemoryTest.class.getSimpleName());
   }

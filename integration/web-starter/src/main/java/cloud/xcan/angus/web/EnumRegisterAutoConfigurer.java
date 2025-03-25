@@ -1,9 +1,9 @@
 package cloud.xcan.angus.web;
 
 import cloud.xcan.angus.web.endpoint.EnumEndpoint;
-import cloud.xcan.sdf.core.enums.EnumStore;
-import cloud.xcan.sdf.core.enums.EnumStoreInMemory;
-import cloud.xcan.sdf.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.core.enums.EnumStore;
+import cloud.xcan.angus.core.enums.EnumStoreInMemory;
+import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

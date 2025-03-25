@@ -1,17 +1,17 @@
-package cloud.xcan.sdf.spec.version.expr;
+package cloud.xcan.angus.spec.version.expr;
 
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.AND;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.DOT;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.EQUAL;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.GREATER;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.HYPHEN;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.NOT_EQUAL;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.NUMERIC;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.AND;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.DOT;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.EQUAL;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.GREATER;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.HYPHEN;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.NOT_EQUAL;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.NUMERIC;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cloud.xcan.sdf.spec.version.expr.Lexer.Token;
+import cloud.xcan.angus.spec.version.expr.Lexer.Token;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;

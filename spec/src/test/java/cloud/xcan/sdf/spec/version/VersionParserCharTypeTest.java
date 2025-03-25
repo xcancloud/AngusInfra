@@ -1,17 +1,17 @@
-package cloud.xcan.sdf.spec.version;
+package cloud.xcan.angus.spec.version;
 
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.DIGIT;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.DOT;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.EOI;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.HYPHEN;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.ILLEGAL;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.LETTER;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.PLUS;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.DIGIT;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.DOT;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.EOI;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.HYPHEN;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.ILLEGAL;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.LETTER;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.PLUS;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cloud.xcan.sdf.spec.version.VersionParser.CharType;
+import cloud.xcan.angus.spec.version.VersionParser.CharType;
 import org.junit.Test;
 
 public class VersionParserCharTypeTest {

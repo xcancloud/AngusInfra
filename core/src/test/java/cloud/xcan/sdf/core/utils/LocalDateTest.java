@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.core.utils;
+package cloud.xcan.angus.core.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -1,15 +1,18 @@
-package cloud.xcan.sdf.core.event;
+package cloud.xcan.angus.core.event;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import cloud.xcan.sdf.api.obf.Str0;
-import cloud.xcan.sdf.core.app.verify.oar.Oar0;
-import cloud.xcan.sdf.core.app.verify.ver.Guard;
+import cloud.xcan.angus.api.obf.Str0;
+import cloud.xcan.angus.core.app.verify.oar.Oar0;
+import cloud.xcan.angus.core.app.verify.ver.Guard;
 import org.junit.Test;
 
 public class NotaryLicenseTest {
 
-  String licenseKeypass = new Str0(new long[] {0x26660259AC059E29L, 0x874CC109D814FC60L, 0x40647729D23B2DCDL, 0x4632A9FCD988251DL}).toString() /* => "BBQQ-G8HZ-NK2M-QKNA-XQ7U" */ + ".435E9A3AB63ED118";
+  String licenseKeypass = new Str0(
+      new long[]{0x26660259AC059E29L, 0x874CC109D814FC60L, 0x40647729D23B2DCDL,
+          0x4632A9FCD988251DL}).toString() /* => "BBQQ-G8HZ-NK2M-QKNA-XQ7U" */
+      + ".435E9A3AB63ED118";
   String licensePath = "/workdata/keystore/license.lic";
 
   @Test

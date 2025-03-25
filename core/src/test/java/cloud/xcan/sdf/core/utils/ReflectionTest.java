@@ -1,9 +1,9 @@
-package cloud.xcan.sdf.core.utils;
+package cloud.xcan.angus.core.utils;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import cloud.xcan.sdf.spec.experimental.EndpointRegister;
-import cloud.xcan.sdf.spec.experimental.Value;
+import cloud.xcan.angus.spec.experimental.EndpointRegister;
+import cloud.xcan.angus.spec.experimental.Value;
 import java.util.Set;
 import org.junit.Test;
 import org.reflections.Reflections;

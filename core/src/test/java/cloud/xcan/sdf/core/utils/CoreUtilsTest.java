@@ -1,15 +1,15 @@
-package cloud.xcan.sdf.core.utils;
+package cloud.xcan.angus.core.utils;
 
-import static cloud.xcan.sdf.core.utils.CoreUtils.calcPassdStrength;
-import static cloud.xcan.sdf.core.utils.CoreUtils.extractMD5Key;
-import static cloud.xcan.sdf.core.utils.CoreUtils.runAtJar;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.distinctByKey;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.duplicateByKey;
+import static cloud.xcan.angus.core.utils.CoreUtils.calcPassdStrength;
+import static cloud.xcan.angus.core.utils.CoreUtils.extractMD5Key;
+import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.distinctByKey;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.duplicateByKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import cloud.xcan.sdf.api.enums.PassdStrength;
-import cloud.xcan.sdf.core.jpa.multitenancy.TenantAuditingEntity;
+import cloud.xcan.angus.api.enums.PassdStrength;
+import cloud.xcan.angus.core.jpa.multitenancy.TenantAuditingEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -73,7 +73,7 @@ public class CoreUtilsTest {
   }
 
   @Test
-  public void testRunAtJar(){
+  public void testRunAtJar() {
     Assert.assertFalse(runAtJar());
   }
 
@@ -115,9 +115,9 @@ public class CoreUtilsTest {
   }
 
   /**
-   * The version number associated with this {@code UUID}.  The version
-   * number describes how this {@code UUID} was generated.
-   *
+   * The version number associated with this {@code UUID}.  The version number describes how this
+   * {@code UUID} was generated.
+   * <p>
    * The version number has the following meaning:
    * <ul>
    * <li>1    Time-based UUID

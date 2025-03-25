@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.thread;
+package cloud.xcan.angus.spec.thread;
 
 import org.junit.Test;
 

@@ -1,14 +1,14 @@
 package io.swagger.v3.oas.models.extension;
 
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.emptySafe;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.nullSafe;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.emptySafe;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import cloud.xcan.sdf.spec.utils.ObjectUtils;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.utils.ObjectUtils;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;

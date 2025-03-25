@@ -17,7 +17,7 @@
  *
  * http://www.xcan.cloud/licenses/XCBL-1.0
  */
-package cloud.xcan.sdf.spec.rate;
+package cloud.xcan.angus.spec.rate;
 
 import static org.assertj.core.api.Assertions.offset;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

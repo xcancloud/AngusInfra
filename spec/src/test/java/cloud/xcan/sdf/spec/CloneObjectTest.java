@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec;
+package cloud.xcan.angus.spec;
 
 import java.util.StringJoiner;
 

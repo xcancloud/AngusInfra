@@ -1,6 +1,6 @@
 package cloud.xcan.angus.security;
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AUTH_WHITELIST;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_WHITELIST;
 
 import cloud.xcan.angus.security.handler.CustomAccessDeniedHandler;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;

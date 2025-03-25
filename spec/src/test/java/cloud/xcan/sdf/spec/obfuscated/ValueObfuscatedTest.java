@@ -1,6 +1,6 @@
-package cloud.xcan.sdf.spec.obfuscated;
+package cloud.xcan.angus.spec.obfuscated;
 
-import cloud.xcan.sdf.api.obf.Obj0;
+import cloud.xcan.angus.api.obf.Obj0;
 
 public class ValueObfuscatedTest {
 

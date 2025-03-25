@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.utils;
+package cloud.xcan.angus.spec.utils;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -323,12 +323,14 @@ public class ObjectsUtilsTest {
 
   @Test
   public void testReplace7() {
-    org.junit.Assert.assertEquals("alt=\"\"", ObjectUtils.replaceFirst("alt=\"\"", "alt=\"\" ", ""));
+    org.junit.Assert.assertEquals("alt=\"\"",
+        ObjectUtils.replaceFirst("alt=\"\"", "alt=\"\" ", ""));
   }
 
   @Test
   public void testReplace8() {
-    org.junit.Assert.assertEquals("img src=xyz ", ObjectUtils.replaceFirst("img src=xyz alt=\"\" ", "alt=\"\" ", ""));
+    org.junit.Assert.assertEquals("img src=xyz ",
+        ObjectUtils.replaceFirst("img src=xyz alt=\"\" ", "alt=\"\" ", ""));
   }
 
   // Note: the split tests should agree as far as possible with CSVSaveService.csvSplitString()
@@ -345,7 +347,8 @@ public class ObjectsUtilsTest {
   @Test
   public void testSplitStringStringFalseWithTrailingSplitChars() {
     // Test ignore trailing split characters
-    MatcherAssert.assertThat("Include the trailing split chars", ObjectUtils.split("a,bc,,", ",", false),
+    MatcherAssert.assertThat("Include the trailing split chars",
+        ObjectUtils.split("a,bc,,", ",", false),
         CoreMatchers.equalTo(new String[]{"a", "bc", "", ""}));
   }
 
@@ -375,7 +378,8 @@ public class ObjectsUtilsTest {
   @Test
   public void testSplitStringStringTrueWithLeadingComplexSplitCharacters() {
     // Test leading split characters
-    MatcherAssert.assertThat(ObjectUtils.split(" , ,a ,bc", " ,", true), CoreMatchers.equalTo(new String[]{"a", "bc"}));
+    MatcherAssert.assertThat(ObjectUtils.split(" , ,a ,bc", " ,", true),
+        CoreMatchers.equalTo(new String[]{"a", "bc"}));
   }
 
   @Test
@@ -420,19 +424,22 @@ public class ObjectsUtilsTest {
   @Test
   public void testSplitSSSSingleDelimiterWithDefaultValue() {
     // Test non-empty parameters
-    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", "?"), CoreMatchers.equalTo(new String[]{"a", "bc", "?", "?"}));
+    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", "?"),
+        CoreMatchers.equalTo(new String[]{"a", "bc", "?", "?"}));
   }
 
   @Test
   public void testSplitSSSSingleDelimiterWithEmptyValue() {
     // Empty default
-    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", ""), CoreMatchers.equalTo(new String[]{"a", "bc", "", ""}));
+    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", ""),
+        CoreMatchers.equalTo(new String[]{"a", "bc", "", ""}));
   }
 
   @Test
   public void testSplitSSSEmptyDelimiter() {
     String in = "a,bc,,"; // Empty delimiter
-    MatcherAssert.assertThat(ObjectUtils.split(in, "", "?"), CoreMatchers.equalTo(new String[]{in}));
+    MatcherAssert.assertThat(ObjectUtils.split(in, "", "?"),
+        CoreMatchers.equalTo(new String[]{in}));
   }
 
   @Test
@@ -445,12 +452,14 @@ public class ObjectsUtilsTest {
   @Test
   public void testSplitSSSMultipleDelimCharsWithEmptyValue() {
     // Multiple delimiters
-    MatcherAssert.assertThat(ObjectUtils.split("a,b;c,,", ",;", ""), CoreMatchers.equalTo(new String[]{"a", "b", "c", "", ""}));
+    MatcherAssert.assertThat(ObjectUtils.split("a,b;c,,", ",;", ""),
+        CoreMatchers.equalTo(new String[]{"a", "b", "c", "", ""}));
   }
 
   @Test
   public void testSplitSSSSameDelimiterAsDefaultValue() {
-    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", ","), CoreMatchers.equalTo(new String[]{"a", "bc", ",", ","}));
+    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", ","),
+        CoreMatchers.equalTo(new String[]{"a", "bc", ",", ","}));
   }
 
   @Test
@@ -469,12 +478,14 @@ public class ObjectsUtilsTest {
 
   @Test
   public void testSplitStringStringNullWithSingleDelimiter() {
-    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", null), CoreMatchers.equalTo(new String[]{"a", "bc"}));
+    MatcherAssert.assertThat(ObjectUtils.split("a,bc,,", ",", null),
+        CoreMatchers.equalTo(new String[]{"a", "bc"}));
   }
 
   @Test
   public void testSplitStringStringNullWithMultipleDelimiter() {
-    MatcherAssert.assertThat(ObjectUtils.split("a,;bc,;,", ",;", null), CoreMatchers.equalTo(new String[]{"a", "bc"}));
+    MatcherAssert.assertThat(ObjectUtils.split("a,;bc,;,", ",;", null),
+        CoreMatchers.equalTo(new String[]{"a", "bc"}));
   }
 
   @Test
@@ -486,7 +497,8 @@ public class ObjectsUtilsTest {
   @Test
   public void testSplitSSSWithEmptyDelimiter() {
     final String in = "a,;bc,;,";
-    MatcherAssert.assertThat(ObjectUtils.split(in, "", "x"), CoreMatchers.equalTo(new String[]{in}));
+    MatcherAssert.assertThat(ObjectUtils.split(in, "", "x"),
+        CoreMatchers.equalTo(new String[]{in}));
   }
 
   @Test
@@ -495,9 +507,11 @@ public class ObjectsUtilsTest {
     org.junit.Assert.assertEquals("source", ObjectUtils.replaceAllChars("source", ' ', "+"));
     org.junit.Assert.assertEquals("so+rce", ObjectUtils.replaceAllChars("source", 'u', "+"));
     org.junit.Assert.assertEquals("+so+urc+", ObjectUtils.replaceAllChars("esoeurce", 'e', "+"));
-    org.junit.Assert.assertEquals("AZAZsoAZurcAZ", ObjectUtils.replaceAllChars("eesoeurce", 'e', "AZ"));
+    org.junit.Assert.assertEquals("AZAZsoAZurcAZ",
+        ObjectUtils.replaceAllChars("eesoeurce", 'e', "AZ"));
     org.junit.Assert.assertEquals("A+B++C+", ObjectUtils.replaceAllChars("A B  C ", ' ', "+"));
-    org.junit.Assert.assertEquals("A%20B%20%20C%20", ObjectUtils.replaceAllChars("A B  C ", ' ', "%20"));
+    org.junit.Assert.assertEquals("A%20B%20%20C%20",
+        ObjectUtils.replaceAllChars("A B  C ", ' ', "%20"));
   }
 
   @Test
@@ -520,14 +534,16 @@ public class ObjectsUtilsTest {
   public void testbaToHexString() {
     org.junit.Assert.assertEquals("", ObjectUtils.baToHexString(new byte[]{}));
     org.junit.Assert.assertEquals("00", ObjectUtils.baToHexString(new byte[]{0}));
-    org.junit.Assert.assertEquals("0f107f8081ff", ObjectUtils.baToHexString(new byte[]{15, 16, 127, -128, -127, -1}));
+    org.junit.Assert.assertEquals("0f107f8081ff",
+        ObjectUtils.baToHexString(new byte[]{15, 16, 127, -128, -127, -1}));
   }
 
   @Test
   public void testBaToHexStringSeparator() {
     org.junit.Assert.assertEquals("", ObjectUtils.baToHexString(new byte[]{}, '-'));
     org.junit.Assert.assertEquals("00", ObjectUtils.baToHexString(new byte[]{0}, '-'));
-    org.junit.Assert.assertEquals("0f-10-7f-80-81-ff", ObjectUtils.baToHexString(new byte[]{15, 16, 127, -128, -127, -1}, '-'));
+    org.junit.Assert.assertEquals("0f-10-7f-80-81-ff",
+        ObjectUtils.baToHexString(new byte[]{15, 16, 127, -128, -127, -1}, '-'));
   }
 
   @Test
@@ -541,7 +557,8 @@ public class ObjectsUtilsTest {
   private void assertEqualsArray(byte[] expected, byte[] actual) {
     org.junit.Assert.assertEquals("arrays must be same length", expected.length, actual.length);
     for (int i = 0; i < expected.length; i++) {
-      org.junit.Assert.assertEquals("values must be the same for index: " + i, expected[i], actual[i]);
+      org.junit.Assert.assertEquals("values must be the same for index: " + i, expected[i],
+          actual[i]);
     }
   }
 
@@ -636,12 +653,14 @@ public class ObjectsUtilsTest {
   @Test
   public void testReplaceValueWithValidValueAndValidSetter() {
     Holder h = new Holder();
-    MatcherAssert.assertThat(ObjectUtils.replaceValue("\\d+", "${port}", true, "80", s -> h.value = s),
+    MatcherAssert.assertThat(
+        ObjectUtils.replaceValue("\\d+", "${port}", true, "80", s -> h.value = s),
         CoreMatchers.is(1));
     MatcherAssert.assertThat(h.value, CoreMatchers.is("${port}"));
   }
 
   private static class Holder {
+
     String value;
   }
 

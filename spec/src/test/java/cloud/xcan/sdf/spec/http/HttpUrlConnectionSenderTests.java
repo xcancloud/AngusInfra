@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.http;
+package cloud.xcan.angus.spec.http;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.ok;

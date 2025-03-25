@@ -2,7 +2,7 @@ package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createDelegatingPasswordEncoder;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getOAuth2TokenGenerator;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AUTH_WHITELIST;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_WHITELIST;
 import static org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer.authorizationServer;
 
 import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;

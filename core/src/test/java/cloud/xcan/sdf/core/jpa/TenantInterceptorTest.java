@@ -1,9 +1,9 @@
-package cloud.xcan.sdf.core.jpa;
+package cloud.xcan.angus.core.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cloud.xcan.sdf.core.jpa.interceptor.TenantInterceptor;
-import cloud.xcan.sdf.spec.principal.PrincipalContext;
+import cloud.xcan.angus.core.jpa.interceptor.TenantInterceptor;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.BeforeClass;

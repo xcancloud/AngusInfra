@@ -1,6 +1,6 @@
 package io.swagger.v3.oas.models.extension;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
 
 @ThirdExtension
 public interface ExtensionKey {

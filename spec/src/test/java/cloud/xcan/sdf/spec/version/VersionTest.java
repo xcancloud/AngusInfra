@@ -1,7 +1,7 @@
-package cloud.xcan.sdf.spec.version;
+package cloud.xcan.angus.spec.version;
 
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.gte;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.lt;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.gte;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.lt;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;

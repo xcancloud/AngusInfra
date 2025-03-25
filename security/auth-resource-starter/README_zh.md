@@ -12,9 +12,12 @@
 ### 主要扩展
 
 - 自动装配可选性加强，增加 xcan.oauth.enabled 控制选项。
-- 认证异常统一处理，使异常返回时报文格式和 ApiResult 保持一致，通过 xcan.oauth.translateException=true 来自动开启。
-- 配置资源服务类型，支持 user_info 和 store 两种方式，默认 ResourceServerConfiguration 会从 Context 中找 UserInfoService 或 TokenStore 实现来注入，同时存在时其中 UserInfoService 优先级更高。
-- 定义 PrincipalContext 身份上下文，认证后存储当前访问端、租户、用户身份、请求等信息，代理使用 SecurityContextHolder，通过 xcan.oauth.holdType=resource_server或gateway_head 来自动开启。
+- 认证异常统一处理，使异常返回时报文格式和 ApiResult 保持一致，通过 xcan.oauth.translateException=true
+  来自动开启。
+- 配置资源服务类型，支持 user_info 和 store 两种方式，默认 ResourceServerConfiguration 会从 Context 中找
+  UserInfoService 或 TokenStore 实现来注入，同时存在时其中 UserInfoService 优先级更高。
+- 定义 PrincipalContext 身份上下文，认证后存储当前访问端、租户、用户身份、请求等信息，代理使用
+  SecurityContextHolder，通过 xcan.oauth.holdType=resource_server或gateway_head 来自动开启。
 - Redis 存储扩展支持集群模式。
 
 ### 配置步骤

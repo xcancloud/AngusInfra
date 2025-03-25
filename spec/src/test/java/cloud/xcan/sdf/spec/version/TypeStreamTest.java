@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.version;
+package cloud.xcan.angus.spec.version;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import cloud.xcan.sdf.spec.version.TypeStream.ElementType;
+import cloud.xcan.angus.spec.version.TypeStream.ElementType;
 import java.util.Iterator;
 import org.junit.Test;
 

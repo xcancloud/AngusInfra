@@ -300,8 +300,9 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
   }
 
   /**
-   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the provided registration
-   * identifier.
+   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the provided
+   * registration identifier.
+   *
    * @param id the identifier for the registration
    * @return the {@link CustomOAuth2RegisteredClient.Builder}
    */
@@ -311,13 +312,15 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
   }
 
   /**
-   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the values from the provided
-   * {@link CustomOAuth2RegisteredClient}.
+   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the values from
+   * the provided {@link CustomOAuth2RegisteredClient}.
+   *
    * @param registeredClient the {@link CustomOAuth2RegisteredClient} used for initializing the
-   * {@link CustomOAuth2RegisteredClient.Builder}
+   *                         {@link CustomOAuth2RegisteredClient.Builder}
    * @return the {@link CustomOAuth2RegisteredClient.Builder}
    */
-  public static CustomOAuth2RegisteredClient.Builder from(CustomOAuth2RegisteredClient registeredClient) {
+  public static CustomOAuth2RegisteredClient.Builder from(
+      CustomOAuth2RegisteredClient registeredClient) {
     Assert.notNull(registeredClient, "registeredClient cannot be null");
     return new CustomOAuth2RegisteredClient.Builder(registeredClient);
   }
@@ -410,14 +413,14 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
         this.scopes.addAll(registeredClient.getScopes());
       }
       this.clientSettings = ClientSettings.withSettings(
-              registeredClient.getClientSettings().getSettings()).build();
+          registeredClient.getClientSettings().getSettings()).build();
       this.tokenSettings = TokenSettings.withSettings(
           registeredClient.getTokenSettings().getSettings()).build();
       this.description = registeredClient.getDescription();
       this.enabled = registeredClient.isEnabled();
       this.platform = registeredClient.getPlatform();
       this.source = registeredClient.getSource();
-      this.bizTag  = registeredClient.getBizTag();
+      this.bizTag = registeredClient.getBizTag();
       this.tenantId = registeredClient.getTenantId();
       this.tenantName = registeredClient.getTenantName();
       this.createdBy = registeredClient.getCreatedBy();
@@ -646,42 +649,52 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
       this.description = description;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder enabled(boolean enabled) {
       this.enabled = enabled;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder platform(String platform) {
       this.platform = platform;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder source(String source) {
       this.source = source;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder bizTag(String bizTag) {
       this.bizTag = bizTag;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder tenantId(String tenantId) {
       this.tenantId = tenantId;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder tenantName(String tenantName) {
       this.tenantName = tenantName;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder createdBy(String createdBy) {
       this.createdBy = createdBy;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder createdDate(Instant createdDate) {
       this.createdDate = createdDate;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder lastModifiedBy(String lastModifiedBy) {
       this.lastModifiedBy = lastModifiedBy;
       return this;
     }
+
     public CustomOAuth2RegisteredClient.Builder lastModifiedDate(Instant lastModifiedDate) {
       this.lastModifiedDate = lastModifiedDate;
       return this;
@@ -753,7 +766,7 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
       registeredClient.enabled = registeredClient.isEnabled();
       registeredClient.platform = registeredClient.getPlatform();
       registeredClient.source = registeredClient.getSource();
-      registeredClient.bizTag  = registeredClient.getBizTag();
+      registeredClient.bizTag = registeredClient.getBizTag();
       registeredClient.tenantId = registeredClient.getTenantId();
       registeredClient.tenantName = registeredClient.getTenantName();
       registeredClient.createdBy = registeredClient.getCreatedBy();

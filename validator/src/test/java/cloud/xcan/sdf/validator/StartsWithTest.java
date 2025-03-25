@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.validator;
+package cloud.xcan.angus.validator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

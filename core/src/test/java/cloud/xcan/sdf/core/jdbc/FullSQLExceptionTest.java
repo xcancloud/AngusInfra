@@ -1,8 +1,8 @@
-package cloud.xcan.sdf.core.jdbc;
+package cloud.xcan.angus.core.jdbc;
 
-import static cloud.xcan.sdf.core.jdbc.JDBCUtilsTest.dbpassword;
-import static cloud.xcan.sdf.core.jdbc.JDBCUtilsTest.dburl;
-import static cloud.xcan.sdf.core.jdbc.JDBCUtilsTest.dbuser;
+import static cloud.xcan.angus.core.jdbc.JDBCUtilsTest.dbpassword;
+import static cloud.xcan.angus.core.jdbc.JDBCUtilsTest.dburl;
+import static cloud.xcan.angus.core.jdbc.JDBCUtilsTest.dbuser;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;

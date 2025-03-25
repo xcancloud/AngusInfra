@@ -1,6 +1,6 @@
 package cloud.xcan.angus.domain;
 
-import cloud.xcan.sdf.core.jpa.repository.BaseRepository;
+import cloud.xcan.angus.core.jpa.repository.BaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository

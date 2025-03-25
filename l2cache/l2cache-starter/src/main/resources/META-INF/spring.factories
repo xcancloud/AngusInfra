@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cloud.xcan.sdf.l2cache.L2CacheAutoConfigurer
+cloud.xcan.angus.l2cache.L2CacheAutoConfigurer

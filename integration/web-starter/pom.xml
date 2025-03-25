@@ -15,7 +15,8 @@
   <artifactId>xcan-infra.web-starter</artifactId>
   <name>AngusInfra :: Integration :: Web Starter</name>
   <packaging>jar</packaging>
-  <description>A simplified and auto-configured library for angus RestFull api service.</description>
+  <description>A simplified and auto-configured library for angus RestFull api service.
+  </description>
 
   <dependencies>
     <dependency>

@@ -1,9 +1,9 @@
 package cloud.xcan.angus.swagger;
 
-import cloud.xcan.sdf.core.spring.boot.ApplicationInfo;
-import cloud.xcan.sdf.spec.annotations.CloudServiceEdition;
-import cloud.xcan.sdf.spec.annotations.PrivateEdition;
-import cloud.xcan.sdf.spec.experimental.Assert;
+import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
+import cloud.xcan.angus.spec.annotations.PrivateEdition;
+import cloud.xcan.angus.spec.experimental.Assert;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;

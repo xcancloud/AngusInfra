@@ -1,28 +1,38 @@
 ID Generator
 ==========================
 
-> Note: AngusInfra ID Generator is a secondary development based on Baidu's [UidGenerator](https://github.com/baidu/uid-generator).
+> Note: AngusInfra ID Generator is a secondary development based on
+> Baidu's [UidGenerator](https://github.com/baidu/uid-generator).
 
 ## Main Modifications
 
 1. Refactored the package structure and optimized some code logic.
 2. Changed the default persistence method from MyBatis to JPA.
 3. Changed the default configuration method from Spring to Spring Boot.
-4. Modified the table design to remove strong dependency on MySQL, enabling support for databases such as Postgres DB, Oracle, and SQL Server.
+4. Modified the table design to remove strong dependency on MySQL, enabling support for databases
+   such as Postgres DB, Oracle, and SQL Server.
 5. Introduced a human-readable business ID generator: BidGenerator.
 
 ## UidGenerator
 
-UidGenerator is a Java implemented, [Snowflake](https://github.com/twitter/snowflake) based unique ID generator. It
-works as a component, and allows users to override workId bits and initialization strategy. As a result, it is much more
-suitable for virtualization environment, such as [docker](https://www.docker.com/). Besides these, it overcomes
-concurrency limitation of Snowflake algorithm by consuming future time; parallels UID produce and consume by caching
-UID with RingBuffer; eliminates CacheLine pseudo sharing, which comes from RingBuffer, via padding. And finally, it
+UidGenerator is a Java implemented, [Snowflake](https://github.com/twitter/snowflake) based unique
+ID generator. It
+works as a component, and allows users to override workId bits and initialization strategy. As a
+result, it is much more
+suitable for virtualization environment, such as [docker](https://www.docker.com/). Besides these,
+it overcomes
+concurrency limitation of Snowflake algorithm by consuming future time; parallels UID produce and
+consume by caching
+UID with RingBuffer; eliminates CacheLine pseudo sharing, which comes from RingBuffer, via padding.
+And finally, it
 can offer over <font color=red>6 million</font> QPS per single instance.
 
 ### Usage
 
-Two generators are provided: [DefaultUidGenerator](cloud.xcan.angus.idgen.uid.impl.DefaultUidGenerator.java) and [CachedUidGenerator](cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator.java). If you require high performance for UID generation, use `CachedUidGenerator`.
+Two generators are
+provided: [DefaultUidGenerator](cloud.xcan.angus.idgen.uid.impl.DefaultUidGenerator.java)
+and [CachedUidGenerator](cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator.java). If you require
+high performance for UID generation, use `CachedUidGenerator`.
 
 #### 1. Add Dependency
 
@@ -93,7 +103,10 @@ CachedUidGenerator uidGenerator = (CachedUidGenerator) SpringContextHolder.getBe
 
 ## BidGenerator
 
-BidGenerator is designed to meet the requirements of business coding, including readability, global uniqueness, sequential increment (or even continuity), and high performance. It supports two generation modes based on DB and Redis, significantly improving performance through business segmentation and pre-segmentation.
+BidGenerator is designed to meet the requirements of business coding, including readability, global
+uniqueness, sequential increment (or even continuity), and high performance. It supports two
+generation modes based on DB and Redis, significantly improving performance through business
+segmentation and pre-segmentation.
 
 ### Usage
 
@@ -126,19 +139,33 @@ Refer to: `sample_library` or `AngusTester` configuration.
 
 - 4.1. Parameter Description
 
-  - `bizKey`: The business identifier corresponding to the generated business code (bid).
-  - `format`: Code format: `PREFIX_DATE_SEQ` - fixed prefix + date + sequence, `PREFIX_SEQ` - prefix + sequence, `DATE_SEQ` - date + sequence, `SEQ` - sequence.
-  - `prefix`: Code prefix, supports 1-4 characters.
-  - `dateFormat`: Code date format: `YYYY` - year, `YYYYMM` - year and month, `YYYYMMDD` - year, month, and day.
-  - `seqLength`: Sequence length, maximum 40 digits, recommended length 8-12 digits. The specific length should be determined based on business data. If the length is greater than 0 and the current ID value is shorter than the set length, it will be left-padded with zeros (e.g., `T2021090100000001`). If the length is less than or equal to 0, the ID will be variable-length and auto-incremented. `Note: Setting a length means the generated ID will have a fixed length. Setting a length less than or equal to 0 means the ID will be variable-length.`
-  - `mode`: Generation mode: `REDIS` - Redis-based, `DB` - database-based.
-  - `scope`: Uniqueness scope: `PLATFORM` - unique across the platform, `TENANT` - unique within a tenant.
-  - `tenantId`: The tenant to which the code belongs. For tenant scope, only one template data should be configured (with tenant ID `-1`). The ID generator will automatically generate configurations based on the tenant.
-  - `maxId`: The current maximum ID in database mode (based on pre-segmented cache).
-  - `step`: Segment step size, maximum allowed is 1,000,000, recommended range is 1,000 - 10,000. A smaller step size increases pressure on DB and Redis, potentially causing bottlenecks in DB mode. A larger step size may lead to unused segments being lost after a restart, resulting in large gaps in IDs.
+    - `bizKey`: The business identifier corresponding to the generated business code (bid).
+    - `format`: Code format: `PREFIX_DATE_SEQ` - fixed prefix + date + sequence, `PREFIX_SEQ` -
+      prefix + sequence, `DATE_SEQ` - date + sequence, `SEQ` - sequence.
+    - `prefix`: Code prefix, supports 1-4 characters.
+    - `dateFormat`: Code date format: `YYYY` - year, `YYYYMM` - year and month, `YYYYMMDD` - year,
+      month, and day.
+    - `seqLength`: Sequence length, maximum 40 digits, recommended length 8-12 digits. The specific
+      length should be determined based on business data. If the length is greater than 0 and the
+      current ID value is shorter than the set length, it will be left-padded with zeros (
+      e.g., `T2021090100000001`). If the length is less than or equal to 0, the ID will be
+      variable-length and
+      auto-incremented. `Note: Setting a length means the generated ID will have a fixed length. Setting a length less than or equal to 0 means the ID will be variable-length.`
+    - `mode`: Generation mode: `REDIS` - Redis-based, `DB` - database-based.
+    - `scope`: Uniqueness scope: `PLATFORM` - unique across the platform, `TENANT` - unique within a
+      tenant.
+    - `tenantId`: The tenant to which the code belongs. For tenant scope, only one template data
+      should be configured (with tenant ID `-1`). The ID generator will automatically generate
+      configurations based on the tenant.
+    - `maxId`: The current maximum ID in database mode (based on pre-segmented cache).
+    - `step`: Segment step size, maximum allowed is 1,000,000, recommended range is 1,000 - 10,000.
+      A smaller step size increases pressure on DB and Redis, potentially causing bottlenecks in DB
+      mode. A larger step size may lead to unused segments being lost after a restart, resulting in
+      large gaps in IDs.
 
 **Note:**
-1. The table `id_config` will be automatically created if it does not exist! 
+
+1. The table `id_config` will be automatically created if it does not exist!
 2. The recommended sequence length is 8-12 digits, and the recommended step size is 1,000 - 10,000.
 
 - 4.2 Configuration Example

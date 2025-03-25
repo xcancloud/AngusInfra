@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.thread.delay;
+package cloud.xcan.angus.spec.thread.delay;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;

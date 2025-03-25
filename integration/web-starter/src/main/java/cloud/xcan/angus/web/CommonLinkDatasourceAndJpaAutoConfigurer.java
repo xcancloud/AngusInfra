@@ -1,12 +1,12 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.sdf.core.jpa.repository.BaseRepositoryImpl;
-import cloud.xcan.sdf.core.spring.condition.MySqlEnvCondition;
-import cloud.xcan.sdf.core.spring.condition.PostgresEnvCondition;
-import cloud.xcan.sdf.datasource.config.DataSourceExtraProperties;
-import cloud.xcan.sdf.datasource.config.DataSourceProperties;
-import cloud.xcan.sdf.datasource.config.HikariProperties;
-import cloud.xcan.sdf.jpa.CommonLinkHibernateJpaConfiguration;
+import cloud.xcan.angus.core.jpa.repository.BaseRepositoryImpl;
+import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
+import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
+import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
+import cloud.xcan.angus.datasource.config.DataSourceProperties;
+import cloud.xcan.angus.datasource.config.HikariProperties;
+import cloud.xcan.angus.jpa.CommonLinkHibernateJpaConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -88,7 +88,7 @@ public class CommonLinkDatasourceAndJpaAutoConfigurer {
       @Qualifier("commonLinkDataSource") DataSource commonLinkDataSource) {
     return builder
         .dataSource(commonLinkDataSource)
-        .packages("cloud.xcan.sdf.api.commonlink")
+        .packages("cloud.xcan.angus.api.commonlink")
         //.properties(properties)
         .build();
   }
@@ -104,7 +104,7 @@ public class CommonLinkDatasourceAndJpaAutoConfigurer {
       repositoryBaseClass = BaseRepositoryImpl.class,
       entityManagerFactoryRef = "commonLinkEntityManagerFactory",
       transactionManagerRef = "commonLinkTransactionManager",
-      basePackages = {"cloud.xcan.sdf.api.commonlink"})
+      basePackages = {"cloud.xcan.angus.api.commonlink"})
   public static class JpaEnableCommonLinkConfiguration {
 
   }

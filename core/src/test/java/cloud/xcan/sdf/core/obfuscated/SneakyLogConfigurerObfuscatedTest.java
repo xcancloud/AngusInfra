@@ -1,13 +1,14 @@
-package cloud.xcan.sdf.core.obfuscated;
+package cloud.xcan.angus.core.obfuscated;
 
-import cloud.xcan.sdf.api.obf.Obj0;
+import cloud.xcan.angus.api.obf.Obj0;
 
 public class SneakyLogConfigurerObfuscatedTest {
 
   public static void main(String[] args) {
     // AppWorkspaceInit
     System.out.println(Obj0.var0("Failed to create home directory"));
-    System.out.println(Obj0.var0("Failed to create application workspace directory and exit, cause: {}"));
+    System.out.println(
+        Obj0.var0("Failed to create application workspace directory and exit, cause: {}"));
     System.out.println(Obj0.var0("TERM_THROW_INFO"));
     System.out.println(Obj0.var0("TERM_THROW_WARN"));
     System.out.println(Obj0.var0("TERM_THROW_ERROR"));

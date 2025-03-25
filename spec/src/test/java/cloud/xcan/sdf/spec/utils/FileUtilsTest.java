@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.utils;
+package cloud.xcan.angus.spec.utils;
 
 import java.io.IOException;
 import java.net.URL;

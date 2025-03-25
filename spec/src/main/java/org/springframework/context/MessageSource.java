@@ -84,8 +84,8 @@ public interface MessageSource {
    * @param locale     the locale in which to do the lookup
    * @return the resolved message (never {@code null} since even a
    * {@code MessageSourceResolvable}-provided default message needs to be non-null)
-   * @throws Exception if no corresponding message was found (and no default message
-   *                                was provided by the {@code MessageSourceResolvable})
+   * @throws Exception if no corresponding message was found (and no default message was provided by
+   *                   the {@code MessageSourceResolvable})
    * @see MessageSourceResolvable#getCodes()
    * @see MessageSourceResolvable#getArguments()
    * @see MessageSourceResolvable#getDefaultMessage()

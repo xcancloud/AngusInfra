@@ -1,6 +1,6 @@
 package io.swagger.v3.oas.models.parameters;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.models.Components;

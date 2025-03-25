@@ -1,9 +1,9 @@
-package cloud.xcan.sdf.spec.version.expr;
+package cloud.xcan.angus.spec.version.expr;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import cloud.xcan.sdf.spec.version.Version;
+import cloud.xcan.angus.spec.version.Version;
 import org.junit.Test;
 
 public class LessTest {

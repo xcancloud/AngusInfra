@@ -1,14 +1,14 @@
-package cloud.xcan.sdf.spec.version.expr;
+package cloud.xcan.angus.spec.version.expr;
 
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.AND;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.EOI;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.NUMERIC;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.RIGHT_PAREN;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.AND;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.EOI;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.NUMERIC;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.RIGHT_PAREN;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cloud.xcan.sdf.spec.version.expr.Lexer.Token;
+import cloud.xcan.angus.spec.version.expr.Lexer.Token;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;

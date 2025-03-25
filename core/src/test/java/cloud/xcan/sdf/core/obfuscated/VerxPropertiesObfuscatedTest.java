@@ -1,6 +1,6 @@
-package cloud.xcan.sdf.core.obfuscated;
+package cloud.xcan.angus.core.obfuscated;
 
-import cloud.xcan.sdf.api.obf.Obj0;
+import cloud.xcan.angus.api.obf.Obj0;
 
 public class VerxPropertiesObfuscatedTest {
 

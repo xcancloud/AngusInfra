@@ -9,7 +9,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import cloud.xcan.angus.core.app.verify.ver.Guard;
 import cloud.xcan.angus.security.remote.ClientSignOpen2pRemote;
 import cloud.xcan.angus.security.remote.dto.ClientSigninDto;
-import cloud.xcan.sdf.api.gm.client.vo.ClientSignVo;
+import cloud.xcan.angus.security.remote.vo.ClientSignVo;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;

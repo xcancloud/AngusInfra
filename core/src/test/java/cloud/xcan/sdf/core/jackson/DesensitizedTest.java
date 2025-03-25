@@ -1,8 +1,8 @@
-package cloud.xcan.sdf.core.jackson;
+package cloud.xcan.angus.core.jackson;
 
-import cloud.xcan.sdf.spec.jackson.desensitized.Desensitized;
-import cloud.xcan.sdf.spec.jackson.desensitized.DesensitizedSerializer;
-import cloud.xcan.sdf.spec.jackson.desensitized.SensitiveType;
+import cloud.xcan.angus.spec.jackson.desensitized.Desensitized;
+import cloud.xcan.angus.spec.jackson.desensitized.DesensitizedSerializer;
+import cloud.xcan.angus.spec.jackson.desensitized.SensitiveType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,7 +15,9 @@ public class DesensitizedTest {
   @Test
   public void testDesensitized() throws JsonProcessingException {
     ObjectMapper objectMapper = new ObjectMapper();
-    Assert.assertEquals("Error", "{\"fullname\":\"张*\",\"passd\":\"********\",\"bankCard\":\"520522********4487\",\"mobile\":\"152****7234\",\"fixedPhone\":\"***7190\",\"email\":\"t***@xcan.cloud\",\"carNumber\":\"京A****C\",\"idCardNumber\":\"520***********4487\",\"address\":\"北京市海淀区珠江摩尔大厦********\"}", objectMapper.writeValueAsString(new User()));
+    Assert.assertEquals("Error",
+        "{\"fullname\":\"张*\",\"passd\":\"********\",\"bankCard\":\"520522********4487\",\"mobile\":\"152****7234\",\"fixedPhone\":\"***7190\",\"email\":\"t***@xcan.cloud\",\"carNumber\":\"京A****C\",\"idCardNumber\":\"520***********4487\",\"address\":\"北京市海淀区珠江摩尔大厦********\"}",
+        objectMapper.writeValueAsString(new User()));
   }
 
 }

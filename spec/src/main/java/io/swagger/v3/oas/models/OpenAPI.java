@@ -1,12 +1,12 @@
 package io.swagger.v3.oas.models;
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_KEY_LENGTH;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_PARAM_SIZE;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_PATH_NUM;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_OPENAPI_TAG_NUM;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNotEmpty;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_KEY_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_PARAM_SIZE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_PATH_NUM;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_TAG_NUM;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;

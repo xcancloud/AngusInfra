@@ -1,6 +1,6 @@
-package cloud.xcan.sdf.validator;
+package cloud.xcan.angus.validator;
 
-import static cloud.xcan.sdf.validator.impl.CodeValidator.REGEX_CODE;
+import static cloud.xcan.angus.validator.impl.CodeValidator.REGEX_CODE;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;

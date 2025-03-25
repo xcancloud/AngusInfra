@@ -1,10 +1,10 @@
-package cloud.xcan.sdf.spec.experimental;
+package cloud.xcan.angus.spec.experimental;
 
-import static cloud.xcan.sdf.spec.experimental.Assert.assertNoNullElements;
-import static cloud.xcan.sdf.spec.experimental.Assert.assertNotBlank;
-import static cloud.xcan.sdf.spec.experimental.Assert.assertNotEmpty;
-import static cloud.xcan.sdf.spec.experimental.Assert.assertNotNull;
-import static cloud.xcan.sdf.spec.experimental.Assert.assertParamNotNull;
+import static cloud.xcan.angus.spec.experimental.Assert.assertNoNullElements;
+import static cloud.xcan.angus.spec.experimental.Assert.assertNotBlank;
+import static cloud.xcan.angus.spec.experimental.Assert.assertNotEmpty;
+import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
+import static cloud.xcan.angus.spec.experimental.Assert.assertParamNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;

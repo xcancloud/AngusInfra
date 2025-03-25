@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.annotations;
+package cloud.xcan.angus.spec.annotations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

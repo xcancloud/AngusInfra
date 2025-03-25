@@ -1,6 +1,6 @@
 package cloud.xcan.angus.security;
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AUTH_RESOURCES_IN_FILTER;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES_IN_FILTER;
 import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
 
 import cloud.xcan.angus.security.principal.HoldPrincipalFilter;

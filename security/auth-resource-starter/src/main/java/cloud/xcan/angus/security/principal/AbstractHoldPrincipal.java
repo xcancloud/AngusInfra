@@ -17,22 +17,22 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
-import static cloud.xcan.sdf.api.ApiConstant.ECode.SYSTEM_ERROR_CODE;
-import static cloud.xcan.sdf.api.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
-import static cloud.xcan.sdf.api.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
-import static cloud.xcan.sdf.spec.principal.Principal.DEFAULT_USER_ID;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNull;
+import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
+import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_USER_ID;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.sdf.api.enums.GrantType;
-import cloud.xcan.sdf.api.message.CommSysException;
-import cloud.xcan.sdf.spec.experimental.BizConstant.Header;
-import cloud.xcan.sdf.spec.locale.SupportedLanguage;
-import cloud.xcan.sdf.spec.principal.Principal;
-import cloud.xcan.sdf.spec.principal.PrincipalContext;
+import cloud.xcan.angus.api.enums.GrantType;
+import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
+import cloud.xcan.angus.spec.locale.SupportedLanguage;
+import cloud.xcan.angus.spec.principal.Principal;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ public abstract class AbstractHoldPrincipal {
         GrantType grantType = GrantType.of(
             tokenAttributes.get(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE).toString());
         if (GrantType.CLIENT_CREDENTIALS.equals(grantType)) {
-          holdSuccess = holdClientPrincipal( request, principal,tokenAttributes, grantType);
+          holdSuccess = holdClientPrincipal(request, principal, tokenAttributes, grantType);
         } else if (GrantType.PASSWORD.equals(grantType)) {
           holdSuccess = holdUserPrincipal(request, principal, tokenAttributes, grantType);
         } else {

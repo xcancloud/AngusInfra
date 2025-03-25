@@ -1,12 +1,12 @@
 package io.swagger.v3.oas.models.parameters;
 
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isNotEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static io.swagger.v3.oas.models.extension.ExtensionKey.VALUE_KEY;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import cloud.xcan.sdf.spec.thread.ThreadContext;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.thread.ThreadContext;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;

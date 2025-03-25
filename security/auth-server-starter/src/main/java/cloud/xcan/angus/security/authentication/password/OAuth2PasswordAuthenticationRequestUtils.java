@@ -75,7 +75,8 @@ final class OAuth2PasswordAuthenticationRequestUtils {
   }
 
   static void throwError(String errorCode, String parameterName, String errorUri) {
-    OAuth2Error error = new OAuth2Error(errorCode, "OAuth 2.0 Parameter: " + parameterName, errorUri);
+    OAuth2Error error = new OAuth2Error(errorCode, "OAuth 2.0 Parameter: " + parameterName,
+        errorUri);
     throw new OAuth2AuthenticationException(error);
   }
 }

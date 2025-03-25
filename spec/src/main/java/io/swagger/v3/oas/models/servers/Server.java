@@ -1,11 +1,11 @@
 package io.swagger.v3.oas.models.servers;
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

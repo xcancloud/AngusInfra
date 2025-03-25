@@ -1,16 +1,16 @@
-package cloud.xcan.sdf.spec.version;
+package cloud.xcan.angus.spec.version;
 
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.DIGIT;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.DOT;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.EOI;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.HYPHEN;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.LETTER;
-import static cloud.xcan.sdf.spec.version.VersionParser.CharType.PLUS;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.DIGIT;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.DOT;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.EOI;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.HYPHEN;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.LETTER;
+import static cloud.xcan.angus.spec.version.VersionParser.CharType.PLUS;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cloud.xcan.sdf.spec.version.VersionParser.CharType;
+import cloud.xcan.angus.spec.version.VersionParser.CharType;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;

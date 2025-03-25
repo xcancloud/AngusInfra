@@ -1,7 +1,7 @@
-package cloud.xcan.sdf.core.spring;
+package cloud.xcan.angus.core.spring;
 
-import cloud.xcan.sdf.api.obf.Obj0;
-import cloud.xcan.sdf.api.obf.Str0;
+import cloud.xcan.angus.api.obf.Obj0;
+import cloud.xcan.angus.api.obf.Str0;
 import org.springframework.boot.system.ApplicationHome;
 
 public class ApplicationStringObfuscatedTest {

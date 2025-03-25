@@ -107,12 +107,14 @@ Response Example:
 }
 ```
 
-Standard Response Fields (According to RFC 7662, the response from the Introspection endpoint includes the following standard fields):
+Standard Response Fields (According to RFC 7662, the response from the Introspection endpoint
+includes the following standard fields):
 
 - **active**: Indicates whether the token is valid (`true` for valid, `false` for invalid).
 - **sub**: The subject of the token (usually the user ID).
 - **aud**: The audience of the token (usually the client ID or resource server ID).
-- **nbf**: The not-before time of the token (Unix timestamp, indicating the token is not valid before this time).
+- **nbf**: The not-before time of the token (Unix timestamp, indicating the token is not valid
+  before this time).
 - **iss**: The issuer of the token (usually the URL of the authorization server).
 - **exp**: The expiration time of the token (Unix timestamp).
 - **iat**: The issuance time of the token (Unix timestamp).

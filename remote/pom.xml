@@ -14,7 +14,8 @@
   <artifactId>xcan-infra.remote</artifactId>
   <name>AngusInfra :: Remote</name>
   <packaging>jar</packaging>
-  <description>A shared library for remote calls to the Angus RESTful API using OpenFeign.</description>
+  <description>A shared library for remote calls to the Angus RESTful API using OpenFeign.
+  </description>
 
   <dependencies>
     <dependency>

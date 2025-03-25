@@ -13,6 +13,7 @@ public class UserResourceRest {
   }
 
   public record Message(String message) {
+
   }
 
 }

@@ -1,7 +1,7 @@
 package cloud.xcan.angus.web.endpoint;
 
-import cloud.xcan.sdf.core.enums.EnumStore;
-import cloud.xcan.sdf.spec.experimental.Value;
+import cloud.xcan.angus.core.enums.EnumStore;
+import cloud.xcan.angus.spec.experimental.Value;
 import java.util.List;
 import java.util.Map;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;

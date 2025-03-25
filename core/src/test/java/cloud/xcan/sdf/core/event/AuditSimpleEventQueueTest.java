@@ -1,13 +1,13 @@
-package cloud.xcan.sdf.core.event;
+package cloud.xcan.angus.core.event;
 
-import static cloud.xcan.sdf.core.disruptor.DisruptorQueueFactory.createHandleEventsQueue;
-import static cloud.xcan.sdf.core.disruptor.DisruptorQueueFactory.createWorkPoolQueue;
+import static cloud.xcan.angus.core.disruptor.DisruptorQueueFactory.createHandleEventsQueue;
+import static cloud.xcan.angus.core.disruptor.DisruptorQueueFactory.createWorkPoolQueue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import cloud.xcan.sdf.core.disruptor.DisruptorQueueManager;
-import cloud.xcan.sdf.spec.EventObject;
-import cloud.xcan.sdf.spec.thread.DefaultThreadFactory;
+import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
+import cloud.xcan.angus.spec.EventObject;
+import cloud.xcan.angus.spec.thread.DefaultThreadFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;

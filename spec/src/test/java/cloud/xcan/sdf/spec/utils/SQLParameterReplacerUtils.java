@@ -1,6 +1,6 @@
-package cloud.xcan.sdf.spec.utils;
+package cloud.xcan.angus.spec.utils;
 
-import static cloud.xcan.sdf.spec.utils.SQLParameterReplacer.replaceParameters;
+import static cloud.xcan.angus.spec.utils.SQLParameterReplacer.replaceParameters;
 
 import java.util.Map;
 import org.junit.Assert;

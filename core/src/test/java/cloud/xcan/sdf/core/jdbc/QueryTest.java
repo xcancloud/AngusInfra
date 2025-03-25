@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.core.jdbc;
+package cloud.xcan.angus.core.jdbc;
 
 import static org.junit.Assert.assertEquals;
 

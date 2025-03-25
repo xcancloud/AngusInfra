@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.version;
+package cloud.xcan.angus.spec.version;
 
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;

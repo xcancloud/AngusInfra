@@ -1,8 +1,8 @@
-package cloud.xcan.sdf.spec;
+package cloud.xcan.angus.spec;
 
-import cloud.xcan.sdf.api.pojo.UserName;
-import cloud.xcan.sdf.spec.utils.GzipUtils;
-import cloud.xcan.sdf.spec.utils.crypto.Base64Utils;
+import cloud.xcan.angus.api.pojo.UserName;
+import cloud.xcan.angus.spec.utils.GzipUtils;
+import cloud.xcan.angus.spec.utils.crypto.Base64Utils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,8 @@ public class Test {
 
     System.out.println(new String(Base64Utils.decode("H4sIAAAAAAAAADM0MgYA0mNIiAMAAAA=")));
 
-    System.out.println(new String(Base64Utils.decode("UEsDBAoAAAAAAJMd6VbSY0iIAwAAAAMAAAAKAAAAZGF0YTAudGV4dDEyM1BLAQIUAAoAAAAAAJMd6VbSY0iIAwAAAAMAAAAKAAAAAAAAAAAAAAAAAAAAAABkYXRhMC50ZXh0UEsFBgAAAAABAAEAOAAAACsAAAAAAA==")));
+    System.out.println(new String(Base64Utils.decode(
+        "UEsDBAoAAAAAAJMd6VbSY0iIAwAAAAMAAAAKAAAAZGF0YTAudGV4dDEyM1BLAQIUAAoAAAAAAJMd6VbSY0iIAwAAAAMAAAAKAAAAAAAAAAAAAAAAAAAAAABkYXRhMC50ZXh0UEsFBgAAAAABAAEAOAAAACsAAAAAAA==")));
 
     Map<UserName, Long> map = new HashMap<>();
     map.put(new UserName().setId(1L).setFullname("a"), 1L);

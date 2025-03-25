@@ -1,6 +1,6 @@
-package cloud.xcan.sdf.spec.setting;
+package cloud.xcan.angus.spec.setting;
 
-import static cloud.xcan.sdf.spec.setting.AppSettingHelper.getSetting;
+import static cloud.xcan.angus.spec.setting.AppSettingHelper.getSetting;
 
 import org.junit.Assert;
 import org.junit.Test;

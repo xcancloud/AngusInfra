@@ -1,14 +1,14 @@
 package cloud.xcan.angus.security.principal;
 
 
-import static cloud.xcan.sdf.api.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
-import static cloud.xcan.sdf.api.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.sdf.api.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
-import static cloud.xcan.sdf.api.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
-import static cloud.xcan.sdf.api.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
-import static cloud.xcan.sdf.api.message.http.Forbidden.M.FATAL_EXIT_KEY;
-import static cloud.xcan.sdf.spec.SpecConstant.DEFAULT_ENCODING;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
+import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
+import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
+import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
+import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
+import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
+import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static java.util.Objects.nonNull;
@@ -16,11 +16,11 @@ import static java.util.Objects.nonNull;
 import cloud.xcan.angus.security.OAuth2PrincipalHoldAutoConfigurer;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
-import cloud.xcan.sdf.api.ApiResult;
-import cloud.xcan.sdf.spec.experimental.BizConstant.Header;
-import cloud.xcan.sdf.spec.locale.MessageHolder;
-import cloud.xcan.sdf.spec.principal.Principal;
-import cloud.xcan.sdf.spec.principal.PrincipalContext;
+import cloud.xcan.angus.remote.ApiResult;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
+import cloud.xcan.angus.spec.locale.MessageHolder;
+import cloud.xcan.angus.spec.principal.Principal;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -39,10 +39,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 /**
  * Hold identity information from introspect endpoint to the current request context.
  *
+ * @author XiaoLong Liu
  * @see CustomOpaqueTokenIntrospector
  * @see OAuth2PrincipalHoldAutoConfigurer
- *
- * @author XiaoLong Liu
  */
 @Slf4j
 public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter {

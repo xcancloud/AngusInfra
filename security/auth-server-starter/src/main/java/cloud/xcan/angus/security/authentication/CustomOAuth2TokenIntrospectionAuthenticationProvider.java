@@ -41,7 +41,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
-import cloud.xcan.sdf.spec.utils.ObjectUtils;
+import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.net.URL;
 import java.security.Principal;
 import java.util.HashMap;
@@ -184,7 +184,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     AuthorizationGrantType grantType = authorization.getAuthorizationGrantType();
     tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE, grantType.getValue());
 
-    if (grantType.equals(AuthorizationGrantType.PASSWORD)){
+    if (grantType.equals(AuthorizationGrantType.PASSWORD)) {
       Object principal = authorization.getAttribute(Principal.class.getName());
       if (principal != null) {
         if (principal instanceof UsernamePasswordAuthenticationToken) {

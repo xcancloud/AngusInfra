@@ -7,8 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AuthorizationServerSampleApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AuthorizationServerSampleApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(AuthorizationServerSampleApplication.class, args);
+  }
 
 }

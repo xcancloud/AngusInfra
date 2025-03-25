@@ -1,10 +1,10 @@
-package cloud.xcan.sdf.spec.rate;
+package cloud.xcan.angus.spec.rate;
 
 
-import static cloud.xcan.sdf.spec.rate.ExponentialMovingAverages.TICK_INTERVAL;
+import static cloud.xcan.angus.spec.rate.ExponentialMovingAverages.TICK_INTERVAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import cloud.xcan.sdf.spec.time.ManualClock;
+import cloud.xcan.angus.spec.time.ManualClock;
 import org.junit.Test;
 
 public class ExponentialMovingAveragesTest {

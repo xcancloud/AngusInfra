@@ -1,4 +1,3 @@
-
 package cloud.xcan.angus.validator;
 
 import java.util.Arrays;

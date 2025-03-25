@@ -3,9 +3,12 @@ Public Data Tables
 
 [English](COMMON_LINK.md) | [中文](COMMON_LINK_zh.md)
 
-Aggregate public data from various business databases using MySQL Federated/DBlink technology, providing a unified data source and JPA Repository access interface. Compared to RESTful APIs, JPA Repository offers simpler usage and higher performance.
+Aggregate public data from various business databases using MySQL Federated/DBlink technology,
+providing a unified data source and JPA Repository access interface. Compared to RESTful APIs, JPA
+Repository offers simpler usage and higher performance.
 
-***All public data tables are logically stored in the `commonlink` database via Federated/DBlink. Each business service connects to the `common` database for unified access.***
+***All public data tables are logically stored in the `commonlink` database via Federated/DBlink.
+Each business service connects to the `common` database for unified access.***
 
 Below is a configuration and usage example of AngusTester public data tables.
 
@@ -13,11 +16,13 @@ Below is a configuration and usage example of AngusTester public data tables.
 
 ### Creating Public Tables in MySQL
 
-Public tables are implemented using MySQL [Federated Storage Engine](http://wiki.xcan.work/pages/viewpage.action?pageId=14647418).
+Public tables are implemented using
+MySQL [Federated Storage Engine](http://wiki.xcan.work/pages/viewpage.action?pageId=14647418).
 
 #### 1. Create and Authorize Users
 
-Create a user named `commonlink` for unified access to Federated/DBlink servers. This user must be created and authorized on each business database server.
+Create a user named `commonlink` for unified access to Federated/DBlink servers. This user must be
+created and authorized on each business database server.
 
 ##### 1.1 Create Database and User
 
@@ -181,7 +186,7 @@ Add the public table dependency (e.g., `xcan-angusgm.api`):
 
 ```xml
 <dependency>
-  <groupId>cloud.xcan.sdf</groupId>
+  <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusgm.api</artifactId>
   <version>1.0.0</version>
 </dependency>

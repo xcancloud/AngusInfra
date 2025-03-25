@@ -1,14 +1,14 @@
 package cloud.xcan.angus.web;
 
-import static cloud.xcan.sdf.core.jpa.JpaDynamicQueryUtils.executeDynamicQuery0;
-import static cloud.xcan.sdf.core.jpa.JpaDynamicQueryUtils.objectArrToInt;
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.getApplicationInfo;
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.isUserAction;
+import static cloud.xcan.angus.core.jpa.JpaDynamicQueryUtils.executeDynamicQuery0;
+import static cloud.xcan.angus.core.jpa.JpaDynamicQueryUtils.objectArrToInt;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getApplicationInfo;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.sdf.api.obf.Str0;
-import cloud.xcan.sdf.core.biz.SneakyThrow0;
-import cloud.xcan.sdf.core.spring.SpringContextHolder;
+import cloud.xcan.angus.api.obf.Str0;
+import cloud.xcan.angus.core.biz.SneakyThrow0;
+import cloud.xcan.angus.core.spring.SpringContextHolder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
@@ -32,7 +32,7 @@ public class SneakyLogConfigurer {
   @PersistenceContext
   protected EntityManager manager;
 
-  @Pointcut("@annotation(cloud.xcan.sdf.core.biz.SneakyThrow0)")
+  @Pointcut("@annotation(cloud.xcan.angus.core.biz.SneakyThrow0)")
   public void logPointCut() {
   }
 

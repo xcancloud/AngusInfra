@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.version;
+package cloud.xcan.angus.spec.version;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;

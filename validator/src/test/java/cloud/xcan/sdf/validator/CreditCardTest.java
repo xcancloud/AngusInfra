@@ -1,7 +1,7 @@
-package cloud.xcan.sdf.validator;
+package cloud.xcan.angus.validator;
 
-import static cloud.xcan.sdf.validator.CreditCardType.AMEX;
-import static cloud.xcan.sdf.validator.CreditCardType.VISA;
+import static cloud.xcan.angus.validator.CreditCardType.AMEX;
+import static cloud.xcan.angus.validator.CreditCardType.VISA;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import jakarta.validation.ConstraintViolation;

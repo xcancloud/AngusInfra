@@ -1,6 +1,6 @@
 package cloud.xcan.angus.web.endpoint;
 
-import cloud.xcan.sdf.core.app.AppWorkspace;
+import cloud.xcan.angus.core.app.AppWorkspace;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 

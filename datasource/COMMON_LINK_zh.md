@@ -3,10 +3,12 @@
 
 [English](COMMON_LINK.md) | [中文](COMMON_LINK_zh.md)
 
-依托数据库 Federated/DBlink 技术，聚合各业务数据库公共数据，对外提供统一数据源和 JPA Repository 方式访问接口，JPA Repository 方式访问相比
+依托数据库 Federated/DBlink 技术，聚合各业务数据库公共数据，对外提供统一数据源和 JPA Repository
+方式访问接口，JPA Repository 方式访问相比
 Restful API 使用更加简单，性能更高。
 
-***所有公共数据表统一通过 Federated/DBlink 逻辑存储在 commonlink 库，各业务服务配置连接到 commmon 库来统一访问。***
+***所有公共数据表统一通过 Federated/DBlink 逻辑存储在 commonlink 库，各业务服务配置连接到 commmon
+库来统一访问。***
 
 以下是 AngusTester 公共数据表配置和使用示例。
 
@@ -14,7 +16,8 @@ Restful API 使用更加简单，性能更高。
 
 ### MySQL 创建公共数据表
 
-公共数据表使用 MySQL [联邦存储引擎](http://wiki.xcan.work/pages/viewpage.action?pageId=14647418) 方式来实现。
+公共数据表使用 MySQL [联邦存储引擎](http://wiki.xcan.work/pages/viewpage.action?pageId=14647418)
+方式来实现。
 
 #### 1. 创建并授权用户
 
@@ -682,7 +685,8 @@ CREATE TABLE `store_goods` (
 
 ### 1. 提供数据表访问 API
 
-- 方式1：在 API 模块 cloud.xcan.angus.api.commonlink 包下定义对外提供的公共数据表对应 domain 和 repository 对象。
+- 方式1：在 API 模块 cloud.xcan.angus.api.commonlink 包下定义对外提供的公共数据表对应 domain 和
+  repository 对象。
 - 方式2：将已有代码移动到 api 对应 commonlink 包下，当已有持久层对象需要被外部项目使用时。
 
 ### 2. 发布 api 包
@@ -708,13 +712,14 @@ CREATE TABLE `store_goods` (
 
 ```xml
 <dependency>
-  <groupId>cloud.xcan.sdf</groupId>
+  <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusgm.api</artifactId>
   <version>1.0.0</version>
 </dependency>
 ```
 
-引入后便可使用domain对象和持久化对象Repository访问所有公共数据表。注意：domain对象 和 repository对象 都在包路径 cloud.xcan.angus.api.commonlink 下。
+引入后便可使用domain对象和持久化对象Repository访问所有公共数据表。注意：domain对象 和 repository对象
+都在包路径 cloud.xcan.angus.api.commonlink 下。
 
 ### 2. 开启自动装配
 

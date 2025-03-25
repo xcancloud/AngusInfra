@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.utils;
+package cloud.xcan.angus.spec.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

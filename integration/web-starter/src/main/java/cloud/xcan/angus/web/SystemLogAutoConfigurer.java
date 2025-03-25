@@ -4,7 +4,7 @@ package cloud.xcan.angus.web;
 import static cloud.xcan.angus.web.endpoint.SystemLogEndpoint.FILE_PATH_PROPERTY;
 
 import cloud.xcan.angus.web.endpoint.SystemLogEndpoint;
-import cloud.xcan.sdf.core.log.SystemLogProperties;
+import cloud.xcan.angus.core.log.SystemLogProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

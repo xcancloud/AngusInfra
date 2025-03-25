@@ -1,9 +1,9 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.sdf.l2cache.L2CacheAutoConfigurer;
-import cloud.xcan.sdf.lettucex.config.LettuceConnectionConfiguration;
-import cloud.xcan.sdf.lettucex.config.RedisProperties;
-import cloud.xcan.sdf.lettucex.util.RedisService;
+import cloud.xcan.angus.l2cache.L2CacheAutoConfigurer;
+import cloud.xcan.angus.lettucex.config.LettuceConnectionConfiguration;
+import cloud.xcan.angus.lettucex.config.RedisProperties;
+import cloud.xcan.angus.lettucex.util.RedisService;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;

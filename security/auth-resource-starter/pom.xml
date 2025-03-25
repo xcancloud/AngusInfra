@@ -11,9 +11,11 @@
   </parent>
 
   <artifactId>xcan-infra.auth-resource-starter</artifactId>
-  <name>AngusInfra :: Security :: Resource Authorization </name>
+  <name>AngusInfra :: Security :: Resource Authorization</name>
   <packaging>jar</packaging>
-  <description>An auto-configured library for OAuth2 resource authorization (OAuth2-password/client_credentials Scheme).</description>
+  <description>An auto-configured library for OAuth2 resource authorization
+    (OAuth2-password/client_credentials Scheme).
+  </description>
 
   <dependencies>
     <dependency>

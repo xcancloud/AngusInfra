@@ -1,12 +1,12 @@
-package cloud.xcan.sdf.spec.version.expr;
+package cloud.xcan.angus.spec.version.expr;
 
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.eq;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.gt;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.gte;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.lt;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.lte;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.neq;
-import static cloud.xcan.sdf.spec.version.expr.CompositeExpression.Helper.not;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.eq;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.gt;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.gte;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.lt;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.lte;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.neq;
+import static cloud.xcan.angus.spec.version.expr.CompositeExpression.Helper.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 

@@ -1,6 +1,6 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
-import cloud.xcan.sdf.jpa.DataSourcePoolMetadataProvidersConfiguration;
+import cloud.xcan.angus.jpa.DataSourcePoolMetadataProvidersConfiguration;
 import javax.sql.DataSource;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -22,7 +22,8 @@ import org.springframework.context.annotation.Import;
 //@ConditionalOnClass({ DataSource.class, EmbeddedDatabaseType.class })
 //@ConditionalOnMissingBean(type = "io.r2dbc.spi.ConnectionFactory")
 @EnableConfigurationProperties(DataSourceProperties.class)
-@Import({ DataSourcePoolMetadataProvidersConfiguration.class, DataSourceCheckpointRestoreConfiguration.class })
+@Import({DataSourcePoolMetadataProvidersConfiguration.class,
+    DataSourceCheckpointRestoreConfiguration.class})
 public class DataSourceAutoConfiguration {
 
 }

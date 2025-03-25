@@ -15,7 +15,8 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
 
   private static final String TABLE_NAME = "oauth2_authorization";
 
-  private static final String REMOVE_PREVIOUS_AUTHORIZATION_SQL = "DELETE FROM " + TABLE_NAME + " WHERE registered_client_id = ? AND principal_name = ?";
+  private static final String REMOVE_PREVIOUS_AUTHORIZATION_SQL =
+      "DELETE FROM " + TABLE_NAME + " WHERE registered_client_id = ? AND principal_name = ?";
 
   public CustomJdbcOAuth2AuthorizationService(
       JdbcOperations jdbcOperations, RegisteredClientRepository registeredClientRepository) {
@@ -36,9 +37,9 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
 
   private void removePrevious(OAuth2Authorization authorization) {
     Assert.notNull(authorization, "authorization cannot be null");
-    SqlParameterValue[] parameters = new SqlParameterValue[] {
+    SqlParameterValue[] parameters = new SqlParameterValue[]{
         new SqlParameterValue(Types.VARCHAR, authorization.getRegisteredClientId()),
-        new SqlParameterValue(Types.VARCHAR, authorization.getPrincipalName()) };
+        new SqlParameterValue(Types.VARCHAR, authorization.getPrincipalName())};
     PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);
     this.getJdbcOperations().update(REMOVE_PREVIOUS_AUTHORIZATION_SQL, pss);
   }

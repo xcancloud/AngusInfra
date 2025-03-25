@@ -1,20 +1,20 @@
 package cloud.xcan.angus.web;
 
-import static cloud.xcan.sdf.core.app.verx.VerxRegister.cacheManager;
-import static cloud.xcan.sdf.core.utils.AppEnvUtils.initSneakyLogDir;
-import static cloud.xcan.sdf.core.utils.CoreUtils.runAtJar;
+import static cloud.xcan.angus.core.app.verx.VerxRegister.cacheManager;
+import static cloud.xcan.angus.core.utils.AppEnvUtils.initSneakyLogDir;
+import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
 import static java.lang.System.exit;
 
-import cloud.xcan.sdf.core.app.AppBeanReadyInit;
-import cloud.xcan.sdf.core.app.AppPropertiesRegisterInit;
-import cloud.xcan.sdf.core.app.AppWorkspaceInit;
-import cloud.xcan.sdf.core.app.ApplicationInit;
-import cloud.xcan.sdf.core.app.verx.VerxRegister;
-import cloud.xcan.sdf.core.spring.SpringContextHolder;
-import cloud.xcan.sdf.core.spring.boot.ApplicationInfo;
-import cloud.xcan.sdf.core.utils.AppEnvUtils;
-import cloud.xcan.sdf.spec.locale.MessageHolder;
-import cloud.xcan.sdf.spec.utils.ObjectUtils;
+import cloud.xcan.angus.core.app.AppBeanReadyInit;
+import cloud.xcan.angus.core.app.AppPropertiesRegisterInit;
+import cloud.xcan.angus.core.app.AppWorkspaceInit;
+import cloud.xcan.angus.core.app.ApplicationInit;
+import cloud.xcan.angus.core.app.verx.VerxRegister;
+import cloud.xcan.angus.core.spring.SpringContextHolder;
+import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.core.utils.AppEnvUtils;
+import cloud.xcan.angus.spec.locale.MessageHolder;
+import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

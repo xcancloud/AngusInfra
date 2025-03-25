@@ -1,6 +1,6 @@
 package cloud.xcan.angus.security.repository;
 
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.nullSafe;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 
 import cloud.xcan.angus.security.client.CustomOAuth2ClientRepository;
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;

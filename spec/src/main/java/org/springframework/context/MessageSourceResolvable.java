@@ -52,8 +52,9 @@ public interface MessageSourceResolvable {
   /**
    * Return the default message to be used to resolve this message.
    * <p>The default implementation simply returns {@code null}.
-   * Note that the default message may be identical to the primary message code ({@link
-   * #getCodes()}), which effectively enforces {@link org.springframework.context.support.AbstractMessageSource#setUseCodeAsDefaultMessage}
+   * Note that the default message may be identical to the primary message code
+   * ({@link #getCodes()}), which effectively enforces
+   * {@link org.springframework.context.support.AbstractMessageSource#setUseCodeAsDefaultMessage}
    * for this particular message.
    *
    * @return the default message, or {@code null} if no default

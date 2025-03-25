@@ -1,12 +1,12 @@
 package cloud.xcan.angus.web;
 
 
-import cloud.xcan.sdf.core.jpa.repository.SimpleSummaryRepository;
-import cloud.xcan.sdf.core.jpa.repository.SummaryRepository;
-import cloud.xcan.sdf.datasource.config.DataSourceExtraProperties;
-import cloud.xcan.sdf.datasource.config.DataSourceProperties;
-import cloud.xcan.sdf.datasource.config.HikariProperties;
-import cloud.xcan.sdf.jpa.HibernateJpaConfiguration;
+import cloud.xcan.angus.core.jpa.repository.SimpleSummaryRepository;
+import cloud.xcan.angus.core.jpa.repository.SummaryRepository;
+import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
+import cloud.xcan.angus.datasource.config.DataSourceProperties;
+import cloud.xcan.angus.datasource.config.HikariProperties;
+import cloud.xcan.angus.jpa.HibernateJpaConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

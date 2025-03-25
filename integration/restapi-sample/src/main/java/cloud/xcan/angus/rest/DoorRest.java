@@ -2,8 +2,8 @@ package cloud.xcan.angus.rest;
 
 import cloud.xcan.angus.domain.User;
 import cloud.xcan.angus.domain.UserRepo;
-import cloud.xcan.sdf.api.ApiLocaleResult;
-import cloud.xcan.sdf.api.PageResult;
+import cloud.xcan.angus.remote.ApiLocaleResult;
+import cloud.xcan.angus.remote.PageResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

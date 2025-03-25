@@ -13,7 +13,9 @@
   <artifactId>xcan-infra.security</artifactId>
   <name>AngusInfra :: Security :: Parent</name>
   <packaging>pom</packaging>
-  <description>A library for OAuth2-based resource authentication, offering enhanced protection and auto-configuration capabilities.</description>
+  <description>A library for OAuth2-based resource authentication, offering enhanced protection and
+    auto-configuration capabilities.
+  </description>
 
   <modules>
     <module>auth-resource-model</module>

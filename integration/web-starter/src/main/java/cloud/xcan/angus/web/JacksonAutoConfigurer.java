@@ -16,18 +16,18 @@
 
 package cloud.xcan.angus.web;
 
-import static cloud.xcan.sdf.spec.SpecConstant.DateFormat.DATE_FMT;
-import static cloud.xcan.sdf.spec.SpecConstant.DateFormat.DATE_FMT_10;
-import static cloud.xcan.sdf.spec.SpecConstant.DateFormat.DATE_FMT_4;
-import static cloud.xcan.sdf.spec.experimental.Assert.assertNotNull;
+import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT;
+import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT_10;
+import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT_4;
+import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
 
-import cloud.xcan.sdf.core.enums.EnumConverterFactory;
-import cloud.xcan.sdf.core.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import cloud.xcan.sdf.core.jackson.JacksonProperties;
-import cloud.xcan.sdf.spec.jackson.EnumModule;
-import cloud.xcan.sdf.spec.jackson.serializer.TimeValueDeSerializer;
-import cloud.xcan.sdf.spec.jackson.serializer.TimeValueSerializer;
-import cloud.xcan.sdf.spec.unit.TimeValue;
+import cloud.xcan.angus.core.enums.EnumConverterFactory;
+import cloud.xcan.angus.core.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import cloud.xcan.angus.core.jackson.JacksonProperties;
+import cloud.xcan.angus.spec.jackson.EnumModule;
+import cloud.xcan.angus.spec.jackson.serializer.TimeValueDeSerializer;
+import cloud.xcan.angus.spec.jackson.serializer.TimeValueSerializer;
+import cloud.xcan.angus.spec.unit.TimeValue;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -175,7 +175,7 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
       //      sourceMixins.put(Schema.class, SchemaConverterMixin.class);
       //      mapper.setMixIns(sourceMixins);
 
-      // Exception: Could not read JSON: The class with cloud.xcan.sdf.api.commonlink.setting.Setting and name of cloud.xcan.sdf.api.commonlink.setting.Setting is not in the allowlist. If you believe this class is safe to deserialize, please provide an explicit mapping using Jackson annotations or by providing a Mixin.
+      // Exception: Could not read JSON: The class with cloud.xcan.angus.api.commonlink.setting.Setting and name of cloud.xcan.angus.api.commonlink.setting.Setting is not in the allowlist. If you believe this class is safe to deserialize, please provide an explicit mapping using Jackson annotations or by providing a Mixin.
       // If the serialization is only done by a trusted source, you can also enable default typing.
       // objectMapper.addMixIn(CacheMessage.class, CacheMessageMixin.class); // Fix method 1
       // mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL); // Fix method 2, recommend!!!

@@ -2,7 +2,7 @@ package cloud.xcan.angus.security.remote;
 
 import cloud.xcan.angus.remote.ApiLocaleResult;
 import cloud.xcan.angus.security.remote.dto.ClientSigninDto;
-import cloud.xcan.sdf.api.gm.client.vo.ClientSignVo;
+import cloud.xcan.angus.security.remote.vo.ClientSignVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

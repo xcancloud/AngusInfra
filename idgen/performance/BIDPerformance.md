@@ -11,10 +11,14 @@ BidGenerator Performance Test Result
 
 ## Resource Usage
 
-- With 1 thread, local CPU usage averages 120%-200%, peaking at no more than 300%. MySQL server CPU usage averages 10%-20%, peaking at no more than 50%.
-- With 20 threads, local CPU usage averages 500%-700%, peaking at no more than 1200%. MySQL server CPU usage averages 70%-120%, peaking at no more than 130%.
+- With 1 thread, local CPU usage averages 120%-200%, peaking at no more than 300%. MySQL server CPU
+  usage averages 10%-20%, peaking at no more than 50%.
+- With 20 threads, local CPU usage averages 500%-700%, peaking at no more than 1200%. MySQL server
+  CPU usage averages 70%-120%, peaking at no more than 130%.
 
-> During multi-threaded testing, MySQL and Redis database CPU usage is relatively low, while the stress test machine (Mac PC) CPU usage is high. For higher thread counts, consider using a higher-specification stress test machine.
+> During multi-threaded testing, MySQL and Redis database CPU usage is relatively low, while the
+> stress test machine (Mac PC) CPU usage is high. For higher thread counts, consider using a
+> higher-specification stress test machine.
 
 ## Performance Test Results
 

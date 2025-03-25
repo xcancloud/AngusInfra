@@ -1,7 +1,7 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.sdf.api.obf.Str0;
-import cloud.xcan.sdf.core.spring.scheduled.SchedulerPropertis;
+import cloud.xcan.angus.api.obf.Str0;
+import cloud.xcan.angus.core.spring.scheduled.SchedulerPropertis;
 import jakarta.annotation.Resource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

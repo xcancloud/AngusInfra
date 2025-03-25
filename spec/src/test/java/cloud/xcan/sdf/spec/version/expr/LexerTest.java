@@ -1,14 +1,14 @@
-package cloud.xcan.sdf.spec.version.expr;
+package cloud.xcan.angus.spec.version.expr;
 
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.DOT;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.EOI;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.GREATER;
-import static cloud.xcan.sdf.spec.version.expr.Lexer.Token.Type.NUMERIC;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.DOT;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.EOI;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.GREATER;
+import static cloud.xcan.angus.spec.version.expr.Lexer.Token.Type.NUMERIC;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import cloud.xcan.sdf.spec.version.TypeStream;
-import cloud.xcan.sdf.spec.version.expr.Lexer.Token;
+import cloud.xcan.angus.spec.version.TypeStream;
+import cloud.xcan.angus.spec.version.expr.Lexer.Token;
 import org.junit.Test;
 
 public class LexerTest {

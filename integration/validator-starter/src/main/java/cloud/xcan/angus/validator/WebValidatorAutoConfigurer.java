@@ -1,4 +1,3 @@
-
 package cloud.xcan.angus.validator;
 
 import jakarta.validation.Validation;
@@ -52,11 +51,11 @@ public class WebValidatorAutoConfigurer {
   }
 
   /**
-   * Debug interpolate bundle message see {@link AbstractMessageInterpolator#interpolate(Context,
-   * Locale, String)}
+   * Debug interpolate bundle message see
+   * {@link AbstractMessageInterpolator#interpolate(Context, Locale, String)}
    * <p>
-   * Note:: Spring inject locale to bundle message see {@link LocaleContextMessageInterpolator#interpolate(String,
-   * Context)}
+   * Note:: Spring inject locale to bundle message see
+   * {@link LocaleContextMessageInterpolator#interpolate(String, Context)}
    */
   @Bean
   public Validator validator(ValidatorProperties validatorProperties) {

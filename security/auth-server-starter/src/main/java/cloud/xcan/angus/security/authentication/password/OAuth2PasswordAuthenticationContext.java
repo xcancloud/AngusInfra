@@ -43,8 +43,7 @@ public final class OAuth2PasswordAuthenticationContext implements OAuth2Authenti
   }
 
   /**
-   * Constructs a new {@link Builder} with the provided
-   * {@link OAuth2PasswordAuthenticationToken}.
+   * Constructs a new {@link Builder} with the provided {@link OAuth2PasswordAuthenticationToken}.
    *
    * @param authentication the {@link OAuth2PasswordAuthenticationToken}
    * @return the {@link Builder}

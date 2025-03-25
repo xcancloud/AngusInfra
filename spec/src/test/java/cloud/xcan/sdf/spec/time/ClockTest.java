@@ -17,7 +17,7 @@
  *
  * http://www.xcan.cloud/licenses/XCBL-1.0
  */
-package cloud.xcan.sdf.spec.time;
+package cloud.xcan.angus.spec.time;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;

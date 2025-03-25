@@ -1,10 +1,10 @@
-package cloud.xcan.sdf.spec.process;
+package cloud.xcan.angus.spec.process;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import cloud.xcan.sdf.spec.PlatformEnum;
+import cloud.xcan.angus.spec.PlatformEnum;
 import com.sun.jna.Platform;
 import java.util.List;
 import org.junit.Test;

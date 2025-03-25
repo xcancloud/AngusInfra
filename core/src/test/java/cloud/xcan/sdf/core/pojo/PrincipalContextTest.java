@@ -1,14 +1,14 @@
-package cloud.xcan.sdf.core.pojo;
+package cloud.xcan.angus.core.pojo;
 
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.getOptTenantId;
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.setOptTenantId;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setOptTenantId;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import cloud.xcan.sdf.spec.principal.Principal;
-import cloud.xcan.sdf.spec.principal.PrincipalContext;
+import cloud.xcan.angus.spec.principal.Principal;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 

@@ -1,16 +1,16 @@
 package io.swagger.v3.oas.models.extension;
 
 
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_CONNECT_TIMEOUT;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_READ_TIMEOUT;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_REQUEST_REDIRECTS;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.DEFAULT_REQUEST_RETRIES;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_REQUEST_REDIRECTS;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.MAX_REQUEST_RETRIES;
-import static cloud.xcan.sdf.spec.utils.ObjectUtils.mapEquals;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_CONNECT_TIMEOUT;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_READ_TIMEOUT;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_REQUEST_REDIRECTS;
+import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_REQUEST_RETRIES;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REQUEST_REDIRECTS;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REQUEST_RETRIES;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.mapEquals;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import cloud.xcan.sdf.spec.unit.TimeValue;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.unit.TimeValue;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,8 +1,8 @@
 package io.swagger.v3.oas.models.extension;
 
-import cloud.xcan.sdf.spec.annotations.ThirdExtension;
-import cloud.xcan.sdf.spec.experimental.EndpointRegister;
-import cloud.xcan.sdf.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.annotations.ThirdExtension;
+import cloud.xcan.angus.spec.experimental.EndpointRegister;
+import cloud.xcan.angus.spec.locale.EnumValueMessage;
 
 /**
  * Apis protocol.

@@ -1,4 +1,4 @@
-package cloud.xcan.sdf.spec.utils;
+package cloud.xcan.angus.spec.utils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +42,7 @@ class StringUtilsTest {
   }
 
   @Test
-  public void camelSplitTest(){
+  public void camelSplitTest() {
     String camelCaseString = "myVariableName";
     List<String> splits = StringUtils.camelSplit(camelCaseString);
     assertEquals(splits, List.of("my", "variable", "name"));

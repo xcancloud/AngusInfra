@@ -3,9 +3,9 @@ package cloud.xcan.angus.rest;
 import cloud.xcan.angus.domain.User;
 import cloud.xcan.angus.domain.UserRepo;
 import cloud.xcan.angus.rest.dto.UserAddDto;
-import cloud.xcan.sdf.api.ApiLocaleResult;
-import cloud.xcan.sdf.api.PageResult;
-import cloud.xcan.sdf.core.biz.ProtocolAssert;
+import cloud.xcan.angus.remote.ApiLocaleResult;
+import cloud.xcan.angus.remote.PageResult;
+import cloud.xcan.angus.core.biz.ProtocolAssert;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,7 +45,7 @@ public class UserRest {
     User oldUser = userRepo.findByUsername(request.username());
     ProtocolAssert.assertResourceExisted(oldUser, request.username());
 
-    User newUser  = new User().setUsername(request.username())
+    User newUser = new User().setUsername(request.username())
         .setEmail(request.email());
     userRepo.save(newUser);
     return ApiLocaleResult.success(newUser);

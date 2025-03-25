@@ -11,7 +11,7 @@
   </parent>
 
   <artifactId>xcan-infra.auth-resource-model</artifactId>
-  <name>AngusInfra :: Security :: Authorization Resource Model </name>
+  <name>AngusInfra :: Security :: Authorization Resource Model</name>
   <packaging>jar</packaging>
   <description>Authorization Persistence Resource Models</description>
 

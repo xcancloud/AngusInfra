@@ -5,16 +5,25 @@
 ### Resource Server Introduction
 
 - Acts as the protector of user resources, i.e., the storage service for specific resources.
-- Accessing protected resources on the resource server requires an access token (`access_token`) obtained from the authorization server.
-- A client is often also a resource server. When services communicate with each other (to access resources requiring permissions), they must carry an access token.
-- For protected resources, the resource server first verifies the token upon receiving a request and then grants the client access to the resource.
+- Accessing protected resources on the resource server requires an access token (`access_token`)
+  obtained from the authorization server.
+- A client is often also a resource server. When services communicate with each other (to access
+  resources requiring permissions), they must carry an access token.
+- For protected resources, the resource server first verifies the token upon receiving a request and
+  then grants the client access to the resource.
 
 ### Main Extensions
 
 - Enhanced optional auto-configuration with the addition of the `xcan.oauth.enabled` control option.
-- Unified handling of authentication exceptions, ensuring that the exception response format aligns with `ApiResult`. This can be enabled automatically via `xcan.oauth.translateException=true`.
-- Configuration of resource service types, supporting `user_info` and `store` methods. By default, `ResourceServerConfiguration` looks for `UserInfoService` or `TokenStore` implementations in the context for injection. If both exist, `UserInfoService` takes precedence.
-- Definition of `PrincipalContext`, an identity context that stores information such as the current accessing client, tenant, user identity, and request after authentication. It proxies the use of `SecurityContextHolder` and can be enabled automatically via `xcan.oauth.holdType=resource_server` or `gateway_head`.
+- Unified handling of authentication exceptions, ensuring that the exception response format aligns
+  with `ApiResult`. This can be enabled automatically via `xcan.oauth.translateException=true`.
+- Configuration of resource service types, supporting `user_info` and `store` methods. By
+  default, `ResourceServerConfiguration` looks for `UserInfoService` or `TokenStore` implementations
+  in the context for injection. If both exist, `UserInfoService` takes precedence.
+- Definition of `PrincipalContext`, an identity context that stores information such as the current
+  accessing client, tenant, user identity, and request after authentication. It proxies the use
+  of `SecurityContextHolder` and can be enabled automatically
+  via `xcan.oauth.holdType=resource_server` or `gateway_head`.
 - Redis storage extension with support for cluster mode.
 
 ### Configuration Steps

@@ -2,7 +2,6 @@ package cloud.xcan.sdf.core.spring.filter;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -29,8 +28,9 @@ public class VueRouterFilter implements Filter {
         && !uri.startsWith("/openapi2p/") && !uri.startsWith("/actuator")
         && !uri.startsWith("/pubview/")
         // For swagger forward
-        && !uri.startsWith("/swagger-ui/") && !uri.startsWith("/v2/api-docs")
-        && !uri.startsWith("/swagger-resources") && !uri.startsWith("/webjars")
+        && !uri.startsWith("/swagger-ui/") && !uri.startsWith("/swagger-resources")
+        && !uri.startsWith("/webjars")
+        && !uri.startsWith("/v3/api-docs") && !uri.startsWith("/v2/api-docs")
     ) {
       String indexPage = "/index.html";
       request.getRequestDispatcher(indexPage).forward(request, response);
@@ -39,11 +39,4 @@ public class VueRouterFilter implements Filter {
     }
   }
 
-  @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
-  }
-
-  @Override
-  public void destroy() {
-  }
 }

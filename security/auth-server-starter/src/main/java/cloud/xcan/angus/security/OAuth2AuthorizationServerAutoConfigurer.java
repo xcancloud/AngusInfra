@@ -16,7 +16,6 @@ import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
 import java.util.Arrays;
 import java.util.List;
 import javax.sql.DataSource;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -51,8 +50,6 @@ import org.springframework.security.web.authentication.DelegatingAuthenticationC
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableMethodSecurity
@@ -181,17 +178,4 @@ public class OAuth2AuthorizationServerAutoConfigurer {
         registeredClientRepository);
   }
 
-  @Bean
-  public WebMvcConfigurer oauth2CorsConfigurer() {
-    return new WebMvcConfigurer() {
-      @Override
-      public void addCorsMappings(@NotNull CorsRegistry registry) {
-        registry.addMapping("/oauth2/*")
-            .allowedOrigins("*")
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true);
-      }
-    };
-  }
 }

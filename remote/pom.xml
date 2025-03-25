@@ -89,8 +89,8 @@
     </dependency>
 
     <dependency>
-      <groupId>com.vladmihalcea</groupId>
-      <artifactId>hibernate-types-60</artifactId>
+      <groupId>io.hypersistence</groupId>
+      <artifactId>hypersistence-utils-hibernate-60</artifactId>
     </dependency>
   </dependencies>
 </project>

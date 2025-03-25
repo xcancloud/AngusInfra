@@ -122,7 +122,7 @@
     <commons-validator.version>1.9.0</commons-validator.version>
 
     <hibernate.version>6.6.2.Final</hibernate.version>
-    <hibernate-types-60.version>2.21.1</hibernate-types-60.version>
+    <hibernate-60-types.version>3.9.4</hibernate-60-types.version>
     <jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
     <jakarta-annotation-api.version>2.0.0</jakarta-annotation-api.version>
 
@@ -149,10 +149,8 @@
 
     <!--<swagger2.version>1.6.10</swagger2.version>-->
     <swagger3.version>2.2.25</swagger3.version>
-    <swagger3-parser.version>2.1.25</swagger3-parser.version>
+    <swagger3-parser.version>2.1.23</swagger3-parser.version>
     <swagger-validator.version>2.1.6</swagger-validator.version>
-    <!--<springfox-swagger2.version>3.0.0</springfox-swagger2.version>
-    <springfox-swagger-ui.version>3.0.0</springfox-swagger-ui.version>-->
 
     <testng.version>7.11.0</testng.version>
     <junit.version>4.13.2</junit.version>
@@ -556,11 +554,11 @@
         <version>${hibernate.version}</version>
         <scope>provided</scope>
       </dependency>
-      <!-- Hibernate ORM 6.0 extra Types -->
+      <!-- Utilities for Spring and Hibernate ORM 6.0 or newer -->
       <dependency>
-        <groupId>com.vladmihalcea</groupId>
-        <artifactId>hibernate-types-60</artifactId>
-        <version>${hibernate-types-60.version}</version>
+        <groupId>io.hypersistence</groupId>
+        <artifactId>hypersistence-utils-hibernate-60</artifactId>
+        <version>${hibernate-60-types.version}</version>
       </dependency>
       <!-- Jakarta Persistence API -->
       <dependency>

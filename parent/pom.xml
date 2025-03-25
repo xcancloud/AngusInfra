@@ -143,6 +143,7 @@
 
     <jakarta.servlet-api.version>6.1.0</jakarta.servlet-api.version>
 
+    <javax.mail.version>1.6.2</javax.mail.version>
     <unboundid.version>6.0.0</unboundid.version>
 
     <!--<swagger2.version>1.6.10</swagger2.version>-->
@@ -657,6 +658,14 @@
         <scope>provided</scope>
       </dependency>
 
+      <!-- JavaMail API -->
+      <dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>${javax.mail.version}</version>
+      </dependency>
+
+      <!-- This package contains the Standard Edition of the LDAP SDK, which is a complete, general-purpose library for communicating with LDAPv3 directory servers. -->
       <dependency>
         <groupId>com.unboundid</groupId>
         <artifactId>unboundid-ldapsdk</artifactId>

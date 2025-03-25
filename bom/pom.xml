@@ -119,6 +119,12 @@
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-infra.auth-resource-starter</artifactId>
         <version>${xcan-infra.security.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.auth-server-starter</artifactId>
+        <version>${xcan-infra.security.version}</version>
         <scope>compile</scope>
       </dependency>
 

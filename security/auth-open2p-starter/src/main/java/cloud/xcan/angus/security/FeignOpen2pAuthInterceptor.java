@@ -1,15 +1,15 @@
 package cloud.xcan.angus.security;
 
-import static cloud.xcan.sdf.core.utils.PrincipalContextUtils.isCloudServiceEdition;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
-import static cloud.xcan.sdf.spec.experimental.BizConstant.Header.AUTHORIZATION;
-import static cloud.xcan.sdf.spec.principal.PrincipalContext.getAuthorization;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isCloudServiceEdition;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTHORIZATION;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getAuthorization;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.sdf.api.gm.client.ClientSignOpen2pRemote;
-import cloud.xcan.sdf.api.gm.client.dto.ClientSigninDto;
+import cloud.xcan.angus.core.app.verify.ver.Guard;
+import cloud.xcan.angus.security.remote.ClientSignOpen2pRemote;
+import cloud.xcan.angus.security.remote.dto.ClientSigninDto;
 import cloud.xcan.sdf.api.gm.client.vo.ClientSignVo;
-import cloud.xcan.sdf.core.app.verify.ver.Guard;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;

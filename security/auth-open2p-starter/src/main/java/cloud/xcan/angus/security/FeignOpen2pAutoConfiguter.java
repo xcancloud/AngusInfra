@@ -1,6 +1,6 @@
 package cloud.xcan.angus.security;
 
-import cloud.xcan.sdf.api.gm.client.ClientSignOpen2pRemote;
+import cloud.xcan.angus.security.remote.ClientSignOpen2pRemote;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

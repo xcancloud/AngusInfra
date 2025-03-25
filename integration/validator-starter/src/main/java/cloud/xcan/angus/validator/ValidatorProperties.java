@@ -21,8 +21,8 @@ public class ValidatorProperties {
   private Boolean enabled = false;
 
   private Set<String> defaultMessages = new HashSet<>(
-      Arrays.asList("classpath:/i18n/messages-sdf-validator",
-          "classpath:/i18n/messages-sdf-spec", "classpath:/i18n/messages-sdf-api"));
+      Arrays.asList("classpath:/i18n/messages-infra-validator",
+          "classpath:/i18n/messages-infra-spec", "classpath:/i18n/messages-infra-remote"));
 
   private Set<String> extraMessages;
 

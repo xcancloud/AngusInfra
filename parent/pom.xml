@@ -122,7 +122,7 @@
     <commons-validator.version>1.9.0</commons-validator.version>
 
     <hibernate.version>6.6.2.Final</hibernate.version>
-    <hibernate-types-60.verison>2.21.1</hibernate-types-60.verison>
+    <hibernate-types-60.version>2.21.1</hibernate-types-60.version>
     <jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
     <jakarta-annotation-api.version>2.0.0</jakarta-annotation-api.version>
 
@@ -556,11 +556,6 @@
         <version>${hibernate.version}</version>
         <scope>provided</scope>
       </dependency>
-      <dependency>
-        <groupId>jakarta.annotation</groupId>
-        <artifactId>jakarta.annotation-api</artifactId>
-        <version>${jakarta-annotation-api.version}</version>
-      </dependency>
       <!-- Hibernate ORM 6.0 extra Types -->
       <dependency>
         <groupId>com.vladmihalcea</groupId>
@@ -568,6 +563,11 @@
         <version>${hibernate-types-60.version}</version>
       </dependency>
       <!-- Jakarta Persistence API -->
+      <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>${jakarta-annotation-api.version}</version>
+      </dependency>
       <dependency>
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>

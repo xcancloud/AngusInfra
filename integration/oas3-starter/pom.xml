@@ -26,6 +26,13 @@
     <dependency>
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <exclusions>
+        <!-- Replace with spec module OAS3 models -->
+        <exclusion>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-models-jakarta</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Spring Security Starter -->

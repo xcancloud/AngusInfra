@@ -141,7 +141,7 @@ public class ApiLogProperties implements AppPropertiesRegister {
 
     /**
      * Custom Ignore doc, blog, content, course in CM.
-     *
+     * <br/>
      * The change of value takes effect after restarting.
      */
     @Schema(description = "Ignore request urls pattern by custom, default value is empty")

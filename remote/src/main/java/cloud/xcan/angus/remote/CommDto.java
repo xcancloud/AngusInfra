@@ -41,7 +41,7 @@ public class CommDto implements Serializable {
   //   * <p>e,g. GMT+8</p>
   //   */
   //  @Length(max = 16, message = "{sdf.timezone.invalid}")
-  //  @ApiModelProperty("Time zone. eg:GMT+8")
+  //  ("Time zone. eg:GMT+8")
   //  private String timezone;
 
   //  /**
@@ -52,7 +52,7 @@ public class CommDto implements Serializable {
   //   */
   //  @MapCharLength
   //  @Size(max = MAX_QUERY_EXT_SIZE)
-  //  @ApiModelProperty("Extended attributes, Max 200 key/value")
+  //  ("Extended attributes, Max 200 key/value")
   //  private Map<String, Object> ext = new HashMap<>();
 
 }

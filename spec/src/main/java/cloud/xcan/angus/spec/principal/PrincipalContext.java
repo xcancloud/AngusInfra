@@ -160,7 +160,7 @@ public class PrincipalContext {
     return get().getUserId();
   }
 
-  public static String getUserName() {
+  public static String getUserFullname() {
     return get().getFullname();
   }
 

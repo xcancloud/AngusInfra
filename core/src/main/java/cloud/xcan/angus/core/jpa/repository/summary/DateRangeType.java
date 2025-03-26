@@ -4,20 +4,13 @@ public enum DateRangeType {
   HOUR, DAY, WEEK, MONTH, YEAR;
 
   public String toFormat() {
-    switch (this) {
-      case HOUR:
-        return "%Y-%m-%d %H";
-      case DAY:
-        return "%Y-%m-%d";
-      case WEEK:
-        return "%Y-%u";
-      case MONTH:
-        return "%Y-%m";
-      case YEAR:
-        return "%Y";
-      default:
-        return null;
-    }
+    return switch (this) {
+      case HOUR -> "%Y-%m-%d %H";
+      case DAY -> "%Y-%m-%d";
+      case WEEK -> "%Y-%u";
+      case MONTH -> "%Y-%m";
+      case YEAR -> "%Y";
+    };
   }
 
 }

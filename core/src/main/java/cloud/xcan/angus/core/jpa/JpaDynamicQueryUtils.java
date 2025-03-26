@@ -34,7 +34,7 @@ public class JpaDynamicQueryUtils {
   }
 
   public static int objectArrToInt(List<?> objects) {
-    if (isNull(objects) || objects.size() == 0) {
+    if (isNull(objects) || objects.isEmpty()) {
       return 0;
     }
     return ObjectUtils.convert(objects.get(0), BigDecimal.class).intValue();

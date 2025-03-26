@@ -27,8 +27,7 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
-@ThirdExtension
+@Accessors(chain = true)@ThirdExtension
 public class RequestSetting {
 
   @Schema(description = "Enable parameter validation. After enabling, the parameters will be verified first, and requests will only be sent after the parameter verification is passed. It is disabled by default.")

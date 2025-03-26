@@ -9,35 +9,35 @@ import org.springframework.data.domain.Pageable;
 public interface CustomBaseRepository<T> {
 
   default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable,
-      Class<T> mainClass, Function<? super Object[], T> mapper, String[] match) {
-    return find0(criteria, pageable, mainClass, mapper, null, match);
+      Class<T> mainClz, Function<? super Object[], T> mapper, String[] match) {
+    return find0(criteria, pageable, mainClz, mapper, null, match);
   }
 
   default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable,
-      Class<T> mainClass, Function<? super Object[], T> mapper,
+      Class<T> mainClz, Function<? super Object[], T> mapper,
       Object[] params, String[] match) {
-    return find0(criteria, pageable, mainClass, mapper, params, match);
+    return find0(criteria, pageable, mainClz, mapper, params, match);
   }
 
-  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClass,
+  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClz,
       String[] match) {
-    return find0(criteria, pageable, mainClass, null, null, match);
+    return find0(criteria, pageable, mainClz, null, null, match);
   }
 
-  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClass,
+  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClz,
       Object[] params, String[] match) {
-    return find0(criteria, pageable, mainClass, null, params, match);
+    return find0(criteria, pageable, mainClz, null, params, match);
   }
 
-  Page<T> find0(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClass,
+  Page<T> find0(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClz,
       Function<? super Object[], T> mapper, Object[] params, String[] match);
 
-  default StringBuilder getSqlTemplate(Set<SearchCriteria> criteria, Class<T> mainClass,
+  default StringBuilder getSqlTemplate(Set<SearchCriteria> criteria, Class<T> mainClz,
       Object[] params, String... match) {
     return new StringBuilder();
   }
 
-  default StringBuilder getCriteriaAliasCondition(Set<SearchCriteria> criteria, Class<T> mainClass,
+  default StringBuilder getCriteriaAliasCondition(Set<SearchCriteria> criteria, Class<T> mainClz,
       String alias, SearchMode mode, Boolean notDeleted, String... match) {
     return new StringBuilder();
   }

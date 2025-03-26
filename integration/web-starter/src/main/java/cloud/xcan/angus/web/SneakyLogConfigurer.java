@@ -47,7 +47,7 @@ public class SneakyLogConfigurer {
   private Object check(ProceedingJoinPoint joinPoint) throws Throwable {
     Object object = joinPoint.proceed();
 
-    // Post processing
+    // Post-processing
     SneakyThrow0 throw0 = ((MethodSignature) joinPoint.getSignature()).getMethod()
         .getAnnotation(SneakyThrow0.class);
     if (nonNull(manager) && getApplicationInfo().isPrivateEdition()) {

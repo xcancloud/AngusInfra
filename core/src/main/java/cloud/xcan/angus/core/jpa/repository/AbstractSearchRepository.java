@@ -51,10 +51,10 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
   }
 
   /**
-   * Non-main mainClass conditions and joins need to be assembled by themselves
+   * Non-main mainClz conditions and joins need to be assembled by themselves
    */
   @Override
-  public abstract StringBuilder getSqlTemplate(Set<SearchCriteria> criteria, Class<T> mainClass,
+  public abstract StringBuilder getSqlTemplate(Set<SearchCriteria> criteria, Class<T> mainClz,
       Object[] params, String... match);
 
   public String getReturnFieldsCondition(Set<SearchCriteria> criteria, Object[] params) {
@@ -66,23 +66,23 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
   }
 
   @Override
-  public Page<T> find0(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClass,
+  public Page<T> find0(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClz,
       Function<? super Object[], T> mapper, Object[] params, String[] match) {
     assertNotNull(pageable, "pageable is required");
-    assertNotNull(mainClass, "mainClass is required");
-    StringBuilder sql = getSqlTemplate(criteria, mainClass, params, match);
+    assertNotNull(mainClz, "mainClz is required");
+    StringBuilder sql = getSqlTemplate(criteria, mainClz, params, match);
     String countSql = sql.toString();
-    List<T> ts = getList(criteria, pageable, mainClass, mapper, params, sql);
+    List<T> ts = getList(criteria, pageable, mainClz, mapper, params, sql);
     if (ts.size() < pageable.getPageSize()) {
       return new PageImpl<>(ts, pageable, ts.size());
     }
-    long count = getCount(criteria, mainClass, params, countSql);
+    long count = getCount(criteria, mainClz, params, countSql);
     return new PageImpl<>(ts, pageable, count);
   }
 
   @SuppressWarnings("unchecked")
   public List<T> getList(Set<SearchCriteria> criteria,
-      Pageable pageable, Class<T> mainClass, Function<? super Object[], T> mapper,
+      Pageable pageable, Class<T> mainClz, Function<? super Object[], T> mapper,
       Object[] params, StringBuilder sql) {
     Order order = pageable.getSort().get().findFirst().get();
     sql.append(" ORDER BY ").append(StringUtils.camelToUnder(order.getProperty())).append(" ")
@@ -93,7 +93,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       queryList.setFirstResult((int) pageable.getOffset());
       queryList.setMaxResults(pageable.getPageSize());
       if (!CollectionUtils.isEmpty(criteria)) {
-        setQueryParameter(queryList, criteria, mainClass);
+        setQueryParameter(queryList, criteria, mainClz);
       }
       List<Object[]> result = (List<Object[]>) queryList.getResultList();
       if (isEmpty(result)) {
@@ -102,27 +102,27 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       return result.stream().map(mapper).collect(Collectors.toList());
     }
     Query queryList = getEntityManager().createNativeQuery(sql.toString()
-        .replaceFirst("%s", getReturnFieldsCondition(criteria, params)), mainClass);
+        .replaceFirst("%s", getReturnFieldsCondition(criteria, params)), mainClz);
     queryList.setFirstResult((int) pageable.getOffset());
     queryList.setMaxResults(pageable.getPageSize());
     if (!CollectionUtils.isEmpty(criteria)) {
-      setQueryParameter(queryList, criteria, mainClass);
+      setQueryParameter(queryList, criteria, mainClz);
     }
     return (List<T>) queryList.getResultList();
   }
 
   public long getCount(Set<SearchCriteria> criteria,
-      Class<?> mainClass, Object[] params, String sql) {
+      Class<?> mainClz, Object[] params, String sql) {
     Query queryCount = getEntityManager().createNativeQuery(
         sql.replaceFirst("%s", getReturnCountCondition(criteria, params)));
     if (!CollectionUtils.isEmpty(criteria)) {
-      setQueryParameter(queryCount, criteria, mainClass);
+      setQueryParameter(queryCount, criteria, mainClz);
     }
     return ((BigInteger) queryCount.getSingleResult()).longValue();
   }
 
   @Override
-  public StringBuilder getCriteriaAliasCondition(Set<SearchCriteria> criteria, Class<T> mainClass,
+  public StringBuilder getCriteriaAliasCondition(Set<SearchCriteria> criteria, Class<T> mainClz,
       String alias, SearchMode mode, Boolean notDeleted, String... match) {
     StringBuilder sql = new StringBuilder();
     boolean hasSearch = false;
@@ -131,7 +131,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
           continue;
         }
-        String columnName = getJpaColumnName(entityManager, mainClass, criteria0.getKey());
+        String columnName = getJpaColumnName(entityManager, mainClz, criteria0.getKey());
         if (isEmpty(columnName)) {
           continue;
         }
@@ -166,7 +166,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
             // MATCH(xc.name) AGAINST (hahah IN BOOLEAN MODE) -> MATCH(xc.name) AGAINST ('hahah' IN BOOLEAN MODE)
             String strValue = detectFulltextSearchValue(criteria0.getValue().toString());
             sql.append(" AND MATCH(")
-                .append(getAliasMatchFields(mainClass, alias, criteria0, match))
+                .append(getAliasMatchFields(mainClz, alias, criteria0, match))
                 .append(") AGAINST (")/*.append(criteria0.isMatchSearch() ? "+" : "-")*/
                 // Complete progression matching
                 /*.append("\"")*/
@@ -212,7 +212,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         }
       }
     }
-    if (notDeleted && hasDeletedField(mainClass)) {
+    if (notDeleted && hasDeletedField(mainClz)) {
       sql.append(" AND ").append(alias).append(".deleted_flag = 0");
     }
     if (!isMultiTenantCtrl() || TenantInterceptor.TENANT_TABLES.isEmpty()) {
@@ -225,12 +225,12 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     return sql;
   }
 
-  public void setQueryParameter(Query query, Set<SearchCriteria> criteria, Class<?> mainClass) {
+  public void setQueryParameter(Query query, Set<SearchCriteria> criteria, Class<?> mainClz) {
     for (SearchCriteria criteria0 : criteria) {
       if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
         continue;
       }
-      String columnName = getJpaColumnName(entityManager, mainClass, criteria0.getKey());
+      String columnName = getJpaColumnName(entityManager, mainClz, criteria0.getKey());
       if (isEmpty(columnName)) {
         continue;
       }
@@ -252,7 +252,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
           query.setParameter(namingKey, criteria0.getValue());
         }
       } else {
-        Field f = ReflectionUtils.getField(mainClass, criteria0.getKey());
+        Field f = ReflectionUtils.getField(mainClz, criteria0.getKey());
         String strValue = safeStringValue(criteria0.getValue().toString());
         if (criteria0.getValue() instanceof Value) {
           query.setParameter(namingKey, ((Value) criteria0.getValue()).getValue());
@@ -288,13 +288,13 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     return sb.toString();
   }
 
-  public String getAliasMatchFields(Class<T> mainClass, String alias, SearchCriteria criteria0,
+  public String getAliasMatchFields(Class<T> mainClz, String alias, SearchCriteria criteria0,
       String... match) {
     // match have the highest priority
     if (isNotEmpty(match)) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < match.length; i++) {
-        sb.append(alias).append(".").append(getJpaColumnName(entityManager, mainClass, match[i]));
+        sb.append(alias).append(".").append(getJpaColumnName(entityManager, mainClz, match[i]));
         if (i != match.length - 1) {
           sb.append(",");
         }
@@ -307,12 +307,12 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (isNotEmpty(fields)) {
       return fields;
     }
-    return getJpaColumnName(entityManager, mainClass, criteria0.getKey());
+    return getJpaColumnName(entityManager, mainClz, criteria0.getKey());
   }
 
-  public boolean hasDeletedField(Class<T> mainClass) {
+  public boolean hasDeletedField(Class<T> mainClz) {
     try {
-      String name = getJpaColumnName(entityManager, mainClass, "deletedFlag");
+      String name = getJpaColumnName(entityManager, mainClz, "deletedFlag");
       return isNotEmpty(name);
     } catch (Exception e) {
       return false;

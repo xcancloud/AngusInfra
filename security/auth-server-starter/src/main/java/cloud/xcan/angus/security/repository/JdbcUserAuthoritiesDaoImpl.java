@@ -33,11 +33,11 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
 
   // @formatter:off
   public static final String DEF_USERS_BY_USERNAME_QUERY =
-      "select username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
+      "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
       + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
       + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-      + "tenant_id, tenant_name, tenant_real_name_status "
-      + "from oauth2_user where username = ? and deleted = false";
+      + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
+      + "FROM oauth2_user WHERE username = ? AND deleted = false";
 
 	public static final String DEF_AUTHORITIES_BY_USERNAME_QUERY =
       "select username, authority from oauth2_authorities where username = ?";
@@ -144,7 +144,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     boolean toUser = rs.getBoolean(13);
     String mobile = rs.getString(14);
     String email = rs.getString(15);
-    Long mainDeptId = rs.getLong(16);
+    String mainDeptId = rs.getString(16);
     Timestamp ts1 = rs.getTimestamp(17);
     Instant passwordExpiredDate = ts1 != null ? ts1.toInstant() : null;
     Timestamp ts2 = rs.getTimestamp(18);
@@ -155,10 +155,14 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     String tenantId = rs.getString(21);
     String tenantName = rs.getString(22);
     String tenantRealNameStatus = rs.getString(23);
+    String directoryId = rs.getString(24);
+    String defaultLanguage = rs.getString(25);
+    String defaultTimeZone = rs.getString(26);
     return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
         credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
         passwordStrength, sysAdmin, toUser, mobile, email, mainDeptId, passwordExpiredDate,
-        lastModifiedPasswordDate, expiredDate, deleted, tenantId, tenantName, tenantRealNameStatus);
+        lastModifiedPasswordDate, expiredDate, deleted, tenantId, tenantName, tenantRealNameStatus,
+        directoryId, defaultLanguage, defaultTimeZone);
   }
 
   /**

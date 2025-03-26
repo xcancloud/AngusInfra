@@ -1,7 +1,10 @@
 package cloud.xcan.angus.security.model;
 
+import cloud.xcan.angus.spec.experimental.EntitySupport;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.time.Instant;
@@ -15,8 +18,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,127 +31,144 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.Assert;
 
 /**
- * A custom user representation in AngusGM.
+ * A custom OAuth2 user representation in AngusGM.
+ * <p>
+ * Authenticate the authorized user and be loaded by principal.
+ *
+ * @see `cloud.xcan.angus.spec.principal.PrincipalContext`
+ * @see `cloud.xcan.angus.spec.principal.Principal`
  */
-
+@Slf4j
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class CustomOAuth2User implements UserDetails, CredentialsContainer {
+public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> implements UserDetails,
+    CredentialsContainer {
 
   private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-
-  private static final Log logger = LogFactory.getLog(CustomOAuth2User.class);
 
   /**
    * OAuth2 User fields
    */
-  private String username;
+  protected String username;
 
   @Nullable
-  private String password;
+  protected String password;
 
-  private boolean enabled;
+  protected boolean enabled;
 
-  private boolean accountNonExpired;
+  @Column(name = "account_non_expired")
+  protected boolean accountNonExpired;
 
-  private boolean accountNonLocked;
+  @Column(name = "account_non_locked")
+  protected boolean accountNonLocked;
 
   /**
    * Is password none expired.
    */
-  private boolean credentialsNonExpired;
+  @Column(name = "credentials_non_expired")
+  protected boolean credentialsNonExpired;
 
-  private Set<GrantedAuthority> authorities;
+  @Transient
+  protected Set<GrantedAuthority> authorities;
 
   /**
    * AngusGM User Info.
    */
-  private String id;
+  @Id
+  protected String id;
 
-  private String firstName;
+  @Column(name = "first_name")
+  protected String firstName;
 
-  private String lastName;
+  @Column(name = "last_name")
+  protected String lastName;
 
-  private String fullName;
+  @Column(name = "full_name")
+  protected String fullName;
 
-  private String passwordStrength;
+  @Column(name = "password_strength")
+  protected String passwordStrength;
 
-  private boolean sysAdmin;
+  @Column(name = "sys_admin")
+  protected boolean sysAdmin;
 
-  private boolean toUser;
+  @Column(name = "to_user")
+  protected boolean toUser;
 
-  private String mobile;
+  protected String mobile;
 
-  private String email;
+  protected String email;
 
-  private Long mainDeptId;
+  @Column(name = "main_dept_id")
+  protected String mainDeptId;
 
-  // private boolean passwordExpired;
+  @Column(name = "password_expired_date")
+  protected Instant passwordExpiredDate;
 
-  private Instant passwordExpiredDate;
+  @Column(name = "last_modified_password_date")
+  protected Instant lastModifiedPasswordDate;
 
-  private Instant lastModifiedPasswordDate;
+  @Column(name = "expired_date")
+  protected Instant expiredDate;
 
-  private Instant expiredDate;
+  protected boolean deleted;
 
-  private boolean deleted;
+  @Column(name = "tenant_id")
+  protected String tenantId;
 
-  private String tenantId;
+  @Column(name = "tenant_name")
+  protected String tenantName;
 
-  private String tenantName;
+  @Column(name = "tenant_real_name_status")
+  protected String tenantRealNameStatus;
 
-  private String tenantRealNameStatus;
+  @Column(name = "directory_id")
+  protected String directoryId;
+
+  @Column(name = "default_language")
+  protected String defaultLanguage;
+
+  @Column(name = "default_time_zone")
+  protected String defaultTimeZone;
 
   /**
    * Temp filed for signup.
    */
   @Transient
-  private String itc;
+  protected String itc;
   @Transient
-  private String country;
-
-  /**
-   * Temp filed for hold principal.
-   */
-  // @JsonIgnore <- Fix:: auth2Authentication.getUserAuthentication() is null
-  @Transient
-  private String clientId;
-  @Transient
-  private String clientSource;
-  @Transient
-  private String deviceId; // Signup Device ID.
-  @Transient
-  private Long directoryId;
-  @Transient
-  private String defaultLanguage;
-  @Transient
-  private String defaultTimeZone;
+  protected String country;
 
   /**
    * Temp filed for business.
    */
   @JsonIgnore
   @Transient
-  private String signupType;
+  protected String signupType;
   @JsonIgnore
   @Transient
-  private String verificationCode;
+  protected String verificationCode;
   @JsonIgnore
   @Transient
-  private String smsBizKey;
+  protected String smsBizKey;
   @JsonIgnore
   @Transient
-  private String emailBizKey;
+  protected String emailBizKey;
   @JsonIgnore
   @Transient
-  private String linkSecret;
+  protected String linkSecret;
   @JsonIgnore
   @Transient
-  private boolean setPassword;
+  protected boolean setPassword;
   @JsonIgnore
   @Transient
-  private String invitationCode;
+  protected String invitationCode;
 
   public CustomOAuth2User() {
+  }
+
+  @Override
+  public Long identity() {
+    return Long.parseLong(id);
   }
 
   /**
@@ -184,16 +203,17 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
       Collection<? extends GrantedAuthority> authorities) {
     this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
         authorities, "-1", null, null, null, null, false, false, null, null, null, null,
-        null, null, false, "-1", null, null);
+        null, null, false, "-1", null, null, null, null, null);
   }
 
   public CustomOAuth2User(String username, String password, boolean enabled,
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities, String id, String firstName,
       String lastName, String fullName, String passwordStrength, boolean sysAdmin, boolean toUser,
-      String mobile, String email, Long mainDeptId, Instant passwordExpiredDate,
+      String mobile, String email, String mainDeptId, Instant passwordExpiredDate,
       Instant lastModifiedPasswordDate, Instant expiredDate,
-      boolean deleted, String tenantId, String tenantName, String tenantRealNameStatus) {
+      boolean deleted, String tenantId, String tenantName, String tenantRealNameStatus,
+      String directoryId, String defaultLanguage, String defaultTimeZone) {
     Assert.isTrue(username != null && !"".equals(username) && password != null,
         "Cannot pass null or empty values to constructor");
 
@@ -222,6 +242,9 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
     this.tenantId = tenantId;
     this.tenantName = tenantName;
     this.tenantRealNameStatus = tenantRealNameStatus;
+    this.directoryId = directoryId;
+    this.defaultLanguage = defaultLanguage;
+    this.defaultTimeZone = defaultTimeZone;
   }
 
   @Override
@@ -264,119 +287,175 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
     return this.authorities;
   }
 
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public void setEnabled(boolean enabled) {
+    this.enabled = enabled;
+  }
+
+  public void setAccountNonExpired(boolean accountNonExpired) {
+    this.accountNonExpired = accountNonExpired;
+  }
+
+  public void setAccountNonLocked(boolean accountNonLocked) {
+    this.accountNonLocked = accountNonLocked;
+  }
+
+  public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+    this.credentialsNonExpired = credentialsNonExpired;
+  }
+
+  public void setAuthorities(Set<GrantedAuthority> authorities) {
+    this.authorities = authorities;
+  }
+
   public String getId() {
     return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 
   public String getFirstName() {
     return firstName;
   }
 
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
   public String getLastName() {
     return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
   }
 
   public String getFullName() {
     return fullName;
   }
 
+  public void setFullName(String fullName) {
+    this.fullName = fullName;
+  }
+
   public String getPasswordStrength() {
     return passwordStrength;
+  }
+
+  public void setPasswordStrength(String passwordStrength) {
+    this.passwordStrength = passwordStrength;
   }
 
   public boolean isSysAdmin() {
     return sysAdmin;
   }
 
+  public void setSysAdmin(boolean sysAdmin) {
+    this.sysAdmin = sysAdmin;
+  }
+
   public boolean isToUser() {
     return toUser;
+  }
+
+  public void setToUser(boolean toUser) {
+    this.toUser = toUser;
   }
 
   public String getMobile() {
     return mobile;
   }
 
+  public void setMobile(String mobile) {
+    this.mobile = mobile;
+  }
+
   public String getEmail() {
     return email;
   }
 
-  public Long getMainDeptId() {
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getMainDeptId() {
     return mainDeptId;
+  }
+
+  public void setMainDeptId(String mainDeptId) {
+    this.mainDeptId = mainDeptId;
   }
 
   public Instant getPasswordExpiredDate() {
     return passwordExpiredDate;
   }
 
+  public void setPasswordExpiredDate(Instant passwordExpiredDate) {
+    this.passwordExpiredDate = passwordExpiredDate;
+  }
+
   public Instant getLastModifiedPasswordDate() {
     return lastModifiedPasswordDate;
+  }
+
+  public void setLastModifiedPasswordDate(Instant lastModifiedPasswordDate) {
+    this.lastModifiedPasswordDate = lastModifiedPasswordDate;
   }
 
   public Instant getExpiredDate() {
     return expiredDate;
   }
 
+  public void setExpiredDate(Instant expiredDate) {
+    this.expiredDate = expiredDate;
+  }
+
   public boolean isDeleted() {
     return deleted;
+  }
+
+  public void setDeleted(boolean deleted) {
+    this.deleted = deleted;
   }
 
   public String getTenantId() {
     return tenantId;
   }
 
+  public void setTenantId(String tenantId) {
+    this.tenantId = tenantId;
+  }
+
   public String getTenantName() {
     return tenantName;
+  }
+
+  public void setTenantName(String tenantName) {
+    this.tenantName = tenantName;
   }
 
   public String getTenantRealNameStatus() {
     return tenantRealNameStatus;
   }
 
-  public String getItc() {
-    return itc;
+  public void setTenantRealNameStatus(String tenantRealNameStatus) {
+    this.tenantRealNameStatus = tenantRealNameStatus;
   }
 
-  public void setItc(String itc) {
-    this.itc = itc;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public void setCountry(String country) {
-    this.country = country;
-  }
-
-  public String getClientId() {
-    return clientId;
-  }
-
-  public void setClientId(String clientId) {
-    this.clientId = clientId;
-  }
-
-  public String getClientSource() {
-    return clientSource;
-  }
-
-  public void setClientSource(String clientSource) {
-    this.clientSource = clientSource;
-  }
-
-  public String getDeviceId() {
-    return deviceId;
-  }
-
-  public void setDeviceId(String deviceId) {
-    this.deviceId = deviceId;
-  }
-
-  public Long getDirectoryId() {
+  public String getDirectoryId() {
     return directoryId;
   }
 
-  public void setDirectoryId(Long directoryId) {
+  public void setDirectoryId(String directoryId) {
     this.directoryId = directoryId;
   }
 
@@ -394,6 +473,22 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
 
   public void setDefaultTimeZone(String defaultTimeZone) {
     this.defaultTimeZone = defaultTimeZone;
+  }
+
+  public String getItc() {
+    return itc;
+  }
+
+  public void setItc(String itc) {
+    this.itc = itc;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
   }
 
   public String getSignupType() {
@@ -612,7 +707,7 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
    */
   @Deprecated
   public static CustomOAuth2User.UserBuilder withDefaultPasswordEncoder() {
-    logger.warn("CustomOAuth2User.withDefaultPasswordEncoder() is considered unsafe for production "
+    log.warn("CustomOAuth2User.withDefaultPasswordEncoder() is considered unsafe for production "
         + "and is only intended for sample applications.");
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     return builder().passwordEncoder(encoder::encode);
@@ -660,57 +755,39 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
      * OAuth2 User fields
      */
     private String username;
-
     private String password;
-
     private boolean disabled;
-
     private boolean accountExpired;
-
     private boolean accountLocked;
-
     private boolean credentialsExpired;
 
     private List<GrantedAuthority> authorities = new ArrayList<>();
-
     private Function<String, String> passwordEncoder = (password) -> password;
 
     /**
      * AngusGM User Info.
      */
     private String id;
-
     private String firstName;
-
     private String lastName;
-
     private String fullName;
-
     private String passwordStrength;
-
     private boolean sysAdmin;
-
     private boolean toUser;
-
     private String mobile;
-
     private String email;
-
-    private Long mainDeptId;
-
+    private String mainDeptId;
     private Instant passwordExpiredDate;
-
     private Instant lastModifiedPasswordDate;
-
     private Instant expiredDate;
-
     private boolean deleted;
-
     private String tenantId;
-
     private String tenantName;
-
     private String tenantRealNameStatus;
+
+    private String directoryId;
+    private String defaultLanguage;
+    private String defaultTimeZone;
 
     /**
      * Creates a new instance
@@ -926,7 +1003,7 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder mainDeptId(Long mainDeptId) {
+    public CustomOAuth2User.UserBuilder mainDeptId(String mainDeptId) {
       this.mainDeptId = mainDeptId;
       return this;
     }
@@ -966,6 +1043,21 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
       return this;
     }
 
+    public CustomOAuth2User.UserBuilder directoryId(String directoryId) {
+      this.directoryId = directoryId;
+      return this;
+    }
+
+    public CustomOAuth2User.UserBuilder defaultLanguage(String defaultLanguage) {
+      this.defaultLanguage = defaultLanguage;
+      return this;
+    }
+
+    public CustomOAuth2User.UserBuilder defaultTimeZone(String defaultTimeZone) {
+      this.defaultTimeZone = defaultTimeZone;
+      return this;
+    }
+
     public CustomOAuth2User build() {
       String encodedPassword = this.passwordEncoder.apply(this.password);
       return new CustomOAuth2User(this.username, encodedPassword, !this.disabled,
@@ -973,7 +1065,8 @@ public class CustomOAuth2User implements UserDetails, CredentialsContainer {
           this.id, this.firstName, this.lastName, this.fullName, this.passwordStrength,
           this.sysAdmin, this.toUser, this.mobile, this.email, this.mainDeptId,
           this.passwordExpiredDate, this.lastModifiedPasswordDate, this.expiredDate,
-          this.deleted, this.tenantId, this.tenantName, this.tenantRealNameStatus);
+          this.deleted, this.tenantId, this.tenantName, this.tenantRealNameStatus,
+          this.directoryId, this.defaultLanguage, this.defaultTimeZone);
     }
   }
 

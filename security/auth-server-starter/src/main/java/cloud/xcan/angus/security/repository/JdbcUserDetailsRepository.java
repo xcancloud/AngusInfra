@@ -53,43 +53,43 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
           + "username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
           + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
           + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-          + "tenant_id, tenant_name, tenant_real_name_status"
-          + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone"
+          + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
   public static final String DEF_DELETE_USER_SQL
-      = "delete from oauth2_user where username = ?";
+      = "DELETE FROM oauth2_user where username = ?";
 
   public static final String DEF_UPDATE_USER_SQL =
-      "update oauth2_user set password = ?, enabled = ?, account_non_expired = ?, account_non_locked = ?, credentials_non_expired = ?, "
+      "UPDATE oauth2_user set password = ?, enabled = ?, account_non_expired = ?, account_non_locked = ?, credentials_non_expired = ?, "
           + "first_name = ?, last_name = ?, full_name = ?, password_strength = ?, sys_admin = ?, to_user = ?, email = ?, mobile = ?, main_dept_id = ?,"
           + "password_expired_date = ?, last_modified_password_date = ?, expired_date = ?, deleted = ?, "
-          + "tenant_id = ?, tenant_name = ?, tenant_real_name_status = ? "
+          + "tenant_id = ?, tenant_name = ?, tenant_real_name_status = ?, directory_id = ?, default_language = ?, default_time_zone = ? "
           + "where username = ?";
 
   public static final String DEF_INSERT_AUTHORITY_SQL
-      = "insert into oauth2_authorities (username, authority) values (?,?)";
+      = "INSERT INTO Oauth2_authorities (username, authority) VALUES (?,?)";
 
   public static final String DEF_DELETE_USER_AUTHORITIES_SQL
-      = "delete from oauth2_authorities where username = ?";
+      = "DELETE FROM oauth2_authorities WHERE username = ?";
 
   public static final String DEF_USER_EXISTS_SQL
-      = "select username from oauth2_user where username = ?";
+      = "SELECT username FROM oauth2_user WHERE username = ?";
 
   public static final String DEF_CHANGE_PASSWORD_SQL
-      = "update oauth2_user set password = ? where username = ?";
+      = "UPDATE oauth2_user SET password = ? WHERE username = ?";
 
   public static final String DEF_USERS_BY_ACCOUNT_QUERY =
-      "select username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
+      "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
           + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
           + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-          + "tenant_id, tenant_name, tenant_real_name_status "
-          + "from oauth2_user where (username = ? or email = ? or mobile = ?) and deleted = 0";
+          + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
+          + "FROM oauth2_user WHERE (username = ? OR email = ? OR mobile = ?) AND deleted = 0";
 
   public static final String DEF_USER_ACCOUNT_EXISTS_SQL
-      = "select username from oauth2_user where username = ? or email = ? or mobile = ?";
+      = "SELECT username FROM oauth2_user WHERE username = ? OR email = ? OR mobile = ?";
 
   public static final String DEF_USER_DELETED_STATUS_SQL
-      = "update oauth2_user set deleted = 1 where username = ?";
+      = "UPDATE oauth2_user SET deleted = 1 WHERE username = ?";
 
   // @formatter:on
 
@@ -168,7 +168,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setBoolean(12, user.isToUser());
       ps.setString(13, user.getEmail());
       ps.setString(14, user.getMobile());
-      ps.setLong(15, user.getMainDeptId());
+      ps.setString(15, user.getMainDeptId());
       ps.setTimestamp(16, user.getPasswordExpiredDate() != null
           ? Timestamp.from(user.getPasswordExpiredDate()) : null);
       ps.setTimestamp(17, user.getLastModifiedPasswordDate() != null
@@ -180,6 +180,9 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setString(21, user.getTenantName());
       ps.setString(22, user.getTenantRealNameStatus());
       ps.setString(23, user.getUsername());
+      ps.setString(24, user.getDirectoryId());
+      ps.setString(25, user.getDefaultLanguage());
+      ps.setString(26, user.getDefaultTimeZone());
     });
     if (getEnableAuthorities()) {
       insertUserAuthorities(user);
@@ -205,7 +208,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setBoolean(11, user.isToUser());
       ps.setString(12, user.getEmail());
       ps.setString(13, user.getMobile());
-      ps.setLong(14, user.getMainDeptId());
+      ps.setString(14, user.getMainDeptId());
       ps.setTimestamp(15, user.getPasswordExpiredDate() != null
           ? Timestamp.from(user.getPasswordExpiredDate()) : null);
       ps.setTimestamp(16, user.getLastModifiedPasswordDate() != null
@@ -216,7 +219,10 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setString(19, user.getTenantId());
       ps.setString(20, user.getTenantName());
       ps.setString(21, user.getTenantRealNameStatus());
-      ps.setString(22, user.getUsername());
+      ps.setString(22, user.getDirectoryId());
+      ps.setString(23, user.getDefaultLanguage());
+      ps.setString(24, user.getDefaultTimeZone());
+      ps.setString(25, user.getUsername());
     });
     if (getEnableAuthorities()) {
       deleteUserAuthorities(user.getUsername());

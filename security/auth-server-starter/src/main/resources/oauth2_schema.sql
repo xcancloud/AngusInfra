@@ -82,7 +82,10 @@ create table oauth2_user
     deleted                     boolean      NOT NULL DEFAULT '0',
     tenant_id                   varchar(32)  NOT NULL DEFAULT '-1',
     tenant_name                 varchar(100)          DEFAULT NULL,
-    tenant_real_name_status     varchar(20)           DEFAULT NULL
+    tenant_real_name_status     varchar(20)           DEFAULT NULL,
+    directory_id                varchar(32)           DEFAULT NULL,
+    default_language            varchar(20)           DEFAULT NULL,
+    default_time_zone           varchar(20)           DEFAULT NULL
 );
 CREATE UNIQUE INDEX idx_username ON oauth2_user (username);
 CREATE INDEX uidx_mobile_tenant_id ON oauth2_user (username, tenant_id);

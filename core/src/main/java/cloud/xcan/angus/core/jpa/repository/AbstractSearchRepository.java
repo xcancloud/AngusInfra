@@ -213,7 +213,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       }
     }
     if (notDeleted && hasDeletedField(mainClz)) {
-      sql.append(" AND ").append(alias).append(".deleted_flag = 0");
+      sql.append(" AND ").append(alias).append(".deleted = 0");
     }
     if (!isMultiTenantCtrl() || TenantInterceptor.TENANT_TABLES.isEmpty()) {
       return sql;

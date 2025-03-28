@@ -6,6 +6,7 @@ CATALINA_BASE_IS_UNDEFINED
 temp
 work
 cert/*.lic
+.DS_Store
 
 ### STS ###
 .apt_generated

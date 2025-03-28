@@ -20,7 +20,7 @@ import static java.lang.Character.isUpperCase;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 
-import cloud.xcan.angus.api.enums.PassdStrength;
+import cloud.xcan.angus.api.enums.PasswordStrength;
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.biz.ResourceName;
 import cloud.xcan.angus.core.jpa.repository.summary.DateRangeType;
@@ -528,15 +528,15 @@ public class CoreUtils {
   /**
    * Must be after running {@link Passd} verification
    */
-  public static PassdStrength calcPassdStrength(String passd) {
+  public static PasswordStrength calcPasswordStrength(String password) {
     int typesNum = 0;
     boolean hasUpperCase = false;
     boolean hasLowerCase = false;
     boolean hasDigits = false;
     boolean hasSpecialChar = false;
 
-    for (int i = 0; i < passd.length(); ++i) {
-      char chr = passd.charAt(i);
+    for (int i = 0; i < password.length(); ++i) {
+      char chr = password.charAt(i);
       if (!hasUpperCase && isUpperCase(chr)) {
         hasUpperCase = true;
         typesNum++;
@@ -551,15 +551,15 @@ public class CoreUtils {
         typesNum++;
       }
     }
-    if (typesNum <= 2 && passd.length() < 10 || typesNum == 3 && passd.length() < 9
-        || typesNum == 4 && passd.length() < 8) {
-      return PassdStrength.WEAK;
+    if (typesNum <= 2 && password.length() < 10 || typesNum == 3 && password.length() < 9
+        || typesNum == 4 && password.length() < 8) {
+      return PasswordStrength.WEAK;
     }
-    if ((typesNum == 2 && passd.length() >= 18) || (typesNum == 3 && passd.length() >= 15)
-        || (typesNum == 4 && passd.length() >= 12)) {
-      return PassdStrength.STRONG;
+    if ((typesNum == 2 && password.length() >= 18) || (typesNum == 3 && password.length() >= 15)
+        || (typesNum == 4 && password.length() >= 12)) {
+      return PasswordStrength.STRONG;
     }
-    return PassdStrength.MEDIUM;
+    return PasswordStrength.MEDIUM;
   }
 
   public static InputStream getUrlInputStream(String url) {

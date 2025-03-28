@@ -53,17 +53,17 @@ import org.springframework.util.CollectionUtils;
  *
  * ## Mode 2 (GroupBy=STATUS) - status column grouping statistics (multiple status column statistics are supported)
  * SELECT
- * 	source, gender, admin_flag, enabled_flag, locked_flag, COUNT(id)
+ * 	source, gender, admin_flag, enabled, locked, COUNT(id)
  * FROM
  * 	`user`
  * WHERE
  * 	tenant_id = 1
  * 	AND created_date >= "2022-01-19 00:00:00"
  * GROUP BY
- * 	source, gender, admin_flag, enabled_flag, locked_flag;
+ * 	source, gender, admin_flag, enabled, locked;
  *
  * ------------ Results ----------
- * -- source|gender|admin_flag|enabled_flag|locked_flag|COUNT(id)
+ * -- source|gender|admin_flag|enabled|locked|COUNT(id)
  * -- ----------------------
  * -- BACKGROUND_ADDED	MALE	0	0	1	1
  * -- BACKGROUND_ADDED	MALE	0	1	0	14
@@ -183,7 +183,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
   }
 
   private String getDeletedCondition(SummaryQueryRegister register) {
-    return register.ignoreDeleted() ? " AND deleted_flag = 0 " : "";
+    return register.ignoreDeleted() ? " AND deleted = 0 " : "";
   }
 
   private String getAggregateCondition(List<Aggregate> aggregates) {

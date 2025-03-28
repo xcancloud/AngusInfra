@@ -3,11 +3,25 @@ package cloud.xcan.angus.api.enums;
 import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.locale.EnumMessage;
 
+/**
+ * Product version type:
+ *
+ * <pre>
+ * - CLOUD_SERVICE (Cloud Service Edition)
+ * - DATACENTER (Data Center Edition)
+ * - ENTERPRISE(Enterprise Edition)
+ * - COMMUNITY (Community Edition)
+ * - GENERIC(Generic Edition) - Not Supported
+ * </pre>
+ */
 @EndpointRegister
 public enum EditionType implements EnumMessage<String> {
-  //     * Product version type: CLOUD_SERVICE (Cloud Service Edition) / DATACENTER (Data Center Edition)/
-  //     * ENTERPRISE(Enterprise Edition)/COMMUNITY (Community Edition) / GENERIC(Generic Edition)
-  CLOUD_SERVICE, COMMUNITY, ENTERPRISE, DATACENTER/*, GENERIC*/;
+
+  CLOUD_SERVICE,
+  COMMUNITY,
+  ENTERPRISE,
+  DATACENTER
+  /*, GENERIC*/;
 
   @Override
   public String getValue() {

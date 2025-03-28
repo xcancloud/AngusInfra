@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.utils;
 
-import static cloud.xcan.angus.core.utils.CoreUtils.calcPassdStrength;
+import static cloud.xcan.angus.core.utils.CoreUtils.calcPasswordStrength;
 import static cloud.xcan.angus.core.utils.CoreUtils.extractMD5Key;
 import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.distinctByKey;
@@ -8,7 +8,7 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.duplicateByKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import cloud.xcan.angus.api.enums.PassdStrength;
+import cloud.xcan.angus.api.enums.PasswordStrength;
 import cloud.xcan.angus.core.jpa.multitenancy.TenantAuditingEntity;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,15 +103,15 @@ public class CoreUtilsTest {
 
   @Test
   public void testCalcPassdStrength() {
-    assertEquals(PassdStrength.WEAK, calcPassdStrength("123456"));
-    assertEquals(PassdStrength.WEAK, calcPassdStrength("123abc"));
-    assertEquals(PassdStrength.WEAK, calcPassdStrength("123456!@#"));
-    assertEquals(PassdStrength.MEDIUM, calcPassdStrength("1234567890ab"));
-    assertEquals(PassdStrength.MEDIUM, calcPassdStrength("123456!@#AAA12"));
-    assertEquals(PassdStrength.MEDIUM, calcPassdStrength("123456!@#Aa"));
-    assertEquals(PassdStrength.STRONG, calcPassdStrength("1234567890ecv34gfb"));
-    assertEquals(PassdStrength.STRONG, calcPassdStrength("1234567890acbAC"));
-    assertEquals(PassdStrength.STRONG, calcPassdStrength("123456789Aa#"));
+    assertEquals(PasswordStrength.WEAK, calcPasswordStrength("123456"));
+    assertEquals(PasswordStrength.WEAK, calcPasswordStrength("123abc"));
+    assertEquals(PasswordStrength.WEAK, calcPasswordStrength("123456!@#"));
+    assertEquals(PasswordStrength.MEDIUM, calcPasswordStrength("1234567890ab"));
+    assertEquals(PasswordStrength.MEDIUM, calcPasswordStrength("123456!@#AAA12"));
+    assertEquals(PasswordStrength.MEDIUM, calcPasswordStrength("123456!@#Aa"));
+    assertEquals(PasswordStrength.STRONG, calcPasswordStrength("1234567890ecv34gfb"));
+    assertEquals(PasswordStrength.STRONG, calcPasswordStrength("1234567890acbAC"));
+    assertEquals(PasswordStrength.STRONG, calcPasswordStrength("123456789Aa#"));
   }
 
   /**

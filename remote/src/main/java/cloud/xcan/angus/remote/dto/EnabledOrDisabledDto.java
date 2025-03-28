@@ -22,7 +22,7 @@ public class EnabledOrDisabledDto implements Serializable {
   @NotNull
   @Schema(description = "Resource enabled or disabled flag", example = "true",
       requiredMode = RequiredMode.REQUIRED)
-  private Boolean enabledFlag;
+  private Boolean enabled;
 
   @Override
   public boolean equals(Object o) {

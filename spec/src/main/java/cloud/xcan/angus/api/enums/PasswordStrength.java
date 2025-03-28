@@ -4,7 +4,7 @@ import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.locale.EnumMessage;
 
 @EndpointRegister
-public enum PassdStrength implements EnumMessage<String> {
+public enum PasswordStrength implements EnumMessage<String> {
   UNKNOWN, WEAK, MEDIUM, STRONG;
 
   @Override

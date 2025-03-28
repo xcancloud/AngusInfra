@@ -132,7 +132,7 @@ CREATE TABLE `tenant`
     `apply_cancel_date`  DATETIME                                  DEFAULT '2001-01-01 00:00:00' COMMENT 'Cancellation Application Date',
     `address`            VARCHAR(160) COLLATE utf8mb4_bin          DEFAULT '' COMMENT 'Address',
     `user_count`         INT(11) NOT NULL DEFAULT '0' COMMENT 'User Count',
-    `locked_flag`        INT(11) NOT NULL DEFAULT '0' COMMENT 'Lock Status: 0-Unlocked; 1-Locked',
+    `locked`        INT(11) NOT NULL DEFAULT '0' COMMENT 'Lock Status: 0-Unlocked; 1-Locked',
     `last_lock_date`     DATETIME                                  DEFAULT NULL COMMENT 'Last Lock Date',
     `lock_start_date`    DATETIME                                  DEFAULT NULL COMMENT 'Lock Start Date',
     `lock_end_date`      DATETIME                                  DEFAULT NULL COMMENT 'Lock End Date',

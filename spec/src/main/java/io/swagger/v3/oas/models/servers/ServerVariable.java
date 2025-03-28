@@ -23,7 +23,7 @@ public class ServerVariable {
 
   //@NotEmpty
   @Schema(description = "An enumeration of string values to be used if the substitution options are from a limited set. Note: The array MUST NOT be empty.",
-      example = "[prod, dev, beta]")
+      type = "array", example = "[\"prod\", \"dev\", \"beta\"]")
   private List<String> _enum = null;
 
   //@NotEmpty

@@ -39,7 +39,7 @@ import org.springframework.data.jpa.domain.Specification;
 @Slf4j
 public class GenericSpecification<T> implements Specification<T> {
 
-  private final Set<SearchCriteria> criterias;
+  private final Set<SearchCriteria> criteria;
 
   public GenericSpecification() {
     this(null);
@@ -47,9 +47,9 @@ public class GenericSpecification<T> implements Specification<T> {
 
   public GenericSpecification(Set<SearchCriteria> filters) {
     if (nonNull(filters)) {
-      this.criterias = new HashSet<>(filters);
+      this.criteria = new HashSet<>(filters);
     } else {
-      this.criterias = new HashSet<>();
+      this.criteria = new HashSet<>();
     }
   }
 
@@ -57,131 +57,131 @@ public class GenericSpecification<T> implements Specification<T> {
     return new GenericSpecification<>(SearchCriteria.criteria(criteria));
   }
 
-  public void add(SearchCriteria criteria) {
-    criterias.add(criteria);
+  public void add(SearchCriteria criteria0) {
+    criteria.add(criteria0);
   }
 
   @Override
   public Predicate toPredicate(@NonNullable Root<T> root, @NonNullable CriteriaQuery<?> query,
       CriteriaBuilder cb) {
     Predicate predicate = cb.conjunction();
-    for (SearchCriteria criteria : criterias) {
-      if (criteria.isIgnoreFields() || criteria.isNotValidCriteria()) {
+    for (SearchCriteria criteria0 : criteria) {
+      if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
         continue;
       }
-      if (criteria.getOp().noValue()) {
-        if (criteria.getOp().equals(SearchOperation.IS_NULL)) {
-          predicate.getExpressions().add(cb.isNull(root.get(criteria.getKey())));
-        } else if (criteria.getOp().equals(SearchOperation.IS_NOT_NULL)) {
-          predicate.getExpressions().add(cb.isNotNull(root.get(criteria.getKey())));
+      if (criteria0.getOp().noValue()) {
+        if (criteria0.getOp().equals(SearchOperation.IS_NULL)) {
+          predicate.getExpressions().add(cb.isNull(root.get(criteria0.getKey())));
+        } else if (criteria0.getOp().equals(SearchOperation.IS_NOT_NULL)) {
+          predicate.getExpressions().add(cb.isNotNull(root.get(criteria0.getKey())));
         }
         continue;
       }
-      Object opValue = criteria.getValue();
-      Class<?> keyType = root.get(criteria.getKey()).getJavaType();
+      Object opValue = criteria0.getValue();
+      Class<?> keyType = root.get(criteria0.getKey()).getJavaType();
       if (isDateTypeKey(keyType)) {
         LocalDateTime dateValue;
-        Object value = criteria.getValue();
+        Object value = criteria0.getValue();
         if (value instanceof LocalDateTime) {
           dateValue = (LocalDateTime) value;
         } else {
           dateValue = getLocalDateTime(value.toString().replaceAll("\"", ""));
         }
         ProtocolAssert.assertNotNull(dateValue, PARAM_FORMAT_ERROR_T, PARAM_FORMAT_ERROR_KEY,
-            new Object[]{criteria.getKey(), value});
-        if (criteria.getOp().equals(SearchOperation.GREATER_THAN)) {
-          predicate.getExpressions().add(cb.greaterThan(root.<LocalDateTime>get(criteria.getKey()),
+            new Object[]{criteria0.getKey(), value});
+        if (criteria0.getOp().equals(SearchOperation.GREATER_THAN)) {
+          predicate.getExpressions().add(cb.greaterThan(root.<LocalDateTime>get(criteria0.getKey()),
               cb.literal(dateValue)));
-        } else if (criteria.getOp().equals(SearchOperation.LESS_THAN)) {
+        } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN)) {
           predicate.getExpressions()
-              .add(cb.lessThan(root.<LocalDateTime>get(criteria.getKey()), cb.literal(dateValue)));
-        } else if (criteria.getOp().equals(SearchOperation.GREATER_THAN_EQUAL)) {
+              .add(cb.lessThan(root.<LocalDateTime>get(criteria0.getKey()), cb.literal(dateValue)));
+        } else if (criteria0.getOp().equals(SearchOperation.GREATER_THAN_EQUAL)) {
           predicate.getExpressions()
-              .add(cb.greaterThanOrEqualTo(root.<LocalDateTime>get(criteria.getKey()),
+              .add(cb.greaterThanOrEqualTo(root.<LocalDateTime>get(criteria0.getKey()),
                   cb.literal(dateValue)));
-        } else if (criteria.getOp().equals(SearchOperation.LESS_THAN_EQUAL)) {
+        } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN_EQUAL)) {
           predicate.getExpressions()
-              .add(cb.lessThanOrEqualTo(root.<LocalDateTime>get(criteria.getKey()),
+              .add(cb.lessThanOrEqualTo(root.<LocalDateTime>get(criteria0.getKey()),
                   cb.literal(dateValue)));
-        } else if (criteria.getOp().equals(SearchOperation.EQUAL)) {
+        } else if (criteria0.getOp().equals(SearchOperation.EQUAL)) {
           predicate.getExpressions()
-              .add(cb.equal(root.<LocalDateTime>get(criteria.getKey()), cb.literal(dateValue)));
+              .add(cb.equal(root.<LocalDateTime>get(criteria0.getKey()), cb.literal(dateValue)));
         }
       } else {
         String stringValue = safeStringValue(opValue.toString());
-        if (criteria.getOp().equals(SearchOperation.GREATER_THAN)) {
+        if (criteria0.getOp().equals(SearchOperation.GREATER_THAN)) {
           predicate.getExpressions().add(cb.greaterThan(
-              root.get(criteria.getKey()), Long.parseLong(stringValue)));
-        } else if (criteria.getOp().equals(SearchOperation.LESS_THAN)) {
+              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+        } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN)) {
           predicate.getExpressions().add(cb.lessThan(
-              root.get(criteria.getKey()), Long.parseLong(stringValue)));
-        } else if (criteria.getOp().equals(SearchOperation.GREATER_THAN_EQUAL)) {
+              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+        } else if (criteria0.getOp().equals(SearchOperation.GREATER_THAN_EQUAL)) {
           predicate.getExpressions().add(cb.greaterThanOrEqualTo(
-              root.get(criteria.getKey()), Long.parseLong(stringValue)));
-        } else if (criteria.getOp().equals(SearchOperation.LESS_THAN_EQUAL)) {
+              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+        } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN_EQUAL)) {
           predicate.getExpressions().add(cb.lessThanOrEqualTo(
-              root.get(criteria.getKey()), Long.parseLong(stringValue)));
-        } else if (criteria.getOp().equals(SearchOperation.EQUAL)) {
+              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+        } else if (criteria0.getOp().equals(SearchOperation.EQUAL)) {
           if (keyType.isEnum()) {
             Value<?>[] values = (Value<?>[]) keyType.getEnumConstants();
             for (Value<?> value : values) {
               if (stringValue.equalsIgnoreCase((String) value.getValue())) {
-                predicate.getExpressions().add(cb.equal(root.get(criteria.getKey()), value));
+                predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey()), value));
               }
             }
           } else {
             if (nonNull(toBooleanObject(opValue.toString()))) {
-              predicate.getExpressions().add(cb.equal(root.get(criteria.getKey()),
+              predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey()),
                   BooleanUtils.toBoolean(opValue.toString())));
             } else if (opValue instanceof String) {
-              predicate.getExpressions().add(cb.equal(root.get(criteria.getKey()), stringValue));
+              predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey()), stringValue));
             } else {
-              predicate.getExpressions().add(cb.equal(root.get(criteria.getKey())
+              predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey())
                   .as(opValue.getClass()), opValue));
             }
           }
-        } else if (criteria.getOp().equals(SearchOperation.NOT_EQUAL)) {
+        } else if (criteria0.getOp().equals(SearchOperation.NOT_EQUAL)) {
           if (keyType.isEnum()) {
             Value<?>[] values = (Value<?>[]) keyType.getEnumConstants();
             for (Value<?> value : values) {
               if (stringValue.equalsIgnoreCase((String) value.getValue())) {
-                predicate.getExpressions().add(cb.notEqual(root.get(criteria.getKey()), value));
+                predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey()), value));
               }
             }
           } else {
             if (nonNull(toBooleanObject(opValue.toString()))) {
-              predicate.getExpressions().add(cb.notEqual(root.get(criteria.getKey()),
+              predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey()),
                   BooleanUtils.toBoolean(opValue.toString())));
             } else if (opValue instanceof String) {
-              predicate.getExpressions().add(cb.notEqual(root.get(criteria.getKey()), stringValue));
+              predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey()), stringValue));
             } else {
-              predicate.getExpressions().add(cb.notEqual(root.get(criteria.getKey())
+              predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey())
                   .as(opValue.getClass()), opValue));
             }
           }
-        } else if (criteria.getOp().equals(SearchOperation.IN)) {
-          In<?> inClause = getInCriteria(root, cb, criteria, opValue, safeInValue(stringValue));
+        } else if (criteria0.getOp().equals(SearchOperation.IN)) {
+          In<?> inClause = getInCriteria(root, cb, criteria0, opValue, safeInValue(stringValue));
           if (Objects.isNull(inClause)) {
             continue;
           }
           predicate.getExpressions().add(cb.and(inClause));
-        } else if (criteria.getOp().equals(SearchOperation.NOT_IN)) {
-          In<?> inClause = getInCriteria(root, cb, criteria, opValue, safeInValue(stringValue));
+        } else if (criteria0.getOp().equals(SearchOperation.NOT_IN)) {
+          In<?> inClause = getInCriteria(root, cb, criteria0, opValue, safeInValue(stringValue));
           if (Objects.isNull(inClause)) {
             continue;
           }
           predicate.getExpressions().add(cb.and(cb.not(inClause)));
-        } else if (criteria.getOp().equals(SearchOperation.MATCH)) {
+        } else if (criteria0.getOp().equals(SearchOperation.MATCH)) {
           predicate.getExpressions()
-              .add(cb.like(root.get(criteria.getKey()), "%" + stringValue + "%"));
-        } else if (criteria.getOp().equals(SearchOperation.MATCH_END)) {
-          predicate.getExpressions().add(cb.like(root.get(criteria.getKey()), stringValue + "%"));
-        } else if (criteria.getOp().equals(SearchOperation.NOT_MATCH)) {
+              .add(cb.like(root.get(criteria0.getKey()), "%" + stringValue + "%"));
+        } else if (criteria0.getOp().equals(SearchOperation.MATCH_END)) {
+          predicate.getExpressions().add(cb.like(root.get(criteria0.getKey()), stringValue + "%"));
+        } else if (criteria0.getOp().equals(SearchOperation.NOT_MATCH)) {
           predicate.getExpressions()
-              .add(cb.notLike(root.get(criteria.getKey()), "%" + stringValue + "%"));
-        } else if (criteria.getOp().equals(SearchOperation.NOT_MATCH_END)) {
+              .add(cb.notLike(root.get(criteria0.getKey()), "%" + stringValue + "%"));
+        } else if (criteria0.getOp().equals(SearchOperation.NOT_MATCH_END)) {
           predicate.getExpressions()
-              .add(cb.notLike(root.get(criteria.getKey()), stringValue + "%"));
+              .add(cb.notLike(root.get(criteria0.getKey()), stringValue + "%"));
         }
       }
     }

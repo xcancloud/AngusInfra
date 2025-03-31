@@ -173,6 +173,7 @@ public interface BizConstant {
   int MAX_LANGUAGE_LENGTH = 8;
 
   int MAX_FILE_NAME = 400;
+  int MAX_FILE_PATH = 800;
   int MAX_VARCHAR_LENGTH = 6000;
   int MAX_ATTACHMENT_NUM = 5;
   int MAX_ATTACHMENT_NUM_X2 = 10;

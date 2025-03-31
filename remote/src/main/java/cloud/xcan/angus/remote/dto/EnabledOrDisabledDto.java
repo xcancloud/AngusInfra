@@ -15,13 +15,11 @@ import lombok.experimental.Accessors;
 public class EnabledOrDisabledDto implements Serializable {
 
   @NotNull
-  @Schema(description = "Resource id", example = "1",
-      requiredMode = RequiredMode.REQUIRED)
+  @Schema(description = "Resource id.", example = "1", requiredMode = RequiredMode.REQUIRED)
   private Long id;
 
   @NotNull
-  @Schema(description = "Resource enabled or disabled flag", example = "true",
-      requiredMode = RequiredMode.REQUIRED)
+  @Schema(description = "Resource enabled or disabled flag.", example = "true", requiredMode = RequiredMode.REQUIRED)
   private Boolean enabled;
 
   @Override

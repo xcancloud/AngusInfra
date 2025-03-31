@@ -3,6 +3,7 @@ package cloud.xcan.angus.core.log;
 import static cloud.xcan.angus.remote.ApiConstant.SystemLog.CLEAR_COMPRESSION_BEFORE_DAY;
 import static cloud.xcan.angus.remote.ApiConstant.SystemLog.DEFAULT_COMPRESSION_MOVE_PATH;
 import static cloud.xcan.angus.remote.ApiConstant.SystemLog.DEFAULT_DISK_USAGE_EXCEEDS_RATE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_FILE_PATH;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -51,7 +52,7 @@ public class SystemLogProperties implements AppPropertiesRegister {
   @Schema(description = "How many days ago to compress the log, default " + CLEAR_COMPRESSION_BEFORE_DAY)
   private Integer compressionBeforeDay;
 
-  @Length(max = 400)
+  @Length(max = MAX_FILE_PATH)
   @Schema(description = "Move to position after compression, default " + DEFAULT_COMPRESSION_MOVE_PATH)
   private String compressionMovePath;
 

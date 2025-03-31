@@ -1,8 +1,8 @@
 package cloud.xcan.angus.spec.experimental;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import java.time.Duration;
 import java.util.Collection;
@@ -298,7 +298,7 @@ public class Assert {
    * @throws IllegalArgumentException if the object array is {@code null} or contains no elements
    */
   public static Object[] assertNotEmpty(Object[] array, String message) {
-    if (ObjectUtils.isEmpty(array)) {
+    if (isEmpty(array)) {
       throw new IllegalArgumentException(message);
     }
     return array;
@@ -316,7 +316,7 @@ public class Assert {
    * @throws IllegalArgumentException if the object array is {@code null} or contains no elements
    */
   public static Object[] assertNotEmpty(Object[] array, Supplier<String> messageSupplier) {
-    if (ObjectUtils.isEmpty(array)) {
+    if (isEmpty(array)) {
       throw new IllegalArgumentException(nullSafeGet(messageSupplier));
     }
     return array;
@@ -375,7 +375,7 @@ public class Assert {
    * @throws IllegalArgumentException if the collection is {@code null} or contains no elements
    */
   public static Collection<?> assertNotEmpty(Collection<?> collection, String message) {
-    if (ObjectUtils.isEmpty(collection)) {
+    if (isEmpty(collection)) {
       throw new IllegalArgumentException(message);
     }
     return collection;
@@ -394,7 +394,7 @@ public class Assert {
    */
   public static Collection<?> assertNotEmpty(Collection<?> collection,
       Supplier<String> messageSupplier) {
-    if (ObjectUtils.isEmpty(collection)) {
+    if (isEmpty(collection)) {
       throw new IllegalArgumentException(nullSafeGet(messageSupplier));
     }
     return collection;
@@ -454,7 +454,7 @@ public class Assert {
    * @throws IllegalArgumentException if the map is {@code null} or contains no entries
    */
   public static Map<?, ?> assertNotEmpty(Map<?, ?> map, String message) {
-    if (ObjectUtils.isEmpty(map)) {
+    if (isEmpty(map)) {
       throw new IllegalArgumentException(message);
     }
     return map;
@@ -472,7 +472,7 @@ public class Assert {
    * @throws IllegalArgumentException if the map is {@code null} or contains no entries
    */
   public static Map<?, ?> assertNotEmpty(Map<?, ?> map, Supplier<String> messageSupplier) {
-    if (ObjectUtils.isEmpty(map)) {
+    if (isEmpty(map)) {
       throw new IllegalArgumentException(nullSafeGet(messageSupplier));
     }
     return map;

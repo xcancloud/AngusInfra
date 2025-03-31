@@ -3,6 +3,7 @@ package cloud.xcan.angus.core.biz;
 import static cloud.xcan.angus.core.biz.exception.BizException.M.OPT_OBJ_IS_EMPTY;
 import static cloud.xcan.angus.remote.message.CommProtocolException.M.RESOURCE_ID_EMPTY;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.CommProtocolException;
@@ -13,7 +14,6 @@ import cloud.xcan.angus.remote.message.http.ResourceNotFound;
 import cloud.xcan.angus.remote.message.http.Unauthorized;
 import cloud.xcan.angus.spec.experimental.Entity;
 import cloud.xcan.angus.spec.utils.EnumUtils;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.util.Collection;
 import org.apache.commons.lang3.StringUtils;
 
@@ -374,37 +374,37 @@ public class ProtocolAssert {
   }
 
   public static <T> void assertResourceExisted(T resource, String id) {
-    if (ObjectUtils.isNotEmpty(resource)) {
+    if (isNotEmpty(resource)) {
       throw ResourceExisted.of(id);
     }
   }
 
   public static <T> void assertResourceExisted(T resource, String id, String name) {
-    if (ObjectUtils.isNotEmpty(resource)) {
+    if (isNotEmpty(resource)) {
       throw ResourceExisted.of(id, name);
     }
   }
 
   public static <T> void assertResourceExisted(T resource, Long id) {
-    if (ObjectUtils.isNotEmpty(resource)) {
+    if (isNotEmpty(resource)) {
       throw ResourceExisted.of(id);
     }
   }
 
   public static <T> void assertResourceExisted(T resource, Long id, String name) {
-    if (ObjectUtils.isNotEmpty(resource)) {
+    if (isNotEmpty(resource)) {
       throw ResourceExisted.of(id, name);
     }
   }
 
   public static <T> void assertResourceExisted(T resource, String message, Object[] args) {
-    if (ObjectUtils.isNotEmpty(resource)) {
+    if (isNotEmpty(resource)) {
       throw ResourceExisted.of(message, args);
     }
   }
 
   public static <ID> void assertIdNotEmpty(ID id) {
-    if (id == null || (id instanceof String && StringUtils.isEmpty((String) id))) {
+    if (id == null || (id instanceof String && isEmpty((String) id))) {
       throw CommProtocolException.of(RESOURCE_ID_EMPTY);
     }
   }

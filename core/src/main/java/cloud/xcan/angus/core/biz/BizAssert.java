@@ -2,52 +2,52 @@ package cloud.xcan.angus.core.biz;
 
 
 import static cloud.xcan.angus.core.biz.exception.BizException.M.OPT_OBJ_IS_EMPTY;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.core.biz.exception.BizException;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.ResultMessage;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class BizAssert {
 
   public static <T> T assertNotEmpty(T object) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(OPT_OBJ_IS_EMPTY);
     }
     return object;
   }
 
   public static <T> T assertNotEmpty(T object, Throwable cause) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(OPT_OBJ_IS_EMPTY, cause);
     }
     return object;
   }
 
   public static <T> T assertNotEmpty(T object, String message) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY);
     }
     return object;
   }
 
   public static <T> T assertNotEmpty(T object, String message, Throwable cause) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, cause);
     }
     return object;
   }
 
   public static <T> T assertNotEmpty(T object, String message, Object[] args) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, args);
     }
     return object;
   }
 
   public static <T> T assertNotEmpty(T object, String message, Object[] args, Throwable cause) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException
           .of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, args, cause);
     }
@@ -55,14 +55,14 @@ public class BizAssert {
   }
 
   public static <T> T assertNotEmpty(T object, String code, String message) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(code, StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY);
     }
     return object;
   }
 
   public static <T> T assertNotEmpty(T object, String code, String message, Throwable cause) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException
           .of(code, StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, cause);
     }
@@ -70,7 +70,7 @@ public class BizAssert {
   }
 
   public static <T> T assertNotEmpty(T object, String code, String message, Object[] args) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException
           .of(code, StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, args);
     }
@@ -78,7 +78,7 @@ public class BizAssert {
   }
 
   public static <T> T assertNotEmpty(T object, ResultMessage resultMessage) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(resultMessage.getCode(), resultMessage.getMsg());
     }
     return object;
@@ -86,7 +86,7 @@ public class BizAssert {
 
   public static <T> T assertNotEmpty(T object, ResultMessage resultMessage,
       Throwable throwable) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(resultMessage.getCode(), resultMessage.getMsg(), throwable);
     }
     return object;
@@ -94,7 +94,7 @@ public class BizAssert {
 
   public static <T> T assertNotEmpty(T object, ResultMessage resultMessage,
       ExceptionLevel level) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(resultMessage.getCode(), resultMessage.getMsg(), level);
     }
     return object;
@@ -102,7 +102,7 @@ public class BizAssert {
 
   public static <T> T assertNotEmpty(T object, ResultMessage resultMessage,
       ExceptionLevel level, Throwable cause) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw BizException.of(resultMessage.getCode(), resultMessage.getMsg(), level, cause);
     }
     return object;

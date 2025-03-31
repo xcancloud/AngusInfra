@@ -2,13 +2,13 @@ package cloud.xcan.angus.l2cache.spring;
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.EMPTY_MAP;
 
 import cloud.xcan.angus.l2cache.config.L2CacheProperties;
 import cloud.xcan.angus.l2cache.synchronous.CacheMessage;
 import cloud.xcan.angus.lettucex.util.RedisService;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import com.github.benmanes.caffeine.cache.Cache;
 import java.util.Collection;
 import java.util.Map;
@@ -234,7 +234,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
   }
 
   public void evict(Collection<Object> keys) {
-    if (ObjectUtils.isNotEmpty(keys)) {
+    if (isNotEmpty(keys)) {
       for (Object key : keys) {
         evict(key.toString());
       }

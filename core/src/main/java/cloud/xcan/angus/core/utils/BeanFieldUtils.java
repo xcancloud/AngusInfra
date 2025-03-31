@@ -1,5 +1,11 @@
 package cloud.xcan.angus.core.utils;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ReflectionUtils.getField;
+import static cloud.xcan.angus.spec.utils.StringUtils.camelToUnder;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
+
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
 import cloud.xcan.angus.spec.experimental.Identity;
@@ -15,7 +21,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * @author liuxiaolong
@@ -23,36 +28,35 @@ import org.springframework.util.ObjectUtils;
 public class BeanFieldUtils {
 
   public static String getSearchFields(String search, Class<?> clz) {
-    if (ObjectUtils.isEmpty(search)) {
+    if (isEmpty(search)) {
       return null;
     }
 
     StringBuilder result = new StringBuilder();
     String[] searchFields = search.replaceAll("\\s*", "").split(",");
     Field[] clzFields = clz.getDeclaredFields();
-    if (ObjectUtils.isEmpty(clzFields)) {
+    if (isEmpty(clzFields)) {
       return null;
     }
     for (String searchField : searchFields) {
-      if (ObjectUtils.isEmpty(searchField)) {
+      if (isEmpty(searchField)) {
         continue;
       }
       for (Field clzField : clzFields) {
         if (searchField.equalsIgnoreCase(clzField.getName())) {
-          result.append(StringUtils.camelToUnder(searchField)).append(",");
+          result.append(camelToUnder(searchField)).append(",");
           break;
         }
       }
     }
     String resultStr = result.toString();
-    return ObjectUtils.isEmpty(resultStr) ? null :
-        resultStr.substring(0, resultStr.length() - 1);
+    return isEmpty(resultStr) ? null : resultStr.substring(0, resultStr.length() - 1);
   }
 
   public static <T> T search2Entity(String search, Class<T> clazz)
       throws IllegalAccessException, InstantiationException {
     T obj = clazz.newInstance();
-    if (Objects.nonNull(search) && search.contains("=")) {
+    if (nonNull(search) && search.contains("=")) {
       String[] pairs = StringUtils.split(search, "&");
       Objects.requireNonNull(pairs);
       for (String pair : pairs) {
@@ -60,9 +64,9 @@ public class BeanFieldUtils {
           String[] kv = pair.split("=");
           String key = kv[0];
           Object value = kv[1];
-          if (Objects.nonNull(key)) {
+          if (nonNull(key)) {
             Field field = ReflectionUtils.findField(clazz, key);
-            if (Objects.nonNull(field)) {
+            if (nonNull(field)) {
               field.set(obj, value);
             }
           }
@@ -85,12 +89,11 @@ public class BeanFieldUtils {
   }
 
   public static List<String> getPropertyNames(Class<?> clz) {
-    return Arrays.stream(FieldUtils.getAllFields(clz)).map(Field::getName)
-        .collect(Collectors.toList());
+    return Arrays.stream(getAllFields(clz)).map(Field::getName).collect(Collectors.toList());
   }
 
   public static Set<String> getIdAnnotationPropertyNames(Class<?> clz) {
-    Field[] fields = FieldUtils.getAllFields(clz);
+    Field[] fields = getAllFields(clz);
     Set<String> names = new HashSet<>();
     for (Field field : fields) {
       if (field.isAnnotationPresent(ID.class) || field.isAnnotationPresent(Identity.class)) {
@@ -104,8 +107,8 @@ public class BeanFieldUtils {
     Set<SearchCriteria> set = new HashSet<>(fields.length);
     for (Field field : fields) {
       field.setAccessible(true);
-      Object fieldValue = ReflectionUtils.getField(field, dto);
-      if (Objects.nonNull(fieldValue)) {
+      Object fieldValue = getField(field, dto);
+      if (nonNull(fieldValue)) {
         set.add(new SearchCriteria(field.getName(), fieldValue, SearchOperation.EQUAL));
       }
     }
@@ -114,7 +117,7 @@ public class BeanFieldUtils {
 
   @SneakyThrows
   public static String[] getNullPropertyNames(Object source) {
-    Field[] fields = FieldUtils.getAllFields(source.getClass());
+    Field[] fields = getAllFields(source.getClass());
     Set<String> emptyNames = new HashSet<>();
     for (Field field : fields) {
       field.setAccessible(true);

@@ -1,13 +1,14 @@
 package cloud.xcan.angus.idgen.bid.impl;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+
 import cloud.xcan.angus.idgen.BidGenerator;
 import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.Format;
 import cloud.xcan.angus.idgen.bid.Mode;
 import cloud.xcan.angus.idgen.entity.IdConfig;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
-import java.util.Objects;
-import org.apache.commons.lang3.StringUtils;
 
 public abstract class AbstractBidGenerator implements BidGenerator {
 
@@ -18,7 +19,7 @@ public abstract class AbstractBidGenerator implements BidGenerator {
   }
 
   protected void checkBizKeyParam(String bizKey) {
-    if (StringUtils.isEmpty(bizKey)) {
+    if (isEmpty(bizKey)) {
       throw new IdGenerateException("The bizKey is empty");
     }
   }
@@ -31,35 +32,34 @@ public abstract class AbstractBidGenerator implements BidGenerator {
   }
 
   protected void checkRedisInstanceParam(IdConfig idConfig, DistributedIncrAssigner incrAssigner) {
-    if (Mode.REDIS.equals(idConfig.getMode()) && Objects.isNull(incrAssigner)) {
+    if (Mode.REDIS.equals(idConfig.getMode()) && isNull(incrAssigner)) {
       throw new IdGenerateException("RedisTemplate instance bean is not initialized");
     }
   }
 
   protected void checkIdConfig(IdConfig idConfig, Long tenantId) {
-    if (Objects.isNull(idConfig.getFormat())) {
+    if (isNull(idConfig.getFormat())) {
       throw new IdGenerateException("The id format is not configured");
     }
     if (!tenantId.equals(idConfig.getTenantId())) {
       throw new IdGenerateException("The tenantId parameter value is wrong");
     }
-    if (Objects.isNull(idConfig.getSeqLength()) || idConfig.getSeqLength() > MAX_SQE_LENGTH) {
+    if (isNull(idConfig.getSeqLength()) || idConfig.getSeqLength() > MAX_SQE_LENGTH) {
       throw new IdGenerateException(
           "The seqLength is invalid, the valid range of seqLength is 1-" + MAX_SQE_LENGTH);
     }
-    if (Objects.isNull(idConfig.getStep()) || idConfig.getStep() > MAX_STEP) {
+    if (isNull(idConfig.getStep()) || idConfig.getStep() > MAX_STEP) {
       throw new IdGenerateException(
           "The step is invalid, the valid range of step is 1-" + MAX_STEP);
     }
-    if (Format.PREFIX_SEQ.equals(idConfig.getFormat()) && StringUtils
-        .isEmpty(idConfig.getPrefix())) {
+    if (Format.PREFIX_SEQ.equals(idConfig.getFormat()) && isEmpty(idConfig.getPrefix())) {
       throw new IdGenerateException("The id prefix is not configured");
     }
-    if (Format.DATE_SEQ.equals(idConfig.getFormat()) && Objects.isNull(idConfig.getDateFormat())) {
+    if (Format.DATE_SEQ.equals(idConfig.getFormat()) && isNull(idConfig.getDateFormat())) {
       throw new IdGenerateException("The id dateFormat is not configured");
     }
-    if (Format.PREFIX_DATE_SEQ.equals(idConfig.getFormat()) && (
-        Objects.isNull(idConfig.getDateFormat()) || StringUtils.isEmpty(idConfig.getPrefix()))) {
+    if (Format.PREFIX_DATE_SEQ.equals(idConfig.getFormat())
+        && (isNull(idConfig.getDateFormat()) || isEmpty(idConfig.getPrefix()))) {
       throw new IdGenerateException("The id prefix or dateFormat is not configured");
     }
   }

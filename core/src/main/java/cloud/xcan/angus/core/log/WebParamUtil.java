@@ -1,6 +1,8 @@
 package cloud.xcan.angus.core.log;
 
 import static cloud.xcan.angus.spec.SpecConstant.UTF8;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.utils.GsonUtils;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
@@ -15,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -34,31 +35,26 @@ public class WebParamUtil {
       paramName = (String) paramNames.nextElement();
       paramValues = request.getParameterValues(paramName);
 
-      // 脱敏
-      // 默认脱敏参数
-      if (AuthKey.ACCESS_TOKEN.equals(paramName)
-          && !ObjectUtils.isEmpty(paramValues)) {
+      if (AuthKey.ACCESS_TOKEN.equals(paramName) && isNotEmpty(paramValues)) {
         map.put(paramName, paramValues[0]
             .replace(paramValues[0].substring(0, paramValues[0].lastIndexOf("-")),
                 "********-****-****-****"));
         continue;
       }
-      if (AuthKey.PASSD.equals(paramName)
-          || AuthKey.CLIENT_SECRET.equals(paramName)) {
+      if (AuthKey.PASSD.equals(paramName) || AuthKey.CLIENT_SECRET.equals(paramName)) {
         map.put(paramName, "********");
         continue;
       }
-      // 自定义脱敏参数
-      if (!ObjectUtils.isEmpty(ignoreParams)) {
+      if (isNotEmpty(ignoreParams)) {
         if (Arrays.binarySearch(ignoreParams, paramName) > 0) {
           map.put(paramName, "********");
           continue;
         }
       }
 
-      if (!ObjectUtils.isEmpty(paramValues)) {
+      if (isNotEmpty(paramValues)) {
         String paramValue = paramValues[0];
-        if (paramValue.length() != 0) {
+        if (!paramValue.isEmpty()) {
           map.put(paramName, paramValue);
         }
       }
@@ -70,7 +66,6 @@ public class WebParamUtil {
     if (joinPoint.getArgs().length > 0) {
       List<Object> args = new ArrayList<>(joinPoint.getArgs().length);
       for (Object o : joinPoint.getArgs()) {
-        // 获取参数, 只取自定义的参数
         if (o instanceof HttpServletRequest || o instanceof HttpServletResponse) {
           continue;
         }
@@ -99,12 +94,12 @@ public class WebParamUtil {
   }
 
   public static boolean isFileContentType(HttpServletRequest request) {
-    return ObjectUtils.isEmpty(request.getContentType()) || request.getContentType()
+    return isEmpty(request.getContentType()) || request.getContentType()
         .startsWith(ContentType.TYPE_FORM_DATA);
   }
 
   public static boolean isFileContentType(HttpServletResponse response) {
-    return ObjectUtils.isEmpty(response.getContentType()) || response.getContentType()
+    return isEmpty(response.getContentType()) || response.getContentType()
         .startsWith(ContentType.TYPE_OCTET_STREAM);
   }
 }

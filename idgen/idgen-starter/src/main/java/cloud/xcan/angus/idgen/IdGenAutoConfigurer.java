@@ -1,5 +1,7 @@
 package cloud.xcan.angus.idgen;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.api.pojo.instance.InstanceInfo;
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
 import cloud.xcan.angus.core.jpa.identity.SnowflakeIdGenerator;
@@ -19,7 +21,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.util.ObjectUtils;
 
 @Configuration
 @Conditional({IdGenAutoConfigurer.CoreCondition.class})
@@ -95,7 +96,7 @@ public class IdGenAutoConfigurer {
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
       String enabled = context.getEnvironment().getProperty("xcan.idgen.enabled");
-      return !ObjectUtils.isEmpty(enabled) && Boolean.parseBoolean(enabled);
+      return isNotEmpty(enabled) && Boolean.parseBoolean(enabled);
     }
   }
 }

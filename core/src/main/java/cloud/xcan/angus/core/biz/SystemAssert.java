@@ -1,11 +1,11 @@
 package cloud.xcan.angus.core.biz;
 
 import static cloud.xcan.angus.core.biz.exception.BizException.M.OPT_OBJ_IS_EMPTY;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.CommSysException;
 import cloud.xcan.angus.remote.message.ResultMessage;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class SystemAssert {
@@ -44,39 +44,39 @@ public class SystemAssert {
 
 
   public static <T> void assertNotEmpty(T object) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw CommSysException.of(OPT_OBJ_IS_EMPTY);
     }
   }
 
   public static <T> void assertNotEmpty(T object, String message) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw CommSysException.of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY);
     }
   }
 
   public static <T> void assertNotEmpty(T object, String message, Object[] args) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw CommSysException
           .of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, args);
     }
   }
 
   public static <T> void assertNotEmpty(T object, String message, String eKey, Object[] args) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw CommSysException
           .of(StringUtils.isNotEmpty(message) ? message : OPT_OBJ_IS_EMPTY, eKey, args);
     }
   }
 
   public static <T> void assertNotEmpty(T object, ResultMessage message) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw CommSysException.of(message.getCode(), message.getMsg(), message.getArgs());
     }
   }
 
   public static <T> void assertNotEmpty(T object, ResultMessage message, ExceptionLevel level) {
-    if (ObjectUtils.isEmpty(object)) {
+    if (isEmpty(object)) {
       throw CommSysException.of(message.getCode(), message.getMsg(), level);
     }
   }

@@ -8,7 +8,6 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.spec.annotations.ThirdExtension;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
@@ -32,7 +31,7 @@ public class OpenAPIUtils {
    * @see swagger-parser#InlineModelResolver
    */
   public static Map<String, io.swagger.v3.oas.models.Operation> flatPaths(Paths paths) {
-    if (ObjectUtils.isEmpty(paths)) {
+    if (isEmpty(paths)) {
       // Warn: Since 3.1 is not required
       return null;
     }

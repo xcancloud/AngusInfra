@@ -7,12 +7,12 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpClient;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isPrivateEdition;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
 import cloud.xcan.angus.remote.message.http.ResourceExisted;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -55,7 +55,7 @@ public abstract class BizTemplate<T> {
     this.multiTenantAutoCtrlWhenOpClient = multiTenantAutoCtrlWhenOpClient;
     this.requiredToPolicy = requiredToPolicy;
     Principal principal = PrincipalContext.get();
-    if (ObjectUtils.isNotEmpty(requiredToPolicy)) {
+    if (isNotEmpty(requiredToPolicy)) {
       // Used by TenantInterceptor
       principal.setRequiredToPolicy(requiredToPolicy);
     }

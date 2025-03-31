@@ -1,9 +1,10 @@
 package cloud.xcan.angus.validator.impl;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+
 import cloud.xcan.angus.validator.CharConstant;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.apache.commons.lang3.ObjectUtils;
 
 public class CharConstantValidator implements ConstraintValidator<CharConstant, String> {
 
@@ -16,7 +17,7 @@ public class CharConstantValidator implements ConstraintValidator<CharConstant, 
 
   @Override
   public boolean isValid(String input, ConstraintValidatorContext constraintValidatorContext) {
-    if (ObjectUtils.isEmpty(array) || ObjectUtils.isEmpty(input)) {
+    if (isEmpty(array) || isEmpty(input)) {
       return true;
     }
     for (String value : array) {

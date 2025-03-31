@@ -1,6 +1,7 @@
 package cloud.xcan.angus.spec.utils;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.AppDir.PLUGINS_DIR_NAME;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -14,7 +15,7 @@ import java.io.File;
 public class AppDirUtils {
 
   public String getHomeDir() {
-    String dir = ObjectUtils.isEmpty(System.getProperty(AppDir.HOME_DIR))
+    String dir = isEmpty(System.getProperty(AppDir.HOME_DIR))
         ? System.getProperty("user.dir") : System.getProperty(AppDir.HOME_DIR);
     return dir.endsWith(File.separator) ? dir : dir + File.separator;
   }
@@ -37,7 +38,7 @@ public class AppDirUtils {
     // java -Dloader.path=./lib/ -jar demo.jar
     // 用-Dloader.path参数来指定lib目录的路径，使用-Dloader.path参数指定lib目录的路径可以让应用程序在运行时动态添加类路径，以加载额外的类或资源
     // 参考：https://blog.csdn.net/Zhai_ZB/article/details/122013533
-    return ObjectUtils.isEmpty(homeDir) ? System
+    return isEmpty(homeDir) ? System
         .getProperty("loader.path") /* Fix:: + File.separator*/
         : homeDir + path;
   }
@@ -52,7 +53,7 @@ public class AppDirUtils {
       return dir.endsWith(File.separator) ? dir : dir + File.separator;
     }
     String path = AppDir.TMP_DIR_NAME + File.separator;
-    return ObjectUtils.isEmpty(homeDir) ? System
+    return isEmpty(homeDir) ? System
         .getProperty("java.io.tmpdir") /* Fix:: + File.separator*/
         : homeDir + path;
   }

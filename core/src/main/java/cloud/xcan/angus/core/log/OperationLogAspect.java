@@ -10,6 +10,7 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
 import static cloud.xcan.angus.remote.message.UnknownException.M.UNKNOWN_ERROR;
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
 import static cloud.xcan.angus.spec.locale.MessageHolder.message;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
 
 import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
@@ -99,7 +100,7 @@ public class OperationLogAspect {
       String description;
       if (!isGetRequest(principal)) {
         description = getOperationDescription(args, optLog, message);
-        if (StringUtils.isEmpty(description)) {
+        if (isEmpty(description)) {
           return joinPoint.proceed();
         }
         operationTemplate.setDescription(description);
@@ -108,7 +109,7 @@ public class OperationLogAspect {
         apiResult = (ApiLocaleResult<?>) joinPoint.proceed();
         if (isGetRequest(principal)) {
           description = getOperationDescription(apiResult, optLog, message);
-          if (StringUtils.isEmpty(description)) {
+          if (isEmpty(description)) {
             return joinPoint.proceed();
           }
           operationTemplate.setDescription(description);

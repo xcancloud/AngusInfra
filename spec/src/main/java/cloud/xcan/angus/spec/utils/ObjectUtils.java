@@ -142,7 +142,7 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
    * @return actual value, if it's not empty, or safe value if the actual value is empty.
    */
   public static String emptySafe(String actual, String safe) {
-    return StringUtils.isEmpty(actual) ? safe : actual;
+    return isEmpty(actual) ? safe : actual;
   }
 
   /**
@@ -150,7 +150,7 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
    * @return actual value, if it's not empty, or "" if the actual value is empty.
    */
   public static String emptySafe(String actual) {
-    return StringUtils.isEmpty(actual) ? "" : actual;
+    return isEmpty(actual) ? "" : actual;
   }
 
   /**

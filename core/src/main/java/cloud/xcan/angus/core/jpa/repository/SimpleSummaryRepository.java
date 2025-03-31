@@ -7,6 +7,7 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasToPolicy;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpSysAdmin;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isToUser;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.jpa.repository.summary.Aggregate;
 import cloud.xcan.angus.core.jpa.repository.summary.DateRangeType;
@@ -15,7 +16,6 @@ import cloud.xcan.angus.core.jpa.repository.summary.SummaryQueryBuilder;
 import cloud.xcan.angus.core.jpa.repository.summary.SummaryQueryRegister;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.spec.annotations.DoInFuture;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
@@ -143,7 +143,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
             .append(getDeletedCondition(register))
             .append(" GROUP BY times ");
       } else {
-        // Allow multi column when GroupBy.STATUS
+        // Allow multi-column when GroupBy.STATUS
         String groupByColumns = getGroupByColumns(builder.getGroupByColumns());
         sql.append("SELECT ").append(groupByColumns)
             .append(" , ").append(getAggregateCondition(builder.getAggregates()))
@@ -205,7 +205,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
 
   private String getCriteriaCondition(Set<SearchCriteria> criterias) {
     StringBuilder builder = new StringBuilder();
-    if (ObjectUtils.isNotEmpty(criterias)) {
+    if (isNotEmpty(criterias)) {
       for (SearchCriteria criteria : criterias) {
         if (criteria.isValidCriteria()) {
           builder.append(" AND ").append(criteria.toConditionString(""));

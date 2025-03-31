@@ -1,11 +1,11 @@
 package cloud.xcan.angus.core.biz;
 
 import static cloud.xcan.angus.remote.ApiConstant.LCS_PUB;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.core.app.AppWorkspace;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.remote.PageResult;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.InputStream;
@@ -39,7 +39,7 @@ public abstract class AbstractJoinAspect {
     } else if (result instanceof PageResult) {
       PageResult<?> pageResult = (PageResult<?>) result;
       List<?> voList = pageResult.getList();
-      if (ObjectUtils.isEmpty(voList)) {
+      if (isEmpty(voList)) {
         return result;
       }
       joinArrayVoName(voList.toArray());

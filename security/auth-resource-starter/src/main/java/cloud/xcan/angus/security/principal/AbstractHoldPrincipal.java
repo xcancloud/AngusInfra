@@ -23,6 +23,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
 import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_USER_ID;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -40,7 +41,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthentication;
@@ -172,7 +172,7 @@ public abstract class AbstractHoldPrincipal {
 
   public static String getAuthorization(HttpServletRequest request) {
     String authorization = request.getHeader(Header.AUTHORIZATION);
-    if (StringUtils.isEmpty(authorization)) {
+    if (isEmpty(authorization)) {
       authorization = BEARER_TOKEN_TYPE + " " + request.getParameter(ACCESS_TOKEN);
     }
     return authorization;
@@ -196,6 +196,6 @@ public abstract class AbstractHoldPrincipal {
 
   private Long getOptTenantId(HttpServletRequest req) {
     String optTenantId = req.getHeader(Header.OPT_TENANT_ID);
-    return StringUtils.isEmpty(optTenantId) ? null : Long.valueOf(optTenantId);
+    return isEmpty(optTenantId) ? null : Long.valueOf(optTenantId);
   }
 }

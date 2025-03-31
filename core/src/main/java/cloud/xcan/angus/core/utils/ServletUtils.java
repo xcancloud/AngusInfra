@@ -84,7 +84,7 @@ public class ServletUtils {
 
   public static String getAuthorization(HttpServletRequest request) {
     String authorization = request.getHeader(Header.AUTHORIZATION);
-    if (StringUtils.isEmpty(authorization)) {
+    if (isEmpty(authorization)) {
       authorization = BEARER_TOKEN_TYPE + " " + request.getParameter(ACCESS_TOKEN);
     }
     return authorization;

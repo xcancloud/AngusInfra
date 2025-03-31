@@ -1,10 +1,11 @@
 package cloud.xcan.angus.web;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.plugin.core.PluginStateListener;
 import cloud.xcan.angus.plugin.core.PluginWrapper;
 import cloud.xcan.angus.plugin.spring.SpringPluginManager;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.spec.version.DefaultVersionManager;
 import cloud.xcan.angus.spec.version.VersionManager;
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class PluginAutoConfigurer {
   public SpringPluginManager pluginManager(
       @Autowired(required = false) List<PluginStateListener> listeners) {
     SpringPluginManager springPluginManager = new SpringPluginManager();
-    if (ObjectUtils.isNotEmpty(listeners)) {
+    if (isNotEmpty(listeners)) {
       for (PluginStateListener pluginStateListener : listeners) {
         springPluginManager.addPluginStateListener(pluginStateListener);
       }

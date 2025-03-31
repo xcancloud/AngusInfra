@@ -1,9 +1,9 @@
 package cloud.xcan.angus.spec.locale;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_LANGUAGE;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.util.Locale;
 
 /**
@@ -27,7 +27,7 @@ public enum SupportedLanguage implements EnumMessage<String> {
   }
 
   public static boolean contain(String value) {
-    if (ObjectUtils.isEmpty(value)) {
+    if (isEmpty(value)) {
       return false;
     }
     for (SupportedLanguage language : SupportedLanguage.values()) {

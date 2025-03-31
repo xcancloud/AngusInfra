@@ -5,13 +5,18 @@ import static cloud.xcan.angus.core.utils.CoreUtils.getAnnotationFieldName;
 import static cloud.xcan.angus.core.utils.CoreUtils.getResourceId;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_RESOURCE_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_RESOURCE_NAME;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isBlank;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.reflect.FieldUtils.getField;
 
 import cloud.xcan.angus.core.jpa.repository.NameJoinRepository;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.remote.NameJoinField;
 import cloud.xcan.angus.spec.annotations.NonNullable;
 import cloud.xcan.angus.spec.experimental.Assert;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -19,12 +24,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -73,7 +76,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
     Class<?> firstClass = voArray[0].getClass();
     for (String repo : repoAndFieldNameAndIdValues.keySet()) {
       Map<String, Set> fieldNameAndIdValues = repoAndFieldNameAndIdValues.get(repo);
-      if (ObjectUtils.isEmpty(fieldNameAndIdValues)) {
+      if (isEmpty(fieldNameAndIdValues)) {
         continue;
       }
 
@@ -85,7 +88,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
 
       // Query all resource data based on ids
       Collection<?> entities = classRepositoryMap.get(firstClass + "#" + repo).findByIdIn(allIds);
-      if (ObjectUtils.isEmpty(entities)) {
+      if (isEmpty(entities)) {
         log.warn("Class {} join repository#{} is empty by all ids in {}",
             firstClass.getSimpleName(), repo, allIds);
         log.warn("Class {} join repository#{} ignored", firstClass.getSimpleName(), repo);
@@ -101,8 +104,8 @@ public class NameJoinAspect extends AbstractJoinAspect {
         Map<String, NameJoinField> nameJoinFieldMap = classFieldJoinNameMap.get(firstClass);
         for (Entry<String, NameJoinField> entry : nameJoinFieldMap.entrySet()) {
           if (fieldNameAndIdValues0.getKey().equals(entry.getValue().id())) {
-            Field voNameField = FieldUtils.getField(firstClass, entry.getKey(), true);
-            Field voIdField = FieldUtils.getField(firstClass, entry.getValue().id(), true);
+            Field voNameField = getField(firstClass, entry.getKey(), true);
+            Field voIdField = getField(firstClass, entry.getValue().id(), true);
             Object voIdValue;
             for (Object vo : voArray) {
               voIdValue = voIdField.get(vo);
@@ -125,7 +128,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
     Field idField;
     Map<String, NameJoinField> nameJoinFieldMap = findAndCacheJoinInfo(first);
     for (NameJoinField joinField : nameJoinFieldMap.values()) {
-      idField = FieldUtils.getField(first.getClass(), joinField.id(), true);
+      idField = getField(first.getClass(), joinField.id(), true);
       Object id;
       idValues = new HashSet<>();
       for (Object vo : voArray) {
@@ -134,7 +137,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
           idValues.add(id);
         }
       }
-      if (ObjectUtils.isNotEmpty(idValues)) {
+      if (isNotEmpty(idValues)) {
         if (repoAndFieldNameAndIdValues.containsKey(joinField.repository())) {
           repoAndFieldNameAndIdValues.get(joinField.repository()).put(idField.getName(), idValues);
         } else {
@@ -157,17 +160,17 @@ public class NameJoinAspect extends AbstractJoinAspect {
     Field[] fields = first.getClass().getDeclaredFields();
     for (Field field : fields) {
       NameJoinField nameJoin = field.getAnnotation(NameJoinField.class);
-      if (Objects.nonNull(nameJoin)) {
+      if (nonNull(nameJoin)) {
         if (StringUtils.isBlank(nameJoin.id())) {
           throw new IllegalArgumentException(
               "The NameJoinField property id of " + field.getName() + " is empty");
         }
-        Field idField = FieldUtils.getField(first.getClass(), nameJoin.id(), true);
-        if (Objects.isNull(idField)) {
+        Field idField = getField(first.getClass(), nameJoin.id(), true);
+        if (isNull(idField)) {
           throw new IllegalArgumentException(
               "The NameJoinField id field " + nameJoin.id() + " not found");
         }
-        if (StringUtils.isBlank(nameJoin.repository())) {
+        if (isBlank(nameJoin.repository())) {
           throw new IllegalArgumentException(
               " The NameJoinField property repository of " + field.getName() + " is empty");
         }
@@ -191,9 +194,9 @@ public class NameJoinAspect extends AbstractJoinAspect {
       throws IllegalAccessException {
     // Find resource id and name in entity
     String resourceName = findEntityResourceName(firstEntity);
-    Field nameField = FieldUtils.getField(firstEntity.getClass(), resourceName, true);
+    Field nameField = getField(firstEntity.getClass(), resourceName, true);
     String resourceId = findEntityResourceId(firstEntity);
-    Field idField = FieldUtils.getField(firstEntity.getClass(), resourceId, true);
+    Field idField = getField(firstEntity.getClass(), resourceId, true);
 
     // Convert entity id and name to map
     Map<Object, String> idNames = new HashMap<>();
@@ -205,19 +208,19 @@ public class NameJoinAspect extends AbstractJoinAspect {
 
   private String findEntityResourceId(Object entity) {
     String resourceId = classResourceIdMap.get(entity.getClass());
-    if (StringUtils.isNotEmpty(resourceId)) {
+    if (isNotEmpty(resourceId)) {
       return resourceId;
     }
 
     resourceId = getAnnotationFieldName(entity.getClass(), ResourceId.class);
-    if (StringUtils.isEmpty(resourceId)) {
+    if (isEmpty(resourceId)) {
       resourceId = getResourceId(entity.getClass());
-      if (StringUtils.isEmpty(resourceId)) {
+      if (isEmpty(resourceId)) {
         if (hasProperty(entity, DEFAULT_RESOURCE_ID)) {
           resourceId = DEFAULT_RESOURCE_ID;
         }
       }
-      if (StringUtils.isEmpty(resourceId)) {
+      if (isEmpty(resourceId)) {
         throw new IllegalStateException("The id of " + entity.getClass().getSimpleName()
             + " not found, please mark the id field with the @Id annotation");
       }
@@ -228,16 +231,16 @@ public class NameJoinAspect extends AbstractJoinAspect {
 
   private String findEntityResourceName(Object entity) {
     String resourceName = classResourceNameMap.get(entity.getClass());
-    if (StringUtils.isNotEmpty(resourceName)) {
+    if (isNotEmpty(resourceName)) {
       return resourceName;
     }
     resourceName = getAnnotationFieldName(entity.getClass(), ResourceName.class);
-    if (StringUtils.isEmpty(resourceName)) {
+    if (isEmpty(resourceName)) {
       if (hasProperty(entity, DEFAULT_RESOURCE_NAME)) {
         resourceName = DEFAULT_RESOURCE_NAME;
       }
     }
-    if (StringUtils.isEmpty(resourceName)) {
+    if (isEmpty(resourceName)) {
       throw new IllegalStateException("The name of " + entity.getClass().getSimpleName()
           + " not found, please mark the name field with the @ResourceName annotation");
     }

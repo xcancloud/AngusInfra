@@ -1,9 +1,10 @@
 package cloud.xcan.angus.validator.impl;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+
 import cloud.xcan.angus.validator.DigitsConstant;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.apache.commons.lang3.ObjectUtils;
 
 public class DigitsConstantValidator implements ConstraintValidator<DigitsConstant, Integer> {
 
@@ -16,7 +17,7 @@ public class DigitsConstantValidator implements ConstraintValidator<DigitsConsta
 
   @Override
   public boolean isValid(Integer input, ConstraintValidatorContext constraintValidatorContext) {
-    if (ObjectUtils.isEmpty(array) || ObjectUtils.isEmpty(input)) {
+    if (isEmpty(array) || isEmpty(input)) {
       return true;
     }
     for (Integer value : array) {

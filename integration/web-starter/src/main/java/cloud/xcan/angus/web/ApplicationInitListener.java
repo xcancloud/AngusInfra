@@ -3,6 +3,7 @@ package cloud.xcan.angus.web;
 import static cloud.xcan.angus.core.app.verx.VerxRegister.cacheManager;
 import static cloud.xcan.angus.core.utils.AppEnvUtils.initSneakyLogDir;
 import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static java.lang.System.exit;
 
 import cloud.xcan.angus.core.app.AppBeanReadyInit;
@@ -14,7 +15,6 @@ import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.utils.AppEnvUtils;
 import cloud.xcan.angus.spec.locale.MessageHolder;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -103,7 +103,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
   private void initApplication(ApplicationStartedEvent event) {
     ApplicationContext ac = event.getApplicationContext();
     Map<String, ApplicationInit> initsMap = ac.getBeansOfType(ApplicationInit.class);
-    if (ObjectUtils.isNotEmpty(initsMap)) {
+    if (isNotEmpty(initsMap)) {
       List<ApplicationInit> inits = new ArrayList<>(initsMap.values());
       Collections.sort(inits);
       for (ApplicationInit init : inits) {

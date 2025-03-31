@@ -1,6 +1,7 @@
 package cloud.xcan.angus.validator.impl;
 
-import cloud.xcan.angus.spec.utils.ObjectUtils;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+
 import cloud.xcan.angus.validator.CollectionValueNotNull;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -15,10 +16,9 @@ public class CollectionValueNotNullValidator implements
   }
 
   @Override
-  public boolean isValid(Object input,
-      ConstraintValidatorContext constraintValidatorContext) {
+  public boolean isValid(Object input, ConstraintValidatorContext constraintValidatorContext) {
     if (input instanceof Collection) {
-      if (ObjectUtils.isEmpty(input)) {
+      if (isEmpty(input)) {
         return true;
       }
       Collection values = (Collection) input;

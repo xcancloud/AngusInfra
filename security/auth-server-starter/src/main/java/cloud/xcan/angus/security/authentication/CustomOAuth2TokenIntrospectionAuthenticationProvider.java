@@ -14,7 +14,6 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DESCRIPTION;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEVICE_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_EMAIL;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ENABLED;
@@ -38,10 +37,10 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.net.URL;
 import java.security.Principal;
 import java.util.HashMap;
@@ -191,10 +190,9 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
           CustomOAuth2User user = (CustomOAuth2User)
               ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
           tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toUserPrincipalClaim(user));
-          if (ObjectUtils.isNotEmpty(user.getAuthorities())) {
-            tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION,
-                user.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toSet()));
+          if (isNotEmpty(user.getAuthorities())) {
+            tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, user.getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
           }
         }
       }
@@ -232,7 +230,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_COUNTRY, user.getCountry());
     //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, user.getClientId());
     //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE, user.getClientSource());
-    claims.put(INTROSPECTION_CLAIM_NAMES_DEVICE_ID, user.getDeviceId());
+    //claims.put(INTROSPECTION_CLAIM_NAMES_DEVICE_ID, user.getDeviceId());
     claims.put(INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID, user.getDirectoryId());
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE, user.getDefaultLanguage());
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE, user.getDefaultTimeZone());

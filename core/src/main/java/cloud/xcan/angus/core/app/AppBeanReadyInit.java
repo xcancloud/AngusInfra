@@ -1,8 +1,9 @@
 package cloud.xcan.angus.core.app;
 
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.core.spring.SpringContextHolder;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,7 +14,7 @@ public class AppBeanReadyInit implements ApplicationInit {
   public void init() throws Exception {
     Map<String, AppBeanReady> beanReadyMap = SpringContextHolder.getCtx()
         .getBeansOfType(AppBeanReady.class);
-    if (ObjectUtils.isNotEmpty(beanReadyMap)) {
+    if (isNotEmpty(beanReadyMap)) {
       for (AppBeanReady register : beanReadyMap.values()) {
         register.ready();
       }

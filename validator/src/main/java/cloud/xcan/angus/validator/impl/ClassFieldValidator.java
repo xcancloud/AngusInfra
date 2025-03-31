@@ -1,10 +1,11 @@
 package cloud.xcan.angus.validator.impl;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+
 import cloud.xcan.angus.validator.ClassField;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.lang.reflect.Field;
-import org.apache.commons.lang3.ObjectUtils;
 
 public class ClassFieldValidator implements ConstraintValidator<ClassField, String> {
 
@@ -17,12 +18,12 @@ public class ClassFieldValidator implements ConstraintValidator<ClassField, Stri
 
   @Override
   public boolean isValid(String input, ConstraintValidatorContext constraintValidatorContext) {
-    if (ObjectUtils.isEmpty(input)) {
+    if (isEmpty(input)) {
       return true;
     }
 
     Field[] clzFields = clz.getDeclaredFields();
-    if (ObjectUtils.isEmpty(clzFields)) {
+    if (isEmpty(clzFields)) {
       return true;
     }
     for (Field clzField : clzFields) {

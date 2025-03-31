@@ -319,7 +319,7 @@ public class CoreUtils {
     if (isEmpty(src)) {
       return target;
     }
-    if (ObjectUtils.isNotEmpty(ignoreProperties)) {
+    if (isNotEmpty(ignoreProperties)) {
       BeanUtils.copyProperties(src, target, ignoreProperties);
     } else {
       BeanUtils.copyProperties(src, target);

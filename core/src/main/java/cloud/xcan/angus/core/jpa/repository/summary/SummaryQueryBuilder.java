@@ -1,5 +1,6 @@
 package cloud.xcan.angus.core.jpa.repository.summary;
 
+import static cloud.xcan.angus.core.biz.ProtocolAssert.assertTrue;
 import static cloud.xcan.angus.core.jpa.repository.SimpleSummaryRepository.REGISTER;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
@@ -9,7 +10,6 @@ import static org.apache.commons.lang3.StringUtils.join;
 
 import cloud.xcan.angus.core.biz.ProtocolAssert;
 import cloud.xcan.angus.remote.search.SearchCriteria;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -138,7 +138,7 @@ public class SummaryQueryBuilder {
     public void validate() {
       SummaryMode mode = getSummaryMode();
       ProtocolAssert.assertNotEmpty(name, "Summary resource is required");
-      ProtocolAssert.assertTrue(mode.equals(SummaryMode.NO_GROUP)
+      assertTrue(mode.equals(SummaryMode.NO_GROUP)
           || isNotEmpty(groupByColumns), "Summary groupBy column is required");
 
       SummaryQueryRegister register = REGISTER.get(name);
@@ -148,27 +148,24 @@ public class SummaryQueryBuilder {
           SummaryMode.GROUP_BY_DATE)) {
         for (int i = 0; i < groupByColumns.size(); i++) {
           String groupByColumn = groupByColumns.get(i);
-          ProtocolAssert.assertTrue(ArrayUtils.contains(register.groupByColumns(), groupByColumn),
+          assertTrue(ArrayUtils.contains(register.groupByColumns(), groupByColumn),
               String.format("Unregistered groupBy column: %s", groupByColumn));
-          ProtocolAssert.assertTrue(!mode.equals(
-                  SummaryMode.GROUP_BY_STATUS)
+          assertTrue(!mode.equals(SummaryMode.GROUP_BY_STATUS)
                   || (!groupByColumn.contains("date") && !groupByColumn.contains("id")),
               String.format("Non status and date range statistics are not allowed, "
                   + "error column: %s", groupByColumn));
-          ProtocolAssert.assertTrue(!mode.equals(
-                  SummaryMode.GROUP_BY_STATUS)
-                  || !groupByColumn.contains("date"),
+          assertTrue(!mode.equals(SummaryMode.GROUP_BY_STATUS) || !groupByColumn.contains("date"),
               "Date field is not supported for grouping by status, it should be an enum field");
 
           // Check multiple fields group must be consistent with the order of the union index
           if (mode.equals(SummaryMode.GROUP_BY_STATUS)) {
             if (register.groupByColumns()[0].contains("date")) {
-              ProtocolAssert.assertTrue(groupByColumn.equals(register.groupByColumns()[i + 1]),
+              assertTrue(groupByColumn.equals(register.groupByColumns()[i + 1]),
                   String.format(
                       "Multiple fields group must be consistent with the order of the union index, current order [%s], required order [%s]",
                       join(groupByColumns, ","), join(register.groupByColumns(), ",")));
             } else {
-              ProtocolAssert.assertTrue(groupByColumn.equals(register.groupByColumns()[i]),
+              assertTrue(groupByColumn.equals(register.groupByColumns()[i]),
                   String.format(
                       "Multiple fields group must be consistent with the order of the union index, current order [%s], required order [%s]",
                       join(groupByColumns, ","), join(register.groupByColumns(), ",")));
@@ -178,10 +175,9 @@ public class SummaryQueryBuilder {
       }
 
       // Init default in constructor method: SummaryQueryBuilder(Builder builder)
-      if (ObjectUtils.isNotEmpty(aggregates)) {
+      if (isNotEmpty(aggregates)) {
         for (Aggregate aggregate : aggregates) {
-          ProtocolAssert
-              .assertTrue(ArrayUtils.contains(register.aggregateColumns(), aggregate.getColumn()),
+          assertTrue(ArrayUtils.contains(register.aggregateColumns(), aggregate.getColumn()),
                   String.format("Unregistered aggregate column: %s", aggregate.getColumn()));
         }
       }

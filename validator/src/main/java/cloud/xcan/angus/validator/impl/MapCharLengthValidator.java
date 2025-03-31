@@ -1,6 +1,7 @@
 package cloud.xcan.angus.validator.impl;
 
-import cloud.xcan.angus.spec.utils.ObjectUtils;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.validator.MapCharLength;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -23,7 +24,7 @@ public class MapCharLengthValidator implements
   @Override
   public boolean isValid(Map<String, Object> input,
       ConstraintValidatorContext constraintValidatorContext) {
-    if (ObjectUtils.isNotEmpty(input)) {
+    if (isNotEmpty(input)) {
       Set<String> keys = input.keySet();
       for (String key : keys) {
         if (key.length() > keyMaxLength || input.get(key).toString().length() > valueMaxLength) {

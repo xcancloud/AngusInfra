@@ -39,7 +39,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
   public static final Pattern NUMERIC_PATTERN = Pattern
       .compile("-?\\d+(\\.\\d+)?");
 
-  public static final String LINE_SEPARATOR = System.getProperty("line.separator");
+  public static final String LINE_SEPARATOR = System.lineSeparator();
 
 
   private StringUtils() { /* no instance */ }
@@ -251,7 +251,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
   }
 
   /**
-   * Performs a case insensitive comparison and returns true if the data begins with the given
+   * Performs a case-insensitive comparison and returns true if the data begins with the given
    * sequence.
    */
   public static boolean beginsWithIgnoreCase(final String data, final String seq) {
@@ -386,13 +386,13 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
     String[] words = str.split("_");
     for (int i = 0; i < words.length; i++) {
       String word = words[i];
-      if (word.length() > 0) {
+      if (!word.isEmpty()) {
         if (i > 0) {
           sb.append(Character.toUpperCase(word.charAt(0)));
         } else {
           sb.append(Character.toLowerCase(word.charAt(0)));
         }
-        sb.append(word.substring(1, word.length()));
+        sb.append(word.substring(1));
       }
     }
     return sb.toString();
@@ -412,7 +412,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
     StringBuilder sb = new StringBuilder();
     String[] words = str.split("_");
     for (String word : words) {
-      if (word.length() > 0) {
+      if (!word.isEmpty()) {
         sb.append(Character.toUpperCase(word.charAt(0)));
         sb.append(strict ? word.substring(1).toLowerCase() : word.substring(1));
       }
@@ -422,7 +422,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
 
   public static List<String> camelSplit(String input) {
     Matcher matcher = CAMEL_CASE_PATTERN.matcher(input);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     while (matcher.find()) {
       matcher.appendReplacement(sb, " " + matcher.group());
@@ -513,7 +513,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
       if (trimTokens) {
         token = token.trim();
       }
-      if (!ignoreEmptyTokens || token.length() > 0) {
+      if (!ignoreEmptyTokens || !token.isEmpty()) {
         tokens.add(token);
       }
     }
@@ -591,7 +591,7 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
         }
       }
     }
-    if (ObjectUtils.isEmpty(values) && ObjectUtils.isNotEmpty(defaultValue)) {
+    if (ObjectUtils.isEmpty(values) && isNotEmpty(defaultValue)) {
       values.add(defaultValue);
     }
     return values;

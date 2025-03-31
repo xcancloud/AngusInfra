@@ -1,6 +1,7 @@
 package cloud.xcan.angus.api.pojo.manifest;
 
-import cloud.xcan.angus.spec.utils.ObjectUtils;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class Installation implements Serializable {
   }
 
   public boolean hasWebPackage() {
-    return ObjectUtils.isNotEmpty(packages) && packages.stream().anyMatch(x -> x.contains("-web"));
+    return isNotEmpty(packages) && packages.stream().anyMatch(x -> x.contains("-web"));
   }
 
   public static final class Builder {

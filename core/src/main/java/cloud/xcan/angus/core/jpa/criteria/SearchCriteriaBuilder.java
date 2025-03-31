@@ -14,12 +14,12 @@ import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTE
 import static cloud.xcan.angus.remote.search.SearchOperation.isInOrNotSearch;
 import static cloud.xcan.angus.remote.search.SearchOperation.isMatchSearch;
 import static cloud.xcan.angus.remote.search.SearchOperation.isRangeSearch;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.utils.BeanFieldUtils;
 import cloud.xcan.angus.remote.AbstractQuery;
 import cloud.xcan.angus.remote.message.CommProtocolException;
 import cloud.xcan.angus.remote.search.SearchCriteria;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,7 +174,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
 
     // 2、Merge filters parameter, The findDto parameter will override filters parameter
     String key = dto.getClass().getName();
-    if (ObjectUtils.isNotEmpty(DTO_FIELDS.get(key))) {
+    if (isNotEmpty(DTO_FIELDS.get(key))) {
       filters.addAll(BeanFieldUtils.getDtoSearchCriteria(DTO_FIELDS.get(key), dto));
     }
 
@@ -195,7 +195,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
         continue;
       }
       // Delete sub-table parameters
-      if (ObjectUtils.isNotEmpty(subTableFields) && subTableFields.contains(criteria.getKey())) {
+      if (isNotEmpty(subTableFields) && subTableFields.contains(criteria.getKey())) {
         removedCriterias.add(criteria);
         continue;
       }
@@ -206,7 +206,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       }
       // Verify that the type and range operation, Eg: Only indexed id or createdDate fields support range query
       if (isRangeSearch(criteria)) {
-        if (ObjectUtils.isNotEmpty(rangeSearchFields) && !rangeSearchFields
+        if (isNotEmpty(rangeSearchFields) && !rangeSearchFields
             .contains(criteria.getKey())) {
           throw CommProtocolException.of(UNSUPPORTED_RANGE_FILTER_T, UNSUPPORTED_RANGE_FILTER_KEY,
               new Object[]{criteria.getKey()});
@@ -214,7 +214,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       }
       // Verify that the type and match operation, Eg: Only string type and indexed fields support match query
       if (isMatchSearch(criteria)) {
-        if (ObjectUtils.isNotEmpty(matchSearchFields) && !matchSearchFields
+        if (isNotEmpty(matchSearchFields) && !matchSearchFields
             .contains(criteria.getKey())) {
           throw CommProtocolException.of(UNSUPPORTED_MATCH_FILTER_T, UNSUPPORTED_MATCH_FILTER_KEY,
               new Object[]{criteria.getKey()});
@@ -222,7 +222,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       }
       // Only allow ID/Identity Annotation field to execute ID, NOT_IN, NOT_EQUAL condition filtering
       if (isInOrNotSearch(criteria)) {
-        if (ObjectUtils.isNotEmpty(inAndNotFields) && !idsFields.contains(criteria.getKey())
+        if (isNotEmpty(inAndNotFields) && !idsFields.contains(criteria.getKey())
             && !inAndNotFields.contains(criteria.getKey())) {
           throw CommProtocolException
               .of(UNSUPPORTED_NOT_FILTER_T, UNSUPPORTED_NOT_FILTER_KEY,
@@ -232,13 +232,13 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       // Check orderBy field
       if (StringUtils.isNotBlank(dto.getOrderBy())) {
         if ((!DEFAULT_ORDER_BY.equalsIgnoreCase(dto.getOrderBy()) &&
-            ObjectUtils.isNotEmpty(orderByFields) && !orderByFields.contains(dto.getOrderBy()))) {
+            isNotEmpty(orderByFields) && !orderByFields.contains(dto.getOrderBy()))) {
           throw CommProtocolException.of(UNSUPPORTED_ORDER_BY_T, UNSUPPORTED_ORDER_BY_KEY,
               new Object[]{dto.getOrderBy()});
         }
       }
     }
-    if (ObjectUtils.isNotEmpty(removedCriterias)) {
+    if (isNotEmpty(removedCriterias)) {
       filters.removeAll(removedCriterias);
     }
 
@@ -251,7 +251,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
   public Field[] safeFilterFields() {
     Field[] allFields = FieldUtils.getAllFields(dto.getClass());
     List<Field> safeFields = new ArrayList<>();
-    if (ObjectUtils.isNotEmpty(allFields)) {
+    if (isNotEmpty(allFields)) {
       for (Field field : allFields) {
         if (!EXCLUDED_FILTER_FIELDS.contains(field.getName())) {
           safeFields.add(field);

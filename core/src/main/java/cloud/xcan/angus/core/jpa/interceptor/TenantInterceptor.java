@@ -5,6 +5,7 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenan
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TENANT_ID_DB_KEY;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.spec.experimental.MultiTenant;
 import cloud.xcan.angus.spec.principal.Principal;
@@ -17,7 +18,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
 import org.springframework.util.CollectionUtils;
@@ -45,7 +45,7 @@ public class TenantInterceptor implements StatementInspector {
     Principal principal = PrincipalContext.get();
     try {
       if (!isMultiTenantCtrl(principal) || !decideMultiTenantCtrlByApiType(principal)
-          || ObjectUtils.isEmpty(TENANT_TABLES)) {
+          || isEmpty(TENANT_TABLES)) {
         return sql;
       }
       // Fix:: The operation administrator operates himself tenant

@@ -25,7 +25,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.util.Map;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,7 +146,7 @@ public class SimpleFileDownloader implements FileDownloader {
     URLConnection connection = fileUrl.openConnection();
 
     // set headers
-    if (ObjectUtils.isNotEmpty(headers)) {
+    if (isNotEmpty(headers)) {
       for (String key : headers.keySet()) {
         connection.setRequestProperty(key, headers.get(key));
       }
@@ -195,7 +194,7 @@ public class SimpleFileDownloader implements FileDownloader {
     URLConnection connection = fileUrl.openConnection();
 
     // set headers
-    if (ObjectUtils.isNotEmpty(headers)) {
+    if (isNotEmpty(headers)) {
       for (String key : headers.keySet()) {
         connection.setRequestProperty(key, headers.get(key));
       }

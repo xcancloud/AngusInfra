@@ -2,9 +2,9 @@ package cloud.xcan.angus.core.app.verx;
 
 import static cloud.xcan.angus.core.spring.SpringContextHolder.isCloudService;
 import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.core.spring.SpringContextHolder;
-import cloud.xcan.angus.spec.utils.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.typelevel.dcache.DCacheManager;
 import org.typelevel.dcache.impl.DCacheParamImpl;
@@ -19,7 +19,7 @@ public class VerxRegister {
   private static DCacheManager dCacheManager;
 
   public VerxRegister() {
-    if (isCloudService() && StringUtils.isEmpty(System.getProperty(
+    if (isCloudService() && isEmpty(System.getProperty(
         new Str0(new long[]{0xCE4C2599BFB7CC70L, 0x667B073ED9D7005AL, 0x24E74F7C77DA3225L})
             .toString() /* => "MAIN_SUBJECT_KEY" */))) {
       System.setProperty(

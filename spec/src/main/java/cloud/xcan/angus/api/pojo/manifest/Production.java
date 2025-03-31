@@ -1,8 +1,9 @@
 package cloud.xcan.angus.api.pojo.manifest;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.api.enums.EditionType;
 import cloud.xcan.angus.api.enums.GoodsType;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class Production implements Serializable {
     setFeatures(builder.features);
     setChargeFlag(builder.chargeFlag);
     setOrderNo(builder.orderNo);
-    if (ObjectUtils.isNotEmpty(builder.extras)) { // Fix:: Null is not allowed
+    if (isNotEmpty(builder.extras)) { // Fix:: Null is not allowed
       this.extras.putAll(builder.extras);
     }
   }

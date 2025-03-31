@@ -1,6 +1,8 @@
 package cloud.xcan.angus.spec.principal;
 
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.api.enums.ApiType;
 import cloud.xcan.angus.api.enums.DataScope;
 import cloud.xcan.angus.api.enums.GrantType;
@@ -8,7 +10,6 @@ import cloud.xcan.angus.api.enums.Platform;
 import cloud.xcan.angus.api.enums.ResourceAclType;
 import cloud.xcan.angus.spec.annotations.DoInFuture;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -125,7 +126,7 @@ public class PrincipalContext {
 
   public static String getToken() {
     String authorization = get().getAuthorization();
-    return ObjectUtils.isNotEmpty(authorization) ? authorization.split(" ")[1] : null;
+    return isNotEmpty(authorization) ? authorization.split(" ")[1] : null;
   }
 
   public static DataScope getDataScope() {

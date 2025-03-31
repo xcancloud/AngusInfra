@@ -1,5 +1,8 @@
 package cloud.xcan.angus.core.utils;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static org.springframework.util.ResourceUtils.getURL;
+
 import cloud.xcan.angus.spec.utils.StringUtils;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -8,7 +11,6 @@ import java.security.KeyStore;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
-import org.springframework.util.ResourceUtils;
 
 /**
  * refer to {@link org.springframework.boot.web.embedded.netty.SslServerCustomizer}
@@ -20,10 +22,10 @@ public final class NettySslUtils {
       String trustStoreResource, String trustStoreType, String trustStorePassword)
       throws SSLException {
     SslContextBuilder sslBuilder = SslContextBuilder
-        .forServer(
-            getKeyManagerFactory(keyStoreType, keyStoreResource, keyPassword, keyStorePassword))
-        .trustManager(
-            getTrustManagerFactory(trustStoreType, trustStoreResource, trustStorePassword));
+        .forServer(getKeyManagerFactory(keyStoreType, keyStoreResource,
+            keyPassword, keyStorePassword))
+        .trustManager(getTrustManagerFactory(trustStoreType,
+            trustStoreResource, trustStorePassword));
     return sslBuilder.build();
   }
 
@@ -60,13 +62,13 @@ public final class NettySslUtils {
 
   private static KeyStore loadKeyStore(String type, String resource, String password)
       throws Exception {
-    type = (StringUtils.isEmpty(type) ? "JKS" : type);
-    if (StringUtils.isEmpty(resource)) {
+    type = isEmpty(type) ? "JKS" : type;
+    if (isEmpty(resource)) {
       return null;
     }
     KeyStore store = KeyStore.getInstance(type);
-    URL url = ResourceUtils.getURL(resource);
-    store.load(url.openStream(), StringUtils.isEmpty(password) ? null : password.toCharArray());
+    URL url = getURL(resource);
+    store.load(url.openStream(), isEmpty(password) ? null : password.toCharArray());
     return store;
   }
 }

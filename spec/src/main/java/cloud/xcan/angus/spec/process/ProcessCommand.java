@@ -8,7 +8,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.spec.PlatformEnum;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import com.sun.jna.Platform;
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ public final class ProcessCommand {
   public static boolean isRunningOnWindows(String processKey) {
     String checkRunningCmd = "TASKLIST /NH /FI \"WINDOWTITLE eq " + processKey + "\"";
     CommandResult res = ProcessCommand.runNativeCmd(checkRunningCmd);
-    return res.success && ObjectUtils.isNotEmpty(res.getResults());
+    return res.success && isNotEmpty(res.getResults());
   }
 
   /**

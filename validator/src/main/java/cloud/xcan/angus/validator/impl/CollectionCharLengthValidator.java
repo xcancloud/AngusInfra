@@ -1,6 +1,7 @@
 package cloud.xcan.angus.validator.impl;
 
-import cloud.xcan.angus.spec.utils.ObjectUtils;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.validator.CollectionCharLength;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -19,7 +20,7 @@ public class CollectionCharLengthValidator implements
   @Override
   public boolean isValid(Collection<String> input,
       ConstraintValidatorContext constraintValidatorContext) {
-    if (ObjectUtils.isNotEmpty(input)) {
+    if (isNotEmpty(input)) {
       for (String i : input) {
         if (i.length() > maxCharLength) {
           return false;

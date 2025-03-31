@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.xml.bind.annotation.XmlType.DEFAULT;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

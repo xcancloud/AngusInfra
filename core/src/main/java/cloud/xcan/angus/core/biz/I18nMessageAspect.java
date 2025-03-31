@@ -1,12 +1,15 @@
 package cloud.xcan.angus.core.biz;
 
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isBlank;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.jpa.repository.I18nMessageJoinRepository;
 import cloud.xcan.angus.remote.MessageJoinField;
 import cloud.xcan.angus.spec.SpecConstant;
-import cloud.xcan.angus.spec.utils.ObjectUtils;
-import cloud.xcan.angus.spec.utils.StringUtils;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,18 +74,18 @@ public class I18nMessageAspect extends AbstractJoinAspect {
 
       // Find from cache
       Map<String, I18nMessage> messageMap = null;
-      if (ObjectUtils.isNotEmpty(typeLanguageMessagesMap.get(fieldNameJoin.type()))) {
+      if (isNotEmpty(typeLanguageMessagesMap.get(fieldNameJoin.type()))) {
         Map<String, Map<String, I18nMessage>> languageMessagesMap = typeLanguageMessagesMap
             .get(fieldNameJoin.type());
         messageMap = languageMessagesMap.get(getLocale().getLanguage());
       }
       // Not found in cache
-      if (ObjectUtils.isEmpty(messageMap)) {
+      if (isEmpty(messageMap)) {
         if (fieldNameJoin.enabledCache()) {
           // Cache after finding from the database
           List<? extends I18nMessage> i18nMessages = i18nMessageJoinRepository
               .findByType(fieldNameJoin.type());
-          if (ObjectUtils.isEmpty(i18nMessages)) {
+          if (isEmpty(i18nMessages)) {
             continue;
           }
           cacheMessage(i18nMessages);
@@ -95,30 +98,30 @@ public class I18nMessageAspect extends AbstractJoinAspect {
               .get(getLocale().getLanguage());
         } else {
           // Find from database
-          if (ObjectUtils.isEmpty(fieldNameAndValues.get(fieldNameJoin.type()))) {
+          if (isEmpty(fieldNameAndValues.get(fieldNameJoin.type()))) {
             continue;
           }
           List<? extends I18nMessage> i18nMessages = i18nMessageJoinRepository
               .findByTypeAndLanguageAndDefaultMessageIn(fieldNameJoin.type(),
                   getLocale().getLanguage(), fieldNameAndValues.get(fieldNameJoin.type()));
-          if (ObjectUtils.isEmpty(i18nMessages)) {
+          if (isEmpty(i18nMessages)) {
             continue;
           }
           messageMap = i18nMessages.stream()
               .collect(Collectors.toMap(I18nMessage::getDefaultMessage, (p) -> p));
         }
       }
-      if (ObjectUtils.isEmpty(messageMap)) {
+      if (isEmpty(messageMap)) {
         return;
       }
       Field voNameField = FieldUtils.getField(firstClass, fieldName, true);
       for (Object vo : voArray) {
         Object voValue = voNameField.get(vo);
-        if (Objects.isNull(voValue)) {
+        if (isNull(voValue)) {
           continue;
         }
         I18nMessage i18nMessage = messageMap.get(voValue.toString());
-        if (Objects.isNull(i18nMessage) || StringUtils.isEmpty(i18nMessage.getI18nMessage())) {
+        if (isNull(i18nMessage) || isEmpty(i18nMessage.getI18nMessage())) {
           continue;
         }
         voNameField.set(vo, i18nMessage.getI18nMessage());
@@ -143,7 +146,7 @@ public class I18nMessageAspect extends AbstractJoinAspect {
           values.add(defaultMessageValue.toString());
         }
       }
-      if (ObjectUtils.isNotEmpty(values)) {
+      if (isNotEmpty(values)) {
         fieldNameAndValues.put(messageField.getName(), values);
       }
     }
@@ -159,8 +162,8 @@ public class I18nMessageAspect extends AbstractJoinAspect {
     Field[] fields = first.getClass().getDeclaredFields();
     for (Field field : fields) {
       MessageJoinField messageJoin = field.getAnnotation(MessageJoinField.class);
-      if (Objects.nonNull(messageJoin)) {
-        if (StringUtils.isBlank(messageJoin.type())) {
+      if (nonNull(messageJoin)) {
+        if (isBlank(messageJoin.type())) {
           throw new IllegalArgumentException(
               "The MessageJoinField property type of " + field.getName() + " is empty");
         }
@@ -176,7 +179,7 @@ public class I18nMessageAspect extends AbstractJoinAspect {
   }
 
   private void cacheMessage(List<? extends I18nMessage> i18nMessages) {
-    if (ObjectUtils.isEmpty(i18nMessages)) {
+    if (isEmpty(i18nMessages)) {
       return;
     }
     Map<String, List<I18nMessage>> typeMaps = i18nMessages.stream()
@@ -184,11 +187,11 @@ public class I18nMessageAspect extends AbstractJoinAspect {
     for (String type : typeMaps.keySet()) {
       Map<String, List<I18nMessage>> typeLanguageMap = typeMaps.get(type).stream()
           .collect(Collectors.groupingBy(I18nMessage::getLanguage));
-      if (ObjectUtils.isNotEmpty(typeLanguageMap)) {
+      if (isNotEmpty(typeLanguageMap)) {
         for (String typeLanguage : typeLanguageMap.keySet()) {
           Map<String, I18nMessage> typeLanguageDefaultMap = typeLanguageMap.get(typeLanguage)
               .stream().collect(Collectors.toMap(I18nMessage::getDefaultMessage, (p) -> p));
-          if (ObjectUtils.isNotEmpty(typeLanguageDefaultMap)) {
+          if (isNotEmpty(typeLanguageDefaultMap)) {
             Map<String, Map<String, I18nMessage>> defaultMaps = new HashMap<>();
             defaultMaps.put(typeLanguage, typeLanguageDefaultMap);
             typeLanguageMessagesMap.put(type, defaultMaps);

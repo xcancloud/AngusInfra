@@ -131,8 +131,8 @@ public class OAuth2AuthorizationServerAutoConfigurer {
 
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-      PasswordEncoder passwordEncoder, HttpSecurity http,
+  public AuthenticationManager authenticationManager(HttpSecurity http,
+      UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
       @Autowired(required = false) LinkSecretCheckService linkSecretCheckService) throws Exception {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder,
         linkSecretCheckService);

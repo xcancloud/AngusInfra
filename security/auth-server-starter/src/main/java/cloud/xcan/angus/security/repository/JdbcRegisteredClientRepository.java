@@ -2,6 +2,7 @@ package cloud.xcan.angus.security.repository;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 
+import cloud.xcan.angus.security.authentication.dao.CaffeineCacheBasedClientCache;
 import cloud.xcan.angus.security.client.CustomOAuth2ClientRepository;
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -103,6 +104,8 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
 
   private Function<RegisteredClient, List<SqlParameterValue>> registeredClientParametersMapper;
 
+  private CaffeineCacheBasedClientCache clientCache;
+
   /**
    * Constructs a {@code JdbcRegisteredClientRepository} using the provided parameters.
    *
@@ -113,6 +116,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
     this.jdbcOperations = jdbcOperations;
     this.registeredClientRowMapper = new RegisteredClientRowMapper();
     this.registeredClientParametersMapper = new RegisteredClientParametersMapper();
+    this.clientCache = new CaffeineCacheBasedClientCache();
   }
 
   @Override
@@ -176,13 +180,23 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   @Override
   public RegisteredClient findById(String id) {
     Assert.hasText(id, "id cannot be empty");
-    return findBy("id = ?", id);
+    RegisteredClient client = clientCache.getClientFromCache(id);
+    if (client == null) {
+      client = findBy("id = ?", id);
+      clientCache.putClientInCache(id, client);
+    }
+    return client;
   }
 
   @Override
   public RegisteredClient findByClientId(String clientId) {
     Assert.hasText(clientId, "clientId cannot be empty");
-    return findBy("client_id = ?", clientId);
+    RegisteredClient client = clientCache.getClientFromCache(clientId);
+    if (client == null) {
+      client = findBy("client_id = ?", clientId);
+      clientCache.putClientInCache(clientId, client);
+    }
+    return client;
   }
 
   private CustomOAuth2RegisteredClient findBy(String filter, Object... args) {

@@ -5,6 +5,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationToken;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken;
+import cloud.xcan.angus.security.model.CustomOAuth2User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
@@ -22,12 +23,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.SpringSecurityMessageSource;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
-import org.springframework.security.core.userdetails.UserCache;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.core.userdetails.cache.NullUserCache;
-import org.springframework.security.core.userdetails.cache.SpringCacheBasedUserCache;
 import org.springframework.util.Assert;
 
 /**
@@ -41,7 +39,7 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
 
   protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
-  private UserCache userCache = new SpringCacheBasedUserCache();
+  private CaffeineCacheBasedUserCache userCache = new CaffeineCacheBasedUserCache();
 
   private boolean forcePrincipalAsString = false;
 
@@ -89,11 +87,11 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
     boolean cacheWasUsed = true;
 
     String compositeAccount = determineCompositeAccount(authentication);
-    UserDetails user = this.userCache.getUserFromCache(compositeAccount);
+    CustomOAuth2User user = this.userCache.getUserFromCache(compositeAccount);
     if (user == null) {
       cacheWasUsed = false;
       try {
-        user = retrieveUser(compositeAccount, authentication);
+        user = (CustomOAuth2User) retrieveUser(compositeAccount, authentication);
       } catch (UsernameNotFoundException ex) {
         log.debug("Failed to find user '" + compositeAccount + "'");
         if (!this.hideUserNotFoundExceptions) {
@@ -115,16 +113,17 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
       // There was a problem, so try again after checking
       // we're using latest data (i.e. not from the cache)
       cacheWasUsed = false;
-      user = retrieveUser(compositeAccount, authentication);
+      user = (CustomOAuth2User) retrieveUser(compositeAccount, authentication);
       this.preAuthenticationChecks.check(user);
       additionalAuthenticationChecks(user, authentication);
     }
 
     this.postAuthenticationChecks.check(user);
     if (!cacheWasUsed) {
-      this.userCache.putUserInCache(user);
+      this.userCache.putUserInCache(compositeAccount, user);
     }
-    Object principalToReturn = user;
+    /* Prevent password from being cleared */
+    Object principalToReturn = user.clone();
     if (this.forcePrincipalAsString) {
       principalToReturn = user.getUsername();
     }
@@ -178,7 +177,7 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
   protected void doAfterPropertiesSet() throws Exception {
   }
 
-  public UserCache getUserCache() {
+  public CaffeineCacheBasedUserCache getUserCache() {
     return this.userCache;
   }
 
@@ -254,7 +253,7 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
     this.messages = new MessageSourceAccessor(messageSource);
   }
 
-  public void setUserCache(UserCache userCache) {
+  public void setUserCache(CaffeineCacheBasedUserCache userCache) {
     this.userCache = userCache;
   }
 

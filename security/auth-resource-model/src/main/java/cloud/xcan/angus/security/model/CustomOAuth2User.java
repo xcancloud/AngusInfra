@@ -1,5 +1,7 @@
 package cloud.xcan.angus.security.model;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.spec.experimental.EntitySupport;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
@@ -41,7 +44,7 @@ import org.springframework.util.Assert;
 @Slf4j
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> implements UserDetails,
-    CredentialsContainer {
+    CredentialsContainer, Cloneable {
 
   private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
@@ -245,6 +248,24 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.directoryId = directoryId;
     this.defaultLanguage = defaultLanguage;
     this.defaultTimeZone = defaultTimeZone;
+  }
+
+  @Override
+  public CustomOAuth2User clone() {
+    try {
+      CustomOAuth2User user = (CustomOAuth2User) super.clone();
+      if (isNotEmpty(user.getAuthorities())) {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        for (GrantedAuthority authority : user.getAuthorities()) {
+          GrantedAuthority clone = new SimpleGrantedAuthority(authority.getAuthority());
+          authorities.add(clone);
+        }
+        user.setAuthorities(authorities);
+      }
+      return user;
+    } catch (CloneNotSupportedException e) {
+      return this;
+    }
   }
 
   @Override

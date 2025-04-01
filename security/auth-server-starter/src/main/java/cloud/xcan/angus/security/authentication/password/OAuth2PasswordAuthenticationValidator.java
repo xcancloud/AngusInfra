@@ -41,8 +41,8 @@ public final class OAuth2PasswordAuthenticationValidator
   }
 
   private static void validateScope(OAuth2PasswordAuthenticationContext authenticationContext) {
-    OAuth2PasswordAuthenticationToken clientCredentialsAuthentication = authenticationContext
-        .getAuthentication();
+    OAuth2PasswordAuthenticationToken clientCredentialsAuthentication
+        = authenticationContext.getAuthentication();
     RegisteredClient registeredClient = authenticationContext.getRegisteredClient();
 
     Set<String> requestedScopes = clientCredentialsAuthentication.getScopes();

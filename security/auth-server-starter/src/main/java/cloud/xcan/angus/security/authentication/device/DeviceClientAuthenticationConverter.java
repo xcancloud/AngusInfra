@@ -28,8 +28,7 @@ public final class DeviceClientAuthenticationConverter implements Authentication
     RequestMatcher clientIdParameterMatcher = request ->
         request.getParameter(OAuth2ParameterNames.CLIENT_ID) != null;
     this.deviceAuthorizationRequestMatcher = new AndRequestMatcher(
-        new AntPathRequestMatcher(
-            deviceAuthorizationEndpointUri, HttpMethod.POST.name()),
+        new AntPathRequestMatcher(deviceAuthorizationEndpointUri, HttpMethod.POST.name()),
         clientIdParameterMatcher);
     this.deviceAccessTokenRequestMatcher = request ->
         AuthorizationGrantType.DEVICE_CODE.getValue()

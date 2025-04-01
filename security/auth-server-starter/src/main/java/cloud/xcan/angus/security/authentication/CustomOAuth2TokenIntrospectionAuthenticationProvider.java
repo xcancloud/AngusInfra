@@ -78,7 +78,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
   private static final TypeDescriptor LIST_STRING_TYPE_DESCRIPTOR = TypeDescriptor.collection(
       List.class, TypeDescriptor.valueOf(String.class));
 
-
   private final Log logger = LogFactory.getLog(getClass());
 
   private final RegisteredClientRepository registeredClientRepository;

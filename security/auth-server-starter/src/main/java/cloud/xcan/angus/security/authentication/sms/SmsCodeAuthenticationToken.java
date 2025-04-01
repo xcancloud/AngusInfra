@@ -1,4 +1,6 @@
-package cloud.xcan.angus.security.authentication.password;
+package cloud.xcan.angus.security.authentication.sms;
+
+import static cloud.xcan.angus.api.enums.SignInType.SMS_CODE;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,39 +11,40 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
 
-/**
- * An {@link Authentication} implementation used for the OAuth 2.0 Password Grant.
- */
-public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
+public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
   private final String id;
-  private final String account;
+  private final String mobile; // mobile
   private final Set<String> scopes;
 
   /**
-   * This is usually a password.
+   * This is usually an SMS verification code.
    *
    * @see Authentication#getCredentials()
    */
   private final Object credentials;
 
+  public static final AuthorizationGrantType SMS_CODE_GRANT_TYPE = new AuthorizationGrantType(
+      SMS_CODE.getValue());
+
   /**
-   * Constructs an {@code OAuth2PasswordAuthenticationToken} using the provided parameters.
+   * Constructs an {@code SmsCodeAuthenticationToken} using the provided parameters.
    *
-   * @param id                   the user id, identify the unique user. Allow phone numbers and email
-   *                             the addresses under multiple tenants, there may be multiple values
-   * @param account              the user username, mobile or email
-   * @param password             the user password
+   * @param id                   the user id, identify the unique user. Allow phone numbers and
+   *                             email the addresses under multiple tenants, there may be multiple
+   *                             values
+   * @param mobile               the user mobile
+   * @param password             the linkSecret of SMS verification code
    * @param clientPrincipal      the authenticated client principal
    * @param scopes               the requested scope(s)
    * @param additionalParameters the additional parameters
    */
-  public OAuth2PasswordAuthenticationToken(String id, String account, String password,
+  public SmsCodeAuthenticationToken(String id, String mobile, String password,
       Authentication clientPrincipal, @Nullable Set<String> scopes,
       @Nullable Map<String, Object> additionalParameters) {
-    super(AuthorizationGrantType.PASSWORD, clientPrincipal, additionalParameters);
+    super(SMS_CODE_GRANT_TYPE, clientPrincipal, additionalParameters);
     this.id = id;
-    this.account = account;
+    this.mobile = mobile;
     this.credentials = password;
     this.scopes = Collections.unmodifiableSet(
         (scopes != null) ? new HashSet<>(scopes) : Collections.emptySet());
@@ -57,12 +60,12 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
   }
 
   /**
-   * Returns the requested account.
+   * Returns the requested mobile.
    *
-   * @return the requested user username, mobile or email
+   * @return the requested user mobile
    */
-  public String getAccount() {
-    return account;
+  public String getMobile() {
+    return mobile;
   }
 
   /**
@@ -75,13 +78,14 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
   }
 
   /**
-   * The credentials that prove the principal is correct. This is usually a password, but could be
-   * anything relevant to the <code>AuthenticationManager</code>. Callers are expected to populate
-   * the credentials.
+   * The credentials that prove the principal is correct. This is usually a linkSecret of SMS
+   * verification code, but could be anything relevant to the <code>AuthenticationManager</code>.
+   * Callers are expected to populate the credentials.
    *
    * @return the credentials that prove the identity of the <code>Principal</code>
    */
   public Object getCredentials() {
     return this.credentials;
   }
+
 }

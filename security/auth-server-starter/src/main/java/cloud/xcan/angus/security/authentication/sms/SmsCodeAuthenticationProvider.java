@@ -1,7 +1,10 @@
-package cloud.xcan.angus.security.authentication.password;
+package cloud.xcan.angus.security.authentication.sms;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createHash;
+import static cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken.SMS_CODE_GRANT_TYPE;
 
+import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils;
+import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationValidator;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -47,10 +50,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 /**
- * An {@link AuthenticationProvider} implementation for the OAuth 2.0 Password Grant.
+ * An {@link AuthenticationProvider} implementation for the Sms Code Grant.
  */
 @Slf4j
-public final class OAuth2PasswordAuthenticationProvider implements AuthenticationProvider {
+public final class SmsCodeAuthenticationProvider implements AuthenticationProvider {
 
   private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
 
@@ -60,7 +63,7 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
   private final OAuth2AuthorizationService authorizationService;
   private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
   private final AuthenticationManager authenticationManager;
-  private Consumer<OAuth2PasswordAuthenticationContext> authenticationValidator = new OAuth2PasswordAuthenticationValidator();
+  private Consumer<SmsCodeAuthenticationContext> authenticationValidator = new SmsCodeAuthenticationValidator();
 
   private SessionRegistry sessionRegistry;
 
@@ -72,7 +75,7 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
    * @param tokenGenerator        the token generator
    * @param authenticationManager for processes an Authentication request.
    */
-  public OAuth2PasswordAuthenticationProvider(OAuth2AuthorizationService authorizationService,
+  public SmsCodeAuthenticationProvider(OAuth2AuthorizationService authorizationService,
       OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator,
       AuthenticationManager authenticationManager) {
     Assert.notNull(authorizationService, "authorizationService cannot be null");
@@ -85,11 +88,11 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    OAuth2PasswordAuthenticationToken passwordAuthenticationToken = (OAuth2PasswordAuthenticationToken) authentication;
+    SmsCodeAuthenticationToken smsCodeAuthenticationToken = (SmsCodeAuthenticationToken) authentication;
 
     // Retrieved and checked client?
     OAuth2ClientAuthenticationToken clientPrincipal = OAuth2PasswordAuthenticationProviderUtils
-        .getAuthenticatedClientElseThrowInvalidClient(passwordAuthenticationToken);
+        .getAuthenticatedClientElseThrowInvalidClient(smsCodeAuthenticationToken);
     RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
     if (log.isTraceEnabled()) {
@@ -97,7 +100,7 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
     }
 
     assert registeredClient != null;
-    if (!registeredClient.getAuthorizationGrantTypes().contains(AuthorizationGrantType.PASSWORD)) {
+    if (!registeredClient.getAuthorizationGrantTypes().contains(SMS_CODE_GRANT_TYPE)) {
       if (log.isDebugEnabled()) {
         log.debug(String.format(
             "Invalid request: requested grant_type is not allowed" + " for registered client '%s'",
@@ -107,8 +110,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
     }
 
     // Check the requested scope is allowed
-    OAuth2PasswordAuthenticationContext authenticationContext = OAuth2PasswordAuthenticationContext
-        .with(passwordAuthenticationToken)
+    SmsCodeAuthenticationContext authenticationContext = SmsCodeAuthenticationContext
+        .with(smsCodeAuthenticationToken)
         .registeredClient(registeredClient)
         .build();
     this.authenticationValidator.accept(authenticationContext);
@@ -117,18 +120,18 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
       log.trace("Validated token request parameters");
     }
 
-    Authentication passwordAuthentication = passwordAuthentication(authenticationManager,
-        passwordAuthenticationToken);
+    Authentication smsCodeAuthentication = smsCodeAuthentication(authenticationManager,
+        smsCodeAuthenticationToken);
 
-    Set<String> authorizedScopes = new LinkedHashSet<>(passwordAuthenticationToken.getScopes());
+    Set<String> authorizedScopes = new LinkedHashSet<>(smsCodeAuthenticationToken.getScopes());
     DefaultOAuth2TokenContext.Builder tokenContextBuilder = DefaultOAuth2TokenContext.builder()
         .registeredClient(registeredClient)
-        .principal(passwordAuthentication)
+        .principal(smsCodeAuthentication)
         .authorizationServerContext(AuthorizationServerContextHolder.getContext())
         .authorizedScopes(authorizedScopes)
         .tokenType(OAuth2TokenType.ACCESS_TOKEN)
-        .authorizationGrantType(AuthorizationGrantType.PASSWORD)
-        .authorizationGrant(passwordAuthenticationToken);
+        .authorizationGrantType(SMS_CODE_GRANT_TYPE)
+        .authorizationGrant(smsCodeAuthenticationToken);
 
     // ----- Access token -----
     OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN)
@@ -142,15 +145,15 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
     if (log.isTraceEnabled()) {
       log.trace("Generated access token");
     }
-    OAuth2AccessToken accessToken = OAuth2PasswordAuthenticationProviderUtils
-        .accessToken(generatedAccessToken, tokenContext);
+    OAuth2AccessToken accessToken = OAuth2PasswordAuthenticationProviderUtils.accessToken(
+        generatedAccessToken, tokenContext);
 
     OAuth2Authorization.Builder authorizationBuilder
         = OAuth2Authorization.withRegisteredClient(registeredClient)
-        .principalName(passwordAuthentication.getName())
-        .authorizationGrantType(AuthorizationGrantType.PASSWORD)
+        .principalName(smsCodeAuthentication.getName())
+        .authorizationGrantType(SMS_CODE_GRANT_TYPE)
         .attribute(OAuth2ParameterNames.SCOPE, authorizedScopes)
-        .attribute(Principal.class.getName(), passwordAuthentication);
+        .attribute(Principal.class.getName(), smsCodeAuthentication);
 
     if (generatedAccessToken instanceof ClaimAccessor) {
       authorizationBuilder.token(accessToken, (metadata) ->
@@ -186,7 +189,7 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
     // ----- ID token -----
     OidcIdToken idToken;
     if (authorizedScopes.contains(OidcScopes.OPENID)) {
-      SessionInformation sessionInformation = getSessionInformation(passwordAuthentication);
+      SessionInformation sessionInformation = getSessionInformation(smsCodeAuthentication);
       if (sessionInformation != null) {
         try {
           // Compute (and use) hash for Session ID
@@ -249,7 +252,7 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
 
   @Override
   public boolean supports(Class<?> authentication) {
-    return OAuth2PasswordAuthenticationToken.class.isAssignableFrom(authentication);
+    return SmsCodeAuthenticationToken.class.isAssignableFrom(authentication);
   }
 
   /**
@@ -263,22 +266,22 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
   }
 
   /**
-   * Sets the {@code Consumer} providing access to the {@link OAuth2PasswordAuthenticationContext}
-   * and is responsible for validating specific OAuth 2.0 Client Credentials Grant Request
-   * parameters associated in the {@link OAuth2PasswordAuthenticationToken}. The default
-   * authentication validator is {@link OAuth2PasswordAuthenticationValidator}.
+   * Sets the {@code Consumer} providing access to the {@link SmsCodeAuthenticationContext} and is
+   * responsible for validating specific OAuth 2.0 Client Credentials Grant Request parameters
+   * associated in the {@link SmsCodeAuthenticationToken}. The default authentication validator is
+   * {@link OAuth2PasswordAuthenticationValidator}.
    *
    * <p>
    * <b>NOTE:</b> The authentication validator MUST throw
    * {@link OAuth2AuthenticationException} if validation fails.
    *
    * @param authenticationValidator the {@code Consumer} providing access to the
-   *                                {@link OAuth2PasswordAuthenticationContext} and is responsible
-   *                                for validating specific OAuth 2.0 Client Credentials Grant
-   *                                Request parameters
+   *                                {@link SmsCodeAuthenticationContext} and is responsible for
+   *                                validating specific OAuth 2.0 Client Credentials Grant Request
+   *                                parameters
    */
   public void setAuthenticationValidator(
-      Consumer<OAuth2PasswordAuthenticationContext> authenticationValidator) {
+      Consumer<SmsCodeAuthenticationContext> authenticationValidator) {
     Assert.notNull(authenticationValidator, "authenticationValidator cannot be null");
     this.authenticationValidator = authenticationValidator;
   }
@@ -301,18 +304,11 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
     return sessionInformation;
   }
 
-  public Authentication passwordAuthentication(AuthenticationManager authenticationManager,
-      OAuth2PasswordAuthenticationToken passwordAuthenticationToken) {
-
-    // Map<String, Object> additionalParameters = passwordAuthenticationToken.getAdditionalParameters();
-    // String account = passwordAuthenticationToken.getAccount();
-    // String password = (String) additionalParameters.get(OAuth2ParameterNames.PASSWORD);
-    // UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-    //    = new UsernamePasswordAuthenticationToken(account, password);
-
+  public Authentication smsCodeAuthentication(AuthenticationManager authenticationManager,
+      SmsCodeAuthenticationToken smsCodeAuthenticationToken) {
     try {
-      // Do password check in DaoAuthenticationProvider#additionalAuthenticationChecks()
-      return authenticationManager.authenticate(passwordAuthenticationToken);
+      // Do password (linkSecret) check in DaoAuthenticationProvider#additionalAuthenticationChecks()
+      return authenticationManager.authenticate(smsCodeAuthenticationToken);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT, e.getMessage()

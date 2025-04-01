@@ -1,4 +1,4 @@
-package cloud.xcan.angus;
+package cloud.xcan.angus.rest;
 
 import java.util.List;
 import java.util.Map;

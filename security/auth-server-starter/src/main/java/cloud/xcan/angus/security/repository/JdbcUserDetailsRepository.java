@@ -133,7 +133,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   protected void initDao() throws ApplicationContextException {
     if (this.authenticationManager == null) {
       this.logger.info(
-          "No authentication manager set. Reauthentication of users when changing passwords will not be performed.");
+          "No authentication manager set. Re-authentication of users when changing passwords will not be performed.");
     }
     super.initDao();
   }
@@ -143,9 +143,8 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
    * should normally only be one matching user.
    */
   @Override
-  protected List<UserDetails> loadUsersByUsername(String username) {
-    return getJdbcTemplate().query(getUsersByUsernameQuery(), (rs, rowNum) -> mapToUser(rs),
-        username);
+  protected List<UserDetails> loadUsersByCompositeAccount(String compositeAccount) {
+    return super.loadUsersByCompositeAccount(compositeAccount);
   }
 
   @Override

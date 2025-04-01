@@ -1,5 +1,7 @@
 package cloud.xcan.angus.security.repository;
 
+import static cloud.xcan.angus.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.COMPOSITE_ACCOUNT_SEPARATOR;
+
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,12 +34,19 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     UserDetailsService, MessageSourceAware {
 
   // @formatter:off
-  public static final String DEF_USERS_BY_USERNAME_QUERY =
+  public static final String DEF_USERS_BY_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
       + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
       + "password_expired_date, last_modified_password_date, expired_date, deleted, "
       + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
-      + "FROM oauth2_user WHERE username = ? AND deleted = false";
+      + "FROM oauth2_user WHERE (username = ? OR mobile = ? OR email = ?) AND deleted = false";
+
+  public static final String DEF_USERS_BY_COMPOSITE_ACCOUNT_QUERY =
+      "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
+          + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
+          + "password_expired_date, last_modified_password_date, expired_date, deleted, "
+          + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
+          + "FROM oauth2_user WHERE id = ? AND (username = ? OR mobile = ? OR email = ?) AND deleted = false";
 
 	public static final String DEF_AUTHORITIES_BY_USERNAME_QUERY =
       "select username, authority from oauth2_authorities where username = ?";
@@ -45,9 +54,11 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
 
   protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
-  private String authoritiesByUsernameQuery;
+  private String usersByAccountQuery;
 
-  private String usersByUsernameQuery;
+  private String usersByCompositeAccountQuery;
+
+  private String authoritiesByUsernameQuery;
 
   private String rolePrefix = "";
 
@@ -58,7 +69,8 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   private boolean enableGroups;
 
   public JdbcUserAuthoritiesDaoImpl() {
-    this.usersByUsernameQuery = DEF_USERS_BY_USERNAME_QUERY;
+    this.usersByAccountQuery = DEF_USERS_BY_ACCOUNT_QUERY;
+    this.usersByCompositeAccountQuery = DEF_USERS_BY_COMPOSITE_ACCOUNT_QUERY;
     this.authoritiesByUsernameQuery = DEF_AUTHORITIES_BY_USERNAME_QUERY;
   }
 
@@ -80,8 +92,8 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   protected void addCustomAuthorities(String username, List<GrantedAuthority> authorities) {
   }
 
-  public String getUsersByUsernameQuery() {
-    return this.usersByUsernameQuery;
+  public String getUsersByAccountQuery() {
+    return this.usersByAccountQuery;
   }
 
   @Override
@@ -91,12 +103,12 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    List<UserDetails> users = loadUsersByUsername(username);
+  public UserDetails loadUserByUsername(String compositeAccount) throws UsernameNotFoundException {
+    List<UserDetails> users = loadUsersByCompositeAccount(compositeAccount);
     if (users.isEmpty()) {
-      this.logger.debug("Query returned no results for user '" + username + "'");
+      this.logger.debug("Query returned no results for user '" + compositeAccount + "'");
       throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
-          new Object[]{username}, "Username {0} not found"));
+          new Object[]{compositeAccount}, "Username {0} not found"));
     }
     UserDetails user = users.stream().filter(UserDetails::isEnabled).toList()
         .get(0); // contains no GrantedAuthority[]
@@ -108,23 +120,30 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     addCustomAuthorities(user.getUsername(), dbAuths);
     if (dbAuths.isEmpty()) {
       this.logger.debug(
-          "User '" + username + "' has no authorities and will be treated as 'not found'");
+          "User '" + compositeAccount + "' has no authorities and will be treated as 'not found'");
       //throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.noAuthority",
       //    new Object[]{username}, "User {0} has no GrantedAuthority"));
     }
-    return createUserDetails(username, user, dbAuths);
+    return createUserDetails(compositeAccount, user, dbAuths);
   }
 
   /**
    * Executes the SQL <tt>usersByUsernameQuery</tt> and returns a list of UserDetails objects. There
    * should normally only be one matching user.
    */
-  protected List<UserDetails> loadUsersByUsername(String username) {
+  protected List<UserDetails> loadUsersByCompositeAccount(String compositeAccount) {
     // @formatter:off
 		RowMapper<UserDetails> mapper = (rs, rowNum) -> mapToUser(rs);
-		// @formatter:on
-    return getJdbcTemplate().query(this.usersByUsernameQuery, mapper,
-        (Object) new String[]{username});
+	  if (compositeAccount.contains(COMPOSITE_ACCOUNT_SEPARATOR)){
+      // Composite Format: id##acount
+      String[] composite = compositeAccount.split(COMPOSITE_ACCOUNT_SEPARATOR);
+      return getJdbcTemplate().query(this.usersByCompositeAccountQuery, mapper,
+          composite[0], composite[1], composite[1], composite[1]);
+    }else {
+      return getJdbcTemplate().query(this.usersByAccountQuery, mapper,
+          compositeAccount, compositeAccount, compositeAccount);
+    }
+    // @formatter:on
   }
 
   public CustomOAuth2User mapToUser(ResultSet rs) throws SQLException {
@@ -231,7 +250,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   }
 
   /**
-   * If <code>true</code> (the default), indicates the {@link #getUsersByUsernameQuery()} returns a
+   * If <code>true</code> (the default), indicates the {@link #getUsersByAccountQuery()} returns a
    * username in response to a query. If
    * <code>false</code>, indicates that a primary key is used instead. If set to
    * <code>true</code>, the class will use the database-derived username in the returned
@@ -254,7 +273,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   /**
    * Allows the default query string used to retrieve users based on username to be overridden, if
    * default table or column names need to be changed. The default query is
-   * {@link #DEF_USERS_BY_USERNAME_QUERY}; when modifying this query, ensure that all returned
+   * {@link #DEF_USERS_BY_ACCOUNT_QUERY}; when modifying this query, ensure that all returned
    * columns are mapped back to the same column positions as in the default query. If the 'enabled'
    * column does not exist in the source database, a permanent true value for this column may be
    * returned by using a query similar to
@@ -265,8 +284,16 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
    *
    * @param usersByUsernameQueryString The query string to set
    */
-  public void setUsersByUsernameQuery(String usersByUsernameQueryString) {
-    this.usersByUsernameQuery = usersByUsernameQueryString;
+  public void setUsersByAccountQuery(String usersByUsernameQueryString) {
+    this.usersByAccountQuery = usersByUsernameQueryString;
+  }
+
+  public String getUsersByCompositeAccountQuery() {
+    return usersByCompositeAccountQuery;
+  }
+
+  public void setUsersByCompositeAccountQuery(String usersByCompositeAccountQuery) {
+    this.usersByCompositeAccountQuery = usersByCompositeAccountQuery;
   }
 
   public boolean getEnableAuthorities() {

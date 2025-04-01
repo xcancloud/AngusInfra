@@ -11,9 +11,7 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.ResolvableType;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
@@ -24,10 +22,8 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.OAuth2Token;
-import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
@@ -60,27 +56,6 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
       return clientPrincipal;
     }
     throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
-  }
-
-  public static Authentication passwordAuthentication(
-      AuthenticationManager authenticationManager,
-      OAuth2PasswordAuthenticationToken passwordAuthenticationToken) {
-
-    Map<String, Object> additionalParameters = passwordAuthenticationToken.getAdditionalParameters();
-
-    String account = passwordAuthenticationToken.getAccount();
-    String password = (String) additionalParameters.get(OAuth2ParameterNames.PASSWORD);
-
-    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-        = new UsernamePasswordAuthenticationToken(account, password);
-    try {
-      return authenticationManager.authenticate(usernamePasswordAuthenticationToken);
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-      OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_GRANT,
-          "The provided authorization grant (e.g., username or password) is invalid.", "");
-      throw new OAuth2AuthenticationException(error);
-    }
   }
 
   public static <T extends OAuth2Token> OAuth2AccessToken accessToken(T token,

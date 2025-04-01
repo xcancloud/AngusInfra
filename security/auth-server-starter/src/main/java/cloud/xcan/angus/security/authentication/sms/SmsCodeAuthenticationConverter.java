@@ -1,12 +1,15 @@
-package cloud.xcan.angus.security.authentication.password;
+package cloud.xcan.angus.security.authentication.sms;
 
+import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationConverter.ACCOUNT;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.ACCESS_TOKEN_REQUEST_ERROR_URI;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.getFormParameters;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.throwError;
+import static cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken.SMS_CODE_GRANT_TYPE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.MOBILE;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
-import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.USERNAME;
 import static org.springframework.util.StringUtils.hasText;
 
+import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationConverter;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,7 +19,6 @@ import java.util.Set;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
 import org.springframework.security.oauth2.server.authorization.web.OAuth2TokenEndpointFilter;
@@ -26,20 +28,14 @@ import org.springframework.util.StringUtils;
 
 /**
  * Attempts to extract an Access Token Request from {@link HttpServletRequest} for the OAuth 2.0
- * Password Grant and then converts it to an {@link OAuth2PasswordAuthenticationToken} used for
+ * Password Grant and then converts it to an {@link SmsCodeAuthenticationToken} used for
  * authenticating the authorization grant.
  *
  * @see AuthenticationConverter
- * @see OAuth2PasswordAuthenticationToken
+ * @see SmsCodeAuthenticationToken
  * @see OAuth2TokenEndpointFilter
  */
-public final class OAuth2PasswordAuthenticationConverter implements AuthenticationConverter {
-
-  /**
-   * User username, mobile or email.
-   */
-  public static final String ACCOUNT = "account";
-  public static final String USER_ID = "user_id";
+public final class SmsCodeAuthenticationConverter implements AuthenticationConverter {
 
   @Nullable
   @Override
@@ -48,7 +44,7 @@ public final class OAuth2PasswordAuthenticationConverter implements Authenticati
 
     // grant_type (REQUIRED)
     String grantType = parameters.getFirst(OAuth2ParameterNames.GRANT_TYPE);
-    if (!AuthorizationGrantType.PASSWORD.getValue().equalsIgnoreCase(grantType)) {
+    if (!SMS_CODE_GRANT_TYPE.getValue().equalsIgnoreCase(grantType)) {
       return null;
     }
 
@@ -64,17 +60,17 @@ public final class OAuth2PasswordAuthenticationConverter implements Authenticati
           Arrays.asList(StringUtils.delimitedListToStringArray(scope, " ")));
     }
 
-    // account (REQUIRED)
-    String account = parameters.getFirst(ACCOUNT);
-    if (isEmpty(account)) {
+    // mobile (REQUIRED)
+    String mobile = parameters.getFirst(ACCOUNT);
+    if (isEmpty(mobile)) {
       // Important! Compatible with old parameter.
-      account = request.getParameter(USERNAME);
+      mobile = request.getParameter(MOBILE);
     }
-    if (!hasText(account) /*|| parameters.get(ACCOUNT).size() != 1*/) {
+    if (!hasText(mobile) /*|| parameters.get(ACCOUNT).size() != 1*/) {
       throwError(OAuth2ErrorCodes.INVALID_REQUEST, ACCOUNT, ACCESS_TOKEN_REQUEST_ERROR_URI);
     }
 
-    // password (REQUIRED)
+    // password (linkSecret, REQUIRED)
     String password = parameters.getFirst(OAuth2ParameterNames.PASSWORD);
     if (!hasText(password) || parameters.get(OAuth2ParameterNames.PASSWORD).size() != 1) {
       throwError(OAuth2ErrorCodes.INVALID_REQUEST, OAuth2ParameterNames.PASSWORD,
@@ -82,7 +78,7 @@ public final class OAuth2PasswordAuthenticationConverter implements Authenticati
     }
 
     // id (User id, OPTIONAL)
-    String userId = parameters.getFirst(USER_ID);
+    String userId = parameters.getFirst(OAuth2PasswordAuthenticationConverter.USER_ID);
 
     Authentication clientPrincipal = SecurityContextHolder.getContext().getAuthentication();
 
@@ -99,7 +95,7 @@ public final class OAuth2PasswordAuthenticationConverter implements Authenticati
       }
     });
 
-    return new OAuth2PasswordAuthenticationToken(userId, account, password, clientPrincipal,
+    return new SmsCodeAuthenticationToken(userId, mobile, password, clientPrincipal,
         requestedScopes, additionalParameters);
   }
 

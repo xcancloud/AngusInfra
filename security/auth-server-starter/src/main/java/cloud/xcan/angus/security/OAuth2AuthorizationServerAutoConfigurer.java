@@ -7,15 +7,20 @@ import static org.springframework.security.oauth2.server.authorization.config.an
 
 import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;
 import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.dao.DaoAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.dao.LinkSecretCheckService;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
+import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
 import java.util.Arrays;
 import java.util.List;
 import javax.sql.DataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -85,14 +90,17 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                         new OAuth2PasswordAuthenticationConverter(),
                         new OAuth2AuthorizationCodeAuthenticationConverter(),
                         new OAuth2RefreshTokenAuthenticationConverter(),
-                        new DeviceClientAuthenticationConverter(authorizationServerSettings.getDeviceAuthorizationEndpoint()))
+                        new DeviceClientAuthenticationConverter(authorizationServerSettings.getDeviceAuthorizationEndpoint()),
+                        new SmsCodeAuthenticationConverter())
                       ))
                     .authenticationProvider(
                         new OAuth2PasswordAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))
                     .authenticationProvider(
                         new OAuth2ClientCredentialsAuthenticationProvider(oauth2AuthorizationService, tokenGenerator))
                     .authenticationProvider(
-                        new DeviceClientAuthenticationProvider(registeredClientRepository))),
+                        new DeviceClientAuthenticationProvider(registeredClientRepository))
+                    .authenticationProvider(
+                        new SmsCodeAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))),
             (authorizationServer) -> authorizationServer
                 .authorizationServerSettings(authorizationServerSettings)
                 // oauth2-authorization-server/src/test/java/org/springframework/security/oauth2/server/authorization/config/annotation/web/configurers/OAuth2TokenIntrospectionTests.java
@@ -124,8 +132,13 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   @Bean
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-      PasswordEncoder passwordEncoder, HttpSecurity http) throws Exception {
+      PasswordEncoder passwordEncoder, HttpSecurity http,
+      @Autowired(required = false) LinkSecretCheckService linkSecretCheckService) throws Exception {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder,
+        linkSecretCheckService);
+    provider.setUserDetailsService(userDetailsService);
     return http.getSharedObject(AuthenticationManagerBuilder.class)
+        .authenticationProvider(provider)
         .userDetailsService(userDetailsService)
         .passwordEncoder(passwordEncoder)
         .and()

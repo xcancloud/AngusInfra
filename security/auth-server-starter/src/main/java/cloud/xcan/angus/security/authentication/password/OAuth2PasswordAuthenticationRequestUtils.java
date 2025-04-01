@@ -12,14 +12,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
-final class OAuth2PasswordAuthenticationRequestUtils {
+public class OAuth2PasswordAuthenticationRequestUtils {
 
-  static final String ACCESS_TOKEN_REQUEST_ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
+  public static final String ACCESS_TOKEN_REQUEST_ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
 
   private OAuth2PasswordAuthenticationRequestUtils() {
   }
 
-  static MultiValueMap<String, String> getFormParameters(HttpServletRequest request) {
+  public static MultiValueMap<String, String> getFormParameters(HttpServletRequest request) {
     Map<String, String[]> parameterMap = request.getParameterMap();
     MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
     parameterMap.forEach((key, values) -> {
@@ -35,7 +35,7 @@ final class OAuth2PasswordAuthenticationRequestUtils {
     return parameters;
   }
 
-  static MultiValueMap<String, String> getQueryParameters(HttpServletRequest request) {
+  public static MultiValueMap<String, String> getQueryParameters(HttpServletRequest request) {
     Map<String, String[]> parameterMap = request.getParameterMap();
     MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
     parameterMap.forEach((key, values) -> {
@@ -50,7 +50,7 @@ final class OAuth2PasswordAuthenticationRequestUtils {
     return parameters;
   }
 
-  static Map<String, Object> getParametersIfMatchesAuthorizationCodeGrantRequest(
+  public static Map<String, Object> getParametersIfMatchesAuthorizationCodeGrantRequest(
       HttpServletRequest request, String... exclusions) {
     if (!matchesAuthorizationCodeGrantRequest(request)) {
       return Collections.emptyMap();
@@ -69,12 +69,12 @@ final class OAuth2PasswordAuthenticationRequestUtils {
     return parameters;
   }
 
-  static boolean matchesAuthorizationCodeGrantRequest(HttpServletRequest request) {
+  public static boolean matchesAuthorizationCodeGrantRequest(HttpServletRequest request) {
     return AuthorizationGrantType.PASSWORD.getValue()
         .equals(request.getParameter(OAuth2ParameterNames.GRANT_TYPE));
   }
 
-  static void throwError(String errorCode, String parameterName, String errorUri) {
+  public static void throwError(String errorCode, String parameterName, String errorUri) {
     OAuth2Error error = new OAuth2Error(errorCode, "OAuth 2.0 Parameter: " + parameterName,
         errorUri);
     throw new OAuth2AuthenticationException(error);

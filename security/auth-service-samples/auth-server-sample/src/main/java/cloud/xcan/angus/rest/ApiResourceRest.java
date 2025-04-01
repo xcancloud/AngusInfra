@@ -1,4 +1,4 @@
-package cloud.xcan.angus;
+package cloud.xcan.angus.rest;
 
 import cloud.xcan.angus.security.principal.HoldPrincipalFilter;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -6,10 +6,11 @@ import cloud.xcan.angus.spec.locale.EnumMessage;
 
 
 @EndpointRegister
-public enum SigninType implements EnumMessage<String> {
+public enum SignInType implements EnumMessage<String> {
 
   ACCOUNT_PASSWORD,
-  MOBILE_SMS,
+  SMS_CODE,
+  EMAIL_CODE,
   THIRD_SOCIAL;
 
   @Override

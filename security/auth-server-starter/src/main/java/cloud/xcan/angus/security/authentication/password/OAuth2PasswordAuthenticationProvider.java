@@ -1,11 +1,10 @@
 package cloud.xcan.angus.security.authentication.password;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createHash;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,9 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.core.log.LogMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -52,14 +49,13 @@ import org.springframework.util.CollectionUtils;
 /**
  * An {@link AuthenticationProvider} implementation for the OAuth 2.0 Password Grant.
  */
+@Slf4j
 public final class OAuth2PasswordAuthenticationProvider implements AuthenticationProvider {
 
   private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
 
   private static final OAuth2TokenType ID_TOKEN_TOKEN_TYPE = new OAuth2TokenType(
       OidcParameterNames.ID_TOKEN);
-
-  private final Log logger = LogFactory.getLog(getClass());
 
   private final OAuth2AuthorizationService authorizationService;
   private final OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator;
@@ -96,13 +92,14 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
         .getAuthenticatedClientElseThrowInvalidClient(passwordAuthenticationToken);
     RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
-    if (this.logger.isTraceEnabled()) {
-      this.logger.trace("Retrieved registered client");
+    if (log.isTraceEnabled()) {
+      log.trace("Retrieved registered client");
     }
 
+    assert registeredClient != null;
     if (!registeredClient.getAuthorizationGrantTypes().contains(AuthorizationGrantType.PASSWORD)) {
-      if (this.logger.isDebugEnabled()) {
-        this.logger.debug(LogMessage.format(
+      if (log.isDebugEnabled()) {
+        log.debug(String.format(
             "Invalid request: requested grant_type is not allowed" + " for registered client '%s'",
             registeredClient.getId()));
       }
@@ -116,8 +113,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
         .build();
     this.authenticationValidator.accept(authenticationContext);
 
-    if (this.logger.isTraceEnabled()) {
-      this.logger.trace("Validated token request parameters");
+    if (log.isTraceEnabled()) {
+      log.trace("Validated token request parameters");
     }
 
     Authentication passwordAuthentication = OAuth2PasswordAuthenticationProviderUtils
@@ -142,14 +139,14 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
           "The token generator failed to generate the access token.", ERROR_URI);
       throw new OAuth2AuthenticationException(error);
     }
-    if (this.logger.isTraceEnabled()) {
-      this.logger.trace("Generated access token");
+    if (log.isTraceEnabled()) {
+      log.trace("Generated access token");
     }
-    OAuth2AccessToken accessToken = OAuth2PasswordAuthenticationProviderUtils.accessToken(
-        generatedAccessToken, tokenContext);
+    OAuth2AccessToken accessToken = OAuth2PasswordAuthenticationProviderUtils
+        .accessToken(generatedAccessToken, tokenContext);
 
-    OAuth2Authorization.Builder authorizationBuilder = OAuth2Authorization.withRegisteredClient(
-            registeredClient)
+    OAuth2Authorization.Builder authorizationBuilder
+        = OAuth2Authorization.withRegisteredClient(registeredClient)
         .principalName(passwordAuthentication.getName())
         .authorizationGrantType(AuthorizationGrantType.PASSWORD)
         .attribute(OAuth2ParameterNames.SCOPE, authorizedScopes)
@@ -177,8 +174,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
           throw new OAuth2AuthenticationException(error);
         }
 
-        if (this.logger.isTraceEnabled()) {
-          this.logger.trace("Generated refresh token");
+        if (log.isTraceEnabled()) {
+          log.trace("Generated refresh token");
         }
 
         refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
@@ -215,8 +212,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
         throw new OAuth2AuthenticationException(error);
       }
 
-      if (this.logger.isTraceEnabled()) {
-        this.logger.trace("Generated id token");
+      if (log.isTraceEnabled()) {
+        log.trace("Generated id token");
       }
 
       idToken = new OidcIdToken(generatedIdToken.getTokenValue(), generatedIdToken.getIssuedAt(),
@@ -232,8 +229,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
 
     this.authorizationService.save(authorization);
 
-    if (this.logger.isTraceEnabled()) {
-      this.logger.trace("Saved authorization");
+    if (log.isTraceEnabled()) {
+      log.trace("Saved authorization");
     }
 
     Map<String, Object> additionalParameters = Collections.emptyMap();
@@ -242,8 +239,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
       additionalParameters.put(OidcParameterNames.ID_TOKEN, idToken.getTokenValue());
     }
 
-    if (this.logger.isTraceEnabled()) {
-      this.logger.trace("Authenticated token request");
+    if (log.isTraceEnabled()) {
+      log.trace("Authenticated token request");
     }
 
     return new OAuth2AccessTokenAuthenticationToken(registeredClient, clientPrincipal, accessToken,
@@ -302,12 +299,6 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
       }
     }
     return sessionInformation;
-  }
-
-  private static String createHash(String value) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("SHA-256");
-    byte[] digest = md.digest(value.getBytes(StandardCharsets.US_ASCII));
-    return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
   }
 
 }

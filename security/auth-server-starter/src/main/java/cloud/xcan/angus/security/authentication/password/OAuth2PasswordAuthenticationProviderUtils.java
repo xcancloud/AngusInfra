@@ -1,5 +1,9 @@
 package cloud.xcan.angus.security.authentication.password;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -187,5 +191,12 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
     }
     return tokenGenerator;
   }
+
+  public static String createHash(String value) throws NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance("SHA-256");
+    byte[] digest = md.digest(value.getBytes(StandardCharsets.US_ASCII));
+    return Base64.getUrlEncoder().withoutPadding().encodeToString(digest);
+  }
+
 
 }

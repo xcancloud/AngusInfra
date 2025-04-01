@@ -2,9 +2,7 @@ package cloud.xcan.angus.security.authentication.password;
 
 import java.util.Set;
 import java.util.function.Consumer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.core.log.LogMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -23,10 +21,9 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
  * @see OAuth2PasswordAuthenticationToken
  * @see OAuth2PasswordAuthenticationProvider#setAuthenticationValidator(Consumer)
  */
+@Slf4j
 public final class OAuth2PasswordAuthenticationValidator
     implements Consumer<OAuth2PasswordAuthenticationContext> {
-
-  private static final Log LOGGER = LogFactory.getLog(OAuth2PasswordAuthenticationValidator.class);
 
   /**
    * The default validator for {@link OAuth2PasswordAuthenticationToken#getScopes()}.
@@ -48,8 +45,8 @@ public final class OAuth2PasswordAuthenticationValidator
     Set<String> requestedScopes = clientCredentialsAuthentication.getScopes();
     Set<String> allowedScopes = registeredClient.getScopes();
     if (!requestedScopes.isEmpty() && !allowedScopes.containsAll(requestedScopes)) {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug(LogMessage.format(
+      if (log.isDebugEnabled()) {
+        log.debug(String.format(
             "Invalid request: requested scope is not allowed" + " for registered client '%s'",
             registeredClient.getId()));
       }

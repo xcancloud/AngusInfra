@@ -307,7 +307,7 @@ public interface BizConstant {
       "/doorapi/**",
       //"/openapi2p/**",
       "/pubview/**",
-      "/ws/**", // Internal authentication of access tokens.
+      // "/ws/**", // Internal authentication of access tokens
       // -- swagger ui
       "/swagger-ui.html",
       "/swagger-ui/**",

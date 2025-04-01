@@ -1,6 +1,6 @@
-package cloud.xcan.angus.security.authentication.sms;
+package cloud.xcan.angus.security.authentication.email;
 
-import static cloud.xcan.angus.api.enums.SignInType.SMS_CODE;
+import static cloud.xcan.angus.api.enums.SignInType.EMAIL_CODE;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,10 +11,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2AuthorizationGrantAuthenticationToken;
 
-public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
+public class EmailCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
   private final String id;
-  private final String mobile; // mobile
+  private final String email; // email
   private final Set<String> scopes;
 
   /**
@@ -24,8 +24,8 @@ public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenti
    */
   private final Object credentials;
 
-  public static final AuthorizationGrantType SMS_CODE_GRANT_TYPE = new AuthorizationGrantType(
-      SMS_CODE.getValue());
+  public static final AuthorizationGrantType EMAIL_CODE_GRANT_TYPE = new AuthorizationGrantType(
+      EMAIL_CODE.getValue());
 
   /**
    * Constructs an {@code EmailCodeAuthenticationToken} using the provided parameters.
@@ -33,18 +33,18 @@ public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenti
    * @param id                   the user id, identify the unique user. Allow phone numbers and
    *                             email the addresses under multiple tenants, there may be multiple
    *                             values
-   * @param mobile               the user mobile
+   * @param email               the user email
    * @param password             the linkSecret of SMS verification code
    * @param clientPrincipal      the authenticated client principal
    * @param scopes               the requested scope(s)
    * @param additionalParameters the additional parameters
    */
-  public SmsCodeAuthenticationToken(String id, String mobile, String password,
+  public EmailCodeAuthenticationToken(String id, String email, String password,
       Authentication clientPrincipal, @Nullable Set<String> scopes,
       @Nullable Map<String, Object> additionalParameters) {
-    super(SMS_CODE_GRANT_TYPE, clientPrincipal, additionalParameters);
+    super(EMAIL_CODE_GRANT_TYPE, clientPrincipal, additionalParameters);
     this.id = id;
-    this.mobile = mobile;
+    this.email = email;
     this.credentials = password;
     this.scopes = Collections.unmodifiableSet(
         (scopes != null) ? new HashSet<>(scopes) : Collections.emptySet());
@@ -60,12 +60,12 @@ public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenti
   }
 
   /**
-   * Returns the requested mobile.
+   * Returns the requested email.
    *
-   * @return the requested user mobile
+   * @return the requested user email
    */
   public String getMobile() {
-    return mobile;
+    return email;
   }
 
   /**

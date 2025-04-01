@@ -3,6 +3,7 @@ package cloud.xcan.angus.security.authentication.dao;
 import static java.util.Objects.isNull;
 
 import cloud.xcan.angus.api.enums.SignInType;
+import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationToken;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
@@ -88,12 +89,20 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
                 "Bad credentials"));
       }
     } else if (authentication instanceof SmsCodeAuthenticationToken token) {
-      if (isNull(linkSecretCheckService)) {
-        log.debug("Failed to authenticate since no LinkSecretCheckService instance provided");
-        throw new AuthenticationServiceException("No LinkSecretCheckService instance provided");
-      }
+      checkLinkSecretCheckServiceRequired();
       String presentedLinkSecret = authentication.getCredentials().toString();
       linkSecretCheckService.matches(SignInType.SMS_CODE, token.getId(), presentedLinkSecret);
+    } else if (authentication instanceof EmailCodeAuthenticationToken token) {
+      checkLinkSecretCheckServiceRequired();
+      String presentedLinkSecret = authentication.getCredentials().toString();
+      linkSecretCheckService.matches(SignInType.EMAIL_CODE, token.getId(), presentedLinkSecret);
+    }
+  }
+
+  private void checkLinkSecretCheckServiceRequired() {
+    if (isNull(linkSecretCheckService)) {
+      log.debug("Failed to authenticate since no LinkSecretCheckService instance provided");
+      throw new AuthenticationServiceException("No LinkSecretCheckService instance provided");
     }
   }
 

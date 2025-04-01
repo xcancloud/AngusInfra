@@ -3,6 +3,7 @@ package cloud.xcan.angus.security.authentication.dao;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
+import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationToken;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
@@ -81,8 +82,9 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     Assert.isTrue(authentication instanceof OAuth2PasswordAuthenticationToken
-            || authentication instanceof SmsCodeAuthenticationToken,
-        () -> "Only UsernamePasswordAuthenticationToken, SmsCodeAuthenticationToken, EmailCodeAuthenticationToken are supported");
+            || authentication instanceof SmsCodeAuthenticationToken
+            || authentication instanceof EmailCodeAuthenticationToken,
+        () -> "Only UsernamePasswordAuthenticationToken, EmailCodeAuthenticationToken, EmailCodeAuthenticationToken are supported");
 
     boolean cacheWasUsed = true;
 
@@ -137,6 +139,11 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
           : token.getAccount();
     }
     if (authentication instanceof SmsCodeAuthenticationToken token) {
+      return isNotEmpty(token.getId())
+          ? format("%s%s%s", token.getId(), COMPOSITE_ACCOUNT_SEPARATOR, token.getMobile())
+          : token.getMobile();
+    }
+    if (authentication instanceof EmailCodeAuthenticationToken token) {
       return isNotEmpty(token.getId())
           ? format("%s%s%s", token.getId(), COMPOSITE_ACCOUNT_SEPARATOR, token.getMobile())
           : token.getMobile();
@@ -260,7 +267,8 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
   @Override
   public boolean supports(Class<?> authentication) {
     return OAuth2PasswordAuthenticationToken.class.isAssignableFrom(authentication)
-        || SmsCodeAuthenticationToken.class.isAssignableFrom(authentication);
+        || SmsCodeAuthenticationToken.class.isAssignableFrom(authentication)
+        || EmailCodeAuthenticationToken.class.isAssignableFrom(authentication);
   }
 
   protected UserDetailsChecker getPreAuthenticationChecks() {

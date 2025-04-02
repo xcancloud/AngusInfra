@@ -141,7 +141,6 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
     encoders
         .put("sha256", new org.springframework.security.crypto.password.StandardPasswordEncoder());
     //encoders.put("argon2", new Argon2PasswordEncoder());
-
     return new DelegatingPasswordEncoder(DEFAULT_ENCODING_ID, encoders);
   }
 

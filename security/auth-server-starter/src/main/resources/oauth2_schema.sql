@@ -38,7 +38,6 @@ CREATE TABLE oauth2_registered_client
     source                        varchar(40)            DEFAULT NULL,
     biz_tag                       varchar(100)           DEFAULT NULL,
     tenant_id                     varchar(32)            DEFAULT '-1',
-    tenant_name                   varchar(100)           DEFAULT NULL,
     created_by                    varchar(32)            DEFAULT '-1',
     created_date                  timestamp NULL DEFAULT NULL,
     last_modified_by              varchar(32)            DEFAULT '-1',

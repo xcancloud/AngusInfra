@@ -1,11 +1,13 @@
 package cloud.xcan.angus.core.job;
 
 import cloud.xcan.angus.core.utils.AppEnvUtils;
+import cloud.xcan.angus.spec.annotations.DoInFuture;
 import cloud.xcan.angus.spec.experimental.DistributedLock;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 
+@DoInFuture("When the number of failures exceeds the limit, the circuit breaker is triggered to stop the execution of the Job.")
 @Slf4j
 public class SyncJobTemplate implements JobTemplate {
 

@@ -8,7 +8,7 @@ import static org.springframework.security.oauth2.server.authorization.config.an
 import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;
 import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.dao.DaoAuthenticationProvider;
-import cloud.xcan.angus.security.authentication.dao.LinkSecretCheckService;
+import cloud.xcan.angus.security.authentication.dao.LinkSecretService;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationConverter;
@@ -140,9 +140,9 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public AuthenticationManager authenticationManager(HttpSecurity http,
       UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
-      @Autowired(required = false) LinkSecretCheckService linkSecretCheckService) throws Exception {
+      @Autowired(required = false) LinkSecretService linkSecretService) throws Exception {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder,
-        linkSecretCheckService);
+        linkSecretService);
     provider.setUserDetailsService(userDetailsService);
     return http.getSharedObject(AuthenticationManagerBuilder.class)
         .authenticationProvider(provider)

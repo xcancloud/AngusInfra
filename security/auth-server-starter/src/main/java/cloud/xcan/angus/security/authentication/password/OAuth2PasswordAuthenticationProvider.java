@@ -218,9 +218,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
 
       idToken = new OidcIdToken(generatedIdToken.getTokenValue(), generatedIdToken.getIssuedAt(),
           generatedIdToken.getExpiresAt(), ((Jwt) generatedIdToken).getClaims());
-      authorizationBuilder.token(idToken,
-          (metadata) -> metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME,
-              idToken.getClaims()));
+      authorizationBuilder.token(idToken, (metadata)
+          -> metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, idToken.getClaims()));
     } else {
       idToken = null;
     }

@@ -50,7 +50,7 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
 
   private UserDetailsPasswordService userDetailsPasswordService;
 
-  private LinkSecretCheckService linkSecretCheckService;
+  private LinkSecretService linkSecretCheckService;
 
   private CompromisedPasswordChecker compromisedPasswordChecker;
 
@@ -62,10 +62,10 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
    * Creates a new instance using the provided {@link PasswordEncoder}
    *
    * @param passwordEncoder        the {@link PasswordEncoder} to use. Cannot be null.
-   * @param linkSecretCheckService the {@link LinkSecretCheckService} to use. Can be null.
+   * @param linkSecretCheckService the {@link LinkSecretService} to use. Can be null.
    */
   public DaoAuthenticationProvider(PasswordEncoder passwordEncoder,
-      LinkSecretCheckService linkSecretCheckService) {
+      LinkSecretService linkSecretCheckService) {
     setPasswordEncoder(passwordEncoder);
     setLinkSecretCheckService(linkSecretCheckService);
   }
@@ -101,8 +101,8 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
 
   private void checkLinkSecretCheckServiceRequired() {
     if (isNull(linkSecretCheckService)) {
-      log.debug("Failed to authenticate since no LinkSecretCheckService instance provided");
-      throw new AuthenticationServiceException("No LinkSecretCheckService instance provided");
+      log.debug("Failed to authenticate since no LinkSecretService instance provided");
+      throw new AuthenticationServiceException("No LinkSecretService instance provided");
     }
   }
 
@@ -183,11 +183,11 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
     return this.passwordEncoder;
   }
 
-  public LinkSecretCheckService getLinkSecretCheckService() {
+  public LinkSecretService getLinkSecretCheckService() {
     return linkSecretCheckService;
   }
 
-  public void setLinkSecretCheckService(LinkSecretCheckService linkSecretCheckService) {
+  public void setLinkSecretCheckService(LinkSecretService linkSecretCheckService) {
     this.linkSecretCheckService = linkSecretCheckService;
   }
 

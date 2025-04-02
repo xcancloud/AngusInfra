@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
@@ -117,6 +118,8 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
    * <li>argon2 - {@link Argon2PasswordEncoder}</li>
    * </ul>
    *
+   * @see PasswordEncoderFactories
+   *
    * @return the {@link PasswordEncoder} to use
    */
   @SuppressWarnings("deprecation")
@@ -132,8 +135,10 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
         new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("MD5"));
     encoders.put("noop",
         org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
-    //encoders.put("pbkdf2", new Pbkdf2PasswordEncoder());
-    //encoders.put("scrypt", new SCryptPasswordEncoder());
+    encoders.put("pbkdf2", Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_5());
+    encoders.put("pbkdf2@SpringSecurity_v5_8", Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8());
+    encoders.put("scrypt", SCryptPasswordEncoder.defaultsForSpringSecurity_v4_1());
+    encoders.put("scrypt@SpringSecurity_v5_8", SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8());
     encoders.put("SHA-1",
         new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-1"));
     encoders.put("SHA-256",

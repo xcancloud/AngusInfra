@@ -11,6 +11,8 @@ import cloud.xcan.angus.security.authentication.dao.DaoAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.dao.LinkSecretCheckService;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationConverter;
+import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
@@ -91,7 +93,8 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                         new OAuth2AuthorizationCodeAuthenticationConverter(),
                         new OAuth2RefreshTokenAuthenticationConverter(),
                         new DeviceClientAuthenticationConverter(authorizationServerSettings.getDeviceAuthorizationEndpoint()),
-                        new SmsCodeAuthenticationConverter())
+                        new SmsCodeAuthenticationConverter(),
+                        new EmailCodeAuthenticationConverter())
                       ))
                     .authenticationProvider(
                         new OAuth2PasswordAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))
@@ -100,7 +103,9 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     .authenticationProvider(
                         new DeviceClientAuthenticationProvider(registeredClientRepository))
                     .authenticationProvider(
-                        new SmsCodeAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))),
+                        new SmsCodeAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))
+                    .authenticationProvider(
+                        new EmailCodeAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))),
             (authorizationServer) -> authorizationServer
                 .authorizationServerSettings(authorizationServerSettings)
                 // oauth2-authorization-server/src/test/java/org/springframework/security/oauth2/server/authorization/config/annotation/web/configurers/OAuth2TokenIntrospectionTests.java

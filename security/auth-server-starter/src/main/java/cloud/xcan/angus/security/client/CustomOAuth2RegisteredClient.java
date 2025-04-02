@@ -75,6 +75,8 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
 
   private String tenantId;
 
+  private String tenantName;
+
   private String createdBy;
 
   private Instant createdDate;
@@ -235,6 +237,10 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
     return tenantId;
   }
 
+  public String getTenantName() {
+    return tenantName;
+  }
+
   public String getCreatedBy() {
     return createdBy;
   }
@@ -278,7 +284,7 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
         && Objects.equals(description, that.description)
         && Objects.equals(platform, that.platform) && Objects.equals(source, that.source)
         && Objects.equals(bizTag, that.bizTag) && Objects.equals(tenantId, that.tenantId)
-        && Objects.equals(createdBy, that.createdBy)
+        && Objects.equals(tenantName, that.tenantName) && Objects.equals(createdBy, that.createdBy)
         && Objects.equals(createdDate, that.createdDate)
         && Objects.equals(lastModifiedBy, that.lastModifiedBy)
         && Objects.equals(lastModifiedDate, that.lastModifiedDate);
@@ -290,7 +296,7 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
         clientSecretExpiresAt, clientName, clientAuthenticationMethods,
         authorizationGrantTypes, redirectUris, postLogoutRedirectUris, scopes,
         clientSettings, tokenSettings, description, enabled, platform, source,
-        bizTag, tenantId, createdBy, createdDate, lastModifiedBy, lastModifiedDate);
+        bizTag, tenantId, tenantName, createdBy, createdDate, lastModifiedBy, lastModifiedDate);
   }
 
   /**
@@ -370,6 +376,8 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
 
     private String tenantId;
 
+    private String tenantName;
+
     private String createdBy;
 
     private Instant createdDate;
@@ -414,6 +422,7 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
       this.source = registeredClient.getSource();
       this.bizTag = registeredClient.getBizTag();
       this.tenantId = registeredClient.getTenantId();
+      this.tenantName = registeredClient.getTenantName();
       this.createdBy = registeredClient.getCreatedBy();
       this.createdDate = registeredClient.getCreatedDate();
       this.lastModifiedBy = registeredClient.getLastModifiedBy();
@@ -666,6 +675,11 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
       return this;
     }
 
+    public CustomOAuth2RegisteredClient.Builder tenantName(String tenantName) {
+      this.tenantName = tenantName;
+      return this;
+    }
+
     public CustomOAuth2RegisteredClient.Builder createdBy(String createdBy) {
       this.createdBy = createdBy;
       return this;
@@ -754,6 +768,7 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
       registeredClient.source = registeredClient.getSource();
       registeredClient.bizTag = registeredClient.getBizTag();
       registeredClient.tenantId = registeredClient.getTenantId();
+      registeredClient.tenantName = registeredClient.getTenantName();
       registeredClient.createdBy = registeredClient.getCreatedBy();
       registeredClient.createdDate = registeredClient.getCreatedDate();
       registeredClient.lastModifiedBy = registeredClient.getLastModifiedBy();

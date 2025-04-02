@@ -68,7 +68,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
 	private static final String COLUMN_NAMES =
       "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
 			+ "client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings, "
-      + "description, enabled, platform, source, biz_tag, tenant_id, created_by, created_date, last_modified_by, last_modified_date";
+      + "description, enabled, platform, source, biz_tag, tenant_id, tenant_name, created_by, created_date, last_modified_by, last_modified_date";
 
   private static final String ADD_COLUMN_NAMES =
       "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
@@ -90,7 +90,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   private static final String UPDATE_REGISTERED_CLIENT_INFO_SQL
       = "UPDATE " + TABLE_NAME
       + " SET description = ?, enabled = ?, platform = ?, source = ?, biz_tag = ?, tenant_id = ?,"
-      + " created_by = ?, created_date = ?, last_modified_by = ?, last_modified_date = ? "
+      + " tenant_name = ?, created_by = ?, created_date = ?, last_modified_by = ?, last_modified_date = ? "
       + " WHERE " + PK_FILTER;
 
   private static final String COUNT_REGISTERED_CLIENT_SQL
@@ -312,6 +312,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
           .source(rs.getString("source"))
           .bizTag(rs.getString("biz_tag"))
           .tenantId(rs.getString("tenant_id"))
+          .tenantName(rs.getString("tenant_name"))
           .createdBy(rs.getString("created_by"))
           .createdDate(createdDate != null ? createdDate.toInstant() : null)
           .lastModifiedBy(rs.getString("last_modified_by"))
@@ -404,6 +405,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
             new SqlParameterValue(Types.VARCHAR, registeredClient.getSource()),
             new SqlParameterValue(Types.VARCHAR, registeredClient.getBizTag()),
             new SqlParameterValue(Types.BIGINT, nullSafe(registeredClient.getTenantId(), -1L)),
+            new SqlParameterValue(Types.VARCHAR, registeredClient.getTenantName()),
             new SqlParameterValue(Types.BIGINT, registeredClient.getCreatedBy()),
             new SqlParameterValue(Types.TIMESTAMP, createdDate),
             new SqlParameterValue(Types.BIGINT, registeredClient.getLastModifiedBy()),

@@ -24,7 +24,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisOperations.class)

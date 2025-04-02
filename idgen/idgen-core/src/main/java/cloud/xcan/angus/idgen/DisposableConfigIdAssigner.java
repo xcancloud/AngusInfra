@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Represents an implementation of {@link ConfigIdAssigner}, the worker pk will be discarded after
  * assigned to the BidGenerator
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 public class DisposableConfigIdAssigner implements ConfigIdAssigner {
 

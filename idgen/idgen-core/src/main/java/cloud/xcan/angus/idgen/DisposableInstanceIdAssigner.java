@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Represents an implementation of {@link InstanceIdAssigner}, the worker pk will be discarded after
  * assigned to the UidGenerator
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 public class DisposableInstanceIdAssigner implements InstanceIdAssigner {
 

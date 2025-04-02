@@ -60,7 +60,7 @@ import org.springframework.web.util.WebUtils;
  * that fired SavedRequestAwareAuthenticationSuccessHandler never enters DispatcherServlet, because
  * this handler performs a redirect).
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Slf4j
 public class GlobalHoldFilter implements Filter {

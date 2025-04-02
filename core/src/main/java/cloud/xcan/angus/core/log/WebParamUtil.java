@@ -20,7 +20,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.util.StreamUtils;
 
 /**
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Slf4j
 public class WebParamUtil {

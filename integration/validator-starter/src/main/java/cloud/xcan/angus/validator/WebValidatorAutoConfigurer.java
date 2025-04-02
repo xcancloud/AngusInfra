@@ -33,7 +33,7 @@ import org.springframework.validation.beanvalidation.LocaleContextMessageInterpo
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
- * @author liuxiaolong
+ * @author XiaoLong Liu
  * @see ValidationAutoConfiguration
  */
 @Slf4j

@@ -9,14 +9,14 @@ import cloud.xcan.angus.spec.ValuedEnum;
  * <li>CONTAINER: Such as Docker
  * <li>HOST: Actual machine
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 public enum InstanceType implements ValuedEnum<Integer> {
 
   CONTAINER(1), HOST(2);
 
   /**
-   * Lock type
+   * DistributedLock type
    */
   private final Integer type;
 

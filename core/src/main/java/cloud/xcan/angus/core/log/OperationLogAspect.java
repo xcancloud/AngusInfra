@@ -46,7 +46,7 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 /**
  * Collect user operation logs.
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Aspect
 @Slf4j

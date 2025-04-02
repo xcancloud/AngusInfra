@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * <p>
  * Check whether the application license expires when privatizing.
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Aspect
 @Slf4j

@@ -8,7 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @author liuxiaolong
+ * @author XiaoLong Liu
  * <p>
  * It is recommended to annotate the business query, and it is prohibited to use it in the api
  * package.

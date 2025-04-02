@@ -3,6 +3,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   cloud.xcan.angus.web.CoreAutoConfigurer,\
   cloud.xcan.angus.web.FeignAutoConfigurer,\
   cloud.xcan.angus.web.RedisAutoConfigurer,\
+  cloud.xcan.angus.web.JobTemplateAutoConfigurer,\
   cloud.xcan.angus.web.JacksonAutoConfigurer,\
   cloud.xcan.angus.web.EnumRegisterAutoConfigurer,\
   cloud.xcan.angus.web.AuditLogAutoConfigurer,\

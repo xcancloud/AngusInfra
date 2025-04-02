@@ -8,7 +8,7 @@ import java.util.Enumeration;
 /**
  * NetUtils
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 public abstract class NetUtils {
 

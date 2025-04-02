@@ -1,8 +1,9 @@
 package cloud.xcan.angus.spec;
 
 /**
- * Specificaiton interface.
- * <p/>
+ * Specification interface.
+ * <p>
+ * <p>
  * Use {@link AbstractSpecification} as base for creating specifications, and only the method
  * {@link #isSatisfiedBy(Object)} must be implemented.
  */

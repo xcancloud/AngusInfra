@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 /**
  * DAO for InstanceInfo
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Repository
 public interface InstanceRepo extends JpaRepository<Instance, String> {

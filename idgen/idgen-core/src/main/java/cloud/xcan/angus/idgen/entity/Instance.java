@@ -23,7 +23,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 /**
  * InstanceInfo Entity
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Setter
 @Getter

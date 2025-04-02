@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class DefaultBidGenerator extends AbstractBidGenerator {
 
   /**
-   * Lock object
+   * DistributedLock object
    */
   private final Object monitor = new Object();
 

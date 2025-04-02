@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 /**
  * DAO for IdConfig
  *
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Repository
 public interface IdConfigRepo extends JpaRepository<IdConfig, String> {

@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.CollectionUtils;
 
 /**
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 @Getter
 @Setter

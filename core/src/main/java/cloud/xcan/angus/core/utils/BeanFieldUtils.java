@@ -23,7 +23,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
- * @author liuxiaolong
+ * @author XiaoLong Liu
  */
 public class BeanFieldUtils {
 

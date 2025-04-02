@@ -257,6 +257,29 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
     return lastModifiedDate;
   }
 
+  /**
+   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the provided registration
+   * identifier.
+   * @param id the identifier for the registration
+   * @return the {@link CustomOAuth2RegisteredClient.Builder}
+   */
+  public static CustomOAuth2RegisteredClient.Builder with(String id) {
+    Assert.hasText(id, "id cannot be empty");
+    return new CustomOAuth2RegisteredClient.Builder(id);
+  }
+
+  /**
+   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the values from the provided
+   * {@link CustomOAuth2RegisteredClient}.
+   * @param registeredClient the {@link CustomOAuth2RegisteredClient} used for initializing the
+   * {@link CustomOAuth2RegisteredClient.Builder}
+   * @return the {@link CustomOAuth2RegisteredClient.Builder}
+   */
+  public static CustomOAuth2RegisteredClient.Builder of(CustomOAuth2RegisteredClient registeredClient) {
+    Assert.notNull(registeredClient, "registeredClient cannot be null");
+    return new CustomOAuth2RegisteredClient.Builder(registeredClient);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

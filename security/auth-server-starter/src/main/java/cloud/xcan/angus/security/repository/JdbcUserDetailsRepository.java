@@ -124,7 +124,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   private AuthenticationManager authenticationManager;
 
   @Nullable
-  private JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository;
+  private JdbcUserAuthoritiesLazyService authoritiesLazyService;
 
   private UserCache userCache = new NullUserCache();
 
@@ -132,8 +132,9 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   }
 
   public JdbcUserDetailsRepository(DataSource dataSource,
-      JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository) {
+      JdbcUserAuthoritiesLazyService authoritiesLazyService) {
     setDataSource(dataSource);
+    setAuthoritiesLazyService(authoritiesLazyService);
   }
 
   @Override
@@ -323,8 +324,8 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       dbAuthsSet.addAll(loadUserAuthorities(user.getUsername()));
     }
     // Lazy load business permissions, such as: authorization policies, resource, and operational role permissions
-    if (nonNull(authoritiesLazyRepository)) {
-      dbAuthsSet.addAll(authoritiesLazyRepository.lazyUserAuthorities((CustomOAuth2User)user));
+    if (nonNull(authoritiesLazyService)) {
+      dbAuthsSet.addAll(authoritiesLazyService.lazyUserAuthorities((CustomOAuth2User) user));
     }
 
     List<GrantedAuthority> dbAuths = new ArrayList<>(dbAuthsSet);
@@ -372,9 +373,9 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
     this.authenticationManager = authenticationManager;
   }
 
-  public void setAuthoritiesLazyRepository(
-      @Nullable JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository) {
-    this.authoritiesLazyRepository = authoritiesLazyRepository;
+  public void setAuthoritiesLazyService(
+      @Nullable JdbcUserAuthoritiesLazyService authoritiesLazyService) {
+    this.authoritiesLazyService = authoritiesLazyService;
   }
 
   public void setCreateUserSql(String createUserSql) {

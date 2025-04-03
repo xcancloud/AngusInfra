@@ -18,7 +18,7 @@ import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthentic
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
-import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyRepository;
+import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyService;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
 import java.util.Arrays;
 import java.util.List;
@@ -183,8 +183,8 @@ public class OAuth2AuthorizationServerAutoConfigurer {
 
   @Bean
   public UserDetailsService userDetailsManager(@Qualifier("dataSource") DataSource dataSource,
-      @Autowired(required = false) JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository) {
-    return new JdbcUserDetailsRepository(dataSource, authoritiesLazyRepository);
+      @Autowired(required = false) JdbcUserAuthoritiesLazyService authoritiesLazyService) {
+    return new JdbcUserDetailsRepository(dataSource, authoritiesLazyService);
   }
 
   @Bean

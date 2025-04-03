@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
  * Lazy initialization and loading of authorization policies, resource, and operational role
  * permissions.
  */
-public interface JdbcUserAuthoritiesLazyRepository {
+public interface JdbcUserAuthoritiesLazyService {
 
   Set<GrantedAuthority> lazyUserAuthorities(CustomOAuth2User user);
 

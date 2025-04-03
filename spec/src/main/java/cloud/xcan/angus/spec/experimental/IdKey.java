@@ -35,6 +35,10 @@ public class IdKey<ID, Key> extends EntitySupport {
     return new IdKey<Long, Object>().setId(id).setKey(key);
   }
 
+  public static IdKey<String, Object> of(String id, String key) {
+    return new IdKey<String, Object>().setId(id).setKey(key);
+  }
+
   public IdKey(ID id, Key key) {
     this.id = id;
     this.key = key;

@@ -262,7 +262,7 @@ public class CommProtocolException extends AbstractResultMessageException {
     String USER_DENIED_AUTHORIZATION = "xcm.user.denied.authorization";
     String USER_DENIED_AUTHORIZATION_KEY = "user_denied_authorization";
 
-    String ACCOUNT_PASSD_ERROR = "xcm.account.passd.error";
+    String ACCOUNT_PASSD_ERROR = "xcm.account.password.error";
     String ACCOUNT_PASSD_ERROR_KEY = "account_passd_error";
 
     String USER_DISABLED = "xcm.user.disabled";

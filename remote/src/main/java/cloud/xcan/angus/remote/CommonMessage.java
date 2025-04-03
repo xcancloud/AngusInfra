@@ -7,7 +7,7 @@ public interface CommonMessage {
   String APP_EXPIRED_CODE = "SDF302";
   String APP_EXPIRED_T = "xcm.comm.app.expired.t";
 
-  String SHARE_PASSD_ERROR_T = "xcm.comm.share.passd.error";
+  String SHARE_PASSD_ERROR_T = "xcm.comm.share.password.error";
   String SHARE_TOKEN_ERROR_T = "xcm.comm.share.pt.error";
 
   String AUDIT_STATUS_ERROR = "xcm.comm.audit.status.error";

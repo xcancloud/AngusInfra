@@ -150,6 +150,7 @@ public final class SmsCodeAuthenticationProvider implements AuthenticationProvid
 
     OAuth2Authorization.Builder authorizationBuilder
         = OAuth2Authorization.withRegisteredClient(registeredClient)
+        // Set username, see AbstractAuthenticationToken.getName()
         .principalName(smsCodeAuthentication.getName())
         .authorizationGrantType(SMS_CODE_GRANT_TYPE)
         .attribute(OAuth2ParameterNames.SCOPE, authorizedScopes)

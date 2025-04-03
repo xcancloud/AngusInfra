@@ -43,4 +43,5 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
     PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);
     this.getJdbcOperations().update(REMOVE_PREVIOUS_AUTHORIZATION_SQL, pss);
   }
+
 }

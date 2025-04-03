@@ -8,6 +8,8 @@ import static org.springframework.security.oauth2.server.authorization.config.an
 import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;
 import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.dao.DaoAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.dao.checker.DefaultPostAuthenticationChecks;
+import cloud.xcan.angus.security.authentication.dao.checker.DefaultPreAuthenticationChecks;
 import cloud.xcan.angus.security.authentication.dao.LinkSecretService;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationProvider;
@@ -141,9 +143,13 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public AuthenticationManager authenticationManager(HttpSecurity http,
       UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
-      @Autowired(required = false) LinkSecretService linkSecretService) throws Exception {
+      @Autowired(required = false) LinkSecretService linkSecretService,
+      @Autowired(required = false) DefaultPreAuthenticationChecks defaultPreAuthenticationChecks,
+      @Autowired(required = false) DefaultPostAuthenticationChecks defaultPostAuthenticationChecks)
+      throws Exception {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder,
         linkSecretService);
+    provider.setPreAuthenticationChecks(defaultPreAuthenticationChecks);
     provider.setUserDetailsService(userDetailsService);
     return http.getSharedObject(AuthenticationManagerBuilder.class)
         .authenticationProvider(provider)

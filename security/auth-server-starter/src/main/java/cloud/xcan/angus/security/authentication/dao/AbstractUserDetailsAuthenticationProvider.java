@@ -1,8 +1,11 @@
 package cloud.xcan.angus.security.authentication.dao;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
+import cloud.xcan.angus.security.authentication.dao.checker.DefaultPostAuthenticationChecks;
+import cloud.xcan.angus.security.authentication.dao.checker.DefaultPreAuthenticationChecks;
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationToken;
@@ -14,12 +17,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -300,7 +299,8 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
    * @param preAuthenticationChecks strategy to be invoked prior to authentication.
    */
   public void setPreAuthenticationChecks(UserDetailsChecker preAuthenticationChecks) {
-    this.preAuthenticationChecks = preAuthenticationChecks;
+    this.preAuthenticationChecks = nullSafe(preAuthenticationChecks,
+        new DefaultPreAuthenticationChecks());
   }
 
   protected UserDetailsChecker getPostAuthenticationChecks() {
@@ -308,50 +308,12 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
   }
 
   public void setPostAuthenticationChecks(UserDetailsChecker postAuthenticationChecks) {
-    this.postAuthenticationChecks = postAuthenticationChecks;
+    this.postAuthenticationChecks = nullSafe(postAuthenticationChecks,
+        new DefaultPostAuthenticationChecks());
   }
 
   public void setAuthoritiesMapper(GrantedAuthoritiesMapper authoritiesMapper) {
     this.authoritiesMapper = authoritiesMapper;
   }
 
-  private class DefaultPreAuthenticationChecks implements UserDetailsChecker {
-
-    @Override
-    public void check(UserDetails user) {
-      if (!user.isAccountNonLocked()) {
-        log.debug("Failed to authenticate since user account is locked");
-        throw new LockedException(
-            messages.getMessage("AbstractUserDetailsAuthenticationProvider.locked",
-                "User account is locked"));
-      }
-      if (!user.isEnabled()) {
-        log.debug("Failed to authenticate since user account is disabled");
-        throw new DisabledException(
-            messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled",
-                "User is disabled"));
-      }
-      if (!user.isAccountNonExpired()) {
-        log.debug("Failed to authenticate since user account has expired");
-        throw new AccountExpiredException(
-            messages.getMessage("AbstractUserDetailsAuthenticationProvider.expired",
-                "User account has expired"));
-      }
-    }
-
-  }
-
-  private class DefaultPostAuthenticationChecks implements UserDetailsChecker {
-
-    @Override
-    public void check(UserDetails user) {
-      if (!user.isCredentialsNonExpired()) {
-        log.debug("Failed to authenticate since user account credentials have expired");
-        throw new CredentialsExpiredException(
-            messages.getMessage("AbstractUserDetailsAuthenticationProvider.credentialsExpired",
-                "User credentials have expired"));
-      }
-    }
-
-  }
 }

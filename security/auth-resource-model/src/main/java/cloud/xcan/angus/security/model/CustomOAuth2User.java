@@ -1,6 +1,7 @@
 package cloud.xcan.angus.security.model;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.spec.experimental.EntitySupport;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,10 +18,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.CredentialsContainer;
@@ -42,6 +47,9 @@ import org.springframework.util.Assert;
  * @see `cloud.xcan.angus.spec.principal.Principal`
  */
 @Slf4j
+@Setter
+@Getter
+@Accessors(chain = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> implements UserDetails,
     CredentialsContainer, Cloneable {
@@ -149,6 +157,9 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
   protected String signupType;
   @JsonIgnore
   @Transient
+  protected String signupDeviceId;
+  @JsonIgnore
+  @Transient
   protected String verificationCode;
   @JsonIgnore
   @Transient
@@ -217,7 +228,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       Instant lastModifiedPasswordDate, Instant expiredDate,
       boolean deleted, String tenantId, String tenantName, String tenantRealNameStatus,
       String directoryId, String defaultLanguage, String defaultTimeZone) {
-    Assert.isTrue(username != null && !"".equals(username) && password != null,
+    Assert.isTrue(username != null && !username.isEmpty() && password != null,
         "Cannot pass null or empty values to constructor");
 
     this.username = username;
@@ -298,6 +309,19 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     return this.credentialsNonExpired;
   }
 
+  public boolean isPasswordExpired(){
+    return !credentialsNonExpired || nonNull(password)
+        && nonNull(passwordExpiredDate) && passwordExpiredDate.isBefore(Instant.now());
+  }
+
+  public boolean isSetPassword(){
+    return this.setPassword || isNotEmpty(password);
+  }
+
+  public boolean supportDirectoryAuth() {
+    return Objects.nonNull(directoryId);
+  }
+
   @Override
   public void eraseCredentials() {
     this.password = null;
@@ -306,266 +330,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
   @Override
   public Collection<GrantedAuthority> getAuthorities() {
     return this.authorities;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
-  public void setEnabled(boolean enabled) {
-    this.enabled = enabled;
-  }
-
-  public void setAccountNonExpired(boolean accountNonExpired) {
-    this.accountNonExpired = accountNonExpired;
-  }
-
-  public void setAccountNonLocked(boolean accountNonLocked) {
-    this.accountNonLocked = accountNonLocked;
-  }
-
-  public void setCredentialsNonExpired(boolean credentialsNonExpired) {
-    this.credentialsNonExpired = credentialsNonExpired;
-  }
-
-  public void setAuthorities(Set<GrantedAuthority> authorities) {
-    this.authorities = authorities;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  public String getFullName() {
-    return fullName;
-  }
-
-  public void setFullName(String fullName) {
-    this.fullName = fullName;
-  }
-
-  public String getPasswordStrength() {
-    return passwordStrength;
-  }
-
-  public void setPasswordStrength(String passwordStrength) {
-    this.passwordStrength = passwordStrength;
-  }
-
-  public boolean isSysAdmin() {
-    return sysAdmin;
-  }
-
-  public void setSysAdmin(boolean sysAdmin) {
-    this.sysAdmin = sysAdmin;
-  }
-
-  public boolean isToUser() {
-    return toUser;
-  }
-
-  public void setToUser(boolean toUser) {
-    this.toUser = toUser;
-  }
-
-  public String getMobile() {
-    return mobile;
-  }
-
-  public void setMobile(String mobile) {
-    this.mobile = mobile;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public String getMainDeptId() {
-    return mainDeptId;
-  }
-
-  public void setMainDeptId(String mainDeptId) {
-    this.mainDeptId = mainDeptId;
-  }
-
-  public Instant getPasswordExpiredDate() {
-    return passwordExpiredDate;
-  }
-
-  public void setPasswordExpiredDate(Instant passwordExpiredDate) {
-    this.passwordExpiredDate = passwordExpiredDate;
-  }
-
-  public Instant getLastModifiedPasswordDate() {
-    return lastModifiedPasswordDate;
-  }
-
-  public void setLastModifiedPasswordDate(Instant lastModifiedPasswordDate) {
-    this.lastModifiedPasswordDate = lastModifiedPasswordDate;
-  }
-
-  public Instant getExpiredDate() {
-    return expiredDate;
-  }
-
-  public void setExpiredDate(Instant expiredDate) {
-    this.expiredDate = expiredDate;
-  }
-
-  public boolean isDeleted() {
-    return deleted;
-  }
-
-  public void setDeleted(boolean deleted) {
-    this.deleted = deleted;
-  }
-
-  public String getTenantId() {
-    return tenantId;
-  }
-
-  public void setTenantId(String tenantId) {
-    this.tenantId = tenantId;
-  }
-
-  public String getTenantName() {
-    return tenantName;
-  }
-
-  public void setTenantName(String tenantName) {
-    this.tenantName = tenantName;
-  }
-
-  public String getTenantRealNameStatus() {
-    return tenantRealNameStatus;
-  }
-
-  public void setTenantRealNameStatus(String tenantRealNameStatus) {
-    this.tenantRealNameStatus = tenantRealNameStatus;
-  }
-
-  public String getDirectoryId() {
-    return directoryId;
-  }
-
-  public void setDirectoryId(String directoryId) {
-    this.directoryId = directoryId;
-  }
-
-  public String getDefaultLanguage() {
-    return defaultLanguage;
-  }
-
-  public void setDefaultLanguage(String defaultLanguage) {
-    this.defaultLanguage = defaultLanguage;
-  }
-
-  public String getDefaultTimeZone() {
-    return defaultTimeZone;
-  }
-
-  public void setDefaultTimeZone(String defaultTimeZone) {
-    this.defaultTimeZone = defaultTimeZone;
-  }
-
-  public String getItc() {
-    return itc;
-  }
-
-  public void setItc(String itc) {
-    this.itc = itc;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public void setCountry(String country) {
-    this.country = country;
-  }
-
-  public String getSignupType() {
-    return signupType;
-  }
-
-  public void setSignupType(String signupType) {
-    this.signupType = signupType;
-  }
-
-  public String getVerificationCode() {
-    return verificationCode;
-  }
-
-  public void setVerificationCode(String verificationCode) {
-    this.verificationCode = verificationCode;
-  }
-
-  public String getSmsBizKey() {
-    return smsBizKey;
-  }
-
-  public void setSmsBizKey(String smsBizKey) {
-    this.smsBizKey = smsBizKey;
-  }
-
-  public String getEmailBizKey() {
-    return emailBizKey;
-  }
-
-  public void setEmailBizKey(String emailBizKey) {
-    this.emailBizKey = emailBizKey;
-  }
-
-  public String getLinkSecret() {
-    return linkSecret;
-  }
-
-  public void setLinkSecret(String linkSecret) {
-    this.linkSecret = linkSecret;
-  }
-
-  public boolean isSetPassword() {
-    return setPassword;
-  }
-
-  public void setSetPassword(boolean setPassword) {
-    this.setPassword = setPassword;
-  }
-
-  public String getInvitationCode() {
-    return invitationCode;
-  }
-
-  public void setInvitationCode(String invitationCode) {
-    this.invitationCode = invitationCode;
   }
 
   private static SortedSet<GrantedAuthority> sortAuthorities(
@@ -777,10 +541,10 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
      */
     private String username;
     private String password;
-    private boolean disabled;
-    private boolean accountExpired;
-    private boolean accountLocked;
-    private boolean credentialsExpired;
+    private boolean disabled = false;
+    private boolean accountExpired = false;
+    private boolean accountLocked = false;
+    private boolean credentialsExpired = false;
 
     private List<GrantedAuthority> authorities = new ArrayList<>();
     private Function<String, String> passwordEncoder = (password) -> password;
@@ -793,15 +557,15 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     private String lastName;
     private String fullName;
     private String passwordStrength;
-    private boolean sysAdmin;
-    private boolean toUser;
+    private boolean sysAdmin = false;
+    private boolean toUser = false;
     private String mobile;
     private String email;
     private String mainDeptId;
     private Instant passwordExpiredDate;
     private Instant lastModifiedPasswordDate;
     private Instant expiredDate;
-    private boolean deleted;
+    private boolean deleted = false;
     private String tenantId;
     private String tenantName;
     private String tenantRealNameStatus;
@@ -830,14 +594,14 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     }
 
     /**
-     * Populates the password. This attribute is required.
+     * Populates the password. This attribute is not required.
      *
-     * @param password the password. Cannot be null.
+     * @param password the password. Can be null.
      * @return the {@link CustomOAuth2User.UserBuilder} for method chaining (i.e. to populate
      * additional attributes for this user)
      */
     public CustomOAuth2User.UserBuilder password(String password) {
-      Assert.notNull(password, "password cannot be null");
+      // Assert.notNull(password, "password cannot be null");
       this.password = password;
       return this;
     }

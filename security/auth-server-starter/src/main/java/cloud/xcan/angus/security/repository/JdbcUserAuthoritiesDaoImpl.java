@@ -110,6 +110,8 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
       throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
           new Object[]{compositeAccount}, "Username {0} not found"));
     }
+    // Important: If login in with a mobile or email and there are multiple accounts,
+    // if the userId is not specified, the first valid account will be used by default.
     UserDetails user = users.stream().filter(UserDetails::isEnabled).toList()
         .get(0); // contains no GrantedAuthority[]
     Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
@@ -121,8 +123,6 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     if (dbAuths.isEmpty()) {
       this.logger.debug(
           "User '" + compositeAccount + "' has no authorities and will be treated as 'not found'");
-      //throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.noAuthority",
-      //    new Object[]{username}, "User {0} has no GrantedAuthority"));
     }
     return createUserDetails(compositeAccount, user, dbAuths);
   }
@@ -202,19 +202,18 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
    * the <tt>loadUserByUsername</tt> method.
    *
    * @param username            the name originally passed to loadUserByUsername
-   * @param userFromUserQuery   the object returned from the execution of the
+   * @param user                the object returned from the execution of the
    * @param combinedAuthorities the combined array of authorities from all the authority loading
    *                            queries.
    * @return the final UserDetails which should be used in the system.
    */
-  protected CustomOAuth2User createUserDetails(String username, UserDetails userFromUserQuery,
+  protected CustomOAuth2User createUserDetails(String username, UserDetails user,
       List<GrantedAuthority> combinedAuthorities) {
-    String returnUsername = userFromUserQuery.getUsername();
+    String returnUsername = user.getUsername();
     if (!this.usernameBasedPrimaryKey && username != null) {
       returnUsername = username;
     }
-    return CustomOAuth2User.with(returnUsername, (CustomOAuth2User) userFromUserQuery,
-        combinedAuthorities);
+    return CustomOAuth2User.with(returnUsername, (CustomOAuth2User) user, combinedAuthorities);
   }
 
   /**

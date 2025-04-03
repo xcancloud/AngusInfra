@@ -61,7 +61,7 @@ CREATE INDEX idx_created_date ON oauth2_registered_client (created_date);
 create table oauth2_user
 (
     username                    varchar(100) NOT NULL,
-    password                    varchar(500) NOT NULL,
+    password                    varchar(500) DEFAULT NULL,
     enabled                     boolean      NOT NULL DEFAULT '1',
     account_non_expired         boolean      NOT NULL DEFAULT '1',
     account_non_locked          boolean      NOT NULL DEFAULT '1',

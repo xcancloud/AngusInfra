@@ -126,6 +126,10 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
     return this.clientSecret;
   }
 
+  public void setClientSecret(String clientSecret) {
+    this.clientSecret = clientSecret;
+  }
+
   /**
    * Returns the time at which the client secret expires or {@code null} if it does not expire.
    *

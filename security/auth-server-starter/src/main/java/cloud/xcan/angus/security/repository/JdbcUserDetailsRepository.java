@@ -1,5 +1,7 @@
 package cloud.xcan.angus.security.repository;
 
+import static java.util.Objects.nonNull;
+
 import cloud.xcan.angus.security.model.AccountNotFoundException;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.angus.security.model.CustomOAuth2UserRepository;
@@ -16,6 +18,7 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.core.log.LogMessage;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -120,19 +123,23 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
 
   private AuthenticationManager authenticationManager;
 
+  @Nullable
+  private JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository;
+
   private UserCache userCache = new NullUserCache();
 
   public JdbcUserDetailsRepository() {
   }
 
-  public JdbcUserDetailsRepository(DataSource dataSource) {
+  public JdbcUserDetailsRepository(DataSource dataSource,
+      JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository) {
     setDataSource(dataSource);
   }
 
   @Override
   protected void initDao() throws ApplicationContextException {
     if (this.authenticationManager == null) {
-      this.logger.info(
+      logger.info(
           "No authentication manager set. Re-authentication of users when changing passwords will not be performed.");
     }
     super.initDao();
@@ -264,14 +271,14 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
     // If an authentication manager has been set, re-authenticate the user with the
     // supplied password.
     if (this.authenticationManager != null) {
-      this.logger.debug(
+      logger.debug(
           LogMessage.format("Reauthenticating user '%s' for password change request.", username));
       this.authenticationManager
           .authenticate(UsernamePasswordAuthenticationToken.unauthenticated(username, oldPassword));
     } else {
-      this.logger.debug("No authentication manager set. Password won't be re-checked.");
+      logger.debug("No authentication manager set. Password won't be re-checked.");
     }
-    this.logger.debug("Changing password for user '" + username + "'");
+    logger.debug("Changing password for user '" + username + "'");
     getJdbcTemplate().update(this.changePasswordSql, newPassword, username);
     Authentication authentication = createNewAuthentication(currentUser, newPassword);
     SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
@@ -303,23 +310,27 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   public CustomOAuth2User findByAccount(String account) throws AccountNotFoundException {
     List<UserDetails> users = loadUsersByAccount(account);
     if (users.isEmpty()) {
-      this.logger.debug("Query returned no results for user '" + account + "'");
+      logger.debug("Query returned no results for user '" + account + "'");
       throw new AccountNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
           new Object[]{account}, "Account {0} not found"));
     }
-    UserDetails user = users.stream().filter(UserDetails::isEnabled).toList()
-        .get(0); // contains no GrantedAuthority[]
+
+    // contains no GrantedAuthority[]
+    UserDetails user = users.stream().filter(UserDetails::isEnabled).toList().get(0);
     Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
+    // Load permissions from the OAuth2 authorization table
     if (getEnableAuthorities()) {
       dbAuthsSet.addAll(loadUserAuthorities(user.getUsername()));
     }
+    // Lazy load business permissions, such as: authorization policies, resource, and operational role permissions
+    if (nonNull(authoritiesLazyRepository)) {
+      dbAuthsSet.addAll(authoritiesLazyRepository.lazyUserAuthorities((CustomOAuth2User)user));
+    }
+
     List<GrantedAuthority> dbAuths = new ArrayList<>(dbAuthsSet);
     addCustomAuthorities(user.getUsername(), dbAuths);
     if (dbAuths.isEmpty()) {
-      this.logger.debug(
-          "User '" + account + "' has no authorities and will be treated as 'not found'");
-      //throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.noAuthority",
-      //    new Object[]{account}, "User {0} has no GrantedAuthority"));
+      logger.debug("User '" + account + "' has no authorities and will be treated as 'not found'");
     }
     return createUserDetails(null, user, dbAuths);
   }
@@ -342,7 +353,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
 
   @Override
   public void updateToDeleted(String username) {
-    getJdbcTemplate().update(this.changePasswordSql, userDeletedStatusSql, username);
+    getJdbcTemplate().update(this.userDeletedStatusSql, username);
   }
 
   /**
@@ -359,6 +370,11 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
 
   public void setAuthenticationManager(AuthenticationManager authenticationManager) {
     this.authenticationManager = authenticationManager;
+  }
+
+  public void setAuthoritiesLazyRepository(
+      @Nullable JdbcUserAuthoritiesLazyRepository authoritiesLazyRepository) {
+    this.authoritiesLazyRepository = authoritiesLazyRepository;
   }
 
   public void setCreateUserSql(String createUserSql) {

@@ -1,9 +1,8 @@
 package cloud.xcan.angus.core.utils;
 
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.POLICY_OP_PREFIX;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.POLICY_PREFIX;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.POLICY_TOP_PREFIX;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.ROLE_TOP_PREFIX;
 import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_OPERATION_PLATFORM_CODE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
@@ -174,7 +173,7 @@ public class PrincipalContextUtils {
   public static boolean isToUser() {
     Principal principal = PrincipalContext.get();
     return isOpSysAdmin(principal) || (isToUser0(principal) && (
-        isEmpty(principal.getRequiredToPolicy()) || hasAnyToPolicy(principal.getRequiredToPolicy())
+        isEmpty(principal.getRequiredToPolicy()) || hasAnyToRole(principal.getRequiredToPolicy())
     ));
   }
 
@@ -320,6 +319,9 @@ public class PrincipalContextUtils {
     return false;
   }
 
+  /**
+   * Determine whether the current user has a permission policy for application functions.
+   */
   public static boolean hasPolicy(String policy) {
     if (nonePolicyAndAuthority(policy)) {
       return false;
@@ -335,6 +337,9 @@ public class PrincipalContextUtils {
     return false;
   }
 
+  /**
+   * Determine whether the current user has any permission policy for application functions.
+   */
   public static boolean hasAnyPolicy(String... policies) {
     if (nonePolicyAndAuthority(policies)) {
       return false;
@@ -353,62 +358,35 @@ public class PrincipalContextUtils {
     return false;
   }
 
-  public static boolean hasOpPolicy(String policy) {
-    if (nonePolicyAndAuthority(policy)) {
+  /**
+   * Determine whether the current user has an operation tenant authorization role.
+   */
+  public static boolean hasToRole(String role) {
+    if (nonePolicyAndAuthority(role)) {
       return false;
     }
-    if (!policy.startsWith(POLICY_OP_PREFIX)) {
-      policy = POLICY_OP_PREFIX + policy;
+    if (!role.startsWith(ROLE_TOP_PREFIX)) {
+      role = ROLE_TOP_PREFIX + role;
     }
     for (String p : PrincipalContext.get().getPermissions()) {
-      if (policy.equals(p)) {
+      if (role.equals(p)) {
         return true;
       }
     }
     return false;
   }
 
-  public static boolean hasAnyOpPolicy(String... policies) {
-    if (nonePolicyAndAuthority(policies)) {
+  /**
+   * Determine whether the current user has any operation tenant authorization role.
+   */
+  public static boolean hasAnyToRole(String... roles) {
+    if (nonePolicyAndAuthority(roles)) {
       return false;
     }
     List<String> allPolicies = PrincipalContext.get().getPermissions();
-    for (String policy : policies) {
-      if (!policy.startsWith(POLICY_OP_PREFIX)) {
-        policy = POLICY_OP_PREFIX + policy;
-      }
-      for (String p : allPolicies) {
-        if (policy.equals(p)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  public static boolean hasToPolicy(String policy) {
-    if (nonePolicyAndAuthority(policy)) {
-      return false;
-    }
-    if (!policy.startsWith(POLICY_TOP_PREFIX)) {
-      policy = POLICY_TOP_PREFIX + policy;
-    }
-    for (String p : PrincipalContext.get().getPermissions()) {
-      if (policy.equals(p)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static boolean hasAnyToPolicy(String... policies) {
-    if (nonePolicyAndAuthority(policies)) {
-      return false;
-    }
-    List<String> allPolicies = PrincipalContext.get().getPermissions();
-    for (String policy : policies) {
-      if (!policy.startsWith(POLICY_TOP_PREFIX)) {
-        policy = POLICY_TOP_PREFIX + policy;
+    for (String policy : roles) {
+      if (!policy.startsWith(ROLE_TOP_PREFIX)) {
+        policy = ROLE_TOP_PREFIX + policy;
       }
       for (String p : allPolicies) {
         if (policy.equals(p)) {

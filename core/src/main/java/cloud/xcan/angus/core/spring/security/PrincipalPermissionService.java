@@ -50,7 +50,7 @@ public class PrincipalPermissionService {
    */
   public boolean hasToPolicy(String policy) {
     return !isOpMultiTenant() || isOpClient() || isOpSysAdmin()
-        || PrincipalContextUtils.hasToPolicy(policy);
+        || PrincipalContextUtils.hasToRole(policy);
   }
 
   /**
@@ -58,7 +58,7 @@ public class PrincipalPermissionService {
    */
   public boolean hasAnyToPolicy(String... policies) {
     return !isOpMultiTenant() || isOpClient() || isOpSysAdmin()
-        || PrincipalContextUtils.hasAnyToPolicy(policies);
+        || PrincipalContextUtils.hasAnyToRole(policies);
   }
 
   public boolean isOpClient() {

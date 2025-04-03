@@ -61,7 +61,7 @@ public class HoldPrincipalFilter extends AbstractHoldPrincipal implements Filter
       HttpServletResponse response = (HttpServletResponse) servletResponse;
       request.setCharacterEncoding(DEFAULT_ENCODING);
 
-      Principal principal = PrincipalContext.get();
+      Principal principal = PrincipalContext.create();
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       if (authentication instanceof AnonymousAuthenticationToken) {
         writeApiResult(response, SC_BAD_REQUEST, PRINCIPAL_INFO_MISSING,

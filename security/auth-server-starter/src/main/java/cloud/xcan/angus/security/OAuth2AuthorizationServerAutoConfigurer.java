@@ -182,7 +182,8 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   }
 
   @Bean
-  public UserDetailsService userDetailsManager(@Qualifier("dataSource") DataSource dataSource,
+  public UserDetailsService userDetailsManager(
+      @Qualifier("dataSource") DataSource dataSource,
       @Autowired(required = false) JdbcUserAuthoritiesLazyService authoritiesLazyService) {
     return new JdbcUserDetailsRepository(dataSource, authoritiesLazyService);
   }

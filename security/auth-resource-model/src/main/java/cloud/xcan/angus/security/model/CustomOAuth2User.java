@@ -148,6 +148,12 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
   protected String itc;
   @Transient
   protected String country;
+  @JsonIgnore
+  @Transient
+  private String clientId;
+  @JsonIgnore
+  @Transient
+  private String clientSource;
 
   /**
    * Temp filed for business.

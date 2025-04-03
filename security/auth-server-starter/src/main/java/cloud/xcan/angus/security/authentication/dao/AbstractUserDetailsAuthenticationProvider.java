@@ -4,8 +4,10 @@ import static java.lang.String.format;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken;
+import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationToken;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken;
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -27,6 +29,8 @@ import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.util.Assert;
 
 /**
@@ -94,6 +98,9 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
       cacheWasUsed = false;
       try {
         user = (CustomOAuth2User) retrieveUser(compositeAccount, authentication);
+
+        // Used by JdbcUserAuthoritiesLazyService(CustomOAuth2User user)
+        assembleSignInClientAndPlatform(authentication, user);
       } catch (UsernameNotFoundException ex) {
         log.debug("Failed to find user '" + compositeAccount + "'");
         if (!this.hideUserNotFoundExceptions) {
@@ -130,6 +137,17 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
       principalToReturn = user.getUsername();
     }
     return createSuccessAuthentication(principalToReturn, authentication, user);
+  }
+
+  private void assembleSignInClientAndPlatform(Authentication authentication,
+      CustomOAuth2User user) {
+    OAuth2ClientAuthenticationToken clientPrincipal = OAuth2PasswordAuthenticationProviderUtils
+        .getAuthenticatedClientElseThrowInvalidClient(authentication);
+    RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
+    if (registeredClient instanceof CustomOAuth2RegisteredClient client) {
+      user.setClientId(client.getClientId());
+      user.setClientSource(client.getSource());
+    }
   }
 
   private String determineCompositeAccount(Authentication authentication) {

@@ -3,7 +3,7 @@ package cloud.xcan.angus.core.jpa.repository;
 import static cloud.xcan.angus.core.utils.CoreUtils.getAnnotationClasses;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasRealOptTenantId;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasToPolicy;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasToRole;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpSysAdmin;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isToUser;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
@@ -200,7 +200,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
   }
 
   private boolean hasMultiTenantAuthority(SummaryQueryBuilder builder) {
-    return isOpSysAdmin() || hasToPolicy(REGISTER.get(builder.getName()).topAuthority());
+    return isOpSysAdmin() || hasToRole(REGISTER.get(builder.getName()).topAuthority());
   }
 
   private String getCriteriaCondition(Set<SearchCriteria> criterias) {

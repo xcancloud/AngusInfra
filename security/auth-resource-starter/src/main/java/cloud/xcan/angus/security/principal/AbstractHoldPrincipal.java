@@ -93,7 +93,6 @@ public abstract class AbstractHoldPrincipal {
         if (log.isDebugEnabled()) {
           log.debug("Hold client principal info : {}", principal);
         }
-        PrincipalContext.set(principal);
       }
       return true;
     } catch (Exception e) {
@@ -143,7 +142,6 @@ public abstract class AbstractHoldPrincipal {
         if (log.isDebugEnabled()) {
           log.debug("Hold principal info : {}", principal);
         }
-        PrincipalContext.set(principal);
         return true;
       }
     } catch (Exception e) {

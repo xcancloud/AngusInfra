@@ -351,9 +351,14 @@ public interface BizConstant {
     String USER_ID = "user_id";
     String FULLNAME = "fullname";
 
+    /**
+     * Tenant application function authorization strategy prefix.
+     */
     String POLICY_PREFIX = "ROLE_";
-    String POLICY_OP_PREFIX = "ROLE_OP_";
-    String POLICY_TOP_PREFIX = "ROLE_TOP_";
+    /**
+     * Operation tenant authorization role prefix.
+     */
+    String ROLE_TOP_PREFIX = "ROLE_TOP_";
 
     String HTTP_AUTH_HEADER = "Authorization";
     String BEARER_TOKEN_TYPE = "Bearer";

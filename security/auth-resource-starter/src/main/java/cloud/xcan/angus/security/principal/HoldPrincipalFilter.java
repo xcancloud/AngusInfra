@@ -2,10 +2,9 @@ package cloud.xcan.angus.security.principal;
 
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_INFO_MISSING_KEY;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_MISSING;
+import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_MISSING_KEY;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
@@ -35,7 +34,6 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static java.util.Objects.nonNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.enums.GrantType;
 import cloud.xcan.angus.remote.ApiResult;
@@ -58,6 +56,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -87,8 +86,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain chain) throws ServletException, IOException {
+  protected void doFilterInternal(@NotNull HttpServletRequest request,
+      @NotNull HttpServletResponse response, @NotNull FilterChain chain)
+      throws ServletException, IOException {
     try {
       boolean isMatched = false;
       for (AntPathRequestMatcher matcher : AUTH_API_MATCHERS) {
@@ -107,8 +107,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Principal principal = PrincipalContext.create();
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       if (authentication instanceof AnonymousAuthenticationToken) {
-        writeApiResult(response, SC_BAD_REQUEST, PRINCIPAL_INFO_MISSING,
-            PRINCIPAL_INFO_MISSING_KEY);
+        writeApiResult(response, SC_BAD_REQUEST, PRINCIPAL_MISSING, PRINCIPAL_MISSING_KEY);
         return;
       }
 
@@ -156,31 +155,29 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
     return holdSuccess;
   }
 
+  @SuppressWarnings("unchecked")
   public boolean holdClientPrincipal(HttpServletRequest request, Principal principal,
       Map<String, Object> attributes, GrantType grantType) {
     // @formatter:off
     try {
       Object clientId = attributes.get(OAuth2TokenIntrospectionClaimNames.CLIENT_ID).toString();
-      Map<String, Object> clientPrincipal = (Map<String, Object>) attributes.get(
-          INTROSPECTION_CLAIM_NAMES_PRINCIPAL);
-      Object tenantId0 = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_ID);
+      Map<String, Object> client = (Map<String, Object>) attributes.get(INTROSPECTION_CLAIM_NAMES_PRINCIPAL);
+      Object tenantId0 = client.get(INTROSPECTION_CLAIM_NAMES_TENANT_ID);
       // Client authentication tenant ID is not mandatory
       Long tenantId = nonNull(tenantId0) ? Long.parseLong(tenantId0.toString()) : -1;
-      if (checkRequiredInfo(tenantId, clientId)) {
-        Object tenantName = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
-        Object clientSource = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
-        Object clientName = clientPrincipal.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
-        principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
-            .setUri(request.getRequestURI()).setMethod(request.getMethod())
-            .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Tenant level settings should be used
-            .setDefaultTimeZone(null) // TODO Tenant level settings should be used
-            .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
-            .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
-            .setUserId(-1L).setFullname(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
-            .setUsername(clientId.toString()/*default*/).setSysAdmin(false).setToUser(false).setMainDeptId(-1L).setCountry(null);
-        if (log.isDebugEnabled()) {
-          log.debug("Hold client principal info : {}", principal);
-        }
+      Object tenantName = client.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
+      Object clientSource = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
+      Object clientName = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
+      principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
+          .setUri(request.getRequestURI()).setMethod(request.getMethod())
+          .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Tenant level settings should be used
+          .setDefaultTimeZone(null) // TODO Tenant level settings should be used
+          .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
+          .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
+          .setUserId(-1L).setFullname(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
+          .setUsername(clientId.toString()/*default*/).setSysAdmin(false).setToUser(false).setMainDeptId(-1L).setCountry(null);
+      if (log.isDebugEnabled()) {
+        log.debug("Hold client principal info : {}", principal);
       }
       return true;
     } catch (Exception e) {
@@ -190,66 +187,52 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
     return false;
   }
 
+  @SuppressWarnings("unchecked")
   public boolean holdUserPrincipal(HttpServletRequest request,
       Principal principal, Map<String, Object> attributes, GrantType grantType) {
     // @formatter:off
     try {
       Object clientId = attributes.get(OAuth2TokenIntrospectionClaimNames.CLIENT_ID).toString();
-      Map<String, Object> userPrincipal = (Map<String, Object>) attributes.get(INTROSPECTION_CLAIM_NAMES_PRINCIPAL);
-      Object tenantId = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_ID);
-      if (checkRequiredInfo(tenantId, clientId)) {
-        Object username = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_USERNAME);
-        Object id = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_ID);
-        Object fullName = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_FULL_NAME);
-        Object sysAdmin = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN);
-        Object toUser = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_TO_USER);
-        Object mainDeptId = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID);
-        Object tenantName = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
-        Object country = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_COUNTRY);
-        Object clientSource = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
-        Object deviceId = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_DEVICE_ID);
-        Object defaultLanguage = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE);
-        Object defaultTimeZone = userPrincipal.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
-        Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
-        principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
-            .setUri(request.getRequestURI()).setMethod(request.getMethod())
-            .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
-            .setDefaultTimeZone(nonNull(defaultTimeZone) ? defaultTimeZone.toString() : null)
-            .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
-            .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
-            .setUserId(nonNull(id) ? Long.valueOf(id.toString()) : null)
-            .setFullname(nonNull(fullName) ? fullName.toString() : null)
-            .setUsername(nonNull(username) ? username.toString() : null)
-            .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
-            .setToUser(nonNull(toUser) && Boolean.parseBoolean(toUser.toString()))
-            .setMainDeptId(nonNull(mainDeptId) ? Long.valueOf(mainDeptId.toString()) : null)
-            .setCountry(nonNull(country) ? country.toString() : null)
-            .setDeviceId(nonNull(deviceId) ? deviceId.toString() : null)
-            .setPermissions(isNull(permissions) ? Collections.emptyList()
-                : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()));
-        if (log.isDebugEnabled()) {
-          log.debug("Hold principal info : {}", principal);
-        }
-        return true;
+      Map<String, Object> user = (Map<String, Object>) attributes.get(INTROSPECTION_CLAIM_NAMES_PRINCIPAL);
+      Object tenantId = user.get(INTROSPECTION_CLAIM_NAMES_TENANT_ID);
+      Object username = user.get(INTROSPECTION_CLAIM_NAMES_USERNAME);
+      Object id = user.get(INTROSPECTION_CLAIM_NAMES_ID);
+      Object fullName = user.get(INTROSPECTION_CLAIM_NAMES_FULL_NAME);
+      Object sysAdmin = user.get(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN);
+      Object toUser = user.get(INTROSPECTION_CLAIM_NAMES_TO_USER);
+      Object mainDeptId = user.get(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID);
+      Object tenantName = user.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
+      Object country = user.get(INTROSPECTION_CLAIM_NAMES_COUNTRY);
+      Object clientSource = user.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
+      Object deviceId = user.get(INTROSPECTION_CLAIM_NAMES_DEVICE_ID);
+      Object defaultLanguage = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE);
+      Object defaultTimeZone = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
+      Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
+      principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
+          .setUri(request.getRequestURI()).setMethod(request.getMethod())
+          .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
+          .setDefaultTimeZone(nonNull(defaultTimeZone) ? defaultTimeZone.toString() : null)
+          .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
+          .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
+          .setUserId(nonNull(id) ? Long.valueOf(id.toString()) : null)
+          .setFullname(nonNull(fullName) ? fullName.toString() : null)
+          .setUsername(nonNull(username) ? username.toString() : null)
+          .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
+          .setToUser(nonNull(toUser) && Boolean.parseBoolean(toUser.toString()))
+          .setMainDeptId(nonNull(mainDeptId) ? Long.valueOf(mainDeptId.toString()) : null)
+          .setCountry(nonNull(country) ? country.toString() : null)
+          .setDeviceId(nonNull(deviceId) ? deviceId.toString() : null)
+          .setPermissions(isNull(permissions) ? Collections.emptyList()
+              : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()));
+      if (log.isDebugEnabled()) {
+        log.debug("Hold principal info : {}", principal);
       }
+      return true;
     } catch (Exception e) {
       log.error("Hold user principal error, cause: ", e);
     }
     // @formatter:on
     return false;
-  }
-
-  public boolean checkRequiredInfo(Object tenantId, Object clientId) {
-    if (log.isDebugEnabled()) {
-      log.debug("Check the required principal info : tenantId = {}, clientId = {}", tenantId,
-          clientId);
-    }
-    boolean success = null != tenantId && null != clientId && isNotEmpty(clientId.toString());
-    if (!success) {
-      throw CommSysException.of(SYSTEM_ERROR_CODE, PRINCIPAL_INFO_MISSING,
-          PRINCIPAL_INFO_MISSING_KEY);
-    }
-    return success;
   }
 
   public String getAccessDeviceId(HttpServletRequest req) {

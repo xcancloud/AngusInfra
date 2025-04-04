@@ -5,10 +5,9 @@ import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAu
 import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES;
 import static org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer.authorizationServer;
 
-import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;
 import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.client.ClientSecretAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.dao.DaoAuthenticationProvider;
-import cloud.xcan.angus.security.authentication.dao.LinkSecretService;
 import cloud.xcan.angus.security.authentication.dao.checker.DefaultPostAuthenticationChecks;
 import cloud.xcan.angus.security.authentication.dao.checker.DefaultPreAuthenticationChecks;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationConverter;
@@ -17,6 +16,8 @@ import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationCon
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.service.CustomJdbcOAuth2AuthorizationService;
+import cloud.xcan.angus.security.authentication.service.LinkSecretService;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
@@ -91,6 +92,9 @@ public class OAuth2AuthorizationServerAutoConfigurer {
         .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
         .cors(cors -> cors.configurationSource(oauth2CorsConfiguration))
         .with(authorizationServerConfigurer
+            .clientAuthentication(
+                clientAuthentication -> clientAuthentication.authenticationProvider(
+                    new ClientSecretAuthenticationProvider(registeredClientRepository, oauth2AuthorizationService)))
             .tokenEndpoint(
                 oAuth2TokenEndpointConfigurer -> oAuth2TokenEndpointConfigurer
                     .accessTokenRequestConverter(

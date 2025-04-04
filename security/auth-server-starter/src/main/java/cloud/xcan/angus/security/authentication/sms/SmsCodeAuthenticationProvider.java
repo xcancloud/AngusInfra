@@ -2,9 +2,12 @@ package cloud.xcan.angus.security.authentication.sms;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createHash;
 import static cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken.SMS_CODE_GRANT_TYPE;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationValidator;
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
+import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -155,6 +158,11 @@ public final class SmsCodeAuthenticationProvider implements AuthenticationProvid
         .authorizationGrantType(SMS_CODE_GRANT_TYPE)
         .attribute(OAuth2ParameterNames.SCOPE, authorizedScopes)
         .attribute(Principal.class.getName(), smsCodeAuthentication);
+
+    if (registeredClient instanceof CustomOAuth2RegisteredClient client
+        && isNotEmpty(client.getSource())) {
+      authorizationBuilder.attribute(AuthKey.CLIENT_SOURCE, client.getSource());
+    }
 
     if (generatedAccessToken instanceof ClaimAccessor) {
       authorizationBuilder.token(accessToken, (metadata) ->

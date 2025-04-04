@@ -55,7 +55,7 @@ curl -X POST http://localhost:9090/oauth2/token \
 }
 ```
 
-### 测试 grant_type=password 方式获取访问令牌
+### 测试 grant_type=client_credentials 方式获取访问令牌
 
 ```bash
 ## 以客户端 `CLIENT_SECRET_BASIC` 认证方式获取

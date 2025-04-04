@@ -21,11 +21,14 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.ClaimAccessor;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.OAuth2Token;
+import org.springframework.security.oauth2.server.authorization.OAuth2Authorization;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
+import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.token.DelegatingOAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2AccessTokenGenerator;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2RefreshTokenGenerator;
@@ -57,6 +60,26 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
       return clientPrincipal;
     }
     throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
+  }
+
+  public static <T extends OAuth2Token> OAuth2AccessToken accessToken(
+      OAuth2Authorization.Builder builder, T token, OAuth2TokenContext accessTokenContext) {
+
+    OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
+        token.getTokenValue(),
+        token.getIssuedAt(), token.getExpiresAt(), accessTokenContext.getAuthorizedScopes());
+    OAuth2TokenFormat accessTokenFormat = accessTokenContext.getRegisteredClient()
+        .getTokenSettings()
+        .getAccessTokenFormat();
+    builder.token(accessToken, (metadata) -> {
+      if (token instanceof ClaimAccessor claimAccessor) {
+        metadata.put(OAuth2Authorization.Token.CLAIMS_METADATA_NAME, claimAccessor.getClaims());
+      }
+      metadata.put(OAuth2Authorization.Token.INVALIDATED_METADATA_NAME, false);
+      metadata.put(OAuth2TokenFormat.class.getName(), accessTokenFormat.getValue());
+    });
+
+    return accessToken;
   }
 
   public static <T extends OAuth2Token> OAuth2AccessToken accessToken(T token,
@@ -118,9 +141,8 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
    * <li>argon2 - {@link Argon2PasswordEncoder}</li>
    * </ul>
    *
-   * @see PasswordEncoderFactories
-   *
    * @return the {@link PasswordEncoder} to use
+   * @see PasswordEncoderFactories
    */
   @SuppressWarnings("deprecation")
   public static PasswordEncoder createDelegatingPasswordEncoder() {
@@ -136,9 +158,11 @@ public final class OAuth2PasswordAuthenticationProviderUtils {
     encoders.put("noop",
         org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
     encoders.put("pbkdf2", Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_5());
-    encoders.put("pbkdf2@SpringSecurity_v5_8", Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8());
+    encoders.put("pbkdf2@SpringSecurity_v5_8",
+        Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8());
     encoders.put("scrypt", SCryptPasswordEncoder.defaultsForSpringSecurity_v4_1());
-    encoders.put("scrypt@SpringSecurity_v5_8", SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8());
+    encoders.put("scrypt@SpringSecurity_v5_8",
+        SCryptPasswordEncoder.defaultsForSpringSecurity_v5_8());
     encoders.put("SHA-1",
         new org.springframework.security.crypto.password.MessageDigestPasswordEncoder("SHA-1"));
     encoders.put("SHA-256",

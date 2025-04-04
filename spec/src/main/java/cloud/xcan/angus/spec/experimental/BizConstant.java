@@ -1,6 +1,8 @@
 package cloud.xcan.angus.spec.experimental;
 
 
+import static java.util.Objects.nonNull;
+
 import cloud.xcan.angus.api.enums.Platform;
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
@@ -405,6 +407,12 @@ public interface BizConstant {
     String XCAN_USER_TOKEN = "XCAN_USER_TOKEN";
     String XCAN_SYS_TOKEN = "XCAN_SYS_TOKEN";
     String XCAN_2P_SIGNIN = "XCAN_2P_SIGNIN";
+  }
+
+  static boolean isUserSignInToken(String clientSource) {
+    return nonNull(clientSource) && (clientSource.equals(ClientSource.XCAN_TP_SIGNIN)
+        || clientSource.equals(ClientSource.XCAN_OP_SIGNIN)
+        /*|| clientSource.equals(ClientSource.XCAN_2P_SIGNIN) -> System sign in */);
   }
 
   /**

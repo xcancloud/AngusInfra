@@ -5,6 +5,7 @@ import static java.util.Objects.isNull;
 import cloud.xcan.angus.api.enums.SignInType;
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationToken;
+import cloud.xcan.angus.security.authentication.service.LinkSecretService;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationProvider;

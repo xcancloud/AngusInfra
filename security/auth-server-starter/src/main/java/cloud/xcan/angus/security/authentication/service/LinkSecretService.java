@@ -1,4 +1,4 @@
-package cloud.xcan.angus.security.authentication.dao;
+package cloud.xcan.angus.security.authentication.service;
 
 
 import cloud.xcan.angus.api.enums.SignInType;

@@ -1,11 +1,11 @@
 package cloud.xcan.angus.security.authentication.device;
 
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import java.util.Map;
 import org.springframework.lang.Nullable;
 import org.springframework.security.core.Transient;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 
 
 @Transient
@@ -17,7 +17,7 @@ public class DeviceClientAuthenticationToken extends OAuth2ClientAuthenticationT
     super(clientId, clientAuthenticationMethod, credentials, additionalParameters);
   }
 
-  public DeviceClientAuthenticationToken(RegisteredClient registeredClient,
+  public DeviceClientAuthenticationToken(CustomOAuth2RegisteredClient registeredClient,
       ClientAuthenticationMethod clientAuthenticationMethod,
       @Nullable Object credentials) {
     super(registeredClient, clientAuthenticationMethod, credentials);

@@ -1,11 +1,11 @@
 package cloud.xcan.angus.security.authentication.dao;
 
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.cache.SpringCacheBasedUserCache;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 
 /**
  * Caches {@link UserDetails} instances in a Caffeine defined {@link Cache}.
@@ -15,7 +15,7 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 @Slf4j
 public class CaffeineCacheBasedClientCache {
 
-  private final Cache<String, RegisteredClient> cache;
+  private final Cache<String, CustomOAuth2RegisteredClient> cache;
 
   public CaffeineCacheBasedClientCache() {
     this.cache = Caffeine.newBuilder()
@@ -25,13 +25,13 @@ public class CaffeineCacheBasedClientCache {
         .build();
   }
 
-  public RegisteredClient getClientFromCache(String clientId) {
-    RegisteredClient element = this.cache.getIfPresent(clientId);
+  public CustomOAuth2RegisteredClient getClientFromCache(String clientId) {
+    CustomOAuth2RegisteredClient element = this.cache.getIfPresent(clientId);
     log.debug("Cache hit: " + (element != null) + "; clientId: " + clientId);
     return element;
   }
 
-  public void putClientInCache(String clientId, RegisteredClient user) {
+  public void putClientInCache(String clientId, CustomOAuth2RegisteredClient user) {
     log.debug("Cache put: " + clientId);
     this.cache.put(clientId, user);
   }

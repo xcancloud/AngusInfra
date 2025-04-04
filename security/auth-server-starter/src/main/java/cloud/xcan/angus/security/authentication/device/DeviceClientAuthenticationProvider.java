@@ -15,6 +15,7 @@
  */
 package cloud.xcan.angus.security.authentication.device;
 
+import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -25,7 +26,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.web.OAuth2ClientAuthenticationFilter;
 import org.springframework.util.Assert;
@@ -57,7 +57,8 @@ public final class DeviceClientAuthenticationProvider implements AuthenticationP
     }
 
     String clientId = deviceClientAuthentication.getPrincipal().toString();
-    RegisteredClient registeredClient = this.registeredClientRepository.findByClientId(clientId);
+    CustomOAuth2RegisteredClient registeredClient =
+        (CustomOAuth2RegisteredClient) this.registeredClientRepository.findByClientId(clientId);
     if (registeredClient == null) {
       throwInvalidClient(OAuth2ParameterNames.CLIENT_ID);
     }

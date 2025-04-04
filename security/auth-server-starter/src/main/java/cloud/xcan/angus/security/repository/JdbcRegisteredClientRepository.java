@@ -186,9 +186,9 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   }
 
   @Override
-  public RegisteredClient findById(String id) {
+  public CustomOAuth2RegisteredClient findById(String id) {
     Assert.hasText(id, "id cannot be empty");
-    RegisteredClient client = clientCache.getClientFromCache(id);
+    CustomOAuth2RegisteredClient client = clientCache.getClientFromCache(id);
     if (client == null) {
       client = findBy("id = ?", id);
       clientCache.putClientInCache(id, client);
@@ -197,9 +197,9 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   }
 
   @Override
-  public RegisteredClient findByClientId(String clientId) {
+  public CustomOAuth2RegisteredClient findByClientId(String clientId) {
     Assert.hasText(clientId, "clientId cannot be empty");
-    RegisteredClient client = clientCache.getClientFromCache(clientId);
+    CustomOAuth2RegisteredClient client = clientCache.getClientFromCache(clientId);
     if (client == null) {
       client = findBy("client_id = ?", clientId);
       clientCache.putClientInCache(clientId, client);

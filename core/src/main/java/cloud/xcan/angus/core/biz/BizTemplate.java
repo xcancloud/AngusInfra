@@ -76,7 +76,7 @@ public abstract class BizTemplate<T> {
     }
   }
 
-  protected abstract void checkParams();
+  protected void checkParams() {};
 
   protected abstract T process();
 

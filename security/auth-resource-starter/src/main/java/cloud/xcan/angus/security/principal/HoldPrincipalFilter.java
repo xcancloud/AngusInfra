@@ -66,7 +66,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Hold identity information from introspect endpoint to the current request context.
+ * Hold identity information from introspect endpoint to the current request thread context.
+ * <p>
+ * Note: Non-secure authentication requests will initialize an empty Principal.
  *
  * @author XiaoLong Liu
  * @see CustomOpaqueTokenIntrospector
@@ -90,6 +92,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       @NotNull HttpServletResponse response, @NotNull FilterChain chain)
       throws ServletException, IOException {
     try {
+      // Important: Set thread context for all requests
+      Principal principal = PrincipalContext.create();
+
       boolean isMatched = false;
       for (AntPathRequestMatcher matcher : AUTH_API_MATCHERS) {
         if (matcher.matches(request)) {
@@ -104,7 +109,6 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
       request.setCharacterEncoding(DEFAULT_ENCODING);
 
-      Principal principal = PrincipalContext.create();
       Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
       if (authentication instanceof AnonymousAuthenticationToken) {
         writeApiResult(response, SC_BAD_REQUEST, PRINCIPAL_MISSING, PRINCIPAL_MISSING_KEY);

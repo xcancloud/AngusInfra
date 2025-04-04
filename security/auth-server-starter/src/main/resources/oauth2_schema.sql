@@ -148,6 +148,7 @@ CREATE TABLE oauth2_authorization
     refresh_token_issued_at       timestamp NULL DEFAULT NULL,
     refresh_token_expires_at      timestamp NULL DEFAULT NULL,
     refresh_token_metadata        blob          DEFAULT NULL,
+    user_allow_duplicate_login    boolean       DEFAULT '1', -- Customization definition
     user_code_value               blob          DEFAULT NULL,
     user_code_issued_at           timestamp NULL DEFAULT NULL,
     user_code_expires_at          timestamp NULL DEFAULT NULL,

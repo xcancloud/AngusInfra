@@ -1,4 +1,4 @@
-package cloud.xcan.angus;
+package cloud.xcan.angus.rest;
 
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -114,7 +114,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
 
   private Function<RegisteredClient, List<SqlParameterValue>> registeredClientParametersMapper;
 
-  private final CaffeineCacheBasedClientCache clientCache;
+  private CaffeineCacheBasedClientCache clientCache;
 
   /**
    * Constructs a {@code JdbcRegisteredClientRepository} using the provided parameters.
@@ -186,9 +186,9 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   }
 
   @Override
-  public RegisteredClient findById(String id) {
+  public CustomOAuth2RegisteredClient findById(String id) {
     Assert.hasText(id, "id cannot be empty");
-    RegisteredClient client = clientCache.getClientFromCache(id);
+    CustomOAuth2RegisteredClient client = clientCache.getClientFromCache(id);
     if (client == null) {
       client = findBy("id = ?", id);
       clientCache.putClientInCache(id, client);
@@ -197,9 +197,9 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   }
 
   @Override
-  public RegisteredClient findByClientId(String clientId) {
+  public CustomOAuth2RegisteredClient findByClientId(String clientId) {
     Assert.hasText(clientId, "clientId cannot be empty");
-    RegisteredClient client = clientCache.getClientFromCache(clientId);
+    CustomOAuth2RegisteredClient client = clientCache.getClientFromCache(clientId);
     if (client == null) {
       client = findBy("client_id = ?", clientId);
       clientCache.putClientInCache(clientId, client);
@@ -223,7 +223,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
   @Override
   public void deleteById(String id) {
     RegisteredClient client = findById(id);
-    if (nonNull(client)){
+    if (nonNull(client)) {
       deleteByClientId(client.getClientId());
       clientCache.removeClientFromCache(client.getClientId());
     }
@@ -274,6 +274,14 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
 
   protected final Function<RegisteredClient, List<SqlParameterValue>> getRegisteredClientParametersMapper() {
     return this.registeredClientParametersMapper;
+  }
+
+  public CaffeineCacheBasedClientCache getClientCache() {
+    return clientCache;
+  }
+
+  public void setClientCache(CaffeineCacheBasedClientCache clientCache) {
+    this.clientCache = clientCache;
   }
 
   /**
@@ -530,6 +538,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
     protected final ObjectMapper getObjectMapper() {
       return this.objectMapper;
     }
+
 
     private String writeMap(Map<String, Object> data) {
       try {

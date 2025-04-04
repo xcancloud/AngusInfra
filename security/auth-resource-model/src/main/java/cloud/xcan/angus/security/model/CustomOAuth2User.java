@@ -315,6 +315,8 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     return this.credentialsNonExpired;
   }
 
+  @JsonIgnore
+  @Transient
   public boolean isPasswordExpired(){
     return !credentialsNonExpired || nonNull(password)
         && nonNull(passwordExpiredDate) && passwordExpiredDate.isBefore(Instant.now());

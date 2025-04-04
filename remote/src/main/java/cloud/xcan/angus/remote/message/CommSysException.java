@@ -220,8 +220,8 @@ public class CommSysException extends AbstractResultMessageException {
     String DATA_CONFIG_NOT_FOUND_T = "xcm.data.config.not.found.t";
     String DATA_CONFIG_NOT_FOUND_KEY = "data_config_not_found";
 
-    String PRINCIPAL_INFO_MISSING = "xcm.principal.info.missing";
-    String PRINCIPAL_INFO_MISSING_KEY = "principal_info_missing";
+    String PRINCIPAL_MISSING = "xcm.principal.info.missing";
+    String PRINCIPAL_MISSING_KEY = "principal_info_missing";
 
   }
 }

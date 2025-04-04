@@ -1,3 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cloud.xcan.angus.security.OAuth2PrincipalHoldAutoConfigurer,\
   cloud.xcan.angus.security.OAuth2ResourceServerSecurityAutoConfigurer

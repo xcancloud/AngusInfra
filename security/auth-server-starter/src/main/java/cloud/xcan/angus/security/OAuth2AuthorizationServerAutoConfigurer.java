@@ -2,21 +2,23 @@ package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createDelegatingPasswordEncoder;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getOAuth2TokenGenerator;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_WHITELIST;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES;
 import static org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer.authorizationServer;
 
-import cloud.xcan.angus.security.authentication.CustomJdbcOAuth2AuthorizationService;
 import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.client.ClientSecretAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.dao.DaoAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.dao.checker.DefaultPostAuthenticationChecks;
 import cloud.xcan.angus.security.authentication.dao.checker.DefaultPreAuthenticationChecks;
-import cloud.xcan.angus.security.authentication.dao.LinkSecretService;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.device.DeviceClientAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProvider;
+import cloud.xcan.angus.security.authentication.service.CustomJdbcOAuth2AuthorizationService;
+import cloud.xcan.angus.security.authentication.service.JdbcOAuth2AuthorizationService;
+import cloud.xcan.angus.security.authentication.service.LinkSecretService;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
@@ -34,7 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -42,19 +43,20 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2Token;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
-import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
-import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientCredentialsAuthenticationProvider;
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2RefreshTokenAuthenticationProvider;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
+import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenIntrospectionAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -76,7 +78,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
       HttpSecurity http, RegisteredClientRepository registeredClientRepository,
       AuthorizationServerSettings authorizationServerSettings,
       AuthenticationManager authenticationManager, CorsConfigurationSource oauth2CorsConfiguration,
-      OAuth2AuthorizationService oauth2AuthorizationService) throws Exception {
+      JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService) throws Exception {
     // @formatter:off
 
     OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator = getOAuth2TokenGenerator(http);
@@ -84,39 +86,44 @@ public class OAuth2AuthorizationServerAutoConfigurer {
 
     // Authorization Server
     http.authorizeHttpRequests(authorize -> authorize
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow public access
-            .requestMatchers(AUTH_WHITELIST).permitAll() // Allow public access
-          .anyRequest().authenticated()) // Other requests require authentication
+            //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow public access
+            .requestMatchers("/**").permitAll() // Allow public access
+            .requestMatchers(AUTH_RESOURCES).authenticated())  // Other requests require authentication
         .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
         .cors(cors -> cors.configurationSource(oauth2CorsConfiguration))
         .with(authorizationServerConfigurer
+            .clientAuthentication(
+                clientAuthentication -> clientAuthentication.authenticationProvider(
+                    new ClientSecretAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService)))
             .tokenEndpoint(
                 oAuth2TokenEndpointConfigurer -> oAuth2TokenEndpointConfigurer
                     .accessTokenRequestConverter(
                       new DelegatingAuthenticationConverter(Arrays.asList(
                         new OAuth2PasswordAuthenticationConverter(),
-                        new OAuth2AuthorizationCodeAuthenticationConverter(),
+                        new OAuth2ClientCredentialsAuthenticationConverter(),
                         new OAuth2RefreshTokenAuthenticationConverter(),
                         new DeviceClientAuthenticationConverter(authorizationServerSettings.getDeviceAuthorizationEndpoint()),
                         new SmsCodeAuthenticationConverter(),
                         new EmailCodeAuthenticationConverter())
                       ))
                     .authenticationProvider(
-                        new OAuth2PasswordAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))
+                        new OAuth2PasswordAuthenticationProvider(jdbcOAuth2AuthorizationService, tokenGenerator, authenticationManager))
                     .authenticationProvider(
-                        new OAuth2ClientCredentialsAuthenticationProvider(oauth2AuthorizationService, tokenGenerator))
+                        new OAuth2ClientCredentialsAuthenticationProvider(jdbcOAuth2AuthorizationService, tokenGenerator))
+                    .authenticationProvider(
+                        new OAuth2RefreshTokenAuthenticationProvider(jdbcOAuth2AuthorizationService, tokenGenerator))
                     .authenticationProvider(
                         new DeviceClientAuthenticationProvider(registeredClientRepository))
                     .authenticationProvider(
-                        new SmsCodeAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))
+                        new SmsCodeAuthenticationProvider(jdbcOAuth2AuthorizationService, tokenGenerator, authenticationManager))
                     .authenticationProvider(
-                        new EmailCodeAuthenticationProvider(oauth2AuthorizationService, tokenGenerator, authenticationManager))),
+                        new EmailCodeAuthenticationProvider(jdbcOAuth2AuthorizationService, tokenGenerator, authenticationManager))),
             (authorizationServer) -> authorizationServer
                 .authorizationServerSettings(authorizationServerSettings)
                 // oauth2-authorization-server/src/test/java/org/springframework/security/oauth2/server/authorization/config/annotation/web/configurers/OAuth2TokenIntrospectionTests.java
                 .tokenIntrospectionEndpoint(tokenIntrospectionEndpoint -> tokenIntrospectionEndpoint // Enable Introspection
                     .introspectionRequestConverter(new OAuth2TokenIntrospectionAuthenticationConverter())
-                    .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(registeredClientRepository, oauth2AuthorizationService))
+                    .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService))
                     //.introspectionResponseHandler(new OAuth2AccessTokenResponseAuthenticationSuccessHandler())
                     //.errorResponseHandler(new OAuth2ErrorAuthenticationFailureHandler())
                 )
@@ -128,7 +135,12 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI))
                 .oidc(Customizer.withDefaults())  // Enable OpenID Connect 1.0
         ).csrf(AbstractHttpConfigurer::disable); // Disable CSRF protection (configure as needed)
-
+    // Avoid setting `X-Frame-Options: deny` in the HTTP response header,
+    // which causes the browser to reject the page from being loaded within <frame></frame>
+    http.headers(headers -> headers
+            .frameOptions(FrameOptionsConfig::sameOrigin)
+        //.frameOptions(FrameOptionsConfig::disable)
+    );
     // @formatter:on
 
     return http.build();
@@ -150,6 +162,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder,
         linkSecretService);
     provider.setPreAuthenticationChecks(defaultPreAuthenticationChecks);
+    provider.setPostAuthenticationChecks(defaultPostAuthenticationChecks);
     provider.setUserDetailsService(userDetailsService);
     return http.getSharedObject(AuthenticationManagerBuilder.class)
         .authenticationProvider(provider)

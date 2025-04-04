@@ -789,17 +789,17 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
       registeredClient.scopes = Collections.unmodifiableSet(new HashSet<>(this.scopes));
       registeredClient.clientSettings = this.clientSettings;
       registeredClient.tokenSettings = this.tokenSettings;
-      registeredClient.description = registeredClient.getDescription();
-      registeredClient.enabled = registeredClient.isEnabled();
-      registeredClient.platform = registeredClient.getPlatform();
-      registeredClient.source = registeredClient.getSource();
-      registeredClient.bizTag = registeredClient.getBizTag();
-      registeredClient.tenantId = registeredClient.getTenantId();
-      registeredClient.tenantName = registeredClient.getTenantName();
-      registeredClient.createdBy = registeredClient.getCreatedBy();
-      registeredClient.createdDate = registeredClient.getCreatedDate();
-      registeredClient.lastModifiedBy = registeredClient.getLastModifiedBy();
-      registeredClient.lastModifiedDate = registeredClient.getLastModifiedDate();
+      registeredClient.description = this.description;
+      registeredClient.enabled = this.enabled;
+      registeredClient.platform = this.platform;
+      registeredClient.source = this.source;
+      registeredClient.bizTag = this.bizTag;
+      registeredClient.tenantId = this.tenantId;
+      registeredClient.tenantName = this.tenantName;
+      registeredClient.createdBy = this.createdBy;
+      registeredClient.createdDate = this.createdDate;
+      registeredClient.lastModifiedBy = this.lastModifiedBy;
+      registeredClient.lastModifiedDate = this.lastModifiedDate;
       return registeredClient;
     }
 

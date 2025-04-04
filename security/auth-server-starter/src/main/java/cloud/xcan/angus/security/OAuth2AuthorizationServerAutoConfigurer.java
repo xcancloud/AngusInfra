@@ -56,6 +56,7 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
+import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenIntrospectionAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
@@ -99,7 +100,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     .accessTokenRequestConverter(
                       new DelegatingAuthenticationConverter(Arrays.asList(
                         new OAuth2PasswordAuthenticationConverter(),
-                        new OAuth2AuthorizationCodeAuthenticationConverter(),
+                        new OAuth2ClientCredentialsAuthenticationConverter(),
                         new OAuth2RefreshTokenAuthenticationConverter(),
                         new DeviceClientAuthenticationConverter(authorizationServerSettings.getDeviceAuthorizationEndpoint()),
                         new SmsCodeAuthenticationConverter(),

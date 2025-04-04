@@ -47,14 +47,14 @@ public interface ApiConstant {
 
   interface Service {
 
-    // String AAS_SERVICE = "XCAN-AAS.BOOT";
-    String AAS_SERVICE = "XCAN-ANGUSGM.BOOT";
+    // String AAS_SERVICE = "AngusGM";
+    String AAS_SERVICE = "AngusGM";
 
     //String LOGGER_SERVICE = "XCAN-LOGGER.BOOT";
-    String LOGGER_SERVICE = "XCAN-ANGUSGM.BOOT";
+    String LOGGER_SERVICE = "AngusGM";
 
     //String EVENT_SERVICE = "XCAN-EVENT.BOOT";
-    String EVENT_SERVICE = "XCAN-ANGUSGM.BOOT";
+    String EVENT_SERVICE = "AngusGM";
 
     String COMMON_SERVICE = BizConstant.GM_SERVICE;
 

@@ -8,6 +8,7 @@ import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.unit.ShortTimeUnit;
 import cloud.xcan.angus.spec.unit.TimeValue;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 /**
@@ -59,7 +60,7 @@ public interface BizConstant {
   /**
    * Service artifactId
    */
-  String GM_SERVICE = "XCAN-ANGUSGM.BOOT";
+  String GM_SERVICE = "AngusGM";
   String GM_SERVICE_PRIVATIZATION = "ANGUSGM";
   String TESTER_SERVICE = "XCAN-ANGUSTESTER.BOOT";
   String TESTER_SERVICE_PRIVATIZATION = "ANGUSTESTER";
@@ -367,7 +368,7 @@ public interface BizConstant {
     String REQUEST_ID = "requestId";
 
     String AUTH_SERVICE_CODE = "serviceCode";
-    String DEFAULT_AUTH_SERVICE_CODE = "XCAN-AAS.BOOT";
+    String DEFAULT_AUTH_SERVICE_CODE = "AngusGM";
 
     String KEY_ID = "keyId";
     String KEY_SECRET = "keySecret";
@@ -395,6 +396,10 @@ public interface BizConstant {
      */
     String BEARER = "Bearer";
 
+    String CUSTOM_ACCESS_TOKEN = "customAccessToken";
+    String ACCESS_TOKEN_EXPIRED_DATE = "accessTokenExpiredDate";
+
+    Duration MAX_TOKEN_VALIDITY_PERIOD = Duration.ofDays(50 * 365);
   }
 
   /**

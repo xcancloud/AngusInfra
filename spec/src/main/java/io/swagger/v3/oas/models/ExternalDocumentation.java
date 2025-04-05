@@ -1,6 +1,6 @@
 package io.swagger.v3.oas.models;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_DOC_DESC_LENGTH;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -27,7 +27,7 @@ public class ExternalDocumentation {
   private String description;
 
   @NotBlank
-  @Length(max = DEFAULT_URL_LENGTH_X2)
+  @Length(max = MAX_URL_LENGTH_X2)
   @Schema(description = "A description of the target documentation. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.",
       example = "https://example.com", requiredMode = RequiredMode.REQUIRED)
   private String url;

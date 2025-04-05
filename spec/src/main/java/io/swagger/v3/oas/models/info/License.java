@@ -1,8 +1,8 @@
 package io.swagger.v3.oas.models.info;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_CODE_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_CODE_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,11 +23,11 @@ import org.hibernate.validator.constraints.Length;
 public class License {
 
   @NotEmpty
-  @Length(max = DEFAULT_NAME_LENGTH_X2)
+  @Length(max = MAX_NAME_LENGTH_X2)
   @Schema(description = "The license name used for the API.", example = "Apache 2.0", requiredMode = RequiredMode.REQUIRED)
   private String name = null;
 
-  @Length(max = DEFAULT_URL_LENGTH_X2)
+  @Length(max = MAX_URL_LENGTH_X2)
   @Schema(description = "A URL to the license used for the API. Note: This MUST be in the form of a URL. The `url` field is mutually exclusive of the `identifier` field.",
       example = "https://www.apache.org/licenses/LICENSE-2.0")
   private String url = null;
@@ -36,7 +36,7 @@ public class License {
    * @since 2.2.0 (OpenAPI 3.1.0)
    */
   @io.swagger.v3.oas.models.annotations.OpenAPI31
-  @Length(max = DEFAULT_CODE_LENGTH_X2)
+  @Length(max = MAX_CODE_LENGTH_X2)
   @Schema(description = "An SPDX license expression for the API. Note: The `identifier` field is mutually exclusive of the `url` field.",
       example = "Apache-2.0")
   private String identifier = null;

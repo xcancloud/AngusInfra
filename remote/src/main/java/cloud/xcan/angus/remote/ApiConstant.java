@@ -1,6 +1,6 @@
 package cloud.xcan.angus.remote;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_BATCH_SIZE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_BATCH_SIZE;
 
 import cloud.xcan.angus.spec.experimental.BizConstant;
 
@@ -148,12 +148,12 @@ public interface ApiConstant {
      * The default maximum size of the delete resource (mandatory)
      **/
     @Deprecated
-    int MAX_DELETE_SIZE = DEFAULT_BATCH_SIZE;
+    int MAX_DELETE_SIZE = MAX_BATCH_SIZE;
     /**
      * The default maximum size of the saved resource (mandatory)
      **/
     @Deprecated
-    int MAX_SAVE_SIZE = DEFAULT_BATCH_SIZE;
+    int MAX_SAVE_SIZE = MAX_BATCH_SIZE;
     /**
      * The default maximum size of the extended attributes (mandatory)
      */

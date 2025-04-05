@@ -1,6 +1,6 @@
 package cloud.xcan.angus.validator;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_DESC_LENGTH_X10;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_DESC_LENGTH_X10;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface EditorContentLength {
 
-  long max() default DEFAULT_DESC_LENGTH_X10;
+  long max() default MAX_DESC_LENGTH_X10;
 
   EditorType value() default EditorType.QUILL;
 

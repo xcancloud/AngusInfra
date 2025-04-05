@@ -1,8 +1,8 @@
-package cloud.xcan.angus.spec.obfuscated;
+package cloud.xcan.angus.spec.obf;
 
 import cloud.xcan.angus.api.obf.Obj0;
 
-public class ValueObfuscatedTest {
+public class ValueObfTest {
 
   public static void main(String[] args) {
     // SpecConstant
@@ -22,5 +22,18 @@ public class ValueObfuscatedTest {
     System.out.println(Obj0.var0("xcan_3rd"));
     System.out.println(Obj0.var0("password"));
     System.out.println(Obj0.var0("client_secret"));
+
+    System.out.println(Obj0.var0("keyId"));
+    System.out.println(Obj0.var0("keySecret"));
+
+    System.out.println(Obj0.var0("init_application_cache"));
+    System.out.println(Obj0.var0("check_application_cache"));
+
+    System.out.println(Obj0.var0("XCAN_TP_SIGNIN"));
+    System.out.println(Obj0.var0("XCAN_OP_SIGNIN"));
+    System.out.println(Obj0.var0("XCAN_USER_TOKEN"));
+    System.out.println(Obj0.var0("XCAN_SYS_TOKEN"));
+    System.out.println(Obj0.var0("XCAN_2P_SIGNIN"));
+
   }
 }

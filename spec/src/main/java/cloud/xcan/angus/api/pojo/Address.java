@@ -1,8 +1,8 @@
 package cloud.xcan.angus.api.pojo;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_CODE_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_CODE_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_COUNTRY_LENGTH;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,36 +24,36 @@ public class Address {
   @Schema(example = "86", maxLength = MAX_COUNTRY_LENGTH)
   private String countryCode;
 
-  @Length(max = DEFAULT_NAME_LENGTH)
-  @Schema(example = "China", maxLength = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(example = "China", maxLength = MAX_NAME_LENGTH)
   private String country;
 
-  @Length(max = DEFAULT_CODE_LENGTH)
-  @Schema(example = "110100", maxLength = DEFAULT_CODE_LENGTH)
+  @Length(max = MAX_CODE_LENGTH)
+  @Schema(example = "110100", maxLength = MAX_CODE_LENGTH)
   private String provinceCode;
 
-  @Length(max = DEFAULT_NAME_LENGTH)
-  @Schema(example = "Beijing", maxLength = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(example = "Beijing", maxLength = MAX_NAME_LENGTH)
   private String province;
 
-  @Length(max = DEFAULT_CODE_LENGTH)
-  @Schema(example = "110100", maxLength = DEFAULT_CODE_LENGTH)
+  @Length(max = MAX_CODE_LENGTH)
+  @Schema(example = "110100", maxLength = MAX_CODE_LENGTH)
   private String cityCode;
 
-  @Length(max = DEFAULT_NAME_LENGTH)
-  @Schema(example = "Beijing", maxLength = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(example = "Beijing", maxLength = MAX_NAME_LENGTH)
   private String city;
 
-  @Length(max = DEFAULT_CODE_LENGTH)
-  @Schema(example = "110101", maxLength = DEFAULT_CODE_LENGTH)
+  @Length(max = MAX_CODE_LENGTH)
+  @Schema(example = "110101", maxLength = MAX_CODE_LENGTH)
   private String areaCode;
 
-  @Length(max = DEFAULT_NAME_LENGTH)
-  @Schema(example = "Dongcheng", maxLength = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(example = "Dongcheng", maxLength = MAX_NAME_LENGTH)
   private String area;
 
-  @Length(max = DEFAULT_NAME_LENGTH_X2)
-  @Schema(example = "Tiananmen Square", maxLength = DEFAULT_NAME_LENGTH_X2)
+  @Length(max = MAX_NAME_LENGTH_X2)
+  @Schema(example = "Tiananmen Square", maxLength = MAX_NAME_LENGTH_X2)
   private String street;
 
   @Override

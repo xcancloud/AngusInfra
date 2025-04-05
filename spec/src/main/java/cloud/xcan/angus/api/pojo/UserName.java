@@ -1,6 +1,6 @@
 package cloud.xcan.angus.api.pojo;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
@@ -18,8 +18,8 @@ public class UserName implements Serializable {
   @Schema(description = "User id")
   private Long id;
 
-  @Length(max = DEFAULT_NAME_LENGTH)
-  @Schema(description = "User fullname", maxLength = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(description = "User fullname", maxLength = MAX_NAME_LENGTH)
   private String fullname;
 
   @Override

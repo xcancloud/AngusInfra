@@ -1,6 +1,8 @@
 package cloud.xcan.angus.spec.experimental;
 
 
+import static java.lang.System.getProperty;
+import static java.lang.System.getenv;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.Platform;
@@ -16,6 +18,7 @@ import java.time.LocalDateTime;
  */
 public interface BizConstant {
 
+  // @formatter:off
   String DEFAULT_LANGUAGE = "zh_CN";
 
   String TENANT_ID_DB_KEY = "tenant_id";
@@ -29,23 +32,19 @@ public interface BizConstant {
   /**
    * @see Platform#XCAN_TP
    */
-  String XCAN_TENANT_PLATFORM_CODE = new Str0(new long[]{0x1D59B3C91B9DB6ADL, 0x63A0A495A05827B7L})
-      .toString() /* => "xcan_tp" */;
+  String XCAN_TENANT_PLATFORM_CODE = new Str0(new long[]{0x1D59B3C91B9DB6ADL, 0x63A0A495A05827B7L}).toString() /* => "xcan_tp" */;
   /**
    * @see Platform#XCAN_OP
    */
-  String XCAN_OPERATION_PLATFORM_CODE = new Str0(
-      new long[]{0xD02B78B2A482A10DL, 0x22FD2ECB43B53D4AL}).toString() /* => "xcan_op" */;
+  String XCAN_OPERATION_PLATFORM_CODE = new Str0(new long[]{0xD02B78B2A482A10DL, 0x22FD2ECB43B53D4AL}).toString() /* => "xcan_op" */;
   /**
    * @see Platform#XCAN_2P
    */
-  String XCAN_2P_PLATFORM_CODE = new Str0(new long[]{0xC954E9B703A0EF5BL, 0x546DE9328C9EDF81L})
-      .toString() /* => "xcan_2p" */;
+  String XCAN_2P_PLATFORM_CODE = new Str0(new long[]{0xC954E9B703A0EF5BL, 0x546DE9328C9EDF81L}).toString() /* => "xcan_2p" */;
   /**
    * @see Platform#XCAN_3RD
    */
-  String XCAN_3RD_PLATFORM_CODE = new Str0(new long[]{0xE05F58EA396C2D50L, 0x1F3CB9F441E5C9A9L})
-      .toString() /* => "xcan_3rd" */;
+  String XCAN_3RD_PLATFORM_CODE = new Str0(new long[]{0xE05F58EA396C2D50L, 0x1F3CB9F441E5C9A9L}).toString() /* => "xcan_3rd" */;
 
   /**
    * Enum i18n message prefix
@@ -62,9 +61,9 @@ public interface BizConstant {
    */
   String GM_SERVICE = "AngusGM";
   String GM_SERVICE_PRIVATIZATION = "ANGUSGM";
-  String TESTER_SERVICE = "XCAN-ANGUSTESTER.BOOT";
+  String TESTER_SERVICE = "AngusTester";
   String TESTER_SERVICE_PRIVATIZATION = "ANGUSTESTER";
-  String CTRL_SERVICE = "XCAN-ANGUSCTRL.BOOT";
+  String CTRL_SERVICE = "AngusCtrl";
   String CTRL_SERVICE_PRIVATIZATION = "ANGUSCTRL";
 
   /**
@@ -110,36 +109,37 @@ public interface BizConstant {
   /********************Param validation***********************/
   int MAX_RELATION_QUOTA = 2000;
 
-  int DEFAULT_PARAM_SIZE = 100;
-  int DEFAULT_BATCH_SIZE = 200;
+  int MAX_PARAM_SIZE = 100;
+  int MAX_PARAM_SIZE_X2 = 200;
+  int MAX_BATCH_SIZE = 200;
 
-  int DEFAULT_ID_LENGTH = 20;
-  int DEFAULT_BID_LENGTH = 20; // Code or No length
-  int DEFAULT_CODE_LENGTH = 80;
-  int DEFAULT_CODE_LENGTH_X2 = 160;
-  int DEFAULT_CODE_LENGTH_X5 = 400;
+  int MAX_ID_LENGTH = 20;
+  int MAX_BID_LENGTH = 20; // Code or No length
+  int MAX_CODE_LENGTH = 80;
+  int MAX_CODE_LENGTH_X2 = 160;
+  int MAX_CODE_LENGTH_X5 = 400;
 
-  int DEFAULT_NAME_LENGTH = 100;
-  int DEFAULT_NAME_LENGTH_X2 = 200;
-  int DEFAULT_NAME_LENGTH_X4 = 400;
+  int MAX_NAME_LENGTH = 100;
+  int MAX_NAME_LENGTH_X2 = 200;
+  int MAX_NAME_LENGTH_X4 = 400;
 
-  int DEFAULT_KEY_LENGTH = 40;
-  int DEFAULT_KEY_LENGTH_X2 = 80;
-  int DEFAULT_KEY_LENGTH_X4 = 160;
+  int MAX_KEY_LENGTH = 40;
+  int MAX_KEY_LENGTH_X2 = 80;
+  int MAX_KEY_LENGTH_X4 = 160;
 
-  int DEFAULT_DESC_LENGTH = 200;
-  int DEFAULT_DESC_LENGTH_X2 = 400;
-  int DEFAULT_DESC_LENGTH_X4 = 800;
-  int DEFAULT_DESC_LENGTH_X10 = 2000;
+  int MAX_DESC_LENGTH = 200;
+  int MAX_DESC_LENGTH_X2 = 400;
+  int MAX_DESC_LENGTH_X4 = 800;
+  int MAX_DESC_LENGTH_X10 = 2000;
 
-  int DEFAULT_OUT_ID_LENGTH = 80;
+  int MAX_OUT_ID_LENGTH = 80;
 
-  int DEFAULT_REMARK_LENGTH = 200;
-  int DEFAULT_REMARK_LENGTH_X2 = 400;
-  int DEFAULT_REMARK_LENGTH_X4 = 800;
-  int DEFAULT_REMARK_LENGTH_X10 = 2000;
-  int DEFAULT_REMARK_LENGTH_X15 = 3000;
-  int DEFAULT_REMARK_LENGTH_X30 = 6000;
+  int MAX_REMARK_LENGTH = 200;
+  int MAX_REMARK_LENGTH_X2 = 400;
+  int MAX_REMARK_LENGTH_X4 = 800;
+  int MAX_REMARK_LENGTH_X10 = 2000;
+  int MAX_REMARK_LENGTH_X15 = 3000;
+  int MAX_REMARK_LENGTH_X30 = 6000;
 
   int MAX_OPENAPI_PATH_NUM = 5000;
   int MAX_OPENAPI_TAG_NUM = 500;
@@ -149,17 +149,18 @@ public interface BizConstant {
   int MAX_OPENAPI_OTHER_DESC_LENGTH = 5000;
   int MAX_OPENAPI_LENGTH = 5000000; // Approximately 10 MB
 
-  int DEFAULT_ADDRESS_LENGTH = 200;
+  int MAX_ADDRESS_LENGTH = 200;
 
-  int DEFAULT_URL_LENGTH = 200;
-  int DEFAULT_URL_LENGTH_X2 = 400;
-  int DEFAULT_URL_LENGTH_X4 = 800;
-  int DEFAULT_URL_LENGTH_X20 = 2000;
+  int MAX_URL_LENGTH = 200;
+  int MAX_URL_LENGTH_X2 = 400;
+  int MAX_URL_LENGTH_X4 = 800;
+  int MAX_URL_LENGTH_X20 = 4000;
+  int MAX_URL_LENGTH_X30 = 6000;
 
-  int DEFAULT_URI_LENGTH = 200;
-  int DEFAULT_URI_LENGTH_X2 = 400;
-  int DEFAULT_URI_LENGTH_X4 = 800;
-  int DEFAULT_URI_LENGTH_X20 = 2000;
+  int MAX_URI_LENGTH = 200;
+  int MAX_URI_LENGTH_X2 = 400;
+  int MAX_URI_LENGTH_X4 = 800;
+  int MAX_URI_LENGTH_X20 = 2000;
 
   int MAX_MOBILE_LENGTH = 16;
   int MAX_EMAIL_LENGTH = 100;
@@ -187,7 +188,6 @@ public interface BizConstant {
   int MAX_CLIENT_AUTHORITY_SIZE = 2000;
 
   int IPV4_LENGTH = 15;
-  int MAX_URL_LENGTH = 6000;
   int MAX_DOMAIN_LENGTH = 200;
   int MAX_HOST_LENGTH = 200;
   @Deprecated // TODO renaming
@@ -205,7 +205,6 @@ public interface BizConstant {
   int MAX_PARAM_VALUE_LENGTH_X10 = MAX_PARAM_VALUE_LENGTH * 10;
   int MAX_PARAM_TYPE_LENGTH = 20;
   int MAX_PARAM_CONTENT_LENGTH = 1024 * 1024 * 2;
-  int MAX_PARAM_SIZE = 200;
   int MAX_PARAM_MATCH_SIZE = 10;
   int MAX_PARAM_MATCH_SIZE_X2 = 20;
   int MAX_PARAM_MATCH_SIZE_X5 = 50;
@@ -213,7 +212,6 @@ public interface BizConstant {
 
   int MAX_MATCH_RESPONSE_NUM = 50;
 
-  int MAX_DESC_LENGTH = 200;
   int MAX_BIZ_KEY_LENGTH = 80;
 
   int MAX_CONTENT_TYPE_LENGTH = 100;
@@ -243,11 +241,9 @@ public interface BizConstant {
   int DEFAULT_REQUEST_RETRIES = 0;
   int DEFAULT_REQUEST_REDIRECTS = 1;
 
-  TimeValue DEFAULT_CONNECT_TIMEOUT = TimeValue
-      .of(DEFAULT_CONNECT_TIMEOUT_SECOND, ShortTimeUnit.Second);
+  TimeValue DEFAULT_CONNECT_TIMEOUT = TimeValue.of(DEFAULT_CONNECT_TIMEOUT_SECOND, ShortTimeUnit.Second);
   TimeValue DEFAULT_READ_TIMEOUT = TimeValue.of(DEFAULT_READ_TIMEOUT_SECOND, ShortTimeUnit.Second);
-  TimeValue DEFAULT_RETRY_INTERVAL = TimeValue
-      .of(DEFAULT_RETRY_INTERVAL_MS, ShortTimeUnit.Millisecond);
+  TimeValue DEFAULT_RETRY_INTERVAL = TimeValue.of(DEFAULT_RETRY_INTERVAL_MS, ShortTimeUnit.Millisecond);
 
   int MAX_HEADER_AUTH_MATCH_NUM = 5;
 
@@ -333,13 +329,10 @@ public interface BizConstant {
     String USERNAME = "username";
     String EMAIL = "email";
     String MOBILE = "mobile";
-    String PASSD = new Str0(new long[]{0x44ED27B90DF8C74AL, 0x26693839EEDEAA2BL})
-        .toString() /* => "password" */;
+    String PASSWORD = new Str0(new long[]{0x44ED27B90DF8C74AL, 0x26693839EEDEAA2BL}).toString() /* => "password" */;
     String CLIENT_ID = "client_id";
     String CLIENT_NAME = "client_name";
-    String CLIENT_SECRET = new Str0(
-        new long[]{0x7A2E43F1E76B6153L, 0xFC45C7301C3CAB2FL, 0x554D36C13AEC2F9L})
-        .toString() /* => "client_secret" */;
+    String CLIENT_SECRET = new Str0(new long[]{0x7A2E43F1E76B6153L, 0xFC45C7301C3CAB2FL, 0x554D36C13AEC2F9L}).toString() /* => "client_secret" */;
     String CLIENT_SOURCE = "client_source";
     String SCOPE = "scope";
     String DEFAULT_SCOPE = "trust";
@@ -350,7 +343,7 @@ public interface BizConstant {
     String TENANT_ID = "tenant_id";
     String TENANT_NAME = "tenant_name";
     String USER_ID = "user_id";
-    String FULLNAME = "fullname";
+    String FULL_NAME = "fullname";
 
     /**
      * Tenant application function authorization strategy prefix.
@@ -370,8 +363,8 @@ public interface BizConstant {
     String AUTH_SERVICE_CODE = "serviceCode";
     String DEFAULT_AUTH_SERVICE_CODE = "AngusGM";
 
-    String KEY_ID = "keyId";
-    String KEY_SECRET = "keySecret";
+    String KEY_ID = new Str0(new long[] {0x51BB3CF446444867L, 0x6AA4A90311567682L}).toString() /* => "keyId" */;
+    String KEY_SECRET = new Str0(new long[] {0x4FF076195E3572F9L, 0x2145CBF5D8F0D1D2L, 0xD28715AD2E4015BEL}).toString() /* => "keySecret" */;
 
     String PRINCIPAL = "principal";
 
@@ -413,11 +406,12 @@ public interface BizConstant {
    */
   interface ClientSource {
 
-    String XCAN_TP_SIGNIN = "XCAN_TP_SIGNIN";
-    String XCAN_OP_SIGNIN = "XCAN_OP_SIGNIN";
-    String XCAN_USER_TOKEN = "XCAN_USER_TOKEN";
-    String XCAN_SYS_TOKEN = "XCAN_SYS_TOKEN";
-    String XCAN_2P_SIGNIN = "XCAN_2P_SIGNIN";
+    String XCAN_TP_SIGNIN = new Str0(new long[] {0xE3D692F6C709CA5DL, 0x2C1C1CD97DBA3BBEL, 0x41700D425EB056F1L}).toString() /* => "XCAN_TP_SIGNIN" */;
+    String XCAN_OP_SIGNIN = new Str0(new long[] {0x95652B5014797DBCL, 0x4EF9C1022162A558L, 0x536430C2525F1221L}).toString() /* => "XCAN_OP_SIGNIN" */;
+    String XCAN_USER_TOKEN = new Str0(new long[] {0x9A7D04AF1D5A1B35L, 0x32F4CCFAD9F1A279L, 0x1FE2E95D017B915DL}).toString() /* => "XCAN_USER_TOKEN" */;
+    String XCAN_SYS_TOKEN = new Str0(new long[] {0xABD519917FB36EF0L, 0xE786F27AF1475DCBL, 0xE31A9ED1744A4094L}).toString() /* => "XCAN_SYS_TOKEN" */;
+    String XCAN_2P_SIGNIN = new Str0(new long[] {0xB0C50FCF27090258L, 0x199E7A9A4ECFA51AL, 0x7C6D5FEA7DE97E87L}).toString() /* => "XCAN_2P_SIGNIN" */;
+
   }
 
   static boolean isUserSignInToken(String clientSource) {
@@ -447,9 +441,9 @@ public interface BizConstant {
 
     String MAIN_DEPT_ID = "mainDeptId";
 
-    String SYS_ADMIN_FLAG = "sysAdminFlag";
+    String SYS_ADMIN = "sysAdmin";
 
-    String TO_USER_FLAG = "toUserFlag";
+    String TO_USER = "toUser";
 
     String ITC = "itc";
 
@@ -479,8 +473,7 @@ public interface BizConstant {
      */
     String AUTHORIZATION = "Authorization";
     String GRANT_TYPE = "grant_type";
-    //    String USERNAME = "username";
-    String PASSD = "password";
+    String PASSWORD = "password";
     String CLIENT_ID = "client_id";
     String CLIENT_SOURCE = "client_source";
     String CLIENT_SECRET = "client_secret";
@@ -522,7 +515,7 @@ public interface BizConstant {
     String TENANT_NAME = HEADER_PREFIX + "Tenant-Name";
 
     String USER_ID = HEADER_PREFIX + "User-Id";
-    String USER_FULLNAME = HEADER_PREFIX + "User-Fullname";
+    String USER_FULL_NAME = HEADER_PREFIX + "User-Fullname";
     String USERNAME = HEADER_PREFIX + "Username";
 
     String DEPT_ID = HEADER_PREFIX + "Dept-Id";
@@ -574,4 +567,15 @@ public interface BizConstant {
     String STATICS_DIR = "STATICS_DIR";
     String STATICS_DIR_NAME = "statics";
   }
+
+  interface AppCache {
+   String a = new Str0(new long[] {0x574044A5639A08F5L, 0x685D2B408098262EL, 0xE078B749076BC39L, 0xF148F9A4C246624CL}).toString(); /* => "init_application_cache" */
+   String b = new Str0(new long[] {0xAA56B4B00FAB2706L, 0x4A09F49C1D229429L, 0xF2F8BD2F0F0299C3L, 0xF4AADE8BB6C3AC8DL}).toString(); /* => "check_application_cache" */
+
+   static boolean openedAppCache(){
+      return nonNull(getenv(a)) || nonNull(getenv(b)) || nonNull(getProperty(a)) || nonNull(getProperty(b));
+    }
+  }
+
+  // @formatter:on
 }

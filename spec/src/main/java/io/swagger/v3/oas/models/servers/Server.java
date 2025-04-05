@@ -1,7 +1,7 @@
 package io.swagger.v3.oas.models.servers;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REMARK_LENGTH_X4;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -26,12 +26,12 @@ import org.hibernate.validator.constraints.Length;
 public class Server {
 
   @NotBlank
-  @Length(max = DEFAULT_URL_LENGTH_X2)
+  @Length(max = MAX_URL_LENGTH_X2)
   @Schema(description = "A URL to the target host. Note: `This MUST be in the form of a URL`.",
       example = "https://{env}-api.xcan.cloud:{port}/{basePath}", requiredMode = RequiredMode.REQUIRED)
   private String url = null;
 
-  @Length(max = DEFAULT_REMARK_LENGTH_X4)
+  @Length(max = MAX_REMARK_LENGTH_X4)
   @Schema(description = "An optional string describing the host designated by the URL. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.",
       example = "The production API server")
   private String description = null;

@@ -1,6 +1,6 @@
 package io.swagger.v3.oas.models.servers;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REMARK_LENGTH_X4;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_NAME_LENGTH;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -33,7 +33,7 @@ public class ServerVariable {
           + "If the enum is defined, the value MUST exist in the enum's values.", example = "prod")
   private String _default = null;
 
-  @Length(max = DEFAULT_REMARK_LENGTH_X4)
+  @Length(max = MAX_REMARK_LENGTH_X4)
   @Schema(description = "An optional description for the server variable. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.", example = "This is a production environment")
   private String description = null;
 

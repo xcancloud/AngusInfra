@@ -396,6 +396,12 @@ public interface BizConstant {
      */
     String BEARER = "Bearer";
 
+    String SECURITY_SCHEME_USER_HTTP_NAME = "UserHttpBearer";
+    String SECURITY_SCHEME_USER_OAUTH2_NAME = "UserOAuth2Bearer";
+
+    String SECURITY_SCHEME_SYS_HTTP_NAME = "SysHttpBearer";
+    String SECURITY_SCHEME_SYS_OAUTH2_NAME = "SysOAuth2Bearer";
+
     String CUSTOM_ACCESS_TOKEN = "customAccessToken";
     String ACCESS_TOKEN_EXPIRED_DATE = "accessTokenExpiredDate";
 

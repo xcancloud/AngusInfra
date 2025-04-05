@@ -1,4 +1,4 @@
-package cloud.xcan.angus.web;
+package cloud.xcan.angus.web.listener;
 
 import static cloud.xcan.angus.core.spring.boot.ApplicationBanner.DECORATION_CHARD;
 import static java.lang.management.ManagementFactory.getRuntimeMXBean;

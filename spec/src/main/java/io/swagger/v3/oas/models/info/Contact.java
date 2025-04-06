@@ -1,7 +1,7 @@
 package io.swagger.v3.oas.models.info;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_EMAIL_LENGTH;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -20,11 +20,11 @@ import org.hibernate.validator.constraints.Length;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Contact {
 
-  @Length(max = DEFAULT_NAME_LENGTH_X2)
+  @Length(max = MAX_NAME_LENGTH_X2)
   @Schema(description = "The identifying name of the contact person/organization.", example = "API Support")
   private String name = null;
 
-  @Length(max = DEFAULT_URL_LENGTH_X2)
+  @Length(max = MAX_URL_LENGTH_X2)
   @Schema(description = "The URL pointing to the contact information. Note: `This MUST be in the form of a URL`.", example = "https://www.xcan.cloud/support")
   private String url = null;
 

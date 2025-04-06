@@ -1,5 +1,10 @@
 package cloud.xcan.angus.swagger;
 
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_SYS_HTTP_NAME;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_SYS_OAUTH2_NAME;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_HTTP_NAME;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_OAUTH2_NAME;
+
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
@@ -141,16 +146,16 @@ public class OpenApiAutoConfigurer {
   private OpenApiCustomizer globalUserSecurityCustomizer() {
     return openApi -> openApi
         // Use existing opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("UserBearer"))
+        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_HTTP_NAME))
         // Use OAuth2 opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("UserBearerOAuth2"))
-        .getComponents().addSecuritySchemes("BearerAuth",
+        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_OAUTH2_NAME))
+        .getComponents().addSecuritySchemes(SECURITY_SCHEME_USER_HTTP_NAME,
             new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("opaque")
                 .description("Use existing opaque tokens for authentication")
-        ).addSecuritySchemes("BearerOAuth2",
+        ).addSecuritySchemes(SECURITY_SCHEME_USER_OAUTH2_NAME,
             new SecurityScheme()
                 .type(Type.OAUTH2)
                 .scheme("bearer")
@@ -168,16 +173,16 @@ public class OpenApiAutoConfigurer {
   private OpenApiCustomizer globalSysSecurityCustomizer() {
     return openApi -> openApi
         // Use existing opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("SysBearer"))
+        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_HTTP_NAME))
         // Use OAuth2 opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList("SysBearerOAuth2"))
-        .getComponents().addSecuritySchemes("SysBearerAuth",
+        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_OAUTH2_NAME))
+        .getComponents().addSecuritySchemes(SECURITY_SCHEME_SYS_HTTP_NAME,
             new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("opaque")
                 .description("Use existing opaque tokens for authentication")
-        ).addSecuritySchemes("SysBearerOAuth2",
+        ).addSecuritySchemes(SECURITY_SCHEME_SYS_OAUTH2_NAME,
             new SecurityScheme()
                 .type(Type.OAUTH2)
                 .scheme("bearer")

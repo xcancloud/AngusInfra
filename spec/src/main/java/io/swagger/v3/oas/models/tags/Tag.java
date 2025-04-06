@@ -1,7 +1,7 @@
 package io.swagger.v3.oas.models.tags;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_REMARK_LENGTH_X4;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REMARK_LENGTH_X4;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,12 +23,12 @@ import org.hibernate.validator.constraints.Length;
 public class Tag {
 
   @NotBlank
-  @Length(max = DEFAULT_NAME_LENGTH_X2)
+  @Length(max = MAX_NAME_LENGTH_X2)
   @Schema(description = "The name of the tag. Note: Each tag name in the list MUST be unique.",
       example = "User", requiredMode = RequiredMode.REQUIRED)
   private String name = null;
 
-  @Length(max = DEFAULT_REMARK_LENGTH_X4)
+  @Length(max = MAX_REMARK_LENGTH_X4)
   @Schema(description = "A description for the tag. [CommonMark syntax](https://spec.commonmark.org/) MAY be used for rich text representation.",
       example = "User Rest API")
   private String description = null;

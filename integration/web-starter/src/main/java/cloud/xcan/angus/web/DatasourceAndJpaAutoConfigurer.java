@@ -3,6 +3,8 @@ package cloud.xcan.angus.web;
 
 import cloud.xcan.angus.core.jpa.repository.SimpleSummaryRepository;
 import cloud.xcan.angus.core.jpa.repository.SummaryRepository;
+import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
+import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
 import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
 import cloud.xcan.angus.datasource.config.DataSourceProperties;
 import cloud.xcan.angus.datasource.config.HikariProperties;
@@ -10,6 +12,7 @@ import cloud.xcan.angus.jpa.HibernateJpaConfiguration;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import java.util.HashMap;
 import java.util.List;
 import javax.sql.DataSource;
 import org.hibernate.engine.spi.SessionImplementor;
@@ -24,6 +27,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
@@ -32,6 +36,7 @@ import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.CollectionUtils;
 
@@ -53,7 +58,7 @@ public class DatasourceAndJpaAutoConfigurer {
   @Primary
   @Bean("dataSourceProperties")
   @ConfigurationProperties(prefix = "xcan.datasource.mysql")
-  @ConditionalOnProperty(name = "xcan.datasource.extra.dbType", havingValue = "mysql")
+  @Conditional(MySqlEnvCondition.class)
   public DataSourceProperties loadMySqlDataSourceProperties() {
     return new DataSourceProperties();
   }
@@ -61,7 +66,7 @@ public class DatasourceAndJpaAutoConfigurer {
   @Primary
   @Bean("dataSourceProperties")
   @ConfigurationProperties(prefix = "xcan.datasource.postgresql")
-  @ConditionalOnProperty(name = "xcan.datasource.extra.dbType", havingValue = "postgres")
+  @Conditional(PostgresEnvCondition.class)
   public DataSourceProperties loadPgDataSourceProperties() {
     return new DataSourceProperties();
   }
@@ -85,6 +90,12 @@ public class DatasourceAndJpaAutoConfigurer {
     dataSource.setReadOnly(hikariProperties.isReadOnly());
     dataSource.setConnectionTestQuery(hikariProperties.getConnectionTestQuery());
     return dataSource;
+  }
+
+  @Bean
+  @Primary
+  public EntityManagerFactoryBuilder entityManagerFactoryBuilder() {
+    return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), new HashMap<>(), null);
   }
 
   @Primary

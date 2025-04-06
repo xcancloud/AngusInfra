@@ -1,7 +1,7 @@
 package cloud.xcan.angus.api.pojo;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X4;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X4;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;
@@ -15,12 +15,12 @@ import org.hibernate.validator.constraints.Length;
 @Accessors(chain = true)
 public class Attachment {
 
-  @Length(max = DEFAULT_NAME_LENGTH_X2)
-  @Schema(description = "Attachment file name", maxLength = DEFAULT_NAME_LENGTH_X2)
+  @Length(max = MAX_NAME_LENGTH_X2)
+  @Schema(description = "Attachment file name", maxLength = MAX_NAME_LENGTH_X2)
   private String name;
 
-  @Length(max = DEFAULT_URL_LENGTH_X4)
-  @Schema(description = "Attachment file URL address", maxLength = DEFAULT_URL_LENGTH_X4)
+  @Length(max = MAX_URL_LENGTH_X4)
+  @Schema(description = "Attachment file URL address", maxLength = MAX_URL_LENGTH_X4)
   private String url;
 
   @Override

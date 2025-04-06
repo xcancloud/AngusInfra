@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.jpa.repository.summary;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -21,7 +21,7 @@ public class Aggregate {
   private AggregateFunction function;
 
   @NotEmpty
-  @Length(max = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
   @Schema(description = "Database aggregate column name.", requiredMode = RequiredMode.REQUIRED)
   private String column;
 

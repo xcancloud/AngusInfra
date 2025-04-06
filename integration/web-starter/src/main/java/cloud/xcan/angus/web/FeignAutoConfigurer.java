@@ -1,6 +1,7 @@
 package cloud.xcan.angus.web;
 
 import static cloud.xcan.angus.spec.SpecConstant.UTF8;
+import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.biz.exception.BizException;
 import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
@@ -15,7 +16,6 @@ import feign.Logger;
 import feign.Retryer;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import okhttp3.ConnectionPool;
 import okhttp3.Interceptor;
@@ -23,7 +23,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
@@ -37,18 +36,6 @@ import org.springframework.http.HttpStatus;
 @ConditionalOnClass(Feign.class)
 @AutoConfigureBefore(FeignAutoConfiguration.class)
 public class FeignAutoConfigurer {
-
-  /*@Bean
-  @Primary
-  public Encoder feignEncoder(ObjectMapper objectMapper) {
-    return new JacksonEncoder(objectMapper);
-  }
-
-  @Bean
-  @Primary
-  public Decoder feignDecoder(ObjectMapper objectMapper) {
-    return new JacksonDecoder(objectMapper);
-  }*/
 
   @Bean
   @ConditionalOnMissingClass
@@ -93,7 +80,6 @@ public class FeignAutoConfigurer {
 
 class BizExceptionInterceptor implements Interceptor {
 
-  @NotNull
   @Override
   public Response intercept(@NonNullable Chain chain) throws IOException {
     Request request = chain.request();
@@ -101,10 +87,10 @@ class BizExceptionInterceptor implements Interceptor {
     String eKey = response.headers().get(Header.E_KEY);
     // fix bug: Solve the serialization exception caused by http status code 200 but not entering the error decoder when the business is abnormal
     // The http status code is not 2xx and will be handled by CustomErrorDecoder
-    if (response.code() >= HttpStatus.OK.value() && response.code() <= HttpStatus.ALREADY_REPORTED
-        .value() && Objects.nonNull(eKey)) {
+    if (response.code() >= HttpStatus.OK.value()
+        && response.code() <= HttpStatus.IM_USED.value() && nonNull(eKey)) {
       ResponseBody body = response.body();
-      if (Objects.nonNull(body)) {
+      if (nonNull(body)) {
         byte[] bodyBytes = body.bytes();
         ApiResult<?> apiResult = GsonUtils.fromJson(new String(bodyBytes, UTF8),
             ApiResult.class);

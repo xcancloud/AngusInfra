@@ -26,14 +26,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Setter
 @Accessors(chain = true)
-@ConfigurationProperties(prefix = "xcan.apilog", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "xcan.api-log", ignoreUnknownFields = false)
 public class ApiLogProperties implements AppPropertiesRegister {
 
   // @formatter:off
-  public static final String AL_ENABLED = "xcan.apilog.enabled";
-  public static final String AL_LOGGER_SERVICE = "xcan.apilog.loggerService";
-  public static final String AL_EVENT_SERVICE = "xcan.apilog.eventService";
-  public static final String AL_CLEAR_BEFORE_DAY = "xcan.apilog.clearBeforeDay";
+  public static final String AL_ENABLED = "xcan.api-log.enabled";
+  public static final String AL_LOGGER_SERVICE = "xcan.api-log.loggerService";
+  public static final String AL_EVENT_SERVICE = "xcan.api-log.eventService";
+  public static final String AL_CLEAR_BEFORE_DAY = "xcan.api-log.clearBeforeDay";
 
   @Schema(description = "Enable api log configuration")
   private Boolean enabled;

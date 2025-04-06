@@ -1,7 +1,7 @@
 package io.swagger.v3.oas.models;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_KEY_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_PARAM_SIZE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_KEY_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_SIZE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_PATH_NUM;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_TAG_NUM;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
@@ -42,7 +42,7 @@ public class OpenAPI {
   @io.swagger.v3.oas.annotations.media.Schema(description =
       "This string MUST be the semantic version number of the OpenAPI Specification version that the OpenAPI document uses. "
           + "The openapi field SHOULD be used by tooling specifications and clients to interpret the OpenAPI document. This is not related to the API info.version string.",
-      requiredMode = RequiredMode.REQUIRED, maxLength = DEFAULT_KEY_LENGTH)
+      requiredMode = RequiredMode.REQUIRED, maxLength = MAX_KEY_LENGTH)
   private String openapi = "3.0.1";
 
   @NotNull
@@ -55,14 +55,14 @@ public class OpenAPI {
       description = "Additional external documentation.")
   private ExternalDocumentation externalDocs = null;
 
-  @Size(max = DEFAULT_PARAM_SIZE)
+  @Size(max = MAX_PARAM_SIZE)
   @io.swagger.v3.oas.annotations.media.Schema(
       description =
           "An array of Server Objects, which provide connectivity information to a target server. "
               + "If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.")
   private List<Server> servers = null;
 
-  @Size(max = DEFAULT_PARAM_SIZE)
+  @Size(max = MAX_PARAM_SIZE)
   @io.swagger.v3.oas.annotations.media.Schema(
       description = "A declaration of which security mechanisms can be used across the API. "
           + "The list of values includes alternative security requirement objects that can be used. "
@@ -88,7 +88,7 @@ public class OpenAPI {
       description = "An element to hold various schemas for the specification.")
   private Components components = null;
 
-  @Size(max = DEFAULT_PARAM_SIZE)
+  @Size(max = MAX_PARAM_SIZE)
   @io.swagger.v3.oas.annotations.media.Schema(
       description = "Specification Extensions.")
   private Map<String, Object> extensions = null;

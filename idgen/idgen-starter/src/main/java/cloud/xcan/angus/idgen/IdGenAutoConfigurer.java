@@ -95,7 +95,7 @@ public class IdGenAutoConfigurer {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
-      String enabled = context.getEnvironment().getProperty("xcan.idgen.enabled");
+      String enabled = context.getEnvironment().getProperty("xcan.id-gen.enabled");
       return isNotEmpty(enabled) && Boolean.parseBoolean(enabled);
     }
   }

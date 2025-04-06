@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.support.AbstractValueAdaptingCache;
 import org.springframework.cache.support.NullValue;
 import org.springframework.lang.Nullable;
@@ -374,7 +373,6 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
    * @return the value to store
    */
   @Override
-  @NotNull
   protected Object toStoreValue(@Nullable Object userValue) {
     if (userValue == null || NullValue.INSTANCE.equals(userValue)
         || (userValue instanceof Collection && ((Collection<?>) userValue).isEmpty())

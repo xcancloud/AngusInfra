@@ -2,7 +2,6 @@ package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createDelegatingPasswordEncoder;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getOAuth2TokenGenerator;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES;
 import static org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer.authorizationServer;
 
 import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
@@ -21,6 +20,7 @@ import cloud.xcan.angus.security.authentication.service.JdbcOAuth2AuthorizationS
 import cloud.xcan.angus.security.authentication.service.LinkSecretService;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
+import cloud.xcan.angus.security.client.CustomOAuth2ClientRepository;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
 import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyService;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
@@ -55,7 +55,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
-import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2AuthorizationCodeAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenIntrospectionAuthenticationConverter;
@@ -73,9 +72,9 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   private static final String ISSUER = "https://www.xcan.cloud";
   private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 
-  @Bean
+  @Bean("authorizationServerSecurityFilterChain")
   public SecurityFilterChain authorizationServerSecurityFilterChain(
-      HttpSecurity http, RegisteredClientRepository registeredClientRepository,
+      HttpSecurity http, CustomOAuth2ClientRepository registeredClientRepository,
       AuthorizationServerSettings authorizationServerSettings,
       AuthenticationManager authenticationManager, CorsConfigurationSource oauth2CorsConfiguration,
       JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService) throws Exception {
@@ -85,11 +84,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
     OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = authorizationServer();
 
     // Authorization Server
-    http.authorizeHttpRequests(authorize -> authorize
-            //.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow public access
-            .requestMatchers("/**").permitAll() // Allow public access
-            .requestMatchers(AUTH_RESOURCES).authenticated())  // Other requests require authentication
-        .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+    http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
         .cors(cors -> cors.configurationSource(oauth2CorsConfiguration))
         .with(authorizationServerConfigurer
             .clientAuthentication(
@@ -155,21 +150,28 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public AuthenticationManager authenticationManager(HttpSecurity http,
       UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
+      DaoAuthenticationProvider daoAuthenticationProvider)
+      throws Exception {
+    return http.getSharedObject(AuthenticationManagerBuilder.class)
+        .authenticationProvider(daoAuthenticationProvider)
+        .userDetailsService(userDetailsService)
+        .passwordEncoder(passwordEncoder)
+        .and()
+        .build();
+  }
+
+  @Bean
+  public DaoAuthenticationProvider daoAuthenticationProvider(
+      PasswordEncoder passwordEncoder, UserDetailsService userDetailsService,
       @Autowired(required = false) LinkSecretService linkSecretService,
       @Autowired(required = false) DefaultPreAuthenticationChecks defaultPreAuthenticationChecks,
-      @Autowired(required = false) DefaultPostAuthenticationChecks defaultPostAuthenticationChecks)
-      throws Exception {
+      @Autowired(required = false) DefaultPostAuthenticationChecks defaultPostAuthenticationChecks) {
     DaoAuthenticationProvider provider = new DaoAuthenticationProvider(passwordEncoder,
         linkSecretService);
     provider.setPreAuthenticationChecks(defaultPreAuthenticationChecks);
     provider.setPostAuthenticationChecks(defaultPostAuthenticationChecks);
     provider.setUserDetailsService(userDetailsService);
-    return http.getSharedObject(AuthenticationManagerBuilder.class)
-        .authenticationProvider(provider)
-        .userDetailsService(userDetailsService)
-        .passwordEncoder(passwordEncoder)
-        .and()
-        .build();
+    return provider;
   }
 
   /**
@@ -195,7 +197,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   }
 
   @Bean
-  public RegisteredClientRepository registeredClientRepository(
+  public CustomOAuth2ClientRepository registeredClientRepository(
       @Qualifier("dataSource") DataSource dataSource) {
     return new JdbcRegisteredClientRepository(new JdbcTemplate(dataSource));
   }

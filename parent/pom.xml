@@ -83,7 +83,6 @@
     <spring-framework.version>6.2.0</spring-framework.version>
     <springdoc-openapi.version>2.7.0</springdoc-openapi.version>
 
-    <feign-httpclient.version>10.10.1</feign-httpclient.version>
     <okhttp3.version>4.12.0</okhttp3.version>
 
     <mysql-connector.version>8.0.31</mysql-connector.version>
@@ -237,34 +236,6 @@
         <version>${springdoc-openapi.version}</version>
       </dependency>
 
-      <!-- RPC: openfeign  -->
-      <dependency>
-        <groupId>io.github.openfeign</groupId>
-        <artifactId>feign-jackson</artifactId>
-        <version>${feign-httpclient.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.github.openfeign</groupId>
-        <artifactId>feign-core</artifactId>
-        <version>${feign-httpclient.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.github.openfeign</groupId>
-        <artifactId>feign-slf4j</artifactId>
-        <version>${feign-httpclient.version}</version>
-      </dependency>
-      <!-- Feign Apache HttpClient -->
-      <dependency>
-        <groupId>io.github.openfeign</groupId>
-        <artifactId>feign-httpclient</artifactId>
-        <version>${feign-httpclient.version}</version>
-      </dependency>
-      <!-- Feign okhttp -->
-      <dependency>
-        <groupId>io.github.openfeign</groupId>
-        <artifactId>feign-okhttp</artifactId>
-        <version>${feign-httpclient.version}</version>
-      </dependency>
       <!-- If okhttp and okhttp-sse Version Conflict：Exception in thread "OkHttp Dispatcher" java.lang.NoSuchFieldError: instance -->
       <dependency>
         <groupId>com.squareup.okhttp3</groupId>

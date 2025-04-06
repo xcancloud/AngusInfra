@@ -1,7 +1,7 @@
 package cloud.xcan.angus.api.pojo;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X4;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X4;
 
 import cloud.xcan.angus.api.enums.AuthObjectType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,12 +21,12 @@ public class AuthObjectInfo {
   @Schema(description = "Auth object id")
   private Long id;
 
-  @Length(max = DEFAULT_NAME_LENGTH)
-  @Schema(description = "Auth object name", maxLength = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(description = "Auth object name", maxLength = MAX_NAME_LENGTH)
   private String name;
 
-  @Length(max = DEFAULT_URL_LENGTH_X4)
-  @Schema(description = "Auth object avatar", maxLength = DEFAULT_URL_LENGTH_X4)
+  @Length(max = MAX_URL_LENGTH_X4)
+  @Schema(description = "Auth object avatar", maxLength = MAX_URL_LENGTH_X4)
   private String avatar;
 
 }

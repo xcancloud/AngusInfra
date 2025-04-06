@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 
@@ -75,7 +74,6 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
     return cacheBuilder.build();
   }
 
-  @NotNull
   @Override
   public Collection<String> getCacheNames() {
     return this.cacheNames;

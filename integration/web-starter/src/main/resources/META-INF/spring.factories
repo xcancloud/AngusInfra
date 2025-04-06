@@ -1,5 +1,6 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   cloud.xcan.angus.web.CommonAutoConfigurer,\
+  cloud.xcan.angus.web.EnvConfigAutoConfigurer,\
   cloud.xcan.angus.web.CoreAutoConfigurer,\
   cloud.xcan.angus.web.FeignAutoConfigurer,\
   cloud.xcan.angus.web.RedisAutoConfigurer,\
@@ -12,8 +13,8 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   cloud.xcan.angus.web.CommonLinkDatasourceAndJpaAutoConfigurer,\
   cloud.xcan.angus.web.PluginAutoConfigurer
 org.springframework.context.ApplicationListener=\
-  cloud.xcan.angus.web.ApplicationReadyListener,\
-  cloud.xcan.angus.web.ApplicationInitListener
+  cloud.xcan.angus.web.listener.ApplicationReadyListener,\
+  cloud.xcan.angus.web.listener.ApplicationInitListener
 ##WebFlux Core For Gateway
 #org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 #  cloud.xcan.angus.web.CommonAutoConfigurer,\

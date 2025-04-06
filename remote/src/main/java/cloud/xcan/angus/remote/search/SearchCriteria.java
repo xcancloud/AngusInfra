@@ -1,6 +1,6 @@
 package cloud.xcan.angus.remote.search;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -41,7 +41,7 @@ public class SearchCriteria implements Serializable {
   /**
    * Filter field
    */
-  @Length(max = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
   @Schema(description = "Filter field")
   private String key;
 

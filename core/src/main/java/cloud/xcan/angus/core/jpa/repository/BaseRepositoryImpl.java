@@ -2,7 +2,7 @@ package cloud.xcan.angus.core.jpa.repository;
 
 import static cloud.xcan.angus.core.utils.CoreUtils.getAnnotationFieldName;
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_BATCH_SIZE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_BATCH_SIZE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_RESOURCE_NAME;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
@@ -67,12 +67,12 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     while (iterator.hasNext()) {
       entityManager.persist(iterator.next());
       index++;
-      if (index % DEFAULT_BATCH_SIZE == 0) {
+      if (index % MAX_BATCH_SIZE == 0) {
         entityManager.flush();
         entityManager.clear();
       }
     }
-    if (index % DEFAULT_BATCH_SIZE != 0) {
+    if (index % MAX_BATCH_SIZE != 0) {
       entityManager.flush();
       entityManager.clear();
     }
@@ -87,12 +87,12 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     while (iterator.hasNext()) {
       entityManager.persist(iterator.next());
       index++;
-      if (index % DEFAULT_BATCH_SIZE == 0) {
+      if (index % MAX_BATCH_SIZE == 0) {
         entityManager.flush();
         entityManager.clear();
       }
     }
-    if (index % DEFAULT_BATCH_SIZE != 0) {
+    if (index % MAX_BATCH_SIZE != 0) {
       entityManager.flush();
       entityManager.clear();
     }
@@ -108,12 +108,12 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     while (iterator.hasNext()) {
       entityManager.merge(iterator.next());
       index++;
-      if (index % DEFAULT_BATCH_SIZE == 0) {
+      if (index % MAX_BATCH_SIZE == 0) {
         entityManager.flush();
         entityManager.clear();
       }
     }
-    if (index % DEFAULT_BATCH_SIZE != 0) {
+    if (index % MAX_BATCH_SIZE != 0) {
       entityManager.flush();
       entityManager.clear();
     }

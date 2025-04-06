@@ -59,6 +59,8 @@ import org.springframework.web.util.WebUtils;
  * AuthenticationSuccessHandler is fired before request enters DispatcherServlet (actually, request
  * that fired SavedRequestAwareAuthenticationSuccessHandler never enters DispatcherServlet, because
  * this handler performs a redirect).
+ * <p>
+ * Note: That it must be executed before HoldPrincipalFilter.
  *
  * @author XiaoLong Liu
  */
@@ -95,21 +97,19 @@ public class GlobalHoldFilter implements Filter {
       response.setStatus(HttpStatus.OK.value);
       return;
     }
-
-    if (path.startsWith("/api/auth/user") || path.startsWith("/swagger") || "/".equals(path)) {
-      filterChain.doFilter(servletRequest, servletResponse);
-      return;
-    }
-
-    Principal principal = PrincipalContext.create();
+    Principal principal = PrincipalContext.createIfAbsent();
     try {
+      if (path.startsWith("/oauth2") || path.startsWith("/swagger") || "/".equals(path)) {
+        filterChain.doFilter(servletRequest, servletResponse);
+        return;
+      }
+
       MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
 
       holdAndInitLocale(request);
 
       holdPrincipal(request, path, principal, mutableRequest);
       PrincipalContext.set(principal);
-      // ThreadContext.create(); -> Set on business code
 
       // For /doorapi
       if (PrincipalContextUtils.isDoorApi()) {
@@ -197,7 +197,7 @@ public class GlobalHoldFilter implements Filter {
             0xBFDF0C0D164B3776L}).toString() /* => "Parsed cookie value [" */
             + cookie.getValue() + new Str0(
             new long[]{0xD281F85B9AD531A7L, 0xDAF571CC3856E648L, 0x982A4A28A21B0C07L})
-            .toString() /* => "] into locale '" */ + locale + "'" + "");
+            .toString() /* => "] into locale '" */ + locale + "'");
       }
     }
 

@@ -56,7 +56,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -88,12 +87,12 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(@NotNull HttpServletRequest request,
-      @NotNull HttpServletResponse response, @NotNull FilterChain chain)
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response, FilterChain chain)
       throws ServletException, IOException {
     try {
       // Important: Set thread context for all requests
-      Principal principal = PrincipalContext.create();
+      Principal principal = PrincipalContext.createIfAbsent();
 
       boolean isMatched = false;
       for (AntPathRequestMatcher matcher : AUTH_API_MATCHERS) {

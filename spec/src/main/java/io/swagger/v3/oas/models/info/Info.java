@@ -1,7 +1,7 @@
 package io.swagger.v3.oas.models.info;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_KEY_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_URL_LENGTH_X2;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_KEY_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_DOC_DESC_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_NAME_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_SUMMARY_LENGTH;
@@ -36,9 +36,9 @@ public class Info {
       maxLength = MAX_OPENAPI_DOC_DESC_LENGTH)
   private String description = null;
 
-  @Length(max = DEFAULT_URL_LENGTH_X2)
+  @Length(max = MAX_URL_LENGTH_X2)
   @Schema(description = "A URL to the Terms of Service for the API. Note: `This MUST be in the form of a URL`.",
-      maxLength = DEFAULT_URL_LENGTH_X2)
+      maxLength = MAX_URL_LENGTH_X2)
   private String termsOfService = null;
 
   @Valid
@@ -50,7 +50,7 @@ public class Info {
   private License license = null;
 
   @NotEmpty
-  @Length(max = DEFAULT_KEY_LENGTH)
+  @Length(max = MAX_KEY_LENGTH)
   @Schema(description = "The version of the OpenAPI document. Note: `Which is distinct from the [OpenAPI Specification version](https://swagger.io/specification/#oas-version) or the API implementation version`.",
       requiredMode = RequiredMode.REQUIRED)
   private String version = null;

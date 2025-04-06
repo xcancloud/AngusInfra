@@ -58,11 +58,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
 public class CoreUtils {
@@ -510,7 +510,6 @@ public class CoreUtils {
     return f;
   }
 
-  @NotNull
   public static Set<Class<?>> getAnnotationClasses(String packageName,
       Class<? extends Annotation> annotation) {
     Reflections reflections = new Reflections(packageName);
@@ -605,7 +604,7 @@ public class CoreUtils {
     return filters;
   }
 
-  public static @NotNull Set<SearchCriteria> getCommonResourcesStatsFilter(Long projectId,
+  public static @NonNull Set<SearchCriteria> getCommonResourcesStatsFilter(Long projectId,
       LocalDateTime startDate, LocalDateTime endDate, Set<Long> createdBys) {
     Set<SearchCriteria> filters = new HashSet<>();
     if (nonNull(projectId)) {

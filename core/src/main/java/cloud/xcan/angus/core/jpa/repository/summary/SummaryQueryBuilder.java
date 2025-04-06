@@ -2,7 +2,7 @@ package cloud.xcan.angus.core.jpa.repository.summary;
 
 import static cloud.xcan.angus.core.biz.ProtocolAssert.assertTrue;
 import static cloud.xcan.angus.core.jpa.repository.SimpleSummaryRepository.REGISTER;
-import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -29,7 +29,7 @@ import org.hibernate.validator.constraints.Length;
 public class SummaryQueryBuilder {
 
   @NotEmpty
-  @Length(max = DEFAULT_NAME_LENGTH)
+  @Length(max = MAX_NAME_LENGTH)
   private String name;
 
   private GroupBy groupBy;

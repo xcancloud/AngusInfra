@@ -42,7 +42,6 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -119,8 +118,8 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
   }
 
   @Override
-  protected void doFilterInternal(@NotNull HttpServletRequest request,
-      @NotNull HttpServletResponse response, @NotNull FilterChain filterChain)
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
     if (isAsyncDispatch(request) || !apiLogProperties.getEnabled()) {
       filterChain.doFilter(request, response);

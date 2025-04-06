@@ -35,6 +35,15 @@ public class PrincipalContext {
     return principal;
   }
 
+  public static Principal createIfAbsent(){
+    Principal principal = tl.get();
+    if (principal == null) {
+      principal = new Principal();
+      tl.set(principal);
+    }
+    return principal;
+  }
+
   public static Principal get() {
     Principal principal = tl.get();
     if (principal == null) {

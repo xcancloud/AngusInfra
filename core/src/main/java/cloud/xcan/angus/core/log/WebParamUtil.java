@@ -41,7 +41,7 @@ public class WebParamUtil {
                 "********-****-****-****"));
         continue;
       }
-      if (AuthKey.PASSD.equals(paramName) || AuthKey.CLIENT_SECRET.equals(paramName)) {
+      if (AuthKey.PASSWORD.equals(paramName) || AuthKey.CLIENT_SECRET.equals(paramName)) {
         map.put(paramName, "********");
         continue;
       }

@@ -28,14 +28,15 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 @EnableConfigurationProperties({OAuth2ResourceServerProperties.class})
 public class OAuth2ResourceServerSecurityAutoConfigurer {
 
-  @Bean
-  public SecurityFilterChain resourceServerFilterChain(HttpSecurity http,
+  @Bean("resourceServerSecurityFilterChain")
+  public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http,
       BearerTokenResolver bearerTokenResolver, AccessDeniedHandler accessDeniedHandler,
       AuthenticationEntryPoint authenticationEntryPoint,
       OpaqueTokenIntrospector opaqueTokenIntrospector, ObjectMapper objectMapper) throws Exception {
     http.authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/**").permitAll() // Allow public access
-            .requestMatchers(AUTH_RESOURCES).authenticated())// Other requests require authentication
+            //.requestMatchers("/**").permitAll() // Allow public access
+            .requestMatchers(AUTH_RESOURCES).authenticated()
+            .anyRequest().permitAll())// Other requests require authentication
         .addFilterBefore(new HoldPrincipalFilter(objectMapper), AuthorizationFilter.class)
         .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
             .bearerTokenResolver(bearerTokenResolver)

@@ -25,6 +25,9 @@ public interface ExtensionKey {
   String REQUEST_SETTING = "requestSetting";
   String REQUEST_SETTING_KEY = PREFIX + REQUEST_SETTING;
 
+  String RESOURCE_NAME = "resourceName";
+  String RESOURCE_NAME_KEY = PREFIX + RESOURCE_NAME;
+
   String URL = "url";
   String URL_KEY = PREFIX + URL;
 

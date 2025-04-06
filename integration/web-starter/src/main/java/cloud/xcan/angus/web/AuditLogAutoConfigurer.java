@@ -53,7 +53,7 @@ import org.springframework.context.annotation.Import;
 @Import(FeignClientsConfiguration.class)
 //@Conditional({AuditLogAutoConfigurer.AuditLogCondition.class}) <- Fix:: Will cause CommonService#Setting to be invalid
 @EnableConfigurationProperties({ApiLogProperties.class, OperationLogProperties.class})
-@ConditionalOnExpression(value = "${xcan.apilog.enabled:true} || ${xcan.optlog.enabled:false}")
+@ConditionalOnExpression(value = "${xcan.api-log.enabled:true} || ${xcan.opt-log.enabled:false}")
 public class AuditLogAutoConfigurer {
 
   public final static String[] RESOURCES = new String[]{
@@ -242,8 +242,8 @@ public class AuditLogAutoConfigurer {
   //
   //    @Override
   //    public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
-  //      String apiLogEnabled = context.getEnvironment().getProperty("xcan.apilog.enabled");
-  //      String optLogEnabled = context.getEnvironment().getProperty("xcan.optlog.enabled");
+  //      String apiLogEnabled = context.getEnvironment().getProperty("xcan.api-log.enabled");
+  //      String optLogEnabled = context.getEnvironment().getProperty("xcan.opt-log.enabled");
   //      return (isNotEmpty(apiLogEnabled) && Boolean.parseBoolean(apiLogEnabled)) ||
   //          isNotEmpty(optLogEnabled) && Boolean.parseBoolean(optLogEnabled);
   //    }

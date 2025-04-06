@@ -42,7 +42,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.CacheControl;
@@ -157,7 +156,6 @@ public class ServletUtils {
     }
   }
 
-  @NotNull
   public static ResponseEntity<Resource> buildDownloadResourceResponseEntity(
       int cacheAge, MediaType mediaType, File file) {
     BodyBuilder bodyBuilder = ResponseEntity.ok();
@@ -184,7 +182,6 @@ public class ServletUtils {
         .body(resource);
   }
 
-  @NotNull
   public static ResponseEntity<Resource> buildDownloadResourceResponseEntity(
       int cacheAge, MediaType mediaType, String filename, long filesize,
       InputStreamResource resource) {

@@ -14,6 +14,7 @@
   <packaging>jar</packaging>
 
   <dependencies>
+    <!-- Note: The auth-server-starter must come before auth-resource-starter to ensure it is initialized first. -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-infra.auth-server-starter</artifactId>

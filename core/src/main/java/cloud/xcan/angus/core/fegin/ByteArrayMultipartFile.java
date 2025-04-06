@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import lombok.NonNull;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ByteArrayMultipartFile implements MultipartFile {
@@ -59,7 +58,6 @@ public class ByteArrayMultipartFile implements MultipartFile {
   }
 
   @Override
-  @NotNull
   public String getName() {
     return this.name;
   }
@@ -75,7 +73,6 @@ public class ByteArrayMultipartFile implements MultipartFile {
   }
 
   @Override
-  @NotNull
   public byte[] getBytes() {
     return this.bytes;
   }

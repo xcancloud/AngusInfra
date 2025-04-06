@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.CollectionUtils;
 
@@ -26,7 +25,6 @@ public class ValidatorProperties {
 
   private Set<String> extraMessages;
 
-  @NotNull
   public String[] getAllI18ns() {
     Set<String> i18ns = getDefaultMessages();
     if (!CollectionUtils.isEmpty(getExtraMessages())) {

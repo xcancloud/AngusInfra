@@ -6,8 +6,6 @@ import static java.util.Objects.nonNull;
 import cloud.xcan.angus.spec.experimental.EntitySupport;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.time.Instant;
@@ -66,16 +64,13 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   protected boolean enabled;
 
-  @Column(name = "account_non_expired")
   protected boolean accountNonExpired;
 
-  @Column(name = "account_non_locked")
   protected boolean accountNonLocked;
 
   /**
    * Is password none expired.
    */
-  @Column(name = "credentials_non_expired")
   protected boolean credentialsNonExpired;
 
   @Transient
@@ -84,61 +79,44 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
   /**
    * AngusGM User Info.
    */
-  @Id
   protected String id;
 
-  @Column(name = "first_name")
   protected String firstName;
 
-  @Column(name = "last_name")
   protected String lastName;
 
-  @Column(name = "full_name")
   protected String fullName;
 
-  @Column(name = "password_strength")
   protected String passwordStrength;
 
-  @Column(name = "sys_admin")
   protected boolean sysAdmin;
 
-  @Column(name = "to_user")
   protected boolean toUser;
 
   protected String mobile;
 
   protected String email;
 
-  @Column(name = "main_dept_id")
   protected String mainDeptId;
 
-  @Column(name = "password_expired_date")
   protected Instant passwordExpiredDate;
 
-  @Column(name = "last_modified_password_date")
   protected Instant lastModifiedPasswordDate;
 
-  @Column(name = "expired_date")
   protected Instant expiredDate;
 
   protected boolean deleted;
 
-  @Column(name = "tenant_id")
   protected String tenantId;
 
-  @Column(name = "tenant_name")
   protected String tenantName;
 
-  @Column(name = "tenant_real_name_status")
   protected String tenantRealNameStatus;
 
-  @Column(name = "directory_id")
   protected String directoryId;
 
-  @Column(name = "default_language")
   protected String defaultLanguage;
 
-  @Column(name = "default_time_zone")
   protected String defaultTimeZone;
 
   /**

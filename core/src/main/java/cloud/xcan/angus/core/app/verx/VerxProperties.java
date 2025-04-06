@@ -12,9 +12,8 @@ import java.io.File;
 import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.lang.Nullable;
 import org.typelevel.v.Str0;
 
 /**
@@ -211,7 +210,6 @@ final public class VerxProperties {
   }
 
   @DoInFuture("Use jenkins to set the name in the prod environment")
-  @NotNull
   private String getCloudServiceName() {
    /* if (SpringContextHolder.isProd()) {
       return new Str0(new long[]{0x5D49827238F2EE35L, 0xEB009B2480ED608AL, 0x705B3D3EC4161998L,

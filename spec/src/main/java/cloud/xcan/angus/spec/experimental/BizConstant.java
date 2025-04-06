@@ -274,6 +274,8 @@ public interface BizConstant {
 
   String[] AUTH_RESOURCES = {
       "/api/**",
+      "/openapi/**",
+      "/doorapi/**",
       "/openapi2p/**",
       "/view/**"
   };

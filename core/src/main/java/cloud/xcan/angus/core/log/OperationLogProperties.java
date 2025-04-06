@@ -17,12 +17,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Setter
 @Accessors(chain = true)
-@ConfigurationProperties(prefix = "xcan.optlog", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "xcan.opt-log", ignoreUnknownFields = false)
 public class OperationLogProperties implements AppPropertiesRegister {
 
   // @formatter:off
-  public static final String OL_ENABLED = "xcan.optlog.enabled";
-  public static final String OL_CLEAR_BEFORE_DAY = "xcan.optlog.clearBeforeDay";
+  public static final String OL_ENABLED = "xcan.opt-log.enabled";
+  public static final String OL_CLEAR_BEFORE_DAY = "xcan.opt-log.clearBeforeDay";
 
   @Schema(description = "Enable operation log configuration")
   private Boolean enabled;

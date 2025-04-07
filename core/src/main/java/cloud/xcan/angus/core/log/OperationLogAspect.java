@@ -349,7 +349,7 @@ public class OperationLogAspect {
         .clientId(principal.getClientId())
         .requestId(principal.getRequestId())
         .userId(principal.getUserId())
-        .fullname(principal.getFullname())
+        .fullName(principal.getFullName())
         .operationDate(principal.getRequestAcceptTime())
         .build();
   }

@@ -20,10 +20,10 @@ public class Test {
         "UEsDBAoAAAAAAJMd6VbSY0iIAwAAAAMAAAAKAAAAZGF0YTAudGV4dDEyM1BLAQIUAAoAAAAAAJMd6VbSY0iIAwAAAAMAAAAKAAAAAAAAAAAAAAAAAAAAAABkYXRhMC50ZXh0UEsFBgAAAAABAAEAOAAAACsAAAAAAA==")));
 
     Map<UserName, Long> map = new HashMap<>();
-    map.put(new UserName().setId(1L).setFullname("a"), 1L);
-    map.put(new UserName().setId(1L).setFullname("a"), 2L);
+    map.put(new UserName().setId(1L).setFullName("a"), 1L);
+    map.put(new UserName().setId(1L).setFullName("a"), 2L);
     System.out.println(map.size());
-    System.out.println(map.get(new UserName().setId(1L).setFullname("a")));
+    System.out.println(map.get(new UserName().setId(1L).setFullName("a")));
 
     String input = "This is my username and password.";
     String regex = "(?=.*\\busername\\b)(?=.*\\bpassword\\b).*";

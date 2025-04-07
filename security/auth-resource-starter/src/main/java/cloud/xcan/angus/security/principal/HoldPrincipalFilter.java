@@ -177,7 +177,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setDefaultTimeZone(null) // TODO Tenant level settings should be used
           .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
-          .setUserId(-1L).setFullname(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
+          .setUserId(-1L).setFullName(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
           .setUsername(clientId.toString()/*default*/).setSysAdmin(false).setToUser(false).setMainDeptId(-1L).setCountry(null);
       if (log.isDebugEnabled()) {
         log.debug("Hold client principal info : {}", principal);
@@ -218,7 +218,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setUserId(nonNull(id) ? Long.valueOf(id.toString()) : null)
-          .setFullname(nonNull(fullName) ? fullName.toString() : null)
+          .setFullName(nonNull(fullName) ? fullName.toString() : null)
           .setUsername(nonNull(username) ? username.toString() : null)
           .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
           .setToUser(nonNull(toUser) && Boolean.parseBoolean(toUser.toString()))

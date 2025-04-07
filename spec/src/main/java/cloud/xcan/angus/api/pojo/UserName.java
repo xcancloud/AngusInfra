@@ -15,12 +15,12 @@ import org.hibernate.validator.constraints.Length;
 @Accessors(chain = true)
 public class UserName implements Serializable {
 
-  @Schema(description = "User id")
+  @Schema(description = "User id.")
   private Long id;
 
   @Length(max = MAX_NAME_LENGTH)
-  @Schema(description = "User fullname", maxLength = MAX_NAME_LENGTH)
-  private String fullname;
+  @Schema(description = "User full name.", maxLength = MAX_NAME_LENGTH)
+  private String fullName;
 
   @Override
   public boolean equals(Object o) {
@@ -31,11 +31,11 @@ public class UserName implements Serializable {
       return false;
     }
     return Objects.equals(id, userName.id) &&
-        Objects.equals(fullname, userName.fullname);
+        Objects.equals(fullName, userName.fullName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, fullname);
+    return Objects.hash(id, fullName);
   }
 }

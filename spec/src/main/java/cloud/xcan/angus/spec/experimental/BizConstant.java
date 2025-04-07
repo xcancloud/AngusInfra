@@ -345,7 +345,7 @@ public interface BizConstant {
     String TENANT_ID = "tenant_id";
     String TENANT_NAME = "tenant_name";
     String USER_ID = "user_id";
-    String FULL_NAME = "fullname";
+    String FULL_NAME = "full_name";
 
     /**
      * Tenant application function authorization strategy prefix.
@@ -431,7 +431,7 @@ public interface BizConstant {
 
     String USER_DATA_ID = "id";
 
-    String USER_NAME = "fullname";
+    String USER_NAME = "fullName";
 
     String USERNAME = "username";
 

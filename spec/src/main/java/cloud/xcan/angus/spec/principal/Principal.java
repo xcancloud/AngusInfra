@@ -86,7 +86,7 @@ public class Principal implements Serializable {
   private String tenantName = "";
 
   private Long userId = DEFAULT_USER_ID;
-  private String fullname = "";
+  private String fullName = "";
   private String username = "";
 
   private Long mainDeptId;

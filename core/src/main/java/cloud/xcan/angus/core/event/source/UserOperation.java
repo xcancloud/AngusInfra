@@ -22,7 +22,7 @@ public class UserOperation extends SimpleSource {
   private String clientId;
   private String requestId = "";
   private Long userId = -1L;
-  private String fullname = "";
+  private String fullName = "";
   private Long tenantId = -1L;
   private String tenantName = "";
   private Boolean success;
@@ -44,7 +44,7 @@ public class UserOperation extends SimpleSource {
     setClientId(builder.clientId);
     setRequestId(builder.requestId);
     setUserId(builder.userId);
-    setFullname(builder.fullname);
+    setFullName(builder.fullName);
     setTenantId(builder.tenantId);
     setTenantName(builder.tenantName);
     setSuccess(builder.success);
@@ -68,7 +68,7 @@ public class UserOperation extends SimpleSource {
     private String clientId;
     private String requestId;
     private Long userId;
-    private String fullname;
+    private String fullName;
     private Long tenantId;
     private String tenantName;
     private Boolean success;
@@ -113,8 +113,8 @@ public class UserOperation extends SimpleSource {
       return this;
     }
 
-    public Builder fullname(String fullname) {
-      this.fullname = fullname;
+    public Builder fullName(String fullName) {
+      this.fullName = fullName;
       return this;
     }
 

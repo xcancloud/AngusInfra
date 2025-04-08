@@ -3,8 +3,8 @@ package cloud.xcan.angus.security.principal;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_MISSING;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_MISSING_KEY;
+import static cloud.xcan.angus.remote.message.SysException.M.PRINCIPAL_MISSING;
+import static cloud.xcan.angus.remote.message.SysException.M.PRINCIPAL_MISSING_KEY;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
@@ -37,7 +37,7 @@ import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.GrantType;
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -151,7 +151,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
         } else if (GrantType.PASSWORD.equals(grantType)) {
           holdSuccess = holdUserPrincipal(request, principal, tokenAttributes, grantType);
         } else {
-          throw CommSysException.of("Unsupported grant type: " + grantType);
+          throw SysException.of("Unsupported grant type: " + grantType);
         }
       }
     }

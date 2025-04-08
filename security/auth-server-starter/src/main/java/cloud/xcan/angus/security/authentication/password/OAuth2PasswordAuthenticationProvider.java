@@ -3,6 +3,7 @@ package cloud.xcan.angus.security.authentication.password;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createHash;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
+import cloud.xcan.angus.security.authentication.client.ClientSecretAuthenticationProvider;
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.security.NoSuchAlgorithmException;
@@ -86,6 +87,9 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
     this.authenticationManager = authenticationManager;
   }
 
+  /**
+   * Called after {@link ClientSecretAuthenticationProvider#authenticate(Authentication)}
+   */
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
     OAuth2PasswordAuthenticationToken passwordAuthenticationToken = (OAuth2PasswordAuthenticationToken) authentication;

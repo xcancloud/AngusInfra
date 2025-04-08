@@ -2,8 +2,8 @@ package cloud.xcan.angus.core.jpa.repository;
 
 import static cloud.xcan.angus.core.jpa.JpaMetadataUtils.getJpaColumnName;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;

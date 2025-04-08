@@ -1,13 +1,13 @@
 package cloud.xcan.angus.core.fegin;
 
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PROTOCOL_UNKNOWN;
-import static cloud.xcan.angus.remote.message.CommSysException.M.RPC_API_EXCEPTION;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PROTOCOL_UNKNOWN;
+import static cloud.xcan.angus.remote.message.SysException.M.RPC_API_EXCEPTION;
 import static cloud.xcan.angus.remote.message.http.ServiceUnavailable.M.SERVICE_UNAVAILABLE_T;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.remote.message.CommProtocolException;
-import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.remote.message.ProtocolException;
+import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.remote.message.http.Forbidden;
 import cloud.xcan.angus.remote.message.http.GatewayTimeout;
 import cloud.xcan.angus.remote.message.http.MediaTypeNotSupported;
@@ -45,7 +45,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
       try {
         body = Util.toByteArray(response.body().asInputStream());
       } catch (IOException e) {
-        throw CommProtocolException.of(PROTOCOL_UNKNOWN);
+        throw ProtocolException.of(PROTOCOL_UNKNOWN);
       }
     }
 
@@ -64,7 +64,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
           }
           switch (response.status()) {
             case 400:
-              return CommProtocolException.of(result.getMsg(), result.getEKey());
+              return ProtocolException.of(result.getMsg(), result.getEKey());
             case 401:
               return Unauthorized.of(result.getMsg(), result.getEKey());
             case 403:
@@ -80,13 +80,13 @@ public class CustomErrorDecoder implements ErrorDecoder {
             //      case 429: TODO
             //        return new TooManyRequests(message, request, body);
             case 500:
-              return CommSysException.of(result.getCode(), result.getMsg(), result.getEKey());
+              return SysException.of(result.getCode(), result.getMsg(), result.getEKey());
             default:
-              return CommSysException.of(RPC_API_EXCEPTION, isEmpty(result.getEKey())
+              return SysException.of(RPC_API_EXCEPTION, isEmpty(result.getEKey())
                   ? exceptionBody : result.getEKey());
           }
         } catch (Exception e) {
-          throw CommProtocolException.of(
+          throw ProtocolException.of(
               String.format("Unknown protocol Error: %s", exceptionBody));
         }
     }

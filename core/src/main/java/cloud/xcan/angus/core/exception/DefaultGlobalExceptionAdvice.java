@@ -6,23 +6,23 @@ import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_EVENT_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_BINDING_ERROR;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_BINDING_ERROR_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_BINDING_ERROR_T;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_BINDING_ERROR_T2;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_MISSING;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_MISSING_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_PARSING_ERROR;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_PARSING_ERROR_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_VALIDATION_ERROR;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_VALIDATION_ERROR_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_VALIDATION_ERROR_T;
-import static cloud.xcan.angus.remote.message.CommSysException.M.DATABASE_ACCESS_EXCEPTION;
-import static cloud.xcan.angus.remote.message.CommSysException.M.DATABASE_ACCESS_EXCEPTION_KEY;
-import static cloud.xcan.angus.remote.message.CommSysException.M.DATABASE_API_EXCEPTION;
-import static cloud.xcan.angus.remote.message.CommSysException.M.DATABASE_API_EXCEPTION_KEY;
-import static cloud.xcan.angus.remote.message.CommSysException.M.DATABASE_INTEGRITY_EXCEPTION;
-import static cloud.xcan.angus.remote.message.CommSysException.M.DATABASE_INTEGRITY_EXCEPTION_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR_T2;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_MISSING;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_MISSING_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_PARSING_ERROR;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_PARSING_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_VALIDATION_ERROR;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_VALIDATION_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_VALIDATION_ERROR_T;
+import static cloud.xcan.angus.remote.message.SysException.M.DATABASE_ACCESS_EXCEPTION;
+import static cloud.xcan.angus.remote.message.SysException.M.DATABASE_ACCESS_EXCEPTION_KEY;
+import static cloud.xcan.angus.remote.message.SysException.M.DATABASE_API_EXCEPTION;
+import static cloud.xcan.angus.remote.message.SysException.M.DATABASE_API_EXCEPTION_KEY;
+import static cloud.xcan.angus.remote.message.SysException.M.DATABASE_INTEGRITY_EXCEPTION;
+import static cloud.xcan.angus.remote.message.SysException.M.DATABASE_INTEGRITY_EXCEPTION_KEY;
 import static cloud.xcan.angus.remote.message.UnknownException.M.UNKNOWN_ERROR;
 import static cloud.xcan.angus.remote.message.UnknownException.M.UNKNOWN_ERROR_KEY;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FORBIDDEN;
@@ -36,7 +36,6 @@ import static cloud.xcan.angus.remote.message.http.MethodNotSupported.M.METHOD_N
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.HANDLER_NOT_FOUND_KEY;
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.HANDLER_NOT_FOUND_T;
 import static cloud.xcan.angus.spec.locale.MessageHolder.message;
-import static cloud.xcan.angus.spec.principal.PrincipalContext.getDefaultLanguage;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -44,7 +43,6 @@ import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 
 import cloud.xcan.angus.api.enums.EventType;
-import cloud.xcan.angus.core.biz.exception.BizException;
 import cloud.xcan.angus.core.biz.exception.QuotaException;
 import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
 import cloud.xcan.angus.core.event.CommonEvent;
@@ -52,9 +50,9 @@ import cloud.xcan.angus.core.event.source.EventContent;
 import cloud.xcan.angus.remote.ApiResult;
 import cloud.xcan.angus.remote.ExceptionLevel;
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.remote.message.CommBizException;
-import cloud.xcan.angus.remote.message.CommProtocolException;
-import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.remote.message.BizException;
+import cloud.xcan.angus.remote.message.ProtocolException;
+import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.remote.message.UnknownException;
 import cloud.xcan.angus.remote.message.http.Forbidden;
 import cloud.xcan.angus.remote.message.http.GatewayTimeout;
@@ -121,8 +119,8 @@ public class DefaultGlobalExceptionAdvice {
    * 200 - OK
    */
   @ResponseStatus(HttpStatus.OK)
-  @ExceptionHandler(CommBizException.class)
-  public ApiResult<?> handleServiceException(CommBizException e, HttpServletResponse response) {
+  @ExceptionHandler(BizException.class)
+  public ApiResult<?> handleServiceException(BizException e, HttpServletResponse response) {
     return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
         e.getEKey(), response);
   }
@@ -131,8 +129,8 @@ public class DefaultGlobalExceptionAdvice {
    * 200 - OK
    */
   @ResponseStatus(HttpStatus.OK)
-  @ExceptionHandler(BizException.class)
-  public ApiResult<?> handleCustomException(BizException e, HttpServletResponse response) {
+  @ExceptionHandler(cloud.xcan.angus.core.biz.exception.BizException.class)
+  public ApiResult<?> handleCustomException(cloud.xcan.angus.core.biz.exception.BizException e, HttpServletResponse response) {
     return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
         e.getEKey(), response);
   }
@@ -151,8 +149,8 @@ public class DefaultGlobalExceptionAdvice {
    * 400 - Bad Request
    */
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler(CommProtocolException.class)
-  public ApiResult<?> handleCommProtocolException(CommProtocolException e,
+  @ExceptionHandler(ProtocolException.class)
+  public ApiResult<?> handleCommProtocolException(ProtocolException e,
       HttpServletResponse response) {
     return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
         e.getEKey(), response);
@@ -392,8 +390,8 @@ public class DefaultGlobalExceptionAdvice {
    * 500 - Internal Server Error
    */
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  @ExceptionHandler(CommSysException.class)
-  public ApiResult<?> handleCommSysException(CommSysException e, HttpServletResponse response) {
+  @ExceptionHandler(SysException.class)
+  public ApiResult<?> handleCommSysException(SysException e, HttpServletResponse response) {
     return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(),
         e, e.getEKey(), response);
   }
@@ -472,9 +470,9 @@ public class DefaultGlobalExceptionAdvice {
 
   private Object getUserDefinedMessage(Exception e) {
     Object userMessage = null;
-    if (e instanceof BizException) {
-      if (nonNull(((BizException) e).getData())) {
-        userMessage = ((BizException) e).getData();
+    if (e instanceof cloud.xcan.angus.core.biz.exception.BizException) {
+      if (nonNull(((cloud.xcan.angus.core.biz.exception.BizException) e).getData())) {
+        userMessage = ((cloud.xcan.angus.core.biz.exception.BizException) e).getData();
       }
     }
     if (Objects.isNull(userMessage) && e instanceof AbstractResultMessageException) {

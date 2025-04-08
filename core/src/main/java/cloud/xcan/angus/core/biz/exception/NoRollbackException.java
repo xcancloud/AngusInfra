@@ -2,10 +2,10 @@ package cloud.xcan.angus.core.biz.exception;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_CODE;
 import static cloud.xcan.angus.remote.ExceptionLevel.ERROR;
-import static cloud.xcan.angus.remote.message.CommBizException.M.BIZ_ERROR;
+import static cloud.xcan.angus.remote.message.BizException.M.BIZ_ERROR;
 
 import cloud.xcan.angus.remote.ExceptionLevel;
-import cloud.xcan.angus.remote.message.CommBizException;
+import cloud.xcan.angus.remote.message.BizException;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -14,7 +14,7 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public class NoRollbackException extends CommBizException {
+public class NoRollbackException extends BizException {
 
   private final String code;
   private final String msg;

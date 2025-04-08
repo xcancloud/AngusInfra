@@ -2,11 +2,11 @@ package cloud.xcan.angus.remote;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.OK_CODE;
-import static cloud.xcan.angus.remote.message.CommBizException.M.BIZ_ERROR;
+import static cloud.xcan.angus.remote.message.BizException.M.BIZ_ERROR;
 import static cloud.xcan.angus.remote.message.SuccessResultMessage.M.OK_MSG;
 
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.remote.message.CommBizException;
+import cloud.xcan.angus.remote.message.BizException;
 import cloud.xcan.angus.spec.locale.MessageHolder;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -100,7 +100,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     if (isSuccess()) {
       return this;
     }
-    throw CommBizException.of(this.getCode(), this.getMsg());
+    throw BizException.of(this.getCode(), this.getMsg());
   }
 
   @Override
@@ -116,7 +116,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     if (isSuccess()) {
       return this.getData();
     }
-    throw CommBizException.of(this.getCode(), this.getMsg());
+    throw BizException.of(this.getCode(), this.getMsg());
   }
 
   @Override

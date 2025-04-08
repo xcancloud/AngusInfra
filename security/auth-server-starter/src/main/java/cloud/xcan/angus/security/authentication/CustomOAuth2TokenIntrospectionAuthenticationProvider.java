@@ -122,6 +122,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
 
     OAuth2Authorization.Token<OAuth2Token> authorizedToken = authorization
         .getToken(tokenIntrospectionAuthentication.getToken());
+    assert authorizedToken != null;
     if (!authorizedToken.isActive()) {
       if (log.isTraceEnabled()) {
         log.trace("Did not introspect token since not active");
@@ -132,7 +133,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     }
 
     RegisteredClient authorizedClient = this.registeredClientRepository
-        .findById(authorization.getRegisteredClientId());
+        .findByClientId(authorization.getRegisteredClientId());
     OAuth2TokenIntrospection tokenClaims = withActiveTokenClaims(authorization,
         authorizedToken, authorizedClient);
 

@@ -49,7 +49,7 @@ import org.springframework.security.web.util.ThrowableAnalyzer;
 @Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  private ThrowableAnalyzer throwableAnalyzer;
+  private final ThrowableAnalyzer throwableAnalyzer;
 
   private final ObjectMapper objectMapper;
 

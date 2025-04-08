@@ -262,8 +262,8 @@ public class ProtocolException extends AbstractResultMessageException {
     String USER_DENIED_AUTHORIZATION = "xcm.user.denied.authorization";
     String USER_DENIED_AUTHORIZATION_KEY = "user_denied_authorization";
 
-    String ACCOUNT_PASSD_ERROR = "xcm.account.password.error";
-    String ACCOUNT_PASSD_ERROR_KEY = "account_passd_error";
+    String ACCOUNT_PASSWORD_ERROR = "xcm.account.password.error";
+    String ACCOUNT_PASSWORD_ERROR_KEY = "account_password_error";
 
     String USER_DISABLED = "xcm.user.disabled";
     String USER_DISABLED_T = "xcm.user.disabled.t";

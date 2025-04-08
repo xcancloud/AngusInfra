@@ -51,6 +51,10 @@ public class ProtocolAssert {
     throw CommProtocolException.of(message, eKey, args, cause);
   }
 
+  public static void assertUnauthorized(String message) {
+    throw Unauthorized.of(message);
+  }
+
   public static void assertUnauthorized(boolean condition, String message) {
     if (!condition) {
       throw Unauthorized.of(message);
@@ -153,6 +157,10 @@ public class ProtocolAssert {
     if (isEmpty(resource)) {
       throw Unauthorized.of(message, args, eKey, cause);
     }
+  }
+
+  public static void assertForbidden(String message) {
+    throw Forbidden.of(message);
   }
 
   public static void assertForbidden(boolean condition, String message) {

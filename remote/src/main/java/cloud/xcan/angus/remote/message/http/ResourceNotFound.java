@@ -28,20 +28,20 @@ public class ResourceNotFound extends AbstractResultMessageException {
   private final String resName;
   private final String code;
   private final String msg;
-  private final Object[] agrs;
+  private final Object[] args;
 
   public ResourceNotFound() {
     this("", "", RESOURCE_NOT_FOUND, null, RESOURCE_NOT_FOUND_KEY, WARNING);
   }
 
-  private ResourceNotFound(String resId, String resName, String message, Object[] agrs,
+  private ResourceNotFound(String resId, String resName, String message, Object[] args,
       String eKey, ExceptionLevel level) {
     super(message, EventType.PROTOCOL, level, eKey);
     this.resId = resId;
     this.resName = resName;
     this.code = PROTOCOL_ERROR_CODE;
     this.msg = message;
-    this.agrs = agrs;
+    this.args = args;
   }
 
   public static ResourceNotFound of() {
@@ -74,22 +74,22 @@ public class ResourceNotFound extends AbstractResultMessageException {
         level);
   }
 
-  public static ResourceNotFound of(String message, Object[] agrs) {
-    return new ResourceNotFound("", "", message, agrs, null, WARNING);
+  public static ResourceNotFound of(String message, Object[] args) {
+    return new ResourceNotFound("", "", message, args, null, WARNING);
   }
 
-  public static ResourceNotFound of(String message, Object[] agrs, String eKey) {
-    return new ResourceNotFound("", "", message, agrs, eKey, WARNING);
+  public static ResourceNotFound of(String message, Object[] args, String eKey) {
+    return new ResourceNotFound("", "", message, args, eKey, WARNING);
   }
 
   public static ResourceNotFound of(String resId, String resName, String message,
-      String eKey, Object[] agrs) {
-    return new ResourceNotFound(resId, resName, message, agrs, eKey, WARNING);
+      String eKey, Object[] args) {
+    return new ResourceNotFound(resId, resName, message, args, eKey, WARNING);
   }
 
   public static ResourceNotFound of(Long resId, String resName, String message,
-      String eKey, Object[] agrs) {
-    return new ResourceNotFound(String.valueOf(resId), resName, message, agrs, eKey, WARNING);
+      String eKey, Object[] args) {
+    return new ResourceNotFound(String.valueOf(resId), resName, message, args, eKey, WARNING);
   }
 
   public static ResourceNotFound of(String resId, ExceptionLevel level) {
@@ -130,8 +130,8 @@ public class ResourceNotFound extends AbstractResultMessageException {
 
   @Override
   public Object[] getArgs() {
-    if (!Objects.isNull(agrs)) {
-      return agrs;
+    if (!Objects.isNull(args)) {
+      return args;
     }
     return new Object[]{this.resId, this.resName};
   }

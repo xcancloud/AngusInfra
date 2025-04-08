@@ -95,7 +95,7 @@ public class ApiResult<T> implements Serializable {
     }
   }
 
-  public static ApiResult success() {
+  public static ApiResult<?> success() {
     return new ApiResult<>();
   }
 
@@ -103,7 +103,7 @@ public class ApiResult<T> implements Serializable {
     return new ApiResult<>(data);
   }
 
-  public static ApiResult success(String msg) {
+  public static ApiResult<?> success(String msg) {
     return new ApiResult<>(OK_CODE, msg, null);
   }
 
@@ -137,14 +137,14 @@ public class ApiResult<T> implements Serializable {
     return OK_CODE.equals(this.code);
   }
 
-  public ApiResult orElseThrow() {
+  public ApiResult<?> orElseThrow() {
     if (isSuccess()) {
       return this;
     }
     throw CommBizException.of(this.code, this.getMsg());
   }
 
-  public ApiResult orElseThrow(AbstractResultMessageException exception) {
+  public ApiResult<?> orElseThrow(AbstractResultMessageException exception) {
     if (isSuccess()) {
       return this;
     }

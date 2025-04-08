@@ -2,12 +2,9 @@ package cloud.xcan.angus.core.exception;
 
 
 import static cloud.xcan.angus.core.utils.EventUtils.assembleExceptionEvent;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_EVENT_CODE;
+import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_EVENT_CODE;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.QUOTA_ERROR_EVENT_CODE;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.SECURITY_FORBIDDEN_EVENT_CODE;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.SECURITY_UNAUTHORIZED_EVENT_CODE;
-import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_EVENT_CODE;
+import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
 import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_BINDING_ERROR;
 import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_BINDING_ERROR_KEY;
@@ -38,8 +35,9 @@ import static cloud.xcan.angus.remote.message.http.MethodNotSupported.M.METHOD_N
 import static cloud.xcan.angus.remote.message.http.MethodNotSupported.M.METHOD_NOT_ALLOWED_T;
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.HANDLER_NOT_FOUND_KEY;
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.HANDLER_NOT_FOUND_T;
-import static cloud.xcan.angus.remote.message.http.Unauthorized.M.UNAUTHORIZED_KEY;
+import static cloud.xcan.angus.spec.locale.MessageHolder.message;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getDefaultLanguage;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getRootCause;
@@ -67,7 +65,6 @@ import cloud.xcan.angus.remote.message.http.ResourceNotFound;
 import cloud.xcan.angus.remote.message.http.ServiceUnavailable;
 import cloud.xcan.angus.remote.message.http.Unauthorized;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
-import cloud.xcan.angus.spec.locale.MessageHolder;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -126,8 +123,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(CommBizException.class)
   public ApiResult<?> handleServiceException(CommBizException e, HttpServletResponse response) {
-    return buildApiResult(BUSINESS_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
-        e.getLevel(), e, e.getCode(), response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
+        e.getEKey(), response);
   }
 
   /**
@@ -136,8 +133,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(BizException.class)
   public ApiResult<?> handleCustomException(BizException e, HttpServletResponse response) {
-    return buildApiResult(BUSINESS_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
-        e.getLevel(), e, e.getCode(), response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
+        e.getEKey(), response);
   }
 
   /**
@@ -146,8 +143,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(QuotaException.class)
   public ApiResult<?> handleCustomException(QuotaException e, HttpServletResponse response) {
-    return buildApiResult(QUOTA_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
-        e.getLevel(), e, e.getCode(), response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
+        e.getEKey(), response);
   }
 
   /**
@@ -157,8 +154,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(CommProtocolException.class)
   public ApiResult<?> handleCommProtocolException(CommProtocolException e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
-        e.getLevel(), e, e.getEKey(), response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
+        e.getEKey(), response);
   }
 
   /**
@@ -168,9 +165,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(MissingServletRequestParameterException.class)
   public ApiResult<?> handleMissingServletRequestParameterException(
       MissingServletRequestParameterException e, HttpServletResponse response) {
-    String message = MessageHolder.message(PARAM_MISSING,
-        getDefaultLanguage().toLocale()) + ": " + e.getMessage();
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, message, EventType.PROTOCOL,
+    String message = message(PARAM_MISSING) + ": " + e.getMessage();
+    return buildApiResult(PROTOCOL_ERROR_CODE, message, EventType.PROTOCOL,
         ExceptionLevel.IGNORABLE, e, PARAM_MISSING_KEY, response);
   }
 
@@ -181,9 +177,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ApiResult<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
       HttpServletResponse response) {
-    String message = MessageHolder.message(PARAM_PARSING_ERROR,
-        getDefaultLanguage().toLocale()) + ": " + e.getMessage();
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, message, EventType.PROTOCOL,
+    String message = message(PARAM_PARSING_ERROR) + ": " + e.getMessage();
+    return buildApiResult(PROTOCOL_ERROR_CODE, message, EventType.PROTOCOL,
         ExceptionLevel.IGNORABLE, e, PARAM_PARSING_ERROR_KEY, response);
   }
 
@@ -196,15 +191,13 @@ public class DefaultGlobalExceptionAdvice {
       HttpServletResponse response) {
     FieldError fe = e.getBindingResult().getFieldError();
     if (nonNull(fe)) {
-      return buildApiResult(PROTOCOL_ERROR_EVENT_CODE,
-          MessageHolder.message(PARAM_VALIDATION_ERROR_T,
-              new Object[]{fe.getField(), MessageHolder.message(fe.getDefaultMessage()),
-                  getDefaultLanguage().toLocale()}), EventType.PROTOCOL, ExceptionLevel.IGNORABLE,
-          e, PARAM_VALIDATION_ERROR_KEY, response);
+      String message = message(PARAM_VALIDATION_ERROR_T,
+          new Object[]{fe.getField(), message(fe.getDefaultMessage())});
+      return buildApiResult(PROTOCOL_ERROR_CODE, message, EventType.PROTOCOL,
+          ExceptionLevel.IGNORABLE, e, PARAM_VALIDATION_ERROR_KEY, response);
     }
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(PARAM_VALIDATION_ERROR,
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        PARAM_VALIDATION_ERROR_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(PARAM_VALIDATION_ERROR), EventType.PROTOCOL,
+        ExceptionLevel.IGNORABLE, e, PARAM_VALIDATION_ERROR_KEY, response);
   }
 
   /**
@@ -218,16 +211,13 @@ public class DefaultGlobalExceptionAdvice {
     FieldError fe = e.getFieldError();
     if (nonNull(fe)) {
       String error = isNotEmpty(fe.getDefaultMessage())
-          ? MessageHolder.message(PARAM_BINDING_ERROR_T2, new Object[]{fe.getField(),
-          fe.getDefaultMessage()}, getDefaultLanguage().toLocale())
-          : MessageHolder.message(PARAM_BINDING_ERROR_T, new Object[]{fe.getField(),
-              fe.getRejectedValue()}, getDefaultLanguage().toLocale());
-      return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, error, EventType.PROTOCOL,
+          ? message(PARAM_BINDING_ERROR_T2, new Object[]{fe.getField(), fe.getDefaultMessage()})
+          : message(PARAM_BINDING_ERROR_T, new Object[]{fe.getField(), fe.getRejectedValue()});
+      return buildApiResult(PROTOCOL_ERROR_CODE, error, EventType.PROTOCOL,
           ExceptionLevel.IGNORABLE, e, PARAM_BINDING_ERROR_KEY, response);
     }
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(PARAM_BINDING_ERROR,
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        PARAM_BINDING_ERROR_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(PARAM_BINDING_ERROR), EventType.PROTOCOL,
+        ExceptionLevel.IGNORABLE, e, PARAM_BINDING_ERROR_KEY, response);
   }
 
   /**
@@ -239,10 +229,9 @@ public class DefaultGlobalExceptionAdvice {
       HttpServletResponse response) {
     Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
     ConstraintViolation<?> violation = violations.iterator().next();
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(PARAM_VALIDATION_ERROR_T,
-            new Object[]{violation.getPropertyPath(), violation.getMessage(),
-                getDefaultLanguage().toLocale()}), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        PARAM_VALIDATION_ERROR_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(PARAM_VALIDATION_ERROR_T,
+            new Object[]{violation.getPropertyPath(), violation.getMessage()}),
+        EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e, PARAM_VALIDATION_ERROR_KEY, response);
   }
 
   /**
@@ -252,9 +241,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(ValidationException.class)
   public ApiResult<?> handleValidationException(ValidationException e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(PARAM_VALIDATION_ERROR,
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        PARAM_VALIDATION_ERROR_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, message(PARAM_VALIDATION_ERROR),
+        EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e, PARAM_VALIDATION_ERROR_KEY, response);
   }
 
   /**
@@ -263,8 +251,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(Unauthorized.class)
   public ApiResult<?> handleAuthenticationException(Unauthorized e, HttpServletResponse response) {
-    return buildApiResult(SECURITY_UNAUTHORIZED_EVENT_CODE, getTenantLocaleMessage(e),
-        EventType.SECURITY, ExceptionLevel.IGNORABLE, e, UNAUTHORIZED_KEY, response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e),
+        EventType.SECURITY, ExceptionLevel.IGNORABLE, e, e.getEKey(), response);
   }
 
   /**
@@ -273,8 +261,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   @ExceptionHandler(Forbidden.class)
   public ApiResult<?> handleForbiddenException(Forbidden e, HttpServletResponse response) {
-    return buildApiResult(SECURITY_FORBIDDEN_EVENT_CODE, getTenantLocaleMessage(e),
-        EventType.SECURITY, ExceptionLevel.WARNING, e, FORBIDDEN_KEY, response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e),
+        EventType.SECURITY, ExceptionLevel.WARNING, e, e.getEKey(), response);
   }
 
   /**
@@ -284,9 +272,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(AccessDeniedException.class)
   public ApiResult<?> handleAccessDeniedException(AccessDeniedException e,
       HttpServletResponse response) {
-    return buildApiResult(SECURITY_FORBIDDEN_EVENT_CODE, MessageHolder.message(FORBIDDEN,
-            getDefaultLanguage().toLocale()), EventType.SECURITY, ExceptionLevel.WARNING, e,
-        FORBIDDEN_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(FORBIDDEN), EventType.SECURITY,
+        ExceptionLevel.WARNING, e, FORBIDDEN_KEY, response);
   }
 
   /**
@@ -296,8 +283,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(NoHandlerFoundException.class)
   public ApiResult<?> handleHandlerNotFoundException(NoHandlerFoundException e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(HANDLER_NOT_FOUND_T,
-            new Object[]{e.getHttpMethod(), e.getRequestURL()}, getDefaultLanguage().toLocale()),
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(HANDLER_NOT_FOUND_T,
+            new Object[]{e.getHttpMethod(), e.getRequestURL()}),
         EventType.PROTOCOL, ExceptionLevel.WARNING, e, HANDLER_NOT_FOUND_KEY, response);
   }
 
@@ -308,9 +295,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(ResourceNotFound.class)
   public ApiResult<?> handleResourceNotFoundException(ResourceNotFound e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(e.getMsg(), e.getArgs(),
-            getDefaultLanguage().toLocale()), e.getType(), e.getLevel(), e, METHOD_NOT_ALLOWED_KEY,
-        response);
+    return buildApiResult(e.getCode(), message(e.getMsg(), e.getArgs()), e.getType(),
+        e.getLevel(), e, e.getEKey(), response);
   }
 
   /**
@@ -320,10 +306,9 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
   public ApiResult<?> handleMethodException(HttpRequestMethodNotSupportedException e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(METHOD_NOT_ALLOWED_T,
-            new Object[]{e.getMethod(), Arrays.toString(e.getSupportedMethods())},
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        METHOD_NOT_ALLOWED_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(METHOD_NOT_ALLOWED_T,
+            new Object[]{e.getMethod(), Arrays.toString(e.getSupportedMethods())}),
+        EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e, METHOD_NOT_ALLOWED_KEY, response);
   }
 
   /**
@@ -332,10 +317,9 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
   @ExceptionHandler(MethodNotSupported.class)
   public ApiResult<?> handleMethodException(MethodNotSupported e, HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE,
-        MessageHolder.message(METHOD_NOT_ALLOWED, new Object[]{e.getNotSupportedMethod()},
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        METHOD_NOT_ALLOWED_KEY, response);
+    return buildApiResult(e.getCode(),
+        message(METHOD_NOT_ALLOWED, new Object[]{e.getNotSupportedMethod()}), EventType.PROTOCOL,
+        ExceptionLevel.IGNORABLE, e, e.getEKey(), response);
   }
 
   /**
@@ -344,8 +328,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.CONFLICT)
   @ExceptionHandler(ResourceExisted.class)
   public ApiResult<?> handleMethodException(ResourceExisted e, HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(e.getMsg(), e.getArgs(),
-        getDefaultLanguage().toLocale()), e.getType(), e.getLevel(), e, e.getEKey(), response);
+    return buildApiResult(e.getCode(), message(e.getMsg(), e.getArgs()), e.getType(), e.getLevel(),
+        e, e.getEKey(), response);
   }
 
   /**
@@ -355,10 +339,9 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
   public ApiResult<?> handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE,
-        MessageHolder.message(MEDIA_TYPE_NOT_SUPPORTED_T, new Object[]{e.getContentType()},
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        MEDIA_TYPE_NOT_SUPPORTED_KEY, response);
+    return buildApiResult(PROTOCOL_ERROR_CODE,
+        message(MEDIA_TYPE_NOT_SUPPORTED_T, new Object[]{e.getContentType()}), EventType.PROTOCOL,
+        ExceptionLevel.IGNORABLE, e, MEDIA_TYPE_NOT_SUPPORTED_KEY, response);
   }
 
   /**
@@ -368,21 +351,9 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(MediaTypeNotSupported.class)
   public ApiResult<?> handleMediaTypeNotSupportedException(MediaTypeNotSupported e,
       HttpServletResponse response) {
-    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(MEDIA_TYPE_NOT_SUPPORTED,
-            getDefaultLanguage().toLocale()), EventType.PROTOCOL, ExceptionLevel.IGNORABLE, e,
-        MEDIA_TYPE_NOT_SUPPORTED_KEY, response);
+    return buildApiResult(e.getCode(), message(MEDIA_TYPE_NOT_SUPPORTED), EventType.PROTOCOL,
+        ExceptionLevel.IGNORABLE, e, e.getEKey(), response);
   }
-
-  //  /**
-  //   * 429 - Too Many Requests
-  //   */
-  //  @ResponseStatus(HttpStatusSeries.TOO_MANY_REQUESTS)
-  //  @ExceptionHandler(MediaTypeNotSupported.class)
-  //  public ApiResult<?> handleMediaTypeNotSupportedException(MediaTypeNotSupported e,
-  //      HttpServletResponse request) {
-  //    return buildApiResult(PROTOCOL_ERROR_EVENT_CODE, MessageHolder.message(MEDIA_TYPE_NOT_SUPPORTED),
-  //        e, request);
-  //  }
 
   /**
    * 500 - Internal Server Error
@@ -391,9 +362,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(InvalidDataAccessApiUsageException.class)
   public ApiResult<?> handleDataApiException(InvalidDataAccessApiUsageException e,
       HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE, MessageHolder.message(DATABASE_API_EXCEPTION,
-            getDefaultLanguage().toLocale()), EventType.SYSTEM, ExceptionLevel.URGENT, e,
-        DATABASE_API_EXCEPTION_KEY, response);
+    return buildApiResult(SYSTEM_ERROR_CODE, message(DATABASE_API_EXCEPTION), EventType.SYSTEM,
+        ExceptionLevel.URGENT, e, DATABASE_API_EXCEPTION_KEY, response);
   }
 
   /**
@@ -403,9 +373,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(DataAccessException.class)
   public ApiResult<?> handleDataAccessException(DataAccessException e,
       HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE, MessageHolder.message(DATABASE_ACCESS_EXCEPTION,
-            getDefaultLanguage().toLocale()), EventType.SYSTEM, ExceptionLevel.URGENT, e,
-        DATABASE_ACCESS_EXCEPTION_KEY, response);
+    return buildApiResult(SYSTEM_ERROR_CODE, message(DATABASE_ACCESS_EXCEPTION), EventType.SYSTEM,
+        ExceptionLevel.URGENT, e, DATABASE_ACCESS_EXCEPTION_KEY, response);
   }
 
   /**
@@ -415,10 +384,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(DataIntegrityViolationException.class)
   public ApiResult<?> handleDataAccessException(DataIntegrityViolationException e,
       HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE,
-        MessageHolder.message(DATABASE_INTEGRITY_EXCEPTION,
-            getDefaultLanguage().toLocale()), EventType.SYSTEM, ExceptionLevel.URGENT, e,
-        DATABASE_INTEGRITY_EXCEPTION_KEY, response);
+    return buildApiResult(SYSTEM_ERROR_CODE, message(DATABASE_INTEGRITY_EXCEPTION),
+        EventType.SYSTEM, ExceptionLevel.URGENT, e, DATABASE_INTEGRITY_EXCEPTION_KEY, response);
   }
 
   /**
@@ -427,7 +394,7 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(CommSysException.class)
   public ApiResult<?> handleCommSysException(CommSysException e, HttpServletResponse response) {
-    return buildApiResult(e.getCode(), getTenantLocaleMessage(e), e.getType(), e.getLevel(),
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(),
         e, e.getEKey(), response);
   }
 
@@ -437,9 +404,8 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(Exception.class)
   public ApiResult<?> handleException(Exception e, HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE, MessageHolder.message(UNKNOWN_ERROR,
-            getDefaultLanguage().toLocale()), EventType.SYSTEM, ExceptionLevel.URGENT, e,
-        UNKNOWN_ERROR_KEY, response);
+    return buildApiResult(SYSTEM_ERROR_CODE, message(UNKNOWN_ERROR), EventType.SYSTEM,
+        ExceptionLevel.URGENT, e, UNKNOWN_ERROR_KEY, response);
   }
 
   /**
@@ -448,7 +414,7 @@ public class DefaultGlobalExceptionAdvice {
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   @ExceptionHandler(UnknownException.class)
   public ApiResult<?> handleException(UnknownException e, HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(),
         e.getLevel(), e, e.getEKey(), response);
   }
 
@@ -459,9 +425,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(ServiceUnavailable.class)
   public ApiResult<?> handleServiceUnavailableException(ServiceUnavailable e,
       HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
-        e.getLevel(),
-        e, e.getEKey(), response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(),
+        e.getLevel(), e, e.getEKey(), response);
   }
 
   /**
@@ -471,9 +436,8 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(GatewayTimeout.class)
   public ApiResult<?> handleGatewayTimeoutException(GatewayTimeout e,
       HttpServletResponse response) {
-    return buildApiResult(SYSTEM_ERROR_EVENT_CODE, getTenantLocaleMessage(e), e.getType(),
-        e.getLevel(),
-        e, e.getEKey(), response);
+    return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(),
+        e.getLevel(), e, e.getEKey(), response);
   }
 
   private ApiResult<?> buildApiResult(String code, String message, EventType type,
@@ -482,8 +446,7 @@ public class DefaultGlobalExceptionAdvice {
     Map<String, Object> apiExt = new HashMap<>();
 
     // SimpleSource eKey Higher priority
-    if (e instanceof AbstractResultMessageException) {
-      AbstractResultMessageException me = (AbstractResultMessageException) e;
+    if (e instanceof AbstractResultMessageException me) {
       if (nonNull(me.getEKey())) {
         eKey = me.getEKey();
       }
@@ -495,42 +458,40 @@ public class DefaultGlobalExceptionAdvice {
     response.setHeader(Header.E_KEY, eKey);
     apiExt.put(EXT_EKEY_NAME, eKey);
 
-    Object userDefinedMessage = getUserDefinedMessage(e);
-    if (Objects.isNull(userDefinedMessage)) {
-      userDefinedMessage = this.traced ? getStackTrace(getRootCause(e)) : e.getMessage();
+    Object userMessage = getUserDefinedMessage(e);
+    if (isNull(userMessage)) {
+      userMessage = this.traced ? getStackTrace(getRootCause(e)) : e.getMessage();
     }
 
     if (isPushEvent(level)) {
-      EventContent event = assembleExceptionEvent(type, code, message, level, eKey,
-          userDefinedMessage);
+      EventContent event = assembleExceptionEvent(type, code, message, level, eKey, userMessage);
       commonEventDisruptorQueue.add(new CommonEvent(event));
     }
-    return ApiResult.error(code, message, userDefinedMessage, apiExt);
+    return ApiResult.error(code, message, userMessage, apiExt);
   }
 
   private Object getUserDefinedMessage(Exception e) {
-    Object userDefinedMessage = null;
+    Object userMessage = null;
     if (e instanceof BizException) {
       if (nonNull(((BizException) e).getData())) {
-        userDefinedMessage = ((BizException) e).getData();
+        userMessage = ((BizException) e).getData();
       }
     }
-    if (Objects.isNull(userDefinedMessage) && e instanceof AbstractResultMessageException) {
+    if (Objects.isNull(userMessage) && e instanceof AbstractResultMessageException) {
       if (nonNull(((AbstractResultMessageException) e).getCauseMessage())) {
-        userDefinedMessage = ((AbstractResultMessageException) e).getCauseMessage();
+        userMessage = ((AbstractResultMessageException) e).getCauseMessage();
       }
     }
-    return userDefinedMessage;
+    return userMessage;
   }
 
   private boolean isPushEvent(ExceptionLevel level) {
     return nonNull(commonEventDisruptorQueue) && !ExceptionLevel.IGNORABLE.equals(level);
   }
 
-  private String getTenantLocaleMessage(Exception e) {
-    if (e instanceof AbstractResultMessageException) {
-      AbstractResultMessageException me = (AbstractResultMessageException) e;
-      return MessageHolder.message(me.getMessage(), me.getArgs(), getDefaultLanguage().toLocale());
+  private String getLocaleMessage(Exception e) {
+    if (e instanceof AbstractResultMessageException me) {
+      return message(me.getMessage(), me.getArgs());
     }
     return e.getMessage();
   }

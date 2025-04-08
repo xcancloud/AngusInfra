@@ -22,6 +22,7 @@ import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConvert
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
 import cloud.xcan.angus.security.client.CustomOAuth2ClientRepository;
 import cloud.xcan.angus.security.handler.CustomBearerTokenAuthenticationEntryPoint;
+import cloud.xcan.angus.security.handler.CustomOAuth2ErrorAuthenticationFailureHandler;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
 import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyService;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
@@ -97,7 +98,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     new ClientSecretAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService)))
             .tokenEndpoint(
                 oAuth2TokenEndpointConfigurer -> oAuth2TokenEndpointConfigurer
-                    .errorResponseHandler(new OAuth2ErrorAuthenticationFailureHandler())
+                    .errorResponseHandler(new CustomOAuth2ErrorAuthenticationFailureHandler())
                     .accessTokenRequestConverter(
                       new DelegatingAuthenticationConverter(Arrays.asList(
                         new OAuth2PasswordAuthenticationConverter(),
@@ -126,7 +127,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     .introspectionRequestConverter(new OAuth2TokenIntrospectionAuthenticationConverter())
                     .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService))
                     //.introspectionResponseHandler(new OAuth2AccessTokenResponseAuthenticationSuccessHandler())
-                    //.errorResponseHandler(new OAuth2ErrorAuthenticationFailureHandler())
+                    //.errorResponseHandler(new CustomOAuth2ErrorAuthenticationFailureHandler())
                 )
                 .deviceAuthorizationEndpoint(deviceAuthorizationEndpoint ->
                     deviceAuthorizationEndpoint.verificationUri("/activate"))

@@ -9,7 +9,8 @@ public enum Platform implements EnumMessage<String> {
   XCAN_TP,
   XCAN_OP,
   XCAN_2P,
-  XCAN_3RD;
+  XCAN_3RD,
+  XCAN_INNER;
 
   @Override
   public String getValue() {

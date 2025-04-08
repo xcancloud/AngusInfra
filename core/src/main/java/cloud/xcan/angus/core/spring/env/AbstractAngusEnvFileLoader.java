@@ -56,14 +56,14 @@ import org.springframework.core.io.ResourceLoader;
 public abstract class AbstractAngusEnvFileLoader implements EnvironmentPostProcessor, Ordered {
 
   private static final String ENV_FILES_KEY = "ENV_FILES";
-  private static final String PRIMARY_ENV_FILE = ".env";
+  private static final String COMMON_ENV_FILE = ".common.env";
   private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment,
       SpringApplication application) {
     // Load the main environment file.
-    Properties envProperties = loadPrimaryEnvFile();
+    Properties envProperties = loadCommonEnvFile();
     // Load other environment files.
     loadAdditionalEnvFiles(envProperties);
     // Load or overwrite external env files.
@@ -73,9 +73,9 @@ public abstract class AbstractAngusEnvFileLoader implements EnvironmentPostProce
         .addFirst(new PropertiesPropertySource("customEnv", envProperties));
   }
 
-  public Properties loadPrimaryEnvFile() {
+  public Properties loadCommonEnvFile() {
     String searchDir = new SpringAppDirUtils().getConfDir();
-    Path envPath = Paths.get(searchDir, PRIMARY_ENV_FILE);
+    Path envPath = Paths.get(searchDir, COMMON_ENV_FILE);
     if (Files.exists(envPath)) {
       return loadEnvFile(envPath);
     }

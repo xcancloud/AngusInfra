@@ -26,18 +26,18 @@ public class ResourceExisted extends AbstractResultMessageException {
   private final String resName;
   private final String code;
   private final String msg;
-  private final Object[] agrs;
+  private final Object[] args;
 
   public ResourceExisted() {
     this("", "", RESOURCE_ALREADY_EXISTS, null, RESOURCE_ALREADY_EXISTS_KEY, WARNING);
   }
 
   private ResourceExisted(String resId, String resName, String message,
-      Object[] agrs, String eKey, ExceptionLevel level) {
+      Object[] args, String eKey, ExceptionLevel level) {
     super(message, EventType.PROTOCOL, level, eKey);
     this.code = PROTOCOL_ERROR_CODE;
     this.msg = message;
-    this.agrs = agrs;
+    this.args = args;
     this.resId = resId;
     this.resName = resName;
   }
@@ -117,8 +117,8 @@ public class ResourceExisted extends AbstractResultMessageException {
 
   @Override
   public Object[] getArgs() {
-    if (!Objects.isNull(agrs)) {
-      return agrs;
+    if (!Objects.isNull(args)) {
+      return args;
     }
     return new Object[]{resId, resName};
   }

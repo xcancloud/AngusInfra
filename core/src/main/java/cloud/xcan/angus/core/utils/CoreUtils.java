@@ -26,7 +26,7 @@ import cloud.xcan.angus.core.biz.ResourceName;
 import cloud.xcan.angus.core.jpa.repository.summary.DateRangeType;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.remote.PageResult;
-import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.spec.SpecConstant;
 import cloud.xcan.angus.spec.experimental.Assert;
@@ -569,7 +569,7 @@ public class CoreUtils {
       connection.setRequestMethod("GET");
       inputStream = connection.getInputStream();
     } catch (Exception e) {
-      throw CommSysException.of("Can't get " + url);
+      throw SysException.of("Can't get " + url);
     }
     return inputStream;
   }

@@ -3,8 +3,8 @@ package cloud.xcan.angus.security.principal;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_MISSING;
-import static cloud.xcan.angus.remote.message.CommSysException.M.PRINCIPAL_MISSING_KEY;
+import static cloud.xcan.angus.remote.message.SysException.M.PRINCIPAL_MISSING;
+import static cloud.xcan.angus.remote.message.SysException.M.PRINCIPAL_MISSING_KEY;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
@@ -37,7 +37,7 @@ import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.GrantType;
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -151,7 +151,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
         } else if (GrantType.PASSWORD.equals(grantType)) {
           holdSuccess = holdUserPrincipal(request, principal, tokenAttributes, grantType);
         } else {
-          throw CommSysException.of("Unsupported grant type: " + grantType);
+          throw SysException.of("Unsupported grant type: " + grantType);
         }
       }
     }
@@ -177,7 +177,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setDefaultTimeZone(null) // TODO Tenant level settings should be used
           .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
-          .setUserId(-1L).setFullname(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
+          .setUserId(-1L).setFullName(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
           .setUsername(clientId.toString()/*default*/).setSysAdmin(false).setToUser(false).setMainDeptId(-1L).setCountry(null);
       if (log.isDebugEnabled()) {
         log.debug("Hold client principal info : {}", principal);
@@ -218,7 +218,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setUserId(nonNull(id) ? Long.valueOf(id.toString()) : null)
-          .setFullname(nonNull(fullName) ? fullName.toString() : null)
+          .setFullName(nonNull(fullName) ? fullName.toString() : null)
           .setUsername(nonNull(username) ? username.toString() : null)
           .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
           .setToUser(nonNull(toUser) && Boolean.parseBoolean(toUser.toString()))

@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.server.authorization.authentication.O
  */
 public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
+  @Nullable
   private final String id;
   private final String account;
   private final Set<String> scopes;
@@ -36,7 +37,7 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
    * @param scopes               the requested scope(s)
    * @param additionalParameters the additional parameters
    */
-  public OAuth2PasswordAuthenticationToken(String id, String account, String password,
+  public OAuth2PasswordAuthenticationToken(@Nullable String id, String account, String password,
       Authentication clientPrincipal, @Nullable Set<String> scopes,
       @Nullable Map<String, Object> additionalParameters) {
     super(AuthorizationGrantType.PASSWORD, clientPrincipal, additionalParameters);
@@ -52,6 +53,7 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
    *
    * @return the requested user id
    */
+  @Nullable
   public String getId() {
     return id;
   }

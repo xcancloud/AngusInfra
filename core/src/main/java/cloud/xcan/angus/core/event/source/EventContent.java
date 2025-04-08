@@ -42,7 +42,7 @@ public class EventContent extends SimpleSource {
   private Long tenantId;
   private String tenantName;
   private Long userId;
-  private String fullname;
+  private String fullName;
 
   /**
    * Exception
@@ -121,7 +121,7 @@ public class EventContent extends SimpleSource {
     setTenantId(builder.tenantId);
     setTenantName(builder.tenantName);
     setUserId(builder.userId);
-    setFullname(builder.fullname);
+    setFullName(builder.fullName);
     eKey = builder.eKey;
     setLevel(builder.level);
     setCause(builder.cause);
@@ -155,7 +155,7 @@ public class EventContent extends SimpleSource {
     private Long tenantId;
     private String tenantName;
     private Long userId;
-    private String fullname;
+    private String fullName;
     private String eKey;
     private ExceptionLevel level;
     private String cause;
@@ -257,8 +257,8 @@ public class EventContent extends SimpleSource {
       return this;
     }
 
-    public Builder fullname(String val) {
-      fullname = val;
+    public Builder fullName(String val) {
+      fullName = val;
       return this;
     }
 

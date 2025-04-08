@@ -2,7 +2,7 @@ package cloud.xcan.angus.core.biz.exception;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_CODE;
 import static cloud.xcan.angus.remote.ExceptionLevel.ERROR;
-import static cloud.xcan.angus.remote.message.CommBizException.M.BIZ_ERROR;
+import static cloud.xcan.angus.remote.message.BizException.M.BIZ_ERROR;
 
 import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;

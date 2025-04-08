@@ -2,8 +2,8 @@ package cloud.xcan.angus.remote.message;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ExceptionLevel.IGNORABLE;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PROTOCOL_ERROR;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PROTOCOL_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PROTOCOL_ERROR;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PROTOCOL_ERROR_KEY;
 
 import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.remote.ExceptionLevel;
@@ -16,52 +16,52 @@ import lombok.ToString;
  */
 @Getter
 @ToString
-public class CommProtocolException extends AbstractResultMessageException {
+public class ProtocolException extends AbstractResultMessageException {
 
   private final String code;
   private final String msg;
   private final Object[] args;
 
-  public CommProtocolException() {
+  public ProtocolException() {
     this(PROTOCOL_ERROR, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null, IGNORABLE);
   }
 
-  public CommProtocolException(String message) {
+  public ProtocolException(String message) {
     this(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null, IGNORABLE);
   }
 
-  public CommProtocolException(String message, Throwable cause) {
+  public ProtocolException(String message, Throwable cause) {
     this(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null, IGNORABLE, cause);
   }
 
-  public CommProtocolException(String message, String eKey) {
+  public ProtocolException(String message, String eKey) {
     this(message, EventType.PROTOCOL, eKey, null, IGNORABLE);
   }
 
-  public CommProtocolException(String message, String eKey, Throwable cause) {
+  public ProtocolException(String message, String eKey, Throwable cause) {
     this(message, EventType.PROTOCOL, eKey, null, IGNORABLE, cause);
   }
 
-  public CommProtocolException(String message, String eKey, ExceptionLevel level) {
+  public ProtocolException(String message, String eKey, ExceptionLevel level) {
     this(message, EventType.PROTOCOL, eKey, null, level);
   }
 
-  public CommProtocolException(String message, EventType type, String eKey,
+  public ProtocolException(String message, EventType type, String eKey,
       ExceptionLevel level, Throwable cause) {
     this(message, type, eKey, null, level, cause);
   }
 
-  public CommProtocolException(String message, EventType type, String eKey,
+  public ProtocolException(String message, EventType type, String eKey,
       ExceptionLevel level) {
     this(message, type, eKey, null, level);
   }
 
-  public CommProtocolException(String message, EventType type, String eKey, Object[] agrs,
+  public ProtocolException(String message, EventType type, String eKey, Object[] agrs,
       ExceptionLevel level) {
     this(message, type, eKey, agrs, level, null);
   }
 
-  public CommProtocolException(String message, EventType type, String eKey, Object[] agrs,
+  public ProtocolException(String message, EventType type, String eKey, Object[] agrs,
       ExceptionLevel level, Throwable cause) {
     super(message, type, level, eKey, cause);
     this.code = PROTOCOL_ERROR_CODE;
@@ -69,85 +69,85 @@ public class CommProtocolException extends AbstractResultMessageException {
     this.args = agrs;
   }
 
-  public static CommProtocolException of(String message) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
+  public static ProtocolException of(String message) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
         IGNORABLE);
   }
 
-  public static CommProtocolException of(String message, Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
+  public static ProtocolException of(String message, Throwable cause) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
         IGNORABLE, cause);
   }
 
-  public static CommProtocolException of(String message, String eKey) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, null, IGNORABLE);
+  public static ProtocolException of(String message, String eKey) {
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, null, IGNORABLE);
   }
 
-  public static CommProtocolException of(String message, String eKey, Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, null, IGNORABLE, cause);
+  public static ProtocolException of(String message, String eKey, Throwable cause) {
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, null, IGNORABLE, cause);
   }
 
-  public static CommProtocolException of(ExceptionLevel level) {
-    return new CommProtocolException(PROTOCOL_ERROR, EventType.PROTOCOL, PROTOCOL_ERROR_KEY,
+  public static ProtocolException of(ExceptionLevel level) {
+    return new ProtocolException(PROTOCOL_ERROR, EventType.PROTOCOL, PROTOCOL_ERROR_KEY,
         null, level);
   }
 
-  public static CommProtocolException of(ExceptionLevel level, Throwable cause) {
-    return new CommProtocolException(PROTOCOL_ERROR, EventType.PROTOCOL, PROTOCOL_ERROR_KEY,
+  public static ProtocolException of(ExceptionLevel level, Throwable cause) {
+    return new ProtocolException(PROTOCOL_ERROR, EventType.PROTOCOL, PROTOCOL_ERROR_KEY,
         null, level, cause);
   }
 
-  public static CommProtocolException of(String message, Object[] agrs) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs, null);
+  public static ProtocolException of(String message, Object[] agrs) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs, null);
   }
 
-  public static CommProtocolException of(String message, Object[] agrs, Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs, null,
+  public static ProtocolException of(String message, Object[] agrs, Throwable cause) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs, null,
         cause);
   }
 
-  public static CommProtocolException of(String message, String eKey, Object[] agrs) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, agrs, null);
+  public static ProtocolException of(String message, String eKey, Object[] agrs) {
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, agrs, null);
   }
 
-  public static CommProtocolException of(String message, String eKey, Object[] agrs,
+  public static ProtocolException of(String message, String eKey, Object[] agrs,
       Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, agrs, null, cause);
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, agrs, null, cause);
   }
 
-  public static CommProtocolException of(String message, ExceptionLevel level) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
+  public static ProtocolException of(String message, ExceptionLevel level) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
         level);
   }
 
-  public static CommProtocolException of(String message, ExceptionLevel level, Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
+  public static ProtocolException of(String message, ExceptionLevel level, Throwable cause) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, null,
         level, cause);
   }
 
-  public static CommProtocolException of(String message, String eKey, ExceptionLevel level) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, null, level);
+  public static ProtocolException of(String message, String eKey, ExceptionLevel level) {
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, null, level);
   }
 
-  public static CommProtocolException of(String message, Object[] agrs, ExceptionLevel level) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs,
+  public static ProtocolException of(String message, Object[] agrs, ExceptionLevel level) {
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs,
         level);
   }
 
-  public static CommProtocolException of(String message, Object[] agrs, ExceptionLevel level,
+  public static ProtocolException of(String message, Object[] agrs, ExceptionLevel level,
       Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs,
+    return new ProtocolException(message, EventType.PROTOCOL, PROTOCOL_ERROR_KEY, agrs,
         level, cause);
   }
 
-  public static CommProtocolException of(String message, String eKey, Object[] agrs,
+  public static ProtocolException of(String message, String eKey, Object[] agrs,
       ExceptionLevel level) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, agrs, level);
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, agrs, level);
   }
 
-  public static CommProtocolException of(String message, String eKey, Object[] agrs,
+  public static ProtocolException of(String message, String eKey, Object[] agrs,
       ExceptionLevel level, Throwable cause) {
-    return new CommProtocolException(message, EventType.PROTOCOL, eKey, agrs, level, cause);
+    return new ProtocolException(message, EventType.PROTOCOL, eKey, agrs, level, cause);
   }
 
   @Override
@@ -262,8 +262,8 @@ public class CommProtocolException extends AbstractResultMessageException {
     String USER_DENIED_AUTHORIZATION = "xcm.user.denied.authorization";
     String USER_DENIED_AUTHORIZATION_KEY = "user_denied_authorization";
 
-    String ACCOUNT_PASSD_ERROR = "xcm.account.password.error";
-    String ACCOUNT_PASSD_ERROR_KEY = "account_passd_error";
+    String ACCOUNT_PASSWORD_ERROR = "xcm.account.password.error";
+    String ACCOUNT_PASSWORD_ERROR_KEY = "account_password_error";
 
     String USER_DISABLED = "xcm.user.disabled";
     String USER_DISABLED_T = "xcm.user.disabled.t";

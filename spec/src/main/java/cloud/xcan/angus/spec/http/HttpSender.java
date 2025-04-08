@@ -3,8 +3,10 @@ package cloud.xcan.angus.spec.http;
 
 import static cloud.xcan.angus.spec.http.HttpRequestHeader.Content_Encoding;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.appendParameter;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isBlank;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import cloud.xcan.angus.api.pojo.Pair;
 import cloud.xcan.angus.api.pojo.auth.SimpleHttpAuth;
@@ -138,8 +140,8 @@ public interface HttpSender {
 
       private byte[] entity = new byte[0];
       private HttpMethod httpMethod;
-      private Map<String, String> requestHeaders = new LinkedHashMap<>();
-      private List<SimpleHttpAuth> auths = new ArrayList<>();
+      private final Map<String, String> requestHeaders = new LinkedHashMap<>();
+      private final List<SimpleHttpAuth> auths = new ArrayList<>();
 
       Builder(String uri, HttpSender sender) {
         try {
@@ -213,7 +215,7 @@ public interface HttpSender {
        * @return This request builder.
        */
       public final Builder withBasicAuthentication(String user, String password) {
-        if (StringUtils.isNotBlank(user)) {
+        if (isNotBlank(user)) {
           String encoded = Base64.getEncoder().encodeToString((user.trim() + ":"
               + (password == null ? "" : password.trim())).getBytes(StandardCharsets.UTF_8));
           withAuthentication("Basic", encoded);
@@ -235,7 +237,7 @@ public interface HttpSender {
        * @since 1.8.0
        */
       public final Builder withAuthentication(String type, String credentials) {
-        if (StringUtils.isNotBlank(credentials)) {
+        if (isNotBlank(credentials)) {
           withHeader("Authorization", type + " " + credentials);
         }
         return this;
@@ -367,7 +369,7 @@ public interface HttpSender {
 
     public static final String NO_RESPONSE_BODY = "<no response body>";
     private final int code;
-    private List<Pair<String, String>> headers;
+    private final List<Pair<String, String>> headers;
     private final String body;
     private final InputStream bodyIS;
 
@@ -375,7 +377,7 @@ public interface HttpSender {
         String body, InputStream bodyIS) {
       this.code = code;
       this.headers = headers;
-      this.body = StringUtils.isBlank(body) ? NO_RESPONSE_BODY : body;
+      this.body = isBlank(body) ? NO_RESPONSE_BODY : body;
       this.bodyIS = bodyIS;
     }
 
@@ -414,13 +416,10 @@ public interface HttpSender {
     }
 
     public boolean isSuccessful() {
-      switch (HttpStatusSeries.valueOf(code)) {
-        case INFORMATIONAL:
-        case SUCCESS:
-          return true;
-        default:
-          return false;
-      }
+      return switch (HttpStatusSeries.valueOf(code)) {
+        case INFORMATIONAL, SUCCESS -> true;
+        default -> false;
+      };
     }
   }
 

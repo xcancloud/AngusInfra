@@ -46,7 +46,7 @@ public class Unauthorized extends AbstractResultMessageException {
 
   private Unauthorized(String message, Object[] args, String eKey, ExceptionLevel level,
       Throwable cause) {
-    super(message, EventType.SECURITY, level, eKey);
+    super(message, EventType.SECURITY, level, eKey, cause);
     this.msg = message;
     this.code = PROTOCOL_ERROR_CODE;
     this.args = args;
@@ -140,6 +140,9 @@ public class Unauthorized extends AbstractResultMessageException {
 
     String OPEN_AUTH_FAILURE = "xcm.open.auth.failure";
     String OPEN_AUTH_FAILURE_KEY = "open_auth_failure";
+
+    String INVALID_PASSWORD = "xcm.invalid.password";
+    String INVALID_PASSWORD_KEY = "invalid_password";
 
     String INVALID_ACCESS_SECRET = "xcm.invalid.access.secret";
     String INVALID_ACCESS_SECRET_KEY = "invalid_access_secret";

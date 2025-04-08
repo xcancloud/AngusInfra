@@ -1,16 +1,16 @@
 package cloud.xcan.angus.core.jpa.criteria;
 
 import static cloud.xcan.angus.remote.ApiConstant.DEFAULT_ORDER_BY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_FILTER_FIELD_T;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_MATCH_FILTER_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_MATCH_FILTER_T;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_NOT_FILTER_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_NOT_FILTER_T;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_ORDER_BY_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_ORDER_BY_T;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_RANGE_FILTER_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_RANGE_FILTER_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_MATCH_FILTER_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_MATCH_FILTER_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_NOT_FILTER_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_NOT_FILTER_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_ORDER_BY_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_ORDER_BY_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_RANGE_FILTER_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_RANGE_FILTER_T;
 import static cloud.xcan.angus.remote.search.SearchOperation.isInOrNotSearch;
 import static cloud.xcan.angus.remote.search.SearchOperation.isMatchSearch;
 import static cloud.xcan.angus.remote.search.SearchOperation.isRangeSearch;
@@ -18,7 +18,7 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.utils.BeanFieldUtils;
 import cloud.xcan.angus.remote.AbstractQuery;
-import cloud.xcan.angus.remote.message.CommProtocolException;
+import cloud.xcan.angus.remote.message.ProtocolException;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -201,14 +201,14 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       }
       // Verify non-contracted query parameters
       if (CollectionUtils.isEmpty(dtoNames) || !dtoNames.contains(criteria.getKey())) {
-        throw CommProtocolException.of(UNSUPPORTED_FILTER_FIELD_T, UNSUPPORTED_FILTER_FIELD_KEY,
+        throw ProtocolException.of(UNSUPPORTED_FILTER_FIELD_T, UNSUPPORTED_FILTER_FIELD_KEY,
             new Object[]{criteria.getKey()});
       }
       // Verify that the type and range operation, Eg: Only indexed id or createdDate fields support range query
       if (isRangeSearch(criteria)) {
         if (isNotEmpty(rangeSearchFields) && !rangeSearchFields
             .contains(criteria.getKey())) {
-          throw CommProtocolException.of(UNSUPPORTED_RANGE_FILTER_T, UNSUPPORTED_RANGE_FILTER_KEY,
+          throw ProtocolException.of(UNSUPPORTED_RANGE_FILTER_T, UNSUPPORTED_RANGE_FILTER_KEY,
               new Object[]{criteria.getKey()});
         }
       }
@@ -216,7 +216,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       if (isMatchSearch(criteria)) {
         if (isNotEmpty(matchSearchFields) && !matchSearchFields
             .contains(criteria.getKey())) {
-          throw CommProtocolException.of(UNSUPPORTED_MATCH_FILTER_T, UNSUPPORTED_MATCH_FILTER_KEY,
+          throw ProtocolException.of(UNSUPPORTED_MATCH_FILTER_T, UNSUPPORTED_MATCH_FILTER_KEY,
               new Object[]{criteria.getKey()});
         }
       }
@@ -224,7 +224,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       if (isInOrNotSearch(criteria)) {
         if (isNotEmpty(inAndNotFields) && !idsFields.contains(criteria.getKey())
             && !inAndNotFields.contains(criteria.getKey())) {
-          throw CommProtocolException
+          throw ProtocolException
               .of(UNSUPPORTED_NOT_FILTER_T, UNSUPPORTED_NOT_FILTER_KEY,
                   new Object[]{criteria.getKey()});
         }
@@ -233,7 +233,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
       if (StringUtils.isNotBlank(dto.getOrderBy())) {
         if ((!DEFAULT_ORDER_BY.equalsIgnoreCase(dto.getOrderBy()) &&
             isNotEmpty(orderByFields) && !orderByFields.contains(dto.getOrderBy()))) {
-          throw CommProtocolException.of(UNSUPPORTED_ORDER_BY_T, UNSUPPORTED_ORDER_BY_KEY,
+          throw ProtocolException.of(UNSUPPORTED_ORDER_BY_T, UNSUPPORTED_ORDER_BY_KEY,
               new Object[]{dto.getOrderBy()});
         }
       }

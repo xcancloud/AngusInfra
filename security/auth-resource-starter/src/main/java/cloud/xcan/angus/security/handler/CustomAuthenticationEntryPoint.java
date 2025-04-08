@@ -2,11 +2,11 @@ package cloud.xcan.angus.security.handler;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.INVALID_GRANT_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PROTOCOL_ERROR_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_GRANT_TYPE_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.UNSUPPORTED_RESPONSE_TYPE_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.USER_DENIED_AUTHORIZATION_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.INVALID_GRANT_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PROTOCOL_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_GRANT_TYPE_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_RESPONSE_TYPE_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.USER_DENIED_AUTHORIZATION_KEY;
 import static cloud.xcan.angus.remote.message.http.Unauthorized.M.INVALID_CLIENT_KEY;
 import static cloud.xcan.angus.remote.message.http.Unauthorized.M.INVALID_TOKEN_KEY;
 import static cloud.xcan.angus.remote.message.http.Unauthorized.M.UNAUTHORIZED;
@@ -49,7 +49,7 @@ import org.springframework.security.web.util.ThrowableAnalyzer;
 @Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  private ThrowableAnalyzer throwableAnalyzer;
+  private final ThrowableAnalyzer throwableAnalyzer;
 
   private final ObjectMapper objectMapper;
 

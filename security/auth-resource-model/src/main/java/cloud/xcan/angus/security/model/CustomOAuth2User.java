@@ -318,7 +318,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     return this.authorities;
   }
 
-  private static SortedSet<GrantedAuthority> sortAuthorities(
+  public static SortedSet<GrantedAuthority> sortAuthorities(
       Collection<? extends GrantedAuthority> authorities) {
     Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
     // Ensure array iteration order is predictable (as per

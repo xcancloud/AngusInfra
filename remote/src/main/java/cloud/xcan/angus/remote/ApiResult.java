@@ -3,11 +3,11 @@ package cloud.xcan.angus.remote;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
 import static cloud.xcan.angus.remote.ApiConstant.OK_CODE;
-import static cloud.xcan.angus.remote.message.CommBizException.M.BIZ_ERROR;
+import static cloud.xcan.angus.remote.message.BizException.M.BIZ_ERROR;
 import static cloud.xcan.angus.remote.message.SuccessResultMessage.M.OK_MSG;
 
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
-import cloud.xcan.angus.remote.message.CommBizException;
+import cloud.xcan.angus.remote.message.BizException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -95,7 +95,7 @@ public class ApiResult<T> implements Serializable {
     }
   }
 
-  public static ApiResult success() {
+  public static ApiResult<?> success() {
     return new ApiResult<>();
   }
 
@@ -103,7 +103,7 @@ public class ApiResult<T> implements Serializable {
     return new ApiResult<>(data);
   }
 
-  public static ApiResult success(String msg) {
+  public static ApiResult<?> success(String msg) {
     return new ApiResult<>(OK_CODE, msg, null);
   }
 
@@ -137,14 +137,14 @@ public class ApiResult<T> implements Serializable {
     return OK_CODE.equals(this.code);
   }
 
-  public ApiResult orElseThrow() {
+  public ApiResult<?> orElseThrow() {
     if (isSuccess()) {
       return this;
     }
-    throw CommBizException.of(this.code, this.getMsg());
+    throw BizException.of(this.code, this.getMsg());
   }
 
-  public ApiResult orElseThrow(AbstractResultMessageException exception) {
+  public ApiResult<?> orElseThrow(AbstractResultMessageException exception) {
     if (isSuccess()) {
       return this;
     }
@@ -155,7 +155,7 @@ public class ApiResult<T> implements Serializable {
     if (isSuccess()) {
       return this.data;
     }
-    throw CommBizException.of(this.code, this.getMsg());
+    throw BizException.of(this.code, this.getMsg());
   }
 
   public T orElseContentThrow(AbstractResultMessageException exception) {

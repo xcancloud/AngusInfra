@@ -12,7 +12,7 @@ import static java.util.Objects.nonNull;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.filter.MutableHttpServletRequest;
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.remote.message.CommSysException;
+import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.experimental.StandardCharsets;
@@ -172,7 +172,7 @@ public class ServletUtils {
     try {
       resource = new InputStreamResource(new FileInputStream(file));
     } catch (FileNotFoundException e) {
-      throw CommSysException.of(e.getMessage());
+      throw SysException.of(e.getMessage());
     }
     return bodyBuilder.contentType(mediaType)
         //.header(HttpHeaders.CONTENT_TYPE, "application/octet-stream")

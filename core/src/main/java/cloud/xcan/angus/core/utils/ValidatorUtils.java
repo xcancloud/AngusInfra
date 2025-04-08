@@ -1,10 +1,10 @@
 package cloud.xcan.angus.core.utils;
 
 import static cloud.xcan.angus.core.utils.CoreUtils.exitApp;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.MOBILE_FORMAT_ERROR;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.MOBILE_FORMAT_ERROR_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_FORMAT_ERROR_KEY;
-import static cloud.xcan.angus.remote.message.CommProtocolException.M.PARAM_FORMAT_ERROR_T;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.MOBILE_FORMAT_ERROR;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.MOBILE_FORMAT_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_KEY;
+import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_T;
 import static cloud.xcan.angus.spec.utils.NetworkUtils.REGEX_IPV4;
 import static org.apache.commons.io.IOUtils.toByteArray;
 

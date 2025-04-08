@@ -21,9 +21,12 @@ import cloud.xcan.angus.security.authentication.service.LinkSecretService;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationConverter;
 import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationProvider;
 import cloud.xcan.angus.security.client.CustomOAuth2ClientRepository;
+import cloud.xcan.angus.security.handler.CustomBearerTokenAuthenticationEntryPoint;
+import cloud.xcan.angus.security.handler.CustomOAuth2ErrorAuthenticationFailureHandler;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
 import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyService;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 import javax.sql.DataSource;
@@ -56,8 +59,10 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ClientCredentialsAuthenticationConverter;
+import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2ErrorAuthenticationFailureHandler;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2RefreshTokenAuthenticationConverter;
 import org.springframework.security.oauth2.server.authorization.web.authentication.OAuth2TokenIntrospectionAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.DelegatingAuthenticationConverter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -77,7 +82,8 @@ public class OAuth2AuthorizationServerAutoConfigurer {
       HttpSecurity http, CustomOAuth2ClientRepository registeredClientRepository,
       AuthorizationServerSettings authorizationServerSettings,
       AuthenticationManager authenticationManager, CorsConfigurationSource oauth2CorsConfiguration,
-      JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService) throws Exception {
+      JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService,
+      ObjectMapper objectMapper) throws Exception {
     // @formatter:off
 
     OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator = getOAuth2TokenGenerator(http);
@@ -92,6 +98,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     new ClientSecretAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService)))
             .tokenEndpoint(
                 oAuth2TokenEndpointConfigurer -> oAuth2TokenEndpointConfigurer
+                    .errorResponseHandler(new CustomOAuth2ErrorAuthenticationFailureHandler())
                     .accessTokenRequestConverter(
                       new DelegatingAuthenticationConverter(Arrays.asList(
                         new OAuth2PasswordAuthenticationConverter(),
@@ -120,7 +127,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     .introspectionRequestConverter(new OAuth2TokenIntrospectionAuthenticationConverter())
                     .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService))
                     //.introspectionResponseHandler(new OAuth2AccessTokenResponseAuthenticationSuccessHandler())
-                    //.errorResponseHandler(new OAuth2ErrorAuthenticationFailureHandler())
+                    //.errorResponseHandler(new CustomOAuth2ErrorAuthenticationFailureHandler())
                 )
                 .deviceAuthorizationEndpoint(deviceAuthorizationEndpoint ->
                     deviceAuthorizationEndpoint.verificationUri("/activate"))
@@ -130,14 +137,17 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                     authorizationEndpoint.consentPage(CUSTOM_CONSENT_PAGE_URI))
                 .oidc(Customizer.withDefaults())  // Enable OpenID Connect 1.0
         ).csrf(AbstractHttpConfigurer::disable); // Disable CSRF protection (configure as needed)
+
     // Avoid setting `X-Frame-Options: deny` in the HTTP response header,
     // which causes the browser to reject the page from being loaded within <frame></frame>
     http.headers(headers -> headers
             .frameOptions(FrameOptionsConfig::sameOrigin)
         //.frameOptions(FrameOptionsConfig::disable)
     );
-    // @formatter:on
 
+    http.exceptionHandling(exceptions ->
+        exceptions.authenticationEntryPoint(new CustomBearerTokenAuthenticationEntryPoint(objectMapper)));
+    // @formatter:on
     return http.build();
   }
 

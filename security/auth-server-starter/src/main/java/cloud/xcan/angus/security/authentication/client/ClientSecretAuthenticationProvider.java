@@ -130,6 +130,7 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
       registeredClient = /*RegisteredClient*/CustomOAuth2RegisteredClient.from(registeredClient)
           .clientSecret(this.passwordEncoder.encode(clientSecret))
           .build();
+      // Will there be any security vulnerability ???
       this.registeredClientRepository.save(registeredClient);
     }
 

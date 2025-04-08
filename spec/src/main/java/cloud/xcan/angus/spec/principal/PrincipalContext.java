@@ -171,7 +171,7 @@ public class PrincipalContext {
   }
 
   public static String getUserFullname() {
-    return get().getFullname();
+    return get().getFullName();
   }
 
   public static String getUsername() {

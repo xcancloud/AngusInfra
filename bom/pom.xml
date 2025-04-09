@@ -111,6 +111,12 @@
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.auth-innerapi-starter</artifactId>
+        <version>${xcan-infra.security.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-infra.auth-openapi-starter</artifactId>
         <version>${xcan-infra.security.version}</version>
       </dependency>

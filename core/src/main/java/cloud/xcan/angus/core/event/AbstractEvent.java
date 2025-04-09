@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Getter
 public abstract class AbstractEvent<T> extends EventObject<T> {
 
-  private EventType type;
+  private String type;
 
   private String code;
 
@@ -47,7 +47,7 @@ public abstract class AbstractEvent<T> extends EventObject<T> {
    * @param description the event content
    * @param ext         the event ext
    */
-  public AbstractEvent(T source, EventType type, String code, String description,
+  public AbstractEvent(T source, String type, String code, String description,
       LocalDateTime timestamp, Map<String, Object> ext) {
     super(source);
     this.type = type;

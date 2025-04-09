@@ -68,7 +68,7 @@ public abstract class AbstractAngusEnvFileLoader implements EnvironmentPostProce
     loadAdditionalEnvFiles(envProperties);
     // Load or overwrite external env files.
     loadOrRewriteFromExternalEnvFiles(envProperties);
-    // Register the variable to the Spring Environment.
+    // Register the variable to the Spring Environment.\
     environment.getPropertySources()
         .addFirst(new PropertiesPropertySource("customEnv", envProperties));
   }

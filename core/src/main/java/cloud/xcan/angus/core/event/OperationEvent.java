@@ -22,7 +22,7 @@ public class OperationEvent extends AbstractEvent<UserOperation> {
    *               associated (never {@code null})
    */
   public OperationEvent(UserOperation source) {
-    super(source, EventType.OPERATION, source.getDescription(), source.getDescription(),
+    super(source, EventType.OPERATION.getValue(), source.getDescription(), source.getDescription(),
         source.getTimestamp(), source.getExt());
   }
 

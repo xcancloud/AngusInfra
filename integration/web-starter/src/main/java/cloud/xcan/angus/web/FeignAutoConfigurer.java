@@ -27,7 +27,6 @@ import okhttp3.ResponseBody;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
@@ -46,25 +45,26 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 public class FeignAutoConfigurer {
 
   @Profile({"local", "dev", "beta"})
-  @Bean
+  @Bean("feignLoggerLevel")
   Logger.Level feignLoggerFull() {
     return Logger.Level.FULL;
   }
 
-  @Profile({"pre", "prod"})
-  @Bean
+  @Profile({"prod"})
+  @Bean("feignLoggerLevel")
   Logger.Level feignLoggerBasic() {
     return Logger.Level.BASIC;
   }
 
   @Bean
   public Feign.Builder feignBuilder(OkHttpClient client, Encoder feignEncoder,
-      Decoder feignDecoder, ErrorDecoder errorDecoder) {
+      Decoder feignDecoder, ErrorDecoder errorDecoder, Logger.Level feignLoggerLevel) {
     return Feign.builder()
         .client(new feign.okhttp.OkHttpClient(client))
         .encoder(feignEncoder)
         .decoder(feignDecoder)
         .errorDecoder(errorDecoder)
+        .logLevel(feignLoggerLevel)
         .queryMapEncoder(new FilterQueryMapEncoder())
         /* new Retryer.Default(): The maximum number of retry requests is 5(maxAttempts),
          * the initial interval time is 100ms(period), the next interval time increases by 1.5 times,
@@ -73,7 +73,6 @@ public class FeignAutoConfigurer {
   }
 
   @Bean
-  @ConditionalOnMissingClass
   public OkHttpClient client() {
     return new OkHttpClient().newBuilder()
         .connectTimeout(5, TimeUnit.SECONDS)
@@ -99,7 +98,6 @@ public class FeignAutoConfigurer {
   }
 
   @Bean
-  @ConditionalOnMissingClass
   public ErrorDecoder errorDecoder(ObjectMapper objectMapper) {
     return new CustomErrorDecoder(objectMapper);
   }

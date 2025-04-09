@@ -280,22 +280,18 @@ public interface BizConstant {
       "/view/**"
   };
 
-  String[] AUTH_RESOURCES_IN_FILTER = {
-      "/api/*",
-      "/openapi2p/*"
+
+  String[] OPENAPI_AUTH_RESOURCES = {
+      "/openapi/**"
   };
 
-  String[] OPEN_AUTH_RESOURCES = {
-      "/openapi/**"
+  String[] INNER_AUTH_RESOURCES = {
+      "/innerapi/**"
   };
 
   String[] PUBLIC_RESOURCES = {
       "/pubapi/**",
       "/pubview/**"
-  };
-
-  String[] DOOR_RESOURCES = {
-      "/innerapi/**"
   };
 
   String[] AUTH_WHITELIST = {
@@ -337,6 +333,7 @@ public interface BizConstant {
     String CLIENT_SECRET = new Str0(new long[]{0x7A2E43F1E76B6153L, 0xFC45C7301C3CAB2FL, 0x554D36C13AEC2F9L}).toString() /* => "client_secret" */;
     String CLIENT_SOURCE = "client_source";
     String SCOPE = "scope";
+    String AUTHORITY_SCOPE_PREFIX = "SCOPE_";
     String DEFAULT_SCOPE = "trust";
     String REFRESH_TOKEN = "refresh_token";
     String ACCESS_TOKEN = "access_token";
@@ -406,6 +403,8 @@ public interface BizConstant {
     String SYS_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xB0E3E630F772EDCCL, 0x19AB604C3E331BA7L, 0xC76133C9AFDC132L}).toString() /* => "system_trust" */;
     String INNER_API_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xC455951C87AD5803L, 0x35805C099A01ECBCL, 0xD171894DFA6FCDCL}).toString() /* => "inner_api_trust" */;
     String SIGN2P_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xD2FA692C90D3F585L, 0x7EA0E7EB0C94C9E6L, 0x96AE7547AD622667L}).toString() /* => "2private_trust" */;
+
+    String INNER_API_AUTHORITY_SCOPE = AUTHORITY_SCOPE_PREFIX + USER_TOKEN_CLIENT_SCOPE;
   }
 
   /**

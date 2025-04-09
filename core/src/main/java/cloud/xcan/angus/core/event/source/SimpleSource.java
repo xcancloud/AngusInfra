@@ -19,7 +19,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Accessors(chain = true)
 public class SimpleSource implements EventSource {
 
-  private EventType type;
+  private String type;
   private String code;
   private String description;
   @JsonFormat(pattern = DATE_FMT)
@@ -32,15 +32,15 @@ public class SimpleSource implements EventSource {
     this(null, null, null);
   }
 
-  public SimpleSource(EventType type, String code, String description) {
+  public SimpleSource(String type, String code, String description) {
     this(type, code, description, null, null);
   }
 
-  public SimpleSource(EventType type, String code, String description, LocalDateTime timestamp) {
+  public SimpleSource(String type, String code, String description, LocalDateTime timestamp) {
     this(type, code, description, timestamp, null);
   }
 
-  public SimpleSource(EventType type, String code, String description,
+  public SimpleSource(String type, String code, String description,
       LocalDateTime timestamp, Map<String, Object> ext) {
     this.type = type;
     this.code = code;

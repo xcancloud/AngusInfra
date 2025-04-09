@@ -4,6 +4,7 @@ import cloud.xcan.angus.security.remote.ClientSignInnerApiRemote;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 
 @Configuration(proxyBeanMethods = false)
@@ -11,9 +12,10 @@ import org.springframework.context.annotation.Configuration;
 public class FeignInnerApiAutoConfigurer {
 
   @Bean
-  public FeignInnerApiAuthInterceptor feignOpen2pAuthInterceptor(
-      ClientSignInnerApiRemote clientSignInnerApiRemote) {
-    return new FeignInnerApiAuthInterceptor(clientSignInnerApiRemote);
+  public FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor(
+      ClientSignInnerApiRemote clientSignInnerApiRemote,
+      ConfigurableEnvironment configurableEnvironment) {
+    return new FeignInnerApiAuthInterceptor(clientSignInnerApiRemote, configurableEnvironment);
   }
 
 }

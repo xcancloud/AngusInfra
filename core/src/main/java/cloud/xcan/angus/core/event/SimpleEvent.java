@@ -24,7 +24,7 @@ public class SimpleEvent extends AbstractEvent<SimpleSource> {
    *               associated (never {@code null})
    */
   public SimpleEvent(SimpleSource source) {
-    super(source, EventType.OPERATION, source.getDescription(), source.getDescription(),
+    super(source, EventType.OPERATION.getValue(), source.getDescription(), source.getDescription(),
         source.getTimestamp(), source.getExt());
   }
 
@@ -45,7 +45,7 @@ public class SimpleEvent extends AbstractEvent<SimpleSource> {
   public static final class Builder {
 
     private SimpleSource source;
-    private EventType type;
+    private String type;
     private String code;
     private String description;
     private LocalDateTime timestamp;
@@ -59,7 +59,7 @@ public class SimpleEvent extends AbstractEvent<SimpleSource> {
       return this;
     }
 
-    public Builder setType(EventType type) {
+    public Builder setType(String type) {
       this.type = type;
       return this;
     }

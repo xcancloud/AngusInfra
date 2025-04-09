@@ -139,7 +139,7 @@ public class EventContent extends SimpleSource {
   public static final class Builder {
 
     private String subject;
-    private EventType type;
+    private String type;
     private String code;
     private String description;
     private LocalDateTime timestamp;
@@ -177,7 +177,7 @@ public class EventContent extends SimpleSource {
       return this;
     }
 
-    public Builder type(EventType val) {
+    public Builder type(String val) {
       type = val;
       return this;
     }

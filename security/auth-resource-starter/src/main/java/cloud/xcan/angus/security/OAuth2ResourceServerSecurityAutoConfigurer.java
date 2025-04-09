@@ -1,6 +1,10 @@
 package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.AUTHORITY_SCOPE_PREFIX;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.INNER_API_TOKEN_CLIENT_SCOPE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.INNER_AUTH_RESOURCES;
+import static cloud.xcan.angus.spec.experimental.BizConstant.OPENAPI_AUTH_RESOURCES;
 
 import cloud.xcan.angus.security.handler.CustomAccessDeniedHandler;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
@@ -37,7 +41,7 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
             //.requestMatchers("/**").permitAll() // Allow public access
             .requestMatchers(AUTH_RESOURCES).authenticated()
             .anyRequest().permitAll())// Other requests require authentication
-        .addFilterBefore(new HoldPrincipalFilter(objectMapper), AuthorizationFilter.class)
+        .addFilterAfter(new HoldPrincipalFilter(objectMapper), AuthorizationFilter.class)
         .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
             .bearerTokenResolver(bearerTokenResolver)
             .accessDeniedHandler(accessDeniedHandler)
@@ -47,7 +51,7 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
     // Avoid setting `X-Frame-Options: deny` in the HTTP response header,
     // which causes the browser to reject the page from being loaded within <frame></frame>
     http.headers(headers -> headers
-        .frameOptions(FrameOptionsConfig::sameOrigin)
+            .frameOptions(FrameOptionsConfig::sameOrigin)
         //.frameOptions(FrameOptionsConfig::disable)
     );
     return http.build();

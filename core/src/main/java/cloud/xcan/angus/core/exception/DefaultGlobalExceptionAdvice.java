@@ -462,7 +462,8 @@ public class DefaultGlobalExceptionAdvice {
     }
 
     if (isPushEvent(level)) {
-      EventContent event = assembleExceptionEvent(type, code, message, level, eKey, userMessage);
+      EventContent event = assembleExceptionEvent(type.getValue(), code, message, level,
+          eKey, userMessage);
       commonEventDisruptorQueue.add(new CommonEvent(event));
     }
     return ApiResult.error(code, message, userMessage, apiExt);

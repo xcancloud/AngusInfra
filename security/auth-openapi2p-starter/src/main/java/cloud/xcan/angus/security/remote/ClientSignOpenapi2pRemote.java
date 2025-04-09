@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public interface ClientSignOpenapi2pRemote {
 
   @Operation(
-      summary = "Client signin", description = "Client signin for private and 3rd authorization.",
+      summary = "Client sign-in", description = "Client sign-in for private and 3rd authorization.",
       operationId = "client:signin:pub"
   )
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Signin successfully")
+      @ApiResponse(responseCode = "200", description = "Sign-in successfully")
   })
   @ResponseStatus(HttpStatus.OK)
   @PostMapping(value = "/pubapi/v1/client/signin")

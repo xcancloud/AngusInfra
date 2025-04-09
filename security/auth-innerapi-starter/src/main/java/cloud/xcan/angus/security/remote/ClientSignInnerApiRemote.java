@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author XiaoLong Liu
  */
-@FeignClient(url = "${OAUTH2_ENDPOINT_PREFIX}/oauth2/token")
+@FeignClient(name = "ClientSignInnerApi", url = "${OAUTH2_ENDPOINT_PREFIX}")
 public interface ClientSignInnerApiRemote {
 
   @Operation(
-      summary = "Client signin", description = "Client signin for private and 3rd authorization.",
+      summary = "Client sign-in", description = "Client sign-in for private and 3rd authorization.",
       operationId = "client:signin:pub"
   )
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "Signin successfully")
+      @ApiResponse(responseCode = "200", description = "Sign-in successfully")
   })
   @ResponseStatus(HttpStatus.OK)
   @PostMapping(value = "/pubapi/v1/client/signin")

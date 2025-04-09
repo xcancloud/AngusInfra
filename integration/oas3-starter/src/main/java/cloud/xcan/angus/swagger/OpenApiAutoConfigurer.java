@@ -73,7 +73,7 @@ public class OpenApiAutoConfigurer {
   @Conditional(CloudServiceEditionCondition.class) // Private version does not display inner API docs
   public GroupedOpenApi doorApi() {
     return GroupedOpenApi.builder()
-        .displayName("/innerapi (Inner Api Document)")
+        .displayName("/innerapi (Inner System Api Document)")
         .group("Inner")
         .pathsToMatch("/innerapi/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())

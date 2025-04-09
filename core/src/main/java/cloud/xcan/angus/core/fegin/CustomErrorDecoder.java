@@ -21,7 +21,6 @@ import feign.Response;
 import feign.Util;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
-import lombok.SneakyThrows;
 
 public class CustomErrorDecoder implements ErrorDecoder {
 
@@ -36,7 +35,6 @@ public class CustomErrorDecoder implements ErrorDecoder {
     this.objectMapper = objectMapper;
   }
 
-  @SneakyThrows
   @Override
   public Exception decode(String methodKey, Response response) {
     ApiResult<?> result;
@@ -62,32 +60,22 @@ public class CustomErrorDecoder implements ErrorDecoder {
             // The Json structure is inconsistent with ApiResult
             throw new IllegalStateException("Global unhandled exception");
           }
-          switch (response.status()) {
-            case 400:
-              return ProtocolException.of(result.getMsg(), result.getEKey());
-            case 401:
-              return Unauthorized.of(result.getMsg(), result.getEKey());
-            case 403:
-              return Forbidden.of(result.getMsg(), result.getEKey());
-            case 404:
-              return ResourceNotFound.of(result.getMsg(), emptyArgs, result.getEKey());
-            case 405:
-              return MethodNotSupported.of(result.getMsg(), emptyArgs, result.getEKey());
-            case 409:
-              return ResourceExisted.of(result.getMsg(), emptyArgs);
-            case 415:
-              return MediaTypeNotSupported.of(result.getMsg(), result.getEKey());
+          return switch (response.status()) {
+            case 400 -> ProtocolException.of(result.getMsg(), result.getEKey());
+            case 401 -> Unauthorized.of(result.getMsg(), result.getEKey());
+            case 403 -> Forbidden.of(result.getMsg(), result.getEKey());
+            case 404 -> ResourceNotFound.of(result.getMsg(), emptyArgs, result.getEKey());
+            case 405 -> MethodNotSupported.of(result.getMsg(), emptyArgs, result.getEKey());
+            case 409 -> ResourceExisted.of(result.getMsg(), emptyArgs);
+            case 415 -> MediaTypeNotSupported.of(result.getMsg(), result.getEKey());
             //      case 429: TODO
             //        return new TooManyRequests(message, request, body);
-            case 500:
-              return SysException.of(result.getCode(), result.getMsg(), result.getEKey());
-            default:
-              return SysException.of(RPC_API_EXCEPTION, isEmpty(result.getEKey())
-                  ? exceptionBody : result.getEKey());
-          }
+            case 500 -> SysException.of(result.getCode(), result.getMsg(), result.getEKey());
+            default -> SysException.of(RPC_API_EXCEPTION, isEmpty(result.getEKey())
+                ? exceptionBody : result.getEKey());
+          };
         } catch (Exception e) {
-          throw ProtocolException.of(
-              String.format("Unknown protocol Error: %s", exceptionBody));
+          throw ProtocolException.of(String.format("Unknown protocol Error: %s", exceptionBody));
         }
     }
   }

@@ -21,7 +21,7 @@ public class ApiLogEvent extends AbstractEvent<ApiLog> {
    *               associated (never {@code null})
    */
   public ApiLogEvent(ApiLog source) {
-    super(source, EventType.API, source.getCode(), source.getDescription(),
+    super(source, EventType.API.getValue(), source.getCode(), source.getDescription(),
         source.getRequestDate(), null);
   }
 

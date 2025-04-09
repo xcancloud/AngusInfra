@@ -18,6 +18,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 @ToString
 public class UserOperation extends SimpleSource {
 
+  private String resourceId = "";
   private String resourceName = "";
   private String clientId;
   private String requestId = "";
@@ -40,6 +41,7 @@ public class UserOperation extends SimpleSource {
     setDescription(builder.description);
     setTimestamp(builder.operationDate);
     setExt(builder.ext);
+    setResourceId(builder.resourceId);
     setResourceName(builder.resourceName);
     setClientId(builder.clientId);
     setRequestId(builder.requestId);
@@ -64,6 +66,7 @@ public class UserOperation extends SimpleSource {
     //private LocalDateTime timestamp;
     private Map<String, Object> ext;
 
+    private String resourceId;
     private String resourceName;
     private String clientId;
     private String requestId;
@@ -90,6 +93,11 @@ public class UserOperation extends SimpleSource {
 
     public Builder ext(Map<String, Object> ext) {
       this.ext = ext;
+      return this;
+    }
+
+    public Builder resourceId(String resourceId) {
+      this.resourceId = resourceId;
       return this;
     }
 

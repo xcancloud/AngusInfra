@@ -59,7 +59,7 @@ public class AuditLogAutoConfigurer {
   public final static String[] RESOURCES = new String[]{
       new Str0(new long[]{0x7582756E66662C60L, 0x3414E4B58011F8F0L}).toString() /* => "/api/*" */,
       new Str0(new long[]{0x79F0996A85EB7CA4L, 0x802CF7EA9F25F197L, 0x4EFFF40A372A716DL}).toString()
-      /* => "/doorapi/*" */,
+      /* => "/innerapi/*" */,
       new Str0(new long[]{0xC60EDC5DD5371E7DL, 0x5B324C24FDC93F38L, 0xA438A15F9C45F104L}).toString()
       /* => "/pubapi/*" */,
       new Str0(new long[]{0xB55FCE32E26D0295L, 0x3A77FACAEC89DA49L, 0xB8679922EFED3ECFL}).toString()

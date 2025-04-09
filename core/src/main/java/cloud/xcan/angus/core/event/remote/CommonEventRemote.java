@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CommonEventRemote extends EventRemote<EventContent> {
 
   @Override
-  @PostMapping(value = "/doorapi/v1/event")
+  @PostMapping(value = "/innerapi/v1/event")
   void sendEvents(@RequestBody List<EventContent> events);
 
 }

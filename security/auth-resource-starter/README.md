@@ -65,7 +65,7 @@ spring:
     // springboot actuator
     "/actuator/**",
     "/pubapi/**",
-    "/doorapi/**",
+    "/innerapi/**",
     //"/openapi2p/**",
     "/pubview/**",
     // -- swagger ui

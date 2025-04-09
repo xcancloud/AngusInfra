@@ -12,7 +12,7 @@ import cloud.xcan.angus.core.utils.PrincipalContextUtils;
  * `@PreAuthorize` will depend on a secure context:
  *
  * <p>
- * Use `@PreAuthorize("@PPS.XXX")` by Unsafe interface(/doorapi or /pubapi) will throw an exception:
+ * Use `@PreAuthorize("@PPS.XXX")` by Unsafe interface(/innerapi or /pubapi) will throw an exception:
  * An authentication object was not found in the SecurityContext
  */
 public class PrincipalPermissionService {

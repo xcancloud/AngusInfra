@@ -73,9 +73,9 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/doorapi (System Inner Api Document)")
+          .displayName("/innerapi (System Inner Api Document)")
           .group("system")
-          .pathsToMatch("/doorapi/v1/**")
+          .pathsToMatch("/innerapi/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(globalSysSecurityCustomizer())
@@ -83,9 +83,9 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/doorapi (System Inner Api Document)")
+          .displayName("/innerapi (System Inner Api Document)")
           .group("system")
-          .pathsToMatch("/doorapi/v1/**")
+          .pathsToMatch("/innerapi/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(globalSysSecurityCustomizer())

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/doorapi/v1/user")
+@RequestMapping("/innerapi/v1/user")
 @Tag(name = "User Management by Door", description = "Operations related to user management")
 public class DoorRest {
 

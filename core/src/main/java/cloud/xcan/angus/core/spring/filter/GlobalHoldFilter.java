@@ -111,7 +111,7 @@ public class GlobalHoldFilter implements Filter {
       holdPrincipal(request, path, principal, mutableRequest);
       PrincipalContext.set(principal);
 
-      // For /doorapi
+      // For /innerapi
       if (PrincipalContextUtils.isDoorApi()) {
         Long optTenantId = getOptTenantId(request);
         if (nonNull(optTenantId)) {

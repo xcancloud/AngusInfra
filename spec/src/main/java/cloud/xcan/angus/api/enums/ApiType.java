@@ -11,7 +11,7 @@ public enum ApiType implements ValueObject<ApiType>, EnumValueMessage<String> {
   API, OPEN_API, OPEN_API_2P, DOOR_API, PUB_API, VIEW, PUB_VIEW;
 
   public static final Map<ApiType, String> API_TYPE_MAP =
-      Map.of(API, "/api/", OPEN_API, "/openapi/", OPEN_API_2P, "/openapi2p/", DOOR_API, "/doorapi/",
+      Map.of(API, "/api/", OPEN_API, "/openapi/", OPEN_API_2P, "/openapi2p/", DOOR_API, "/innerapi/",
           PUB_API, "/pubapi/", VIEW, "/view/", PUB_VIEW, "/pubview/");
 
   public static ApiType findByUri(String uri) {

@@ -275,7 +275,7 @@ public interface BizConstant {
   String[] AUTH_RESOURCES = {
       "/api/**",
       "/openapi/**",
-      "/doorapi/**",
+      "/innerapi/**",
       "/openapi2p/**",
       "/view/**"
   };
@@ -295,7 +295,7 @@ public interface BizConstant {
   };
 
   String[] DOOR_RESOURCES = {
-      "/doorapi/**"
+      "/innerapi/**"
   };
 
   String[] AUTH_WHITELIST = {
@@ -304,7 +304,7 @@ public interface BizConstant {
       "/actuator/**",
       // angus apis
       "/pubapi/**",
-      "/doorapi/**",
+      "/innerapi/**",
       //"/openapi2p/**",
       "/pubview/**",
       // "/ws/**", // Internal authentication of access tokens

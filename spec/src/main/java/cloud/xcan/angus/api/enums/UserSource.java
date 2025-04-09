@@ -23,9 +23,13 @@ public enum UserSource implements EnumMessage<String> {
     return this.name();
   }
 
+  public boolean isPlatformSignup() {
+    return PLATFORM_SIGNUP.equals(this);
+  }
+
   public static boolean isNewSignup(final UserSource source) {
-    return PLATFORM_SIGNUP.equals(source) || BACKGROUND_SIGNUP.equals(source) || THIRD_PARTY_LOGIN
-        .equals(source);
+    return PLATFORM_SIGNUP.equals(source) || BACKGROUND_SIGNUP.equals(source)
+        || THIRD_PARTY_LOGIN.equals(source);
   }
 
   public static boolean isAddUser(final UserSource source) {

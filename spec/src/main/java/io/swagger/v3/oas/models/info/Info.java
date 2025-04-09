@@ -1,11 +1,11 @@
 package io.swagger.v3.oas.models.info;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_KEY_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_DOC_DESC_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_NAME_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_SUMMARY_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_SIZE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;

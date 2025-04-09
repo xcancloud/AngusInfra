@@ -89,7 +89,7 @@ public class ApiLog extends SimpleSource {
 
   public static final class Builder {
 
-    private final EventType type = EventType.API;
+    private final String type = EventType.API.getValue();
     private String code;
     private String description;
     //private LocalDateTime timestamp;

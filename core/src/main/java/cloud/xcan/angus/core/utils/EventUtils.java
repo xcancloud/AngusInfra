@@ -1,6 +1,5 @@
 package cloud.xcan.angus.core.utils;
 
-import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.api.enums.NoticeType;
 import cloud.xcan.angus.api.enums.ReceiveObjectType;
 import cloud.xcan.angus.core.event.source.EventContent;
@@ -12,7 +11,7 @@ import java.util.Map;
 
 public class EventUtils {
 
-  public static EventContent assembleExceptionEvent(EventType type, String code, String message,
+  public static EventContent assembleExceptionEvent(String type, String code, String message,
       ExceptionLevel level, String eKey, Object cause) {
     Principal principal = PrincipalContext.get();
     return EventContent.newBuilder()
@@ -31,7 +30,7 @@ public class EventUtils {
         .build();
   }
 
-  public static EventContent assembleNoticeEvent(String appCode, EventType type, String code,
+  public static EventContent assembleNoticeEvent(String appCode, String type, String code,
       String message, String targetType, String targetId, String targetName,
       List<NoticeType> noticeTypes, ReceiveObjectType receiveObjectType,
       List<Long> receiveObjectIds) {
@@ -52,7 +51,7 @@ public class EventUtils {
         .build();
   }
 
-  public static EventContent assembleNoticeEvent(String appCode, EventType type, String code,
+  public static EventContent assembleNoticeEvent(String appCode, String type, String code,
       String message, String targetType, String targetId, String targetName,
       List<NoticeType> noticeTypes, ReceiveObjectType receiveObjectType,
       List<Long> receiveObjectIds, List<String> topPolicyCode, Map<String, String> templateParams) {
@@ -74,7 +73,7 @@ public class EventUtils {
         .build();
   }
 
-  public static EventContent assembleNoticeEventByDoor(String appCode, EventType type,
+  public static EventContent assembleNoticeEventByDoor(String appCode, String type,
       Principal principal, String code, String message, String targetType, String targetId,
       String targetName, List<NoticeType> noticeTypes, ReceiveObjectType receiveObjectType,
       List<Long> receiveObjectIds, List<String> topPolicyCode, Map<String, String> templateParams) {

@@ -8,12 +8,13 @@ import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
 import cloud.xcan.angus.core.fegin.FilterQueryMapEncoder;
 import cloud.xcan.angus.core.utils.GsonUtils;
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.spec.annotations.NonNullable;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Feign;
 import feign.Logger;
 import feign.Retryer;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -24,40 +25,46 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
+import org.springframework.cloud.openfeign.FeignClientsConfiguration;
+import org.springframework.cloud.openfeign.support.SpringDecoder;
+import org.springframework.cloud.openfeign.support.SpringEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Feign.class)
-@AutoConfigureBefore(FeignAutoConfiguration.class)
+@ImportAutoConfiguration(FeignClientsConfiguration.class)
+@AutoConfigureBefore({FeignClientsConfiguration.class, FeignAutoConfiguration.class})
 public class FeignAutoConfigurer {
 
-  @Bean
-  @ConditionalOnMissingClass
-  public ErrorDecoder errorDecoder(ObjectMapper objectMapper) {
-    return new CustomErrorDecoder(objectMapper);
-  }
-
   @Profile({"local", "dev", "beta"})
-  @Bean
+  @Bean("feignLoggerLevel")
   Logger.Level feignLoggerFull() {
     return Logger.Level.FULL;
   }
 
-  @Profile({"pre", "prod"})
-  @Bean
+  @Profile({"prod"})
+  @Bean("feignLoggerLevel")
   Logger.Level feignLoggerBasic() {
     return Logger.Level.BASIC;
   }
 
   @Bean
-  public Feign.Builder feignBuilder() {
+  public Feign.Builder feignBuilder(OkHttpClient client, Encoder feignEncoder,
+      Decoder feignDecoder, ErrorDecoder errorDecoder, Logger.Level feignLoggerLevel) {
     return Feign.builder()
+        .client(new feign.okhttp.OkHttpClient(client))
+        .encoder(feignEncoder)
+        .decoder(feignDecoder)
+        .errorDecoder(errorDecoder)
+        .logLevel(feignLoggerLevel)
         .queryMapEncoder(new FilterQueryMapEncoder())
         /* new Retryer.Default(): The maximum number of retry requests is 5(maxAttempts),
          * the initial interval time is 100ms(period), the next interval time increases by 1.5 times,
@@ -66,22 +73,40 @@ public class FeignAutoConfigurer {
   }
 
   @Bean
-  @ConditionalOnMissingClass
   public OkHttpClient client() {
     return new OkHttpClient().newBuilder()
-        .connectTimeout(3, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .writeTimeout(30, TimeUnit.SECONDS)
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .writeTimeout(60, TimeUnit.SECONDS)
         .retryOnConnectionFailure(true)
         .connectionPool(new ConnectionPool(10, 5L, TimeUnit.MINUTES))
         .addInterceptor(new BizExceptionInterceptor()).build();
+  }
+
+  @Bean
+  public Encoder feignEncoder(ObjectMapper objectMapper) {
+    return new SpringEncoder(() -> new HttpMessageConverters(
+        new MappingJackson2HttpMessageConverter(objectMapper)
+    ));
+  }
+
+  @Bean
+  public Decoder feignDecoder(ObjectMapper objectMapper) {
+    return new SpringDecoder(() -> new HttpMessageConverters(
+        new MappingJackson2HttpMessageConverter(objectMapper)
+    ));
+  }
+
+  @Bean
+  public ErrorDecoder errorDecoder(ObjectMapper objectMapper) {
+    return new CustomErrorDecoder(objectMapper);
   }
 }
 
 class BizExceptionInterceptor implements Interceptor {
 
   @Override
-  public Response intercept(@NonNullable Chain chain) throws IOException {
+  public Response intercept(Chain chain) throws IOException {
     Request request = chain.request();
     Response response = chain.proceed(request);
     String eKey = response.headers().get(Header.E_KEY);

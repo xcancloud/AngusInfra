@@ -1,5 +1,7 @@
 package cloud.xcan.angus.security.introspection;
 
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.AUTHORITY_SCOPE_PREFIX;
+
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -46,7 +48,6 @@ import org.springframework.web.client.RestTemplate;
  */
 public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
-  private static final String AUTHORITY_PREFIX = "SCOPE_";
 
   public static final String INTROSPECTION_CLAIM_NAMES_SCOPE = "permissions";
 
@@ -250,7 +251,7 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
   private OAuth2IntrospectionAuthenticatedPrincipal defaultAuthenticationConverter(
       OAuth2TokenIntrospectionClaimAccessor accessor) {
     Collection<GrantedAuthority> authorities = new ArrayList<>();
-    Collection<GrantedAuthority> scopeAuthorities = authorities(AUTHORITY_PREFIX,
+    Collection<GrantedAuthority> scopeAuthorities = authorities(AUTHORITY_SCOPE_PREFIX,
         accessor.getScopes());
     authorities.addAll(scopeAuthorities);
     Collection<GrantedAuthority> userAuthorities = authorities("",

@@ -79,6 +79,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
   private final static AntPathRequestMatcher[] AUTH_API_MATCHERS = new AntPathRequestMatcher[]{
       new AntPathRequestMatcher("/api/**"),
+      new AntPathRequestMatcher("/innerapi/**"),
       new AntPathRequestMatcher("/openapi/**")
   };
 

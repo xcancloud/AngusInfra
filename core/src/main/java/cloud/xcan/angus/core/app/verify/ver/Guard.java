@@ -195,7 +195,7 @@ public class Guard {
           if (var1.equalsIgnoreCase(var0)) {
             String var2 = var6.elements().get(0).getText();
             if (null != var6.elements().get(0).elements()
-                && var6.elements().get(0).elements().size() > 0) {
+                && !var6.elements().get(0).elements().isEmpty()) {
               return var6.elements().get(0).elements().get(0).getText();
             }
             return var2;
@@ -262,12 +262,9 @@ public class Guard {
     // Allow max 1MB size files and let the verifier detect a partial read
     final int size = Math.min((int) var0.length(), 1024 * 1024);
     final byte[] b = new byte[size];
-    final InputStream in = new FileInputStream(var0);
-    try {
+    try (InputStream in = new FileInputStream(var0)) {
       // Let the verifier detect a partial read as an error
       in.read(b);
-    } finally {
-      in.close();
     }
     return b;
   }

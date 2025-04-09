@@ -125,7 +125,7 @@ public class ApiLogProperties implements AppPropertiesRegister {
     public static final String AL_UR_PUSH_LOGGER_SERVICE_IGNORE_PATTERN = "xcan.apilog.userRequest.pushLoggerServiceIgnorePattern";
 
     /**
-     * Record the logs of user token, /pubapi and /doorapi is also included.
+     * Record the logs of user token, /pubapi and /innerapi is also included.
      */
     @Schema(description = "Enable user access log configuration")
     private Boolean enabled;

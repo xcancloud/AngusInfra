@@ -191,7 +191,9 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
     CustomOAuth2RegisteredClient client = clientCache.getClientFromCache(id);
     if (client == null) {
       client = findBy("id = ?", id);
-      clientCache.putClientInCache(id, client);
+      if (nonNull(client)){
+        clientCache.putClientInCache(id, client);
+      }
     }
     return client;
   }
@@ -202,7 +204,9 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
     CustomOAuth2RegisteredClient client = clientCache.getClientFromCache(clientId);
     if (client == null) {
       client = findBy("client_id = ?", clientId);
-      clientCache.putClientInCache(clientId, client);
+      if (nonNull(client)){
+        clientCache.putClientInCache(clientId, client);
+      }
     }
     return client;
   }

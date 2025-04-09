@@ -13,7 +13,7 @@ public enum EventType implements EnumMessage<String> {
   /**
    * Flag to support events based on exception mechanism.
    */
-  public boolean exceptional;
+  public final boolean exceptional;
 
   EventType(boolean exceptional) {
     this.exceptional = exceptional;
@@ -24,6 +24,15 @@ public enum EventType implements EnumMessage<String> {
     return this.name();
   }
 
+  public static EventType from(String type) {
+    for (EventType value : values()) {
+      if (value.getValue().equalsIgnoreCase(type)) {
+        return value;
+      }
+    }
+    throw new IllegalArgumentException("Unknown type: " + type);
+  }
+
   public String getExceptionEventBizKey() {
     return exceptional ? getValue() : null;
   }
@@ -31,5 +40,4 @@ public enum EventType implements EnumMessage<String> {
   public String getExceptionEventBigBizKey() {
     return exceptional ? getValue() : null;
   }
-
 }

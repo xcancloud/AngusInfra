@@ -18,7 +18,7 @@
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.spec</artifactId>
+      <artifactId>xcan-infra.remote</artifactId>
     </dependency>
 
     <dependency>

@@ -101,11 +101,6 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
     FEATURE_DEFAULTS = Collections.unmodifiableMap(featureDefaults);
   }
 
-  @Bean
-  public EnumModule enumModule() {
-    return new EnumModule();
-  }
-
   @Override
   public void addFormatters(FormatterRegistry registry) {
     registry.addConverterFactory(new EnumConverterFactory());
@@ -134,46 +129,7 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
       // simpleModule.addSerializer(BigDecimal.class, new BigDecimalSerializer());
       // simpleModule.addDeserializer(BigDecimal.class, new BigDecimalDeSerializer());
       mapper.registerModule(simpleModule);
-
-      //      // OAS3 models converter config
-      //      // see ObjectMapperFactory#createJsonConverter()
-      //      Module deserializerModule = new DeserializationModule();
-      //      mapper.registerModule(deserializerModule);
-      //      // mapper.registerModule(new JavaTimeModule());
-      //
-      //      Map<Class<?>, Class<?>> sourceMixins = new LinkedHashMap<>();
-      //      sourceMixins.put(ApiResponses.class, ExtensionsMixin.class);
-      //      sourceMixins.put(ApiResponse.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Callback.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Components.class, ComponentsMixin.class);
-      //      sourceMixins.put(Contact.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Encoding.class, ExtensionsMixin.class);
-      //      sourceMixins.put(EncodingProperty.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Example.class, ExampleMixin.class);
-      //      sourceMixins.put(ExternalDocumentation.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Header.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Info.class, ExtensionsMixin.class);
-      //      sourceMixins.put(License.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Link.class, ExtensionsMixin.class);
-      //      sourceMixins.put(LinkParameter.class, ExtensionsMixin.class);
-      //      sourceMixins.put(MediaType.class, MediaTypeMixin.class);
-      //      sourceMixins.put(OAuthFlow.class, ExtensionsMixin.class);
-      //      sourceMixins.put(OAuthFlows.class, ExtensionsMixin.class);
-      //      sourceMixins.put(OpenAPI.class, OpenAPIMixin.class);
-      //      sourceMixins.put(Operation.class, OperationMixin.class);
-      //      sourceMixins.put(Parameter.class, ExtensionsMixin.class);
-      //      sourceMixins.put(PathItem.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Paths.class, ExtensionsMixin.class);
-      //      sourceMixins.put(RequestBody.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Scopes.class, ExtensionsMixin.class);
-      //      sourceMixins.put(SecurityScheme.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Server.class, ExtensionsMixin.class);
-      //      sourceMixins.put(ServerVariable.class, ExtensionsMixin.class);
-      //      sourceMixins.put(ServerVariables.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Tag.class, ExtensionsMixin.class);
-      //      sourceMixins.put(XML.class, ExtensionsMixin.class);
-      //      sourceMixins.put(Schema.class, SchemaConverterMixin.class);
-      //      mapper.setMixIns(sourceMixins);
+      mapper.registerModule(new EnumModule());
 
       // Exception: Could not read JSON: The class with cloud.xcan.angus.api.commonlink.setting.Setting and name of cloud.xcan.angus.api.commonlink.setting.Setting is not in the allowlist. If you believe this class is safe to deserialize, please provide an explicit mapping using Jackson annotations or by providing a Mixin.
       // If the serialization is only done by a trusted source, you can also enable default typing.

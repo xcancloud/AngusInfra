@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface OperationEventRemote extends EventRemote<UserOperation> {
 
   @Override
-  @PostMapping(value = "/doorapi/v1/log/operation")
+  @PostMapping(value = "/innerapi/v1/log/operation")
   void sendEvents(@RequestBody List<UserOperation> events);
 
 }

@@ -128,7 +128,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
     String path = request.getRequestURI();
     if (path.startsWith("/api/auth/user") || path.startsWith("/pubapi/v1/auth/user")
-        || path.startsWith("/doorapi/v1/log/") || path.startsWith("/actuator")
+        || path.startsWith("/innerapi/v1/log/") || path.startsWith("/actuator")
         || path.startsWith("/swagger") || "/".equals(path)) {
       filterChain.doFilter(request, response);
       return;

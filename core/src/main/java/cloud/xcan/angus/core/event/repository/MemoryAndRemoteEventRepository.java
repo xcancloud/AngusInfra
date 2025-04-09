@@ -1,6 +1,7 @@
 package cloud.xcan.angus.core.event.repository;
 
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
 import cloud.xcan.angus.core.event.AbstractEvent;
 import cloud.xcan.angus.core.event.EventRemote;
@@ -135,7 +136,7 @@ public class MemoryAndRemoteEventRepository<T extends AbstractEvent<?>> implemen
   }
 
   private synchronized int batchSendEvents() {
-    if (Objects.isNull(eventRemote)) {
+    if (isNull(eventRemote)) {
       return 0;
     }
     List<Object> eventSources = new ArrayList<>();

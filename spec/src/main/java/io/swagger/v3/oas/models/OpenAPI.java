@@ -1,9 +1,9 @@
 package io.swagger.v3.oas.models;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_KEY_LENGTH;
-import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_SIZE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_PATH_NUM;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_OPENAPI_TAG_NUM;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_SIZE;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.spec.annotations.ThirdExtension;

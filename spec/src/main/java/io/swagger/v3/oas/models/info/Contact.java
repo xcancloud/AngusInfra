@@ -1,8 +1,8 @@
 package io.swagger.v3.oas.models.info;
 
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_EMAIL_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_EMAIL_LENGTH;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;

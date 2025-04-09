@@ -31,7 +31,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 @Slf4j
 public class FeignRequestInterceptor implements RequestInterceptor {
 
-  private ApplicationInfo applicationInfo;
+  private final ApplicationInfo applicationInfo;
 
   public FeignRequestInterceptor(ApplicationInfo applicationInfo) {
     this.applicationInfo = applicationInfo;

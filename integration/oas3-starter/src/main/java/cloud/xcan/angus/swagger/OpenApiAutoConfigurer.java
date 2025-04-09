@@ -46,7 +46,7 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/api (User Api Document)")
+          .displayName("/api (Private Edition User Api Document)")
           .group("user")
           .pathsToMatch("/api/v1/**")
           // Exclude cloud service edition apis
@@ -56,7 +56,7 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/api (User Api Document)")
+          .displayName("/api (CloudService Edition User Api Document)")
           .group("user")
           .pathsToMatch("/api/v1/**")
           // Exclude privatized edition apis
@@ -73,7 +73,7 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/innerapi (System Inner Api Document)")
+          .displayName("/innerapi (Private Edition System Inner Api Document)")
           .group("system")
           .pathsToMatch("/innerapi/v1/**")
           // Exclude cloud service edition apis
@@ -83,7 +83,7 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/innerapi (System Inner Api Document)")
+          .displayName("/innerapi (CloudService Edition System Inner Api Document)")
           .group("system")
           .pathsToMatch("/innerapi/v1/**")
           // Exclude privatized edition apis
@@ -100,7 +100,7 @@ public class OpenApiAutoConfigurer {
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/pubapi (Public Api Document)")
+          .displayName("/pubapi (Private Edition Public Api Document)")
           .group("public")
           .pathsToMatch("/pubapi/v1/**")
           // Exclude cloud service edition apis
@@ -109,7 +109,7 @@ public class OpenApiAutoConfigurer {
     } else {
       // Cloud service edition
       openApi = GroupedOpenApi.builder()
-          .displayName("/pubapi (Public Api Document)")
+          .displayName("/pubapi (CloudService Edition Public Api Document)")
           .group("public")
           .pathsToMatch("/pubapi/v1/**")
           // Exclude privatized edition apis

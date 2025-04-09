@@ -56,7 +56,7 @@ VALUES ('client-credentials-introspect-id', -- id
         'client_secret_post,client_secret_basic', -- client_authentication_methods
         'client_credentials', -- authorization_grant_types
         NULL, -- redirect_uris (not required for client_credentials grant)
-        'read,write', -- scopes
+        'opaque_token_introspect_trust,inner_api_trust', -- scopes
         '{"@class":"java.util.Collections$UnmodifiableMap","settings.client.require-authorization-consent":false}', -- client_settings
         '{"@class":"java.util.Collections$UnmodifiableMap","settings.token.access-token-time-to-live":["java.time.Duration",360000],"settings.token.access-token-format":{"@class":"org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat","value":"reference"}}', -- token_settings
         true, 'XCAN_INNER', 'XCAN_SYS_INTROSPECT'

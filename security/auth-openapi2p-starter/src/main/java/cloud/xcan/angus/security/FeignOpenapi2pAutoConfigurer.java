@@ -1,12 +1,12 @@
 package cloud.xcan.angus.security;
 
-import cloud.xcan.angus.security.model.remote.ClientSignOpenapi2pRemote;
+import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnProperty(prefix = "xcan.open2pauth", name = "enabled", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "xcan.auth.openapi2p", name = "enabled", matchIfMissing = false)
 public class FeignOpenapi2pAutoConfigurer {
 
   @Bean

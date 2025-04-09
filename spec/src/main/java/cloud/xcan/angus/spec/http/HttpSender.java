@@ -11,7 +11,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import cloud.xcan.angus.api.pojo.Pair;
 import cloud.xcan.angus.api.pojo.auth.SimpleHttpAuth;
 import cloud.xcan.angus.spec.utils.ObjectUtils;
-import cloud.xcan.angus.spec.utils.StringUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;

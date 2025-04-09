@@ -35,5 +35,21 @@ public class ValueObfTest {
     System.out.println(Obj0.var0("XCAN_SYS_TOKEN"));
     System.out.println(Obj0.var0("XCAN_2P_SIGNIN"));
 
+    System.out.println(Obj0.var0("/openapi2p"));
+    System.out.println(Obj0.var0("/innerapi"));
+
+    System.out.println(Obj0.var0("user_trust"));
+    System.out.println(Obj0.var0("system_trust"));
+    System.out.println(Obj0.var0("inner_api_trust"));
+    System.out.println(Obj0.var0("2private_trust"));
+
+    System.out.println(Obj0.var0("OAUTH2_INNER_API_CLIENT_ID"));
+    System.out.println(Obj0.var0("OAUTH2_INTROSPECT_CLIENT_ID"));
+    System.out.println(Obj0.var0("OAUTH2_INNER_API_CLIENT_SECRET"));
+    System.out.println(Obj0.var0("OAUTH2_INTROSPECT_CLIENT_SECRET"));
+
+    System.out.println(Obj0.var0("The inner API authentication client is not configured"));
+    System.out.println(Obj0.var0("Inner API authentication failed"));
+
   }
 }

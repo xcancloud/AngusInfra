@@ -1,4 +1,4 @@
-package cloud.xcan.angus.security.model.remote;
+package cloud.xcan.angus.security.remote;
 
 import cloud.xcan.angus.remote.ApiLocaleResult;
 import cloud.xcan.angus.security.model.remote.dto.ClientSigninDto;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author XiaoLong Liu
  */
-@FeignClient(name = "ANGUSGM", url = "${xcan.cloud.gmApiUrlPrefix}")
-public interface ClientSignOpenapi2pRemote {
+@FeignClient(url = "${OAUTH2_ENDPOINT_PREFIX}/oauth2/token")
+public interface ClientSignInnerApiRemote {
 
   @Operation(
       summary = "Client signin", description = "Client signin for private and 3rd authorization.",

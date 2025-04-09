@@ -1,9 +1,9 @@
 package cloud.xcan.angus.api.pojo;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_CODE_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_COUNTRY_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH_X2;
-import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_COUNTRY_LENGTH;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.Objects;

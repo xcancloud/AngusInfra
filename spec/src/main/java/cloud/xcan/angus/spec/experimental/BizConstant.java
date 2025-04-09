@@ -401,6 +401,11 @@ public interface BizConstant {
     String ACCESS_TOKEN_EXPIRED_DATE = "accessTokenExpiredDate";
 
     Duration MAX_TOKEN_VALIDITY_PERIOD = Duration.ofDays(50 * 365);
+
+    String USER_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0x7B11B48BEA942518L, 0xF8BF08BD6A9D124DL, 0xB9DCE6E85E26CF1DL}).toString() /* => "user_trust" */;
+    String SYS_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xB0E3E630F772EDCCL, 0x19AB604C3E331BA7L, 0xC76133C9AFDC132L}).toString() /* => "system_trust" */;
+    String INNER_API_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xC455951C87AD5803L, 0x35805C099A01ECBCL, 0xD171894DFA6FCDCL}).toString() /* => "inner_api_trust" */;
+    String SIGN2P_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xD2FA692C90D3F585L, 0x7EA0E7EB0C94C9E6L, 0x96AE7547AD622667L}).toString() /* => "2private_trust" */;
   }
 
   /**

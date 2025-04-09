@@ -4,8 +4,8 @@ import static cloud.xcan.angus.core.biz.exception.BizException.M.OPT_OBJ_IS_EMPT
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.remote.ExceptionLevel;
-import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.remote.message.ResultMessage;
+import cloud.xcan.angus.remote.message.SysException;
 import org.apache.commons.lang3.StringUtils;
 
 public class SystemAssert {

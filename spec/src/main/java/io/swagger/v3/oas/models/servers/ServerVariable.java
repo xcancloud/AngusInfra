@@ -1,7 +1,7 @@
 package io.swagger.v3.oas.models.servers;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REMARK_LENGTH_X4;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_NAME_LENGTH;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REMARK_LENGTH_X4;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;

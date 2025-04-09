@@ -23,6 +23,7 @@
     <module>auth-server-starter</module>
     <module>auth-openapi-starter</module>
     <module>auth-openapi2p-starter</module>
+    <module>auth-innerapi-starter</module>
     <module>auth-service-samples</module>
   </modules>
 

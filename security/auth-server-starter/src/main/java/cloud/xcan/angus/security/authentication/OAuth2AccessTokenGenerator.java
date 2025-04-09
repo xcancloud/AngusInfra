@@ -7,7 +7,6 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.spec.principal.PrincipalContext;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Collections;

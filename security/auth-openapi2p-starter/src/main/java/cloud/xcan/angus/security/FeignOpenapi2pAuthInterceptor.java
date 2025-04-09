@@ -2,18 +2,19 @@ package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isCloudServiceEdition;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SIGN2P_TOKEN_CLIENT_SCOPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTHORIZATION;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getAuthorization;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
+import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.app.verify.ver.Guard;
-import cloud.xcan.angus.security.model.remote.ClientSignOpenapi2pRemote;
 import cloud.xcan.angus.security.model.remote.dto.ClientSigninDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
+import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.typelevel.v.Str0;
 
 @Slf4j
 public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
@@ -29,8 +30,8 @@ public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
   @Override
   public void apply(RequestTemplate template) {
     if (template.path().startsWith(
-        new Str0(new long[]{0x3B4B5579260CAC87L, 0x7D6D17E8233465F6L, 0xBD91B361BD0DAC9CL})
-            .toString() /* => "/openapi2p" */)) {
+        new Str0(new long[]{0x3D078221EA9EB44L, 0x2BF9F66B7026894CL,
+            0xAFB9EBCE23D55A7AL}).toString() /* => "/openapi2p" */)) {
       template.header(AUTHORIZATION, getToken());
     }
   }
@@ -58,9 +59,7 @@ public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
         ClientSignInVo result = clientSign2pOpenRemote.signin(
             new ClientSigninDto().setClientId(guard.var126())
                 .setClientSecret(guard.var127())
-                .setScope(new Str0(
-                    new long[]{0xF6A8996A31956709L, 0xEB88405CAAFD11A3L, 0xECCBFA5DAF2B5F55L})
-                    .toString() /* => "2private_trust" */)).orElseContentThrow();
+                .setScope(SIGN2P_TOKEN_CLIENT_SCOPE)).orElseContentThrow();
         this.openapi2pToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
         return this.openapi2pToken;
       } catch (Exception e) {

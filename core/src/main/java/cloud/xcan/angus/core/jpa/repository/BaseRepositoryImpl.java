@@ -2,8 +2,8 @@ package cloud.xcan.angus.core.jpa.repository;
 
 import static cloud.xcan.angus.core.utils.CoreUtils.getAnnotationFieldName;
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
-import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_BATCH_SIZE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_RESOURCE_NAME;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_BATCH_SIZE;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;

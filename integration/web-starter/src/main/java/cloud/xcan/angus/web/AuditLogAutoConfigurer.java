@@ -24,6 +24,7 @@ import cloud.xcan.angus.core.log.ApiLogFilter;
 import cloud.xcan.angus.core.log.ApiLogProperties;
 import cloud.xcan.angus.core.log.OperationLogAspect;
 import cloud.xcan.angus.core.log.OperationLogProperties;
+import cloud.xcan.angus.security.FeignInnerApiAuthInterceptor;
 import cloud.xcan.angus.spec.thread.DefaultThreadFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.Client;
@@ -32,16 +33,15 @@ import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import jakarta.servlet.DispatcherType;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Import;
 
 /**
  * Request log and operation log auto-configuration for {@link AbstractEvent}.
@@ -50,27 +50,23 @@ import org.springframework.context.annotation.Import;
  * @see EnableAutoConfiguration
  */
 @Configuration(proxyBeanMethods = false)
-@Import(FeignClientsConfiguration.class)
+@AutoConfigureAfter(FeignAutoConfigurer.class)
 //@Conditional({AuditLogAutoConfigurer.AuditLogCondition.class}) <- Fix:: Will cause CommonService#Setting to be invalid
 @EnableConfigurationProperties({ApiLogProperties.class, OperationLogProperties.class})
 @ConditionalOnExpression(value = "${xcan.api-log.enabled:true} || ${xcan.opt-log.enabled:false}")
 public class AuditLogAutoConfigurer {
 
   public final static String[] RESOURCES = new String[]{
-      new Str0(new long[]{0x7582756E66662C60L, 0x3414E4B58011F8F0L}).toString() /* => "/api/*" */,
-      new Str0(new long[]{0x79F0996A85EB7CA4L, 0x802CF7EA9F25F197L, 0x4EFFF40A372A716DL}).toString()
-      /* => "/innerapi/*" */,
-      new Str0(new long[]{0xC60EDC5DD5371E7DL, 0x5B324C24FDC93F38L, 0xA438A15F9C45F104L}).toString()
-      /* => "/pubapi/*" */,
-      new Str0(new long[]{0xB55FCE32E26D0295L, 0x3A77FACAEC89DA49L, 0xB8679922EFED3ECFL}).toString()
-      /* => "/openapi2p/*" */};
+      "/api/*", "/innerapi/*", "/pubapi/*", "/openapi2p/*"};
 
   @ConditionalOnMissingBean
   @Bean("commonEventRemote")
   public CommonEventRemote commonEventRemote(Client client, Encoder encoder,
-      Decoder decoder, Contract contract, ApiLogProperties apiLogProperties) {
+      Decoder decoder, Contract contract, ApiLogProperties apiLogProperties,
+      FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
     return Feign.builder().client(client)
         .encoder(encoder).decoder(decoder).contract(contract)
+        .requestInterceptor(feignInnerApiAuthInterceptor)
         .target(CommonEventRemote.class, "http://" + apiLogProperties.getEventService());
   }
 
@@ -108,18 +104,20 @@ public class AuditLogAutoConfigurer {
 
   @ConditionalOnMissingBean
   @Bean("operationEventRemote")
-  //@ConditionalOnProperty(prefix = "xcan.optlog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
   public OperationEventRemote operationEventRemote(Client client, Encoder encoder,
-      Decoder decoder, Contract contract, ApiLogProperties apiLogProperties) {
+      Decoder decoder, Contract contract, ApiLogProperties apiLogProperties,
+      FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
     return Feign.builder().client(client)
         .encoder(encoder).decoder(decoder).contract(contract)
+        .requestInterceptor(feignInnerApiAuthInterceptor)
         .target(OperationEventRemote.class, "http://" + apiLogProperties.getLoggerService());
   }
 
   @DependsOn("operationEventRemote")
   @ConditionalOnMissingBean(name = "operationEventRepository")
   @Bean("operationEventRepository")
-  //@ConditionalOnProperty(prefix = "xcan.optlog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
   public EventRepository<OperationEvent> operationEventRepository(
       OperationEventRemote operationEventRemote, ObjectMapper objectMapper) {
     return new MemoryAndRemoteEventRepository(
@@ -130,7 +128,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("operationEventRepository")
   @Bean("operationEventListener")
-  //@ConditionalOnProperty(prefix = "xcan.optlog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
   public EventListener<OperationEvent> operationEventListener(
       EventRepository<OperationEvent> operationEventRepository) {
     return new OperationEventListener<>(operationEventRepository);
@@ -138,7 +136,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("operationEventListener")
   @Bean(EventSender.OperationQueue.QUEUE_NAME)
-  //@ConditionalOnProperty(prefix = "xcan.optlog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
   public DisruptorQueueManager<OperationEvent> operationEventDisruptorQueue(
       EventListener<OperationEvent> operationEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
@@ -152,7 +150,7 @@ public class AuditLogAutoConfigurer {
   }
 
   @Bean
-  //@ConditionalOnProperty(prefix = "xcan.optlog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
   public OperationLogAspect operationLogAspect(
       DisruptorQueueManager<OperationEvent> operationEventDisruptorQueue) {
     return new OperationLogAspect(operationEventDisruptorQueue);
@@ -160,18 +158,20 @@ public class AuditLogAutoConfigurer {
 
   @ConditionalOnMissingBean
   @Bean("apiLogEventRemote")
-  //@ConditionalOnProperty(prefix = "xcan.apilog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
   public ApiLogEventRemote apiLogEventRemote(Client client, Encoder encoder,
-      Decoder decoder, Contract contract, ApiLogProperties apiLogProperties) {
+      Decoder decoder, Contract contract, ApiLogProperties apiLogProperties,
+      FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
     return Feign.builder().client(client)
         .encoder(encoder).decoder(decoder).contract(contract)
+        .requestInterceptor(feignInnerApiAuthInterceptor)
         .target(ApiLogEventRemote.class, "http://" + apiLogProperties.getLoggerService());
   }
 
   @DependsOn("apiLogEventRemote")
   @ConditionalOnMissingBean(name = "apiLogEventRepository")
   @Bean("apiLogEventRepository")
-  //@ConditionalOnProperty(prefix = "xcan.apilog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
   public EventRepository<ApiLogEvent> apiLogEventRepository(ApiLogEventRemote apiLogEventRemote,
       ObjectMapper objectMapper) {
     return new MemoryAndRemoteEventRepository(
@@ -182,7 +182,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("apiLogEventRepository")
   @Bean("apiLogEventListener")
-  //@ConditionalOnProperty(prefix = "xcan.apilog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
   public EventListener<ApiLogEvent> apiLogEventListener(
       EventRepository<ApiLogEvent> apiLogEventRepository) {
     return new OperationEventListener<>(apiLogEventRepository);
@@ -190,7 +190,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("apiLogEventListener")
   @Bean(EventSender.ApiLogQueue.QUEUE_NAME)
-  //@ConditionalOnProperty(prefix = "xcan.apilog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
   public DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue(
       EventListener<ApiLogEvent> apiLogEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
@@ -204,7 +204,7 @@ public class AuditLogAutoConfigurer {
   }
 
   @Bean
-  //@ConditionalOnProperty(prefix = "xcan.apilog", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
   public FilterRegistrationBean<ApiLogFilter> registrationApiLogFilterBean(
       ApiLogProperties apiLogProperties,
       DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue) {
@@ -220,33 +220,5 @@ public class AuditLogAutoConfigurer {
     registrationBean.setOrder(REQUEST_WRAPPER_FILTER_MAX_ORDER - 98);
     return registrationBean;
   }
-
-  //  @Bean
-  //  @ConditionalOnClass(name = "org.springframework.security.authentication.event.AbstractAuthenticationEvent")
-  //  @ConditionalOnMissingBean(AbstractAuthenticationAuditListener.class)
-  //  public AuthenticationAuditListener authenticationAuditListener() throws EventContent {
-  //    return new AuthenticationAuditListener();
-  //  }
-  //
-  //  @Bean
-  //  @ConditionalOnClass(name = "org.springframework.security.access.event.AbstractAuthorizationEvent")
-  //  @ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
-  //  public AuthorizationAuditListener authorizationAuditListener() throws EventContent {
-  //    return new AuthorizationAuditListener();
-  //  }
-
-  //  static final class AuditLogCondition implements Condition {
-  //
-  //    AuditLogCondition() {
-  //    }
-  //
-  //    @Override
-  //    public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
-  //      String apiLogEnabled = context.getEnvironment().getProperty("xcan.api-log.enabled");
-  //      String optLogEnabled = context.getEnvironment().getProperty("xcan.opt-log.enabled");
-  //      return (isNotEmpty(apiLogEnabled) && Boolean.parseBoolean(apiLogEnabled)) ||
-  //          isNotEmpty(optLogEnabled) && Boolean.parseBoolean(optLogEnabled);
-  //    }
-  //  }
 
 }

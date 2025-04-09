@@ -7,22 +7,22 @@ import static cloud.xcan.angus.spec.principal.PrincipalContext.getAuthorization;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.app.verify.ver.Guard;
-import cloud.xcan.angus.security.remote.ClientSignOpen2pRemote;
-import cloud.xcan.angus.security.remote.dto.ClientSigninDto;
-import cloud.xcan.angus.security.remote.vo.ClientSignVo;
+import cloud.xcan.angus.security.model.remote.ClientSignOpenapi2pRemote;
+import cloud.xcan.angus.security.model.remote.dto.ClientSigninDto;
+import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.typelevel.v.Str0;
 
 @Slf4j
-public class FeignOpen2pAuthInterceptor implements RequestInterceptor {
+public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
 
-  private String open2pToken;
+  private String openapi2pToken;
 
-  private final ClientSignOpen2pRemote clientSign2pOpenRemote;
+  private final ClientSignOpenapi2pRemote clientSign2pOpenRemote;
 
-  public FeignOpen2pAuthInterceptor(ClientSignOpen2pRemote clientSign2pOpenRemote) {
+  public FeignOpenapi2pAuthInterceptor(ClientSignOpenapi2pRemote clientSign2pOpenRemote) {
     this.clientSign2pOpenRemote = clientSign2pOpenRemote;
   }
 
@@ -41,8 +41,8 @@ public class FeignOpen2pAuthInterceptor implements RequestInterceptor {
       return getAuthorization();
     }
 
-    if (this.open2pToken != null) {
-      return this.open2pToken;
+    if (this.openapi2pToken != null) {
+      return this.openapi2pToken;
     }
 
     try {
@@ -55,14 +55,14 @@ public class FeignOpen2pAuthInterceptor implements RequestInterceptor {
               new long[]{0x5CC49F98C5B79423L, 0x9E229ED62365552BL, 0x6CB5ECDA361155EFL,
                   0x5EC1A30F4C2E0F61L}).toString() /* => "MAIN_LICENSE_PATH" */));
       try {
-        ClientSignVo result = clientSign2pOpenRemote.signin(
+        ClientSignInVo result = clientSign2pOpenRemote.signin(
             new ClientSigninDto().setClientId(guard.var126())
                 .setClientSecret(guard.var127())
                 .setScope(new Str0(
                     new long[]{0xF6A8996A31956709L, 0xEB88405CAAFD11A3L, 0xECCBFA5DAF2B5F55L})
                     .toString() /* => "2private_trust" */)).orElseContentThrow();
-        this.open2pToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
-        return this.open2pToken;
+        this.openapi2pToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
+        return this.openapi2pToken;
       } catch (Exception e) {
         log.warn(new Str0(new long[]{0x5FCCC37F83496ECL, 0xC7AEB45FB3DEAEE8L, 0xD38753E33A84D57FL,
                 0xC7DEFD7034DA5473L, 0x7E4454ABF8B67762L, 0x77CD090011F8B14L})

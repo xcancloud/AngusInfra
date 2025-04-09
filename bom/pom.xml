@@ -130,7 +130,7 @@
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.auth-open2p-starter</artifactId>
+        <artifactId>auth-openapi2p-starter</artifactId>
         <version>${xcan-infra.security.version}</version>
       </dependency>
     </dependencies>

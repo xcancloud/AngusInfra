@@ -6,6 +6,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SC
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_OAUTH2_NAME;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
 import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
@@ -23,6 +24,7 @@ import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -68,30 +70,14 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public GroupedOpenApi doorApi(ApplicationInfo applicationInfo) {
-    GroupedOpenApi openApi;
-    if (applicationInfo.isPrivateEdition()) {
-      // Private edition
-      openApi = GroupedOpenApi.builder()
-          .displayName("/innerapi (Private Edition System Inner Api Document)")
-          .group("system")
-          .pathsToMatch("/innerapi/v1/**")
-          // Exclude cloud service edition apis
-          .addOpenApiMethodFilter(notCloudServiceEditionFilter())
-          .addOpenApiCustomizer(globalSysSecurityCustomizer())
-          .build();
-    } else {
-      // Cloud service edition
-      openApi = GroupedOpenApi.builder()
-          .displayName("/innerapi (CloudService Edition System Inner Api Document)")
-          .group("system")
-          .pathsToMatch("/innerapi/v1/**")
-          // Exclude privatized edition apis
-          .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
-          .addOpenApiCustomizer(globalSysSecurityCustomizer())
-          .build();
-    }
-    return openApi;
+  @Conditional(CloudServiceEditionCondition.class) // Private version does not display inner API docs
+  public GroupedOpenApi doorApi() {
+    return GroupedOpenApi.builder()
+        .displayName("/innerapi (Inner Api Document)")
+        .group("Inner")
+        .pathsToMatch("/innerapi/v1/**")
+        .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .build();
   }
 
   @Bean

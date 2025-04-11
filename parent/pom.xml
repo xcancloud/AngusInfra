@@ -78,6 +78,8 @@
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
 
+    <docker.image.name>angus</docker.image.name>
+
     <spring-cloud.version>2024.0.0</spring-cloud.version>
     <spring-boot.version>3.4.0</spring-boot.version>
     <spring-framework.version>6.2.0</spring-framework.version>
@@ -1073,7 +1075,7 @@
             <configuration>
               <images>
                 <image>
-                  <name>${project.groupId}/${archive.name}:${project.version}</name>
+                  <name>${docker.image.name}:${project.version}</name>
                   <build>
                     <dockerFile>Dockerfile</dockerFile>
                     <args>

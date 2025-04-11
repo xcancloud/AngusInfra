@@ -176,6 +176,7 @@
     <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
     <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
+    <docker-maven-plugin.version>0.46.0</docker-maven-plugin.version>
     <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
     <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
     <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
@@ -879,6 +880,12 @@
           <artifactId>maven-gpg-plugin</artifactId>
           <version>${maven-gpg-plugin.version}</version>
         </plugin>
+        <!-- Build the Docker image and push it to the registry. -->
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>${docker-maven-plugin.version}</version>
+        </plugin>
         <!-- The Enforcer plugin provides goals to control certain environmental constraints such as Maven version,
              JDK version and OS family along with many more built-in rules and user created rules. -->
         <plugin>
@@ -1047,6 +1054,48 @@
                 <phase>verify</phase>
                 <goals>
                   <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Build the Docker image and push it to the registry. -->
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <configuration>
+              <images>
+                <image>
+                  <name>${project.groupId}/${archive.name}:${project.version}</name>
+                  <build>
+                    <dockerFile>Dockerfile</dockerFile>
+                    <args>
+                      <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+                    </args>
+                  </build>
+                </image>
+              </images>
+            </configuration>
+            <executions>
+              <execution>
+                <id>docker-build</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>docker-push</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>push</goal>
                 </goals>
               </execution>
             </executions>

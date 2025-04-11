@@ -1063,43 +1063,6 @@
         </plugins>
       </build>
     </profile>
-
-    <!-- Build the Docker image and push it to the registry. -->
-    <profile>
-      <id>docker</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>com.spotify</groupId>
-            <artifactId>dockerfile-maven-plugin</artifactId>
-            <configuration>
-              <repository>${docker.image.name}</repository>
-              <tag>${project.version}</tag>
-              <dockerfile>${project.build.directory}/Dockerfile</dockerfile>
-              <buildArgs>
-                <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-              </buildArgs>
-            </configuration>
-            <executions>
-              <execution>
-                <id>docker-build</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>build</goal>
-                </goals>
-              </execution>
-              <execution>
-                <id>docker-push</id>
-                <phase>deploy</phase>
-                <goals>
-                  <goal>push</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
   </profiles>
 
 </project>

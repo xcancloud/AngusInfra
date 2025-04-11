@@ -62,14 +62,6 @@ public class SystemLogProperties implements AppPropertiesRegister {
   @Schema(description = "How many days ago to clear the log when the disk usage exceeds the limit, default " + CLEAR_COMPRESSION_BEFORE_DAY)
   private Integer diskUsageExceedsAndClearBeforeDay;
 
-  ///**
-  // * Default true
-  // */
-  //public Boolean getEnabled() {
-  //  String commonConfig = System.getProperty(SL_ENABLED);
-  //  return isNotEmpty(enabled) ? enabled : isEmpty(commonConfig) || Boolean.parseBoolean(commonConfig);
-  //}
-
   /**
    * Default {@link SystemLogClearWay#CLEAR_BEFORE_DAY}
    */

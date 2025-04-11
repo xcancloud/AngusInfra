@@ -2,11 +2,11 @@ package cloud.xcan.angus.core.enums;
 
 import static cloud.xcan.angus.core.spring.SpringContextHolder.getBean;
 import static cloud.xcan.angus.spec.experimental.BizConstant.CTRL_SERVICE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.CTRL_SERVICE_PRIVATIZATION;
+import static cloud.xcan.angus.spec.experimental.BizConstant.CTRL_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE_PRIVATIZATION;
+import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TESTER_SERVICE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.TESTER_SERVICE_PRIVATIZATION;
+import static cloud.xcan.angus.spec.experimental.BizConstant.TESTER_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.obf.Str0;
@@ -53,7 +53,7 @@ public class EnumStoreInMemory implements EnumStore {
               || clz.getName().startsWith("io.swagger.v3.oas.models.extension");
           boolean isGmService = isNotEmpty(appInfo.getArtifactId()) && (
               appInfo.getArtifactId().equalsIgnoreCase(GM_SERVICE)
-                  || appInfo.getArtifactId().equalsIgnoreCase(GM_SERVICE_PRIVATIZATION)
+                  || appInfo.getArtifactId().equalsIgnoreCase(GM_SERVICE_ARTIFACT_ID)
           );
           if (isSdfEnum && !isGmService) {
             continue;
@@ -63,9 +63,9 @@ public class EnumStoreInMemory implements EnumStore {
           boolean isAngusModelEnum = clz.getName().startsWith("cloud.xcan.angus.model");
           boolean isTesterOrCtrlService = isNotEmpty(appInfo.getArtifactId()) && (
               appInfo.getArtifactId().equalsIgnoreCase(TESTER_SERVICE)
-                  || appInfo.getArtifactId().equalsIgnoreCase(TESTER_SERVICE_PRIVATIZATION)
+                  || appInfo.getArtifactId().equalsIgnoreCase(TESTER_SERVICE_ARTIFACT_ID)
                   || appInfo.getArtifactId().equalsIgnoreCase(CTRL_SERVICE)
-                  || appInfo.getArtifactId().equalsIgnoreCase(CTRL_SERVICE_PRIVATIZATION)
+                  || appInfo.getArtifactId().equalsIgnoreCase(CTRL_SERVICE_ARTIFACT_ID)
           );
           if (isAngusModelEnum && !isTesterOrCtrlService) {
             continue;

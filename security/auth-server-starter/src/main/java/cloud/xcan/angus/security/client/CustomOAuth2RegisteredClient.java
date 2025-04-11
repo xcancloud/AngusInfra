@@ -1,5 +1,6 @@
 package cloud.xcan.angus.security.client;
 
+import cloud.xcan.angus.spec.experimental.Resources;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,7 +28,7 @@ import org.springframework.util.StringUtils;
  * Client Registration</a>
  * @see org.springframework.security.oauth2.server.authorization.client.RegisteredClient
  */
-public class CustomOAuth2RegisteredClient extends RegisteredClient {
+public class CustomOAuth2RegisteredClient extends RegisteredClient implements Resources<String> {
 
   private static final long serialVersionUID = SpringAuthorizationServerVersion.SERIAL_VERSION_UID;
 
@@ -95,6 +96,11 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient {
    */
   public String getId() {
     return this.id;
+  }
+
+  @Override
+  public String getName() {
+    return clientName;
   }
 
   /**

@@ -2,8 +2,8 @@ package cloud.xcan.angus.core.log;
 
 import static cloud.xcan.angus.remote.ApiConstant.ApiLog.CLEAR_BEFORE_DAY;
 import static cloud.xcan.angus.remote.ApiConstant.ApiLog.DEFAULT_IGNORE_PATTERN;
-import static cloud.xcan.angus.remote.ApiConstant.Service.EVENT_SERVICE;
-import static cloud.xcan.angus.remote.ApiConstant.Service.LOGGER_SERVICE;
+import static cloud.xcan.angus.remote.ApiConstant.Service.EVENT_SERVICE_ARTIFACT_ID;
+import static cloud.xcan.angus.remote.ApiConstant.Service.LOGGER_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static java.util.Objects.nonNull;
@@ -62,21 +62,21 @@ public class ApiLogProperties implements AppPropertiesRegister {
   }
 
   /**
-   * Default {@link Service#LOGGER_SERVICE}
+   * Default {@link Service#LOGGER_SERVICE_ARTIFACT_ID}
    */
   public String getLoggerService() {
     String commonConfig = System.getProperty(AL_LOGGER_SERVICE);
     return isNotEmpty(loggerService) ? loggerService : isEmpty(commonConfig)
-        ? LOGGER_SERVICE : commonConfig;
+        ? LOGGER_SERVICE_ARTIFACT_ID : commonConfig;
   }
 
   /**
-   * Default {@link Service#EVENT_SERVICE}
+   * Default {@link Service#EVENT_SERVICE_ARTIFACT_ID}
    */
   public String getEventService() {
     String commonConfig = System.getProperty(AL_EVENT_SERVICE);
     return isNotEmpty(eventService) ? eventService : isEmpty(commonConfig)
-        ? EVENT_SERVICE : commonConfig;
+        ? EVENT_SERVICE_ARTIFACT_ID : commonConfig;
   }
 
   public Integer getClearBeforeDay() {
@@ -97,7 +97,8 @@ public class ApiLogProperties implements AppPropertiesRegister {
   @Override
   public ApiLogProperties getDefault() {
     return new ApiLogProperties().setEnabled(true)
-        .setLoggerService(LOGGER_SERVICE).setEventService(EVENT_SERVICE)
+        .setLoggerService(LOGGER_SERVICE_ARTIFACT_ID)
+        .setEventService(EVENT_SERVICE_ARTIFACT_ID)
         .setClearBeforeDay(CLEAR_BEFORE_DAY)
         .setUserRequest(new UserRequest().getDefault())
         .setSystemRequest(new SystemRequest().getDefault());

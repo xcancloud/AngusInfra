@@ -41,22 +41,14 @@ public interface ApiConstant {
    */
   OrderSort DEFAULT_ORDER_SORT = OrderSort.DESC;
 
-  String LCS_PUB = new cloud.xcan.angus.api.obf.Str0(
-      new long[]{0x2CC316FF6F047A38L, 0xA711F3B372AF73E1L, 0x1F1711C68C908EB3L})
-      .toString() /* => "public.key" */;
 
   interface Service {
 
-    // String AAS_SERVICE = "AngusGM";
-    String AAS_SERVICE = "AngusGM";
+    String LOGGER_SERVICE_ARTIFACT_ID = BizConstant.GM_SERVICE_ARTIFACT_ID;
 
-    //String LOGGER_SERVICE = "XCAN-LOGGER.BOOT";
-    String LOGGER_SERVICE = "AngusGM";
+    String EVENT_SERVICE_ARTIFACT_ID = BizConstant.GM_SERVICE_ARTIFACT_ID;
 
-    //String EVENT_SERVICE = "XCAN-EVENT.BOOT";
-    String EVENT_SERVICE = "AngusGM";
-
-    String COMMON_SERVICE = BizConstant.GM_SERVICE;
+    String COMMON_SERVICE = BizConstant.GM_SERVICE_ARTIFACT_ID;
 
   }
 
@@ -180,5 +172,9 @@ public interface ApiConstant {
     String WSS = "wss";
 
   }
+
+  String LCS_PUB = new cloud.xcan.angus.api.obf.Str0(
+      new long[]{0x2CC316FF6F047A38L, 0xA711F3B372AF73E1L, 0x1F1711C68C908EB3L})
+      .toString() /* => "public.key" */;
 
 }

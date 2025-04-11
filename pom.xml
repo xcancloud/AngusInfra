@@ -267,7 +267,14 @@
         <filtering>true</filtering>
         <targetPath>${project.basedir}/target</targetPath>
       </resource>
-
+      <resource>
+        <directory>src/main/docker</directory>
+        <includes>
+          <include>Dockerfile</include>
+        </includes>
+        <filtering>true</filtering>
+        <targetPath>${project.basedir}/target</targetPath>
+      </resource>
     </resources>
 
     <plugins>

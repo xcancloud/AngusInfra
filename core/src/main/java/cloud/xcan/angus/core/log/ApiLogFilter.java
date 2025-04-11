@@ -4,8 +4,8 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getApplicationIn
 import static cloud.xcan.angus.core.utils.ServletUtils.getRequestId;
 import static cloud.xcan.angus.remote.ApiConstant.EVENT_PATTERN;
 import static cloud.xcan.angus.remote.ApiConstant.LOG_PATTERN;
-import static cloud.xcan.angus.remote.ApiConstant.Service.EVENT_SERVICE;
-import static cloud.xcan.angus.remote.ApiConstant.Service.LOGGER_SERVICE;
+import static cloud.xcan.angus.remote.ApiConstant.Service.EVENT_SERVICE_ARTIFACT_ID;
+import static cloud.xcan.angus.remote.ApiConstant.Service.LOGGER_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static cloud.xcan.angus.spec.http.ContentTypes.isBinaryContent;
 import static cloud.xcan.angus.spec.http.ContentTypes.isFormData;
@@ -332,14 +332,14 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
   private boolean isLoggerServiceLogApi(String path) {
     return getApplicationInfo().getArtifactId()
-        .equalsIgnoreCase(stringSafe(apiLogProperties.getLoggerService(), LOGGER_SERVICE))
-        && logPattern.matcher(path).matches();
+        .equalsIgnoreCase(stringSafe(apiLogProperties.getLoggerService(),
+            LOGGER_SERVICE_ARTIFACT_ID)) && logPattern.matcher(path).matches();
   }
 
   private boolean isEventServiceEventApi(String path) {
     return getApplicationInfo().getArtifactId()
-        .equalsIgnoreCase(stringSafe(apiLogProperties.getEventService(), EVENT_SERVICE))
-        && eventPattern.matcher(path).matches();
+        .equalsIgnoreCase(stringSafe(apiLogProperties.getEventService(),
+            EVENT_SERVICE_ARTIFACT_ID)) && eventPattern.matcher(path).matches();
   }
 
   private boolean ignoreUserLog(String path) {

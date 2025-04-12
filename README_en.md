@@ -1,6 +1,6 @@
 # AngusInfra
 
-[English](README.md) | [中文](README_zh.md)
+[English](README_en.md) | [中文](README.md)
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-brightgreen)](https://spring.io/projects/spring-boot)
 [![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-4.2.0-brightgreen)](https://spring.io/projects/spring-cloud)

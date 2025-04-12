@@ -261,7 +261,6 @@
       <resource>
         <directory>src/main/scripts</directory>
         <includes>
-          <include>Dockerfile</include>
           <include>startenv.sh</include>
         </includes>
         <filtering>true</filtering>

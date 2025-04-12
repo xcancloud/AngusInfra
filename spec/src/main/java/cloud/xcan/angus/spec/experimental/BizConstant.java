@@ -219,8 +219,8 @@ public interface BizConstant {
   int MAX_HTTP_METHOD_LENGTH = 8;
 
   int MAX_SHARE_OBJECT_NUM = 2000;
-  int MAX_SHARE_PWD_LENGTH = 40;
-  int MIN_SHARE_PWD_LENGTH = 6;
+  int MAX_SHARE_PASSWORD_LENGTH = 40;
+  int MIN_SHARE_PASSWORD_LENGTH = 6;
 
   /**
    * The privatization version is limited to a maximum of 20MB, and the cloud service version is

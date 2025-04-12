@@ -147,12 +147,12 @@ public class ServletUtils {
       int cacheAge, MediaType mediaType, String filename, long filesize, Date lastModified,
       InputStream inputStream, HttpServletRequest request, HttpServletResponse response) {
     String range = request.getHeader("range");
-    if (ObjectUtils.isEmpty(range)) {
-      doNotRangeDownload(cacheAge, mediaType, filename, filesize, lastModified, inputStream,
-          response);
+    if (isEmpty(range)) {
+      doNotRangeDownload(cacheAge, mediaType, filename, filesize, lastModified,
+          inputStream,response);
     } else {
-      doRangeDownload(cacheAge, mediaType, filename, filesize, lastModified, inputStream, response,
-          range);
+      doRangeDownload(cacheAge, mediaType, filename, filesize, lastModified, inputStream,
+          response, range);
     }
   }
 

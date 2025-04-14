@@ -13,7 +13,7 @@
   <url>https://github.com/xcancloud/AngusInfra</url>
 
   <organization>
-    <name>XCan Company</name>
+    <name>XCan Cloud</name>
     <url>http://www.xcan.cloud</url>
   </organization>
 
@@ -32,7 +32,7 @@
   </scm>
 
   <issueManagement>
-    <system>gitlab</system>
+    <system>github</system>
     <url>https://github.com/xcancloud/AngusInfra/-/issues</url>
   </issueManagement>
 

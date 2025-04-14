@@ -12,9 +12,9 @@ import lombok.Setter;
 @Getter
 public class License implements Serializable {
 
-  private String lcsNo;
+  private String licenseNo;
 
-  private String mainLcsNo;
+  private String mainLicenseNo;
 
   private String provider;
 
@@ -57,8 +57,8 @@ public class License implements Serializable {
   }
 
   private License(Builder builder) {
-    setLcsNo(builder.lcsNo);
-    setMainLcsNo(builder.mainLcsNo);
+    setLicenseNo(builder.licenseNo);
+    setMainLicenseNo(builder.mainLicenseNo);
     setProvider(builder.provider);
     setIssuer(builder.issuer);
     setHolderId(builder.holderId);
@@ -85,8 +85,8 @@ public class License implements Serializable {
 
   public static Builder newBuilder(License copy) {
     Builder builder = new Builder();
-    builder.lcsNo = copy.getLcsNo();
-    builder.mainLcsNo = copy.getMainLcsNo();
+    builder.licenseNo = copy.getLicenseNo();
+    builder.mainLicenseNo = copy.getMainLicenseNo();
     builder.provider = copy.getProvider();
     builder.issuer = copy.getIssuer();
     builder.holderId = copy.getHolderId();
@@ -110,8 +110,8 @@ public class License implements Serializable {
 
   public static final class Builder {
 
-    private String lcsNo;
-    private String mainLcsNo;
+    private String licenseNo;
+    private String mainLicenseNo;
     private String provider;
     private String issuer;
     private Long holderId;
@@ -134,13 +134,13 @@ public class License implements Serializable {
     private Builder() {
     }
 
-    public Builder lcsNo(String lcsNo) {
-      this.lcsNo = lcsNo;
+    public Builder licenseNo(String licenseNo) {
+      this.licenseNo = licenseNo;
       return this;
     }
 
-    public Builder mainLcsNo(String mainLcsNo) {
-      this.mainLcsNo = mainLcsNo;
+    public Builder mainLicenseNo(String mainLicenseNo) {
+      this.mainLicenseNo = mainLicenseNo;
       return this;
     }
 

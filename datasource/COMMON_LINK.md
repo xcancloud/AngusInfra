@@ -43,41 +43,7 @@ PRIVILEGES;
 ##### 1.2 Grant Read-Only Permissions by Default
 
 ```sql
--- GM -----
--- UC ------------------------------
 GRANT SELECT ON `xcan_gm`.`tenant` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`user0` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`dept` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`dept_user` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`group0` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`group_user` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`org_tag` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`org_tag_target` TO `commonlink`@`%`;
--- AAS ------------------------------
-GRANT SELECT ON `xcan_gm`.`service` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`api` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`app` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`auth_user` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`auth_policy` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`to_policy` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`to_user` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`to_policy_user` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`app_open` TO `commonlink`@`%`;
--- WPUSH ------------------------------
-GRANT SELECT ON `xcan_gm`.`mcenter_online` TO `commonlink`@`%`;
--- COMMON ------------------------------
-GRANT SELECT ON `xcan_gm`.`c_i18n_messages` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`c_setting` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`c_setting_tenant` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`c_setting_tenant_quota` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_gm`.`c_setting_user` TO `commonlink`@`%`;
-FLUSH
-PRIVILEGES;
--- STORE -----------------------------------
-GRANT SELECT ON `xcan_store`.`goods` TO `commonlink`@`%`;
-GRANT SELECT ON `xcan_store`.`store_goods` TO `commonlink`@`%`;
-FLUSH
-PRIVILEGES;
 ```
 
 #### 2. Create Federated Tables
@@ -97,18 +63,6 @@ OPTIONS (
   HOST 'dev-mw.xcan.cloud', 
   PORT 3306, 
   DATABASE 'xcan_gm'
-);
-
--- STORE database
-CREATE
-SERVER xcan_store_link
-FOREIGN DATA WRAPPER mysql
-OPTIONS (
-  USER 'commonlink', 
-  PASSWORD 'LUYSMvzdVR0', 
-  HOST 'dev-mw.xcan.cloud', 
-  PORT 3306, 
-  DATABASE 'xcan_store'
 );
 ```
 

@@ -8,7 +8,7 @@ import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
 import cloud.xcan.angus.core.fegin.FilterQueryMapEncoder;
 import cloud.xcan.angus.core.utils.GsonUtils;
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.remote.client.BroadcastInvoker;
+import cloud.xcan.angus.remote.client.FeignBroadcastInvoker;
 import cloud.xcan.angus.remote.client.DynamicFeignClient;
 import cloud.xcan.angus.remote.client.ServiceDiscoveryHelper;
 import cloud.xcan.angus.security.FeignInnerApiAuthInterceptor;
@@ -66,9 +66,9 @@ public class FeignAutoConfigurer {
   }
 
   @Bean
-  public BroadcastInvoker broadcastInvoker(DynamicFeignClient dynamicFeignClient,
+  public FeignBroadcastInvoker broadcastInvoker(DynamicFeignClient dynamicFeignClient,
       ServiceDiscoveryHelper serviceDiscoveryHelper) {
-    return new BroadcastInvoker(dynamicFeignClient, serviceDiscoveryHelper);
+    return new FeignBroadcastInvoker(dynamicFeignClient, serviceDiscoveryHelper);
   }
 
   @Profile({"local", "dev", "beta"})

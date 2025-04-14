@@ -5,12 +5,12 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class BroadcastInvoker {
+public class FeignBroadcastInvoker {
 
   private final DynamicFeignClient dynamicFeignClient;
   private final ServiceDiscoveryHelper serviceDiscoveryHelper;
 
-  public BroadcastInvoker(DynamicFeignClient dynamicFeignClient,
+  public FeignBroadcastInvoker(DynamicFeignClient dynamicFeignClient,
       ServiceDiscoveryHelper serviceDiscoveryHelper) {
     this.dynamicFeignClient = dynamicFeignClient;
     this.serviceDiscoveryHelper = serviceDiscoveryHelper;

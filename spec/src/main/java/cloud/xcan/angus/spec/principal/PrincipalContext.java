@@ -170,7 +170,7 @@ public class PrincipalContext {
     return get().getUserId();
   }
 
-  public static String getUserFullname() {
+  public static String getUserFullName() {
     return get().getFullName();
   }
 

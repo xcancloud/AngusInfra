@@ -8,8 +8,14 @@ import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
 import cloud.xcan.angus.core.fegin.FilterQueryMapEncoder;
 import cloud.xcan.angus.core.utils.GsonUtils;
 import cloud.xcan.angus.remote.ApiResult;
+import cloud.xcan.angus.remote.client.BroadcastInvoker;
+import cloud.xcan.angus.remote.client.DynamicFeignClient;
+import cloud.xcan.angus.remote.client.ServiceDiscoveryHelper;
+import cloud.xcan.angus.security.FeignInnerApiAuthInterceptor;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Client;
+import feign.Contract;
 import feign.Feign;
 import feign.Logger;
 import feign.Retryer;
@@ -28,6 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.cloud.openfeign.FeignClientsConfiguration;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
@@ -44,15 +51,35 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 @AutoConfigureBefore({FeignClientsConfiguration.class, FeignAutoConfiguration.class})
 public class FeignAutoConfigurer {
 
+  @Bean
+  public ServiceDiscoveryHelper broadcastInvoker(DiscoveryClient discoveryClient) {
+    return new ServiceDiscoveryHelper(discoveryClient);
+  }
+
+  @Bean
+  public DynamicFeignClient dynamicFeignClient(Client client, Encoder encoder, Decoder decoder,
+      Contract contract, FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
+    return Feign.builder().client(client)
+        .encoder(encoder).decoder(decoder).contract(contract)
+        .requestInterceptor(feignInnerApiAuthInterceptor)
+        .target(DynamicFeignClient.class, "dynamic-feign-client");
+  }
+
+  @Bean
+  public BroadcastInvoker broadcastInvoker(DynamicFeignClient dynamicFeignClient,
+      ServiceDiscoveryHelper serviceDiscoveryHelper) {
+    return new BroadcastInvoker(dynamicFeignClient, serviceDiscoveryHelper);
+  }
+
   @Profile({"local", "dev", "beta"})
   @Bean("feignLoggerLevel")
-  Logger.Level feignLoggerFull() {
+  public Logger.Level feignLoggerFull() {
     return Logger.Level.FULL;
   }
 
   @Profile({"prod"})
   @Bean("feignLoggerLevel")
-  Logger.Level feignLoggerBasic() {
+  public Logger.Level feignLoggerBasic() {
     return Logger.Level.BASIC;
   }
 

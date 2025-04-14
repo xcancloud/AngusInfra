@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @Getter
 @Accessors(chain = true)
-public class LcsServerTo implements Serializable {
+public class LicenseServerTo implements Serializable {
 
   @Length(max = MAX_CODE_LENGTH_X2)
   @Schema(description = "Allowable the IP address", example = "192.168.1.12,192.168.1.13")

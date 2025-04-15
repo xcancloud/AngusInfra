@@ -185,7 +185,7 @@ public class ValidatorUtils {
       if (EditionType.valueOf(editionType).isPrivatization()) {
         String sign = MD5Utils.encrypt(toByteArray(ValidatorUtils.class.getResourceAsStream(
             new Str0(new long[]{0x72EF4DCB15D8F8A3L, 0x69120DB47A85384EL, 0xCFE552E6CDD22372L,
-                0x7808D39035915283L}).toString() /* => "LcsProtector.class" */)));
+                0x7808D39035915283L}).toString() /* => "LicenseProtector.class" */)));
         boolean valid = Objects.nonNull(sign) && sign.equalsIgnoreCase(new Str0(
             new long[]{0x1BB0D8BA6FC3B55CL, 0xB0B813217510F001L, 0xD156226D7C1EED01L,
                 0xA7B547358FDC82C8L, 0xF790BBED26A59110L})

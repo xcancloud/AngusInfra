@@ -166,7 +166,7 @@ xcan:
     commonlink:
       mysql:
         driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://${COMMON_MYSQL_HOST:dev-mw.xcan.cloud}:3306/xcan_commonlink
+        url: jdbc:mysql://${COMMON_MYSQL_HOST:dev-mw.xcan.cloud}/xcan_commonlink
         username: ${COMMON_MYSQL_USER:commonlink}
         password: ${COMMON_MYSQL_PASSWORD:LUYSMvzdVR0}
 ```

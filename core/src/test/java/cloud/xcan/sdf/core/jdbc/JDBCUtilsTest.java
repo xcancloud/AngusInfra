@@ -24,7 +24,7 @@ public class JDBCUtilsTest {
 
   private Connection connection;
 
-  public static String dburl = "jdbc:mysql://mysql01-sample.angusmock.cloud:3306/xcan_mockdata_sample";
+  public static String dburl = "jdbc:mysql://mysql01-sample.angusmock.cloud/xcan_mockdata_sample";
   public static String dbuser = "root";
   public static String dbpassword = "aXoMMebXwmXxx!90ulqF6";
 

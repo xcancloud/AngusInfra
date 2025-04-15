@@ -36,7 +36,7 @@ public class Production implements Serializable {
 
   private LinkedHashSet<String> features;
 
-  private Boolean chargeFlag;
+  private Boolean charge;
 
   private String orderNo;
 
@@ -58,7 +58,7 @@ public class Production implements Serializable {
     setIntroduction(builder.introduction);
     setInformation(builder.information);
     setFeatures(builder.features);
-    setChargeFlag(builder.chargeFlag);
+    setCharge(builder.charge);
     setOrderNo(builder.orderNo);
     if (isNotEmpty(builder.extras)) { // Fix:: Null is not allowed
       this.extras.putAll(builder.extras);
@@ -82,7 +82,7 @@ public class Production implements Serializable {
     builder.introduction = copy.getIntroduction();
     builder.information = copy.getInformation();
     builder.features = copy.getFeatures();
-    builder.chargeFlag = copy.getChargeFlag();
+    builder.charge = copy.getCharge();
     builder.orderNo = copy.getOrderNo();
     builder.extras = copy.getExtras();
     return builder;
@@ -102,7 +102,7 @@ public class Production implements Serializable {
     private String introduction;
     private String information;
     private LinkedHashSet<String> features;
-    private Boolean chargeFlag;
+    private Boolean charge;
     private String orderNo;
     private Map<String, String> extras;
 
@@ -164,8 +164,8 @@ public class Production implements Serializable {
       return this;
     }
 
-    public Builder chargeFlag(Boolean chargeFlag) {
-      this.chargeFlag = chargeFlag;
+    public Builder charge(Boolean charge) {
+      this.charge = charge;
       return this;
     }
 

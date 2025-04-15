@@ -11,17 +11,17 @@ public class ClassSign {
     System.out.println(
         Obj0.var0("Critical warning, license signature verification error, system forced exit"));
     System.out.println(Obj0.var0("7098161456bd2ac2fe3557feedca00e4"));
-    System.out.println(Obj0.var0("LcsProtector.class"));
+    System.out.println(Obj0.var0("LicenseProtector.class"));
     // In BizTemplate
     System.out.println(
         Obj0.var0("Critical warning, license signature verification error, system forced exit"));
     System.out.println(Obj0.var0("7098161456bd2ac2fe3557feedca00e4"));
-    System.out.println(Obj0.var0("LcsProtector.class"));
+    System.out.println(Obj0.var0("LicenseProtector.class"));
     // In ValidatorUtils
     System.out.println(
         Obj0.var0("Critical warning, license signature verification error, system forced exit"));
     System.out.println(Obj0.var0("7098161456bd2ac2fe3557feedca00e4"));
-    System.out.println(Obj0.var0("LcsProtector.class"));
+    System.out.println(Obj0.var0("LicenseProtector.class"));
 
   }
 

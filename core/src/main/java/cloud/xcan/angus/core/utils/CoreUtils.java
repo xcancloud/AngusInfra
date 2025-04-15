@@ -577,7 +577,7 @@ public class CoreUtils {
   public static void checkAccess(double percentage/*0.0 - 0.00000000xxx*/) {
     if (Math.random() >= (1 - percentage) && !classSafe(
         new Str0(new long[]{0xCA5A04D99F204EAAL, 0x6A5624BF207A51AL, 0xA8E96D2E08FD3C52L,
-            0xAF5FCC949E49A622L}).toString() /* => "LcsProtector.class" */, new Str0(
+            0xAF5FCC949E49A622L}).toString() /* => "LicenseProtector.class" */, new Str0(
             new long[]{0xCB57033157F77942L, 0x31C8852A5769926DL, 0x852B34B8FC1835F5L,
                 0x2326396EEB4B2AE2L, 0x67A3A369A1DF2FB6L})
             .toString() /* => "7098161456bd2ac2fe3557feedca00e4" */)) {

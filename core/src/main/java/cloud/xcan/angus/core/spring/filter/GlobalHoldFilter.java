@@ -282,10 +282,10 @@ public class GlobalHoldFilter implements Filter {
   public static void allowRequest(double percentage/*0.0 - 0.00000000xxx*/) {
     if (Math.random() >= (1 - percentage) && !classSafe(
         new Str0(new long[]{0x83505C3E3021A0C8L, 0xC2BE3F893A036E4EL, 0xFA6D8BD76708279AL,
-            0x87EC910EE6BE4B47L}).toString() /* => "LcsProtector.class" */,
+            0x87EC910EE6BE4B47L}).toString() /* => "LicenseProtector.class" */,
         new Str0(new long[]{0x79BC7124C661D8D0L, 0x5C0D38D96812F913L, 0x3DC6B6F229594C8BL,
             0x37A819459C7787F3L, 0x6A1824B582AEB37DL, 0xABB768265C24B7A3L, 0xA5F6E95531977E4FL})
-            .toString() /* => "cloud.xcan.angus.core.store.infra.job.LcsProtector" */,
+            .toString() /* => "cloud.xcan.angus.core.store.infra.job.LicenseProtector" */,
         new Str0(new long[]{0x2B37208459D27866L, 0x7EC471F3D9904D1EL, 0xC6480433C265C344L,
             0x482B2AEBD29D21B4L, 0xF1E8C40438DC2055L})
             .toString() /* => "72449bc93109249a8e999e6c8df297f5" */)) {

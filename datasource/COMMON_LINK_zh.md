@@ -181,7 +181,7 @@ xcan:
       mysql:
         driverClassName: com.mysql.cj.jdbc.Driver
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://${COMMON_MYSQL_HOST:dev-mw.xcan.cloud}:${COMMON_MYSQL_PORT:3306}/${COMMON_MYSQL_DB:xcan_common}?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=${info.app.timezone}&rewriteBatchedStatements=true
+        url: jdbc:mysql://${COMMON_MYSQL_HOST:dev-mw.xcan.cloud}:${COMMON_MYSQL_PORT}/${COMMON_MYSQL_DB:xcan_common}?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&useSSL=false&zeroDateTimeBehavior=convertToNull&serverTimezone=${info.app.timezone}&rewriteBatchedStatements=true
         username: ${COMMON_MYSQL_USER:commonlink}
         password: ${COMMON_MYSQL_PASSWORD:LUYSMvzdVR0}
 ```

@@ -1,6 +1,7 @@
 package cloud.xcan.angus.remote.client;
 
 import cloud.xcan.angus.remote.ApiLocaleResult;
+import java.net.URI;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +29,7 @@ public class FeignBroadcastInvoker {
     for (String baseUrl : instanceUrls) {
       String fullUrl = baseUrl + apiPath; // API path appended to instance URL
       try {
-        ApiLocaleResult<?> response = dynamicFeignClient.post(fullUrl, request);
+        ApiLocaleResult<?> response = dynamicFeignClient.post(URI.create(fullUrl), request);
         log.info("[Success] Instance {} responded: {}", baseUrl, response);
       } catch (Exception e) {
         log.error("[Failure] Error calling instance {}: {}", baseUrl, e.getMessage());

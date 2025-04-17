@@ -521,7 +521,7 @@ public interface BizConstant {
     String TENANT_NAME = HEADER_PREFIX + "Tenant-Name";
 
     String USER_ID = HEADER_PREFIX + "User-Id";
-    String USER_FULL_NAME = HEADER_PREFIX + "User-Fullname";
+    String USER_FULL_NAME = HEADER_PREFIX + "User-Full-Name";
     String USERNAME = HEADER_PREFIX + "Username";
 
     String DEPT_ID = HEADER_PREFIX + "Dept-Id";

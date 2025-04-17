@@ -312,7 +312,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
 
   public boolean hasDeletedField(Class<T> mainClz) {
     try {
-      String name = getJpaColumnName(entityManager, mainClz, "deletedFlag");
+      String name = getJpaColumnName(entityManager, mainClz, "deleted");
       return isNotEmpty(name);
     } catch (Exception e) {
       return false;

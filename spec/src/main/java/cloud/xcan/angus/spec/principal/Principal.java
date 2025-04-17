@@ -26,7 +26,6 @@ import lombok.experimental.Accessors;
  */
 @Setter
 @Getter
-@ToString(exclude = {"authorization", "authorities"})
 @Accessors(chain = true)
 public class Principal implements Serializable {
 

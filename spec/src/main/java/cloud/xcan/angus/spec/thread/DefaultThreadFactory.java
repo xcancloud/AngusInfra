@@ -2,6 +2,7 @@ package cloud.xcan.angus.spec.thread;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import lombok.NonNull;
 
 /**
  * The default thread factory.
@@ -28,15 +29,14 @@ public class DefaultThreadFactory implements ThreadFactory {
   }
 
   public DefaultThreadFactory(String prefix, boolean daemon, int priority) {
-    SecurityManager s = System.getSecurityManager();
-    this.group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+    this.group = Thread.currentThread().getThreadGroup();
     this.namePrefix = prefix + POOL_NUM.getAndIncrement() + "-Thread-";
     this.daemon = daemon;
     this.priority = priority;
   }
 
   @Override
-  public Thread newThread(Runnable r) {
+  public Thread newThread(@NonNull Runnable r) {
     Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
     t.setDaemon(this.daemon);
     t.setPriority(this.priority);

@@ -107,18 +107,14 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
   }
 
   public long toMilliSecond() {
-    switch (this.unit) {
-      case Day:
-        return value * MILLISECOND_PER_DAY;
-      case Hour:
-        return value * MILLISECOND_PER_HOUR;
-      case Minute:
-        return value * MILLISECOND_PER_MINUTE;
-      case Second:
-        return value * MILLISECOND_PER_SECOND;
-      default: // MS
-        return value;
-    }
+    return switch (this.unit) {
+      case Day -> value * MILLISECOND_PER_DAY;
+      case Hour -> value * MILLISECOND_PER_HOUR;
+      case Minute -> value * MILLISECOND_PER_MINUTE;
+      case Second -> value * MILLISECOND_PER_SECOND;
+      default -> // MS
+          value;
+    };
   }
 
   public String formatDays() {

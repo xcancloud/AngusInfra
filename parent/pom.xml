@@ -148,10 +148,10 @@
     <jakarta.mail.version>2.0.1</jakarta.mail.version>
     <unboundid.version>6.0.0</unboundid.version>
 
-    <swagger2.version>1.6.10</swagger2.version>
+    <swagger2.version>1.6.14</swagger2.version>
     <swagger3.version>2.2.29</swagger3.version>
     <swagger3-parser.version>2.1.23</swagger3-parser.version>
-    <swagger-validator.version>2.1.6</swagger-validator.version>
+    <swagger-validator.version>2.1.2</swagger-validator.version>
 
     <testng.version>7.11.0</testng.version>
     <junit.version>4.13.2</junit.version>
@@ -653,7 +653,7 @@
 
       <!-- Openapi Start -->
       <!-- JSON API documentation for spring based applications -->
-      <!-- Fix:: swagger-parser-v2-converter java.lang.ClassNotFoundException: io.swagger.models.Responses-->
+      <!-- Fix:: swagger-parser-v2-converter java.lang.ClassNotFoundException: io.swagger.models.Responses -->
       <dependency>
         <groupId>io.swagger</groupId>
         <artifactId>swagger-models</artifactId>

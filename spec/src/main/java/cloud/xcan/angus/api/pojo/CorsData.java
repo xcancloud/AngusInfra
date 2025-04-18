@@ -12,6 +12,6 @@ import lombok.experimental.Accessors;
 public class CorsData extends Cors {
 
   @Schema(description = "Enable cross domain access configuration restrictions, default false", example = "true")
-  private Boolean enabledFlag = false;
+  private Boolean enabled = false;
 
 }

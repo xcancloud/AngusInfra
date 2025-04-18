@@ -144,7 +144,7 @@ public class Schema<T> {
   protected List<T> _enum = null;
   private Discriminator discriminator = null;
 
-  private boolean exampleSetFlag;
+  private boolean exampleSet;
 
   /**
    * @since 2.2.0 (OpenAPI 3.1.0)
@@ -1468,7 +1468,7 @@ public class Schema<T> {
   public void setExample(Object example) {
     this.example = cast(example);
     if (!(example != null && this.example == null)) {
-      exampleSetFlag = true;
+      exampleSet = true;
     }
   }
 
@@ -1538,15 +1538,15 @@ public class Schema<T> {
    * returns true if example setter has been invoked Used to flag explicit setting to null of
    * example (vs missing field) while deserializing from json/yaml string
    *
-   * @return boolean exampleSetFlag
+   * @return boolean exampleSet
    **/
 
-  public boolean getExampleSetFlag() {
-    return exampleSetFlag;
+  public boolean getExampleSet() {
+    return exampleSet;
   }
 
-  public void setExampleSetFlag(boolean exampleSetFlag) {
-    this.exampleSetFlag = exampleSetFlag;
+  public void setExampleSet(boolean exampleSet) {
+    this.exampleSet = exampleSet;
   }
 
   /**
@@ -2239,8 +2239,8 @@ public class Schema<T> {
     return this;
   }
 
-  public Schema exampleSetFlag(boolean exampleSetFlag) {
-    this.exampleSetFlag = exampleSetFlag;
+  public Schema exampleSet(boolean exampleSet) {
+    this.exampleSet = exampleSet;
     return this;
   }
 

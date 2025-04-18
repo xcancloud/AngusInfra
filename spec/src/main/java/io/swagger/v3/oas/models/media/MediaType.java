@@ -23,7 +23,7 @@ public class MediaType {
   private Map<String, Encoding> encoding = null;
   private Map<String, Object> extensions = null;
 
-  private boolean exampleSetFlag;
+  private boolean exampleSet;
 
   /**
    * returns the schema property from a MediaType instance.
@@ -84,12 +84,12 @@ public class MediaType {
   public void setExample(Object example) {
     if (this.schema == null) {
       this.example = example;
-      this.exampleSetFlag = true;
+      this.exampleSet = true;
       return;
     }
     this.example = this.schema.cast(example);
     if (!(example != null && this.example == null)) {
-      this.exampleSetFlag = true;
+      this.exampleSet = true;
     }
   }
 
@@ -125,12 +125,12 @@ public class MediaType {
     return this;
   }
 
-  public boolean getExampleSetFlag() {
-    return exampleSetFlag;
+  public boolean getExampleSet() {
+    return exampleSet;
   }
 
-  public void setExampleSetFlag(boolean exampleSetFlag) {
-    this.exampleSetFlag = exampleSetFlag;
+  public void setExampleSet(boolean exampleSet) {
+    this.exampleSet = exampleSet;
   }
 
   @Override

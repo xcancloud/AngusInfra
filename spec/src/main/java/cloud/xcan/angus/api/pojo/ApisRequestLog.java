@@ -39,7 +39,7 @@ public class ApisRequestLog {
   @JsonIgnore
   private String endpoint;
 
-  private Boolean pushbackFlag;
+  private Boolean pushback;
 
   private String pushbackRequestId;
 
@@ -98,7 +98,7 @@ public class ApisRequestLog {
     setMethod(builder.method);
     setUri(builder.uri);
     setEndpoint(builder.endpoint);
-    setPushbackFlag(builder.pushbackFlag);
+    setPushback(builder.pushback);
     setPushbackRequestId(builder.pushbackRequestId);
     setQueryParameters(builder.queryParameters);
     setRequestHeaders(builder.requestHeaders);
@@ -128,7 +128,7 @@ public class ApisRequestLog {
     private String method;
     private String uri;
     private String endpoint;
-    private Boolean pushbackFlag;
+    private Boolean pushback;
     private String pushbackRequestId;
     private String queryParameters;
     private List<HttpHeader> requestHeaders = new ArrayList<>();
@@ -192,8 +192,8 @@ public class ApisRequestLog {
       return this;
     }
 
-    public Builder pushbackFlag(Boolean val) {
-      pushbackFlag = val;
+    public Builder pushback(Boolean val) {
+      pushback = val;
       return this;
     }
 

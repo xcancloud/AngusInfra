@@ -44,19 +44,19 @@ public class Operation {
 
   @ThirdExtension
   @JsonIgnore
-  public transient String method;
+  public String method;
   @ThirdExtension
   @JsonIgnore
-  public transient String url;
+  public String url;
   @ThirdExtension
   @JsonIgnore
-  public transient Server currentServer;
+  public Server currentServer;
   @ThirdExtension
   @JsonIgnore
-  public transient String endpoint;
+  public String endpoint;
   @ThirdExtension
   @JsonIgnore
-  public transient SecurityScheme authentication;
+  public SecurityScheme authentication;
 
   /**
    * returns the tags property from a Operation instance.
@@ -387,6 +387,46 @@ public class Operation {
   public Operation extensions(Map<String, Object> extensions) {
     this.extensions = extensions;
     return this;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public Server getCurrentServer() {
+    return currentServer;
+  }
+
+  public void setCurrentServer(Server currentServer) {
+    this.currentServer = currentServer;
+  }
+
+  public String getEndpoint() {
+    return endpoint;
+  }
+
+  public void setEndpoint(String endpoint) {
+    this.endpoint = endpoint;
+  }
+
+  public SecurityScheme getAuthentication() {
+    return authentication;
+  }
+
+  public void setAuthentication(SecurityScheme authentication) {
+    this.authentication = authentication;
   }
 
   @Override

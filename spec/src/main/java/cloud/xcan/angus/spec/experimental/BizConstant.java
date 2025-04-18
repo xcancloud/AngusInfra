@@ -533,9 +533,9 @@ public interface BizConstant {
 
     String DEVICE_ID = HEADER_PREFIX + "DeviceId";
 
-    String SYS_ADMIN_FLAG = HEADER_PREFIX + "Sys-Admin-Flag";
+    String SYS_ADMIN_FLAG = HEADER_PREFIX + "Sys-Admin";
 
-    String TO_USER_FLAG = HEADER_PREFIX + "To-User-Flag";
+    String TO_USER_FLAG = HEADER_PREFIX + "To-User";
 
     String E_KEY = HEADER_PREFIX + "E-Key";
 

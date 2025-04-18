@@ -44,7 +44,7 @@ public class SystemLogProperties implements AppPropertiesRegister {
 
   // Only is user behavior
   // @Schema(description = "System log auto refresh flag, default false", example = "false")
-  // private Boolean autoRefreshFlag = false;
+  // private Boolean autoRefresh = false;
 
   @Schema(description = "How many days ago to clear the log, default " + CLEAR_COMPRESSION_BEFORE_DAY)
   private Integer clearBeforeDay;

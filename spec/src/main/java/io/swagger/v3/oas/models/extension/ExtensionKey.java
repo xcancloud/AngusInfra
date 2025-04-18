@@ -19,7 +19,7 @@ public interface ExtensionKey {
   String STATUS = "status";
   String STATUS_KEY = PREFIX + STATUS;
 
-  String ENABLED = "enabledFlag";
+  String ENABLED = "enabled";
   String ENABLED_KEY = PREFIX + ENABLED;
 
   String REQUEST_SETTING = "requestSetting";

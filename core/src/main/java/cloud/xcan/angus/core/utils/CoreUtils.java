@@ -600,7 +600,7 @@ public class CoreUtils {
       LocalDateTime startDate, LocalDateTime endDate, Set<Long> createdBys) {
     Set<SearchCriteria> filters = getCommonResourcesStatsFilter(projectId,
         startDate, endDate, createdBys);
-    filters.add(equal("deletedFlag", false));
+    filters.add(equal("deleted", false));
     return filters;
   }
 

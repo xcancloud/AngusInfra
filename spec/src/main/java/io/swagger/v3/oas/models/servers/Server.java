@@ -3,6 +3,8 @@ package io.swagger.v3.oas.models.servers;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_REMARK_LENGTH_X4;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_URL_LENGTH_X2;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.spec.annotations.ThirdExtension;
@@ -13,6 +15,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 import io.swagger.v3.oas.models.annotations.OpenAPI31;
 import jakarta.validation.constraints.NotBlank;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Objects;
 import org.hibernate.validator.constraints.Length;
 
@@ -76,6 +80,32 @@ public class Server {
   @ThirdExtension
   public boolean isNotEmptyContent() {
     return !isEmptyContent();
+  }
+
+  @ThirdExtension
+  public URL toUrl() {
+    try {
+      // Create a URL object from the OpenAPI Server object
+      String url = Objects.isNull(this.getUrl()) ? "127.0.0.1" : this.getUrl();
+      if (nonNull(variables)) {
+        // Replace the variables in the URL with their values
+        for (String name : variables.keySet()) {
+          String variableName = "{" + name + "}";
+          String variableValue = variables.get(name).getDefault();
+          // Use the first enum value as the default when no default value is specified
+          if (isNull(variableValue) && isNotEmpty(variables.get(name).getEnum())){
+            variableValue = variables.get(name).getEnum().get(0);
+          }
+          // Ignore substitution when variable value is not found
+          if (nonNull(variableValue)){
+            url = url.replace(variableName, variableValue);
+          }
+        }
+      }
+      return new URL(url);
+    } catch (MalformedURLException e) {
+      return null;
+    }
   }
 
   /**

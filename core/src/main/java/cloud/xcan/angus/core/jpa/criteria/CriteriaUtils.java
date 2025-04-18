@@ -386,10 +386,10 @@ public class CriteriaUtils {
     return values;
   }
 
-  public static boolean findAdminFlagInCriteria(Set<SearchCriteria> filters,
+  public static boolean findAdminInCriteria(Set<SearchCriteria> filters,
       boolean removeCriteria) {
-    SearchCriteria criteria = removeCriteria ? findFirstAndRemove(filters, "adminFlag")
-        : findFirst(filters, "adminFlag");
+    SearchCriteria criteria = removeCriteria ? findFirstAndRemove(filters, "admin")
+        : findFirst(filters, "admin");
     if (nonNull(criteria) && criteria.isValidCriteria()) {
       return Boolean.parseBoolean(safeStringValue(criteria.getValue().toString()));
     }

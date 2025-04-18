@@ -11,7 +11,7 @@ eureka:
     serviceUrl:
       defaultZone: http://${DISCOVERY_SECURITY_USER_NAME:discovery}:${DISCOVERY_SECURITY_USER_PASSWORD:discovery}@${DISCOVERY_HOST:localhost}:${DISCOVERY_PORT:1801}/eureka/
   instance:
-    appname: '@artifactId@'
+    app-name: '@artifactId@'
     instance-id: ${spring.cloud.client.ip-address}:${server.port}
     lease-expiration-duration-in-seconds: 30
     lease-renewal-interval-in-seconds: 10

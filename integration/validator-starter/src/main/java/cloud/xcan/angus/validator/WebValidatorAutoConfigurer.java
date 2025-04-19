@@ -16,7 +16,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.validation.beanvalidation.FilteredMethodValidationPostProcessor;
@@ -41,9 +40,8 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 //@AutoConfigureOrder(1)
 @EnableConfigurationProperties({ValidatorProperties.class})
 @ConditionalOnClass(ExecutableValidator.class)
-@ConditionalOnResource(resources = "classpath:META-INF/services/javax.validation.spi.ValidationProvider")
 @Import(PrimaryDefaultValidatorPostProcessor.class)
-@ConditionalOnProperty(name = "xcan.validator.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "xcan.validator.enabled", havingValue = "true", matchIfMissing = true)
 public class WebValidatorAutoConfigurer {
 
   public WebValidatorAutoConfigurer() {

@@ -1,7 +1,7 @@
 package cloud.xcan.angus.security.remote;
 
 import cloud.xcan.angus.remote.ApiLocaleResult;
-import cloud.xcan.angus.security.model.remote.dto.ClientSigninDto;
+import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +28,6 @@ public interface ClientSignInnerApiRemote {
   })
   @ResponseStatus(HttpStatus.OK)
   @PostMapping(value = "/pubapi/v1/client/signin")
-  ApiLocaleResult<ClientSignInVo> signin(@Valid @RequestBody ClientSigninDto dto);
+  ApiLocaleResult<ClientSignInVo> signin(@Valid @RequestBody ClientSignInDto dto);
 
 }

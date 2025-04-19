@@ -7,7 +7,7 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.remote.message.SysException;
-import cloud.xcan.angus.security.model.remote.dto.ClientSigninDto;
+import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import cloud.xcan.angus.security.remote.ClientSignInnerApiRemote;
 import feign.RequestInterceptor;
@@ -23,7 +23,7 @@ public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
   /**
    * NOTE: The validity period of the registered client token cannot be less than 15 minutes.
    */
-  private final long maxAuthTimeInterval = 15 * 60 * 1000;
+  private static final long maxAuthTimeInterval = 15 * 60 * 1000;
 
   private final ClientSignInnerApiRemote clientSignInnerApiRemote;
   private final ConfigurableEnvironment configurableEnvironment;
@@ -76,7 +76,7 @@ public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
       }
 
       ClientSignInVo result = clientSignInnerApiRemote.signin(
-          new ClientSigninDto().setClientId(clientId).setClientSecret(clientSecret)
+          new ClientSignInDto().setClientId(clientId).setClientSecret(clientSecret)
               .setScope(INNER_API_TOKEN_CLIENT_SCOPE)).orElseContentThrow();
       this.innerApiToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
       this.lastedAuthTime = System.currentTimeMillis();

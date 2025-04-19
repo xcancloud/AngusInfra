@@ -36,9 +36,9 @@ public class SyncJobTemplate implements JobTemplate {
       // Execute business callback
       callback.doInSync();
 
-      log.debug("[{}] Sync task executed successfully", lockKey);
+      log.debug("[{}] Job task executed successfully", lockKey);
     } catch (Exception e) {
-      log.error("[{}] Sync task failed: {}", lockKey, e.getMessage(), e);
+      log.error("[{}] Job task failed: {}", lockKey, e.getMessage(), e);
     } finally {
       distributedLock.releaseLock(lockKey, reqId);
     }

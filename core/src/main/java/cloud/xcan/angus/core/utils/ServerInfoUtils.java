@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import namesbean.SystemInfo;
-import namesbean.hardware.CentralProcessor.ProcessorIdentifier;
-import namesbean.hardware.HardwareAbstractionLayer;
-import namesbean.hardware.NetworkIF;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor.ProcessorIdentifier;
+import oshi.hardware.HardwareAbstractionLayer;
+import oshi.hardware.NetworkIF;
 
 @Slf4j
 public class ServerInfoUtils {
@@ -21,7 +21,7 @@ public class ServerInfoUtils {
   public static List<String> getIpv4Address() {
     List<NetworkIF> var0 = HARDWARE.getNetworkIFs();
     List<String> ips = null;
-    if (var0 != null && var0.size() > 0) {
+    if (var0 != null && !var0.isEmpty()) {
       ips = new ArrayList<>();
       for (NetworkIF var : var0) {
         String[] var1 = var.getIPv4addr();
@@ -40,7 +40,7 @@ public class ServerInfoUtils {
   public static List<String> getMacAddress() {
     List<NetworkIF> var0 = HARDWARE.getNetworkIFs();
     List<String> var2 = null;
-    if (var0 != null && var0.size() > 0) {
+    if (var0 != null && !var0.isEmpty()) {
       var2 = new ArrayList<>();
       for (NetworkIF var : var0) {
         String var1 = var.getMacaddr();

@@ -127,6 +127,7 @@
     <jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
     <jakarta-annotation-api.version>2.0.0</jakarta-annotation-api.version>
 
+    <dcache.version>1.0.0</dcache.version>
     <commons-io.version>2.18.0</commons-io.version>
     <commons-fileupload.version>1.5</commons-fileupload.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -544,6 +545,12 @@
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>
         <version>${jakarta.persistence-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-dcache.core</artifactId>
+        <version>${dcache.version}</version>
       </dependency>
 
       <!-- Apache Commons Lang, a package of Java utility classes for the classes that are in java.lang's hierarchy,or are considered to be so standard as to justify existence in java.lang.-->

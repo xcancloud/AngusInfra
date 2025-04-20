@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 @ConditionalOnProperty(name = {"springdoc.api-docs.enabled"}, matchIfMissing = true)
@@ -34,6 +35,15 @@ public class OpenApiAutoConfigurer {
 
   @Value("${springdoc.oauth2.token-url: http://localhost:9090/oauth2/token}")
   private String oauth2TokenUrl;
+
+  /**
+   * Resolve jakarta.servlet.ServletException: Could not resolve view with name
+   * 'forward:/swagger-ui/index.html' in servlet with name 'dispatcherServlet'.
+   */
+  @Bean
+  public InternalResourceViewResolver defaultViewResolver() {
+    return new InternalResourceViewResolver();
+  }
 
   @Bean
   public OpenAPI openAPI(SpringDocConfigProperties doc) {
@@ -70,7 +80,8 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  @Conditional(CloudServiceEditionCondition.class) // Private version does not display inner API docs
+  @Conditional(CloudServiceEditionCondition.class)
+  // Private version does not display inner API docs
   public GroupedOpenApi doorApi() {
     return GroupedOpenApi.builder()
         .displayName("/innerapi (Inner System Api Document)")

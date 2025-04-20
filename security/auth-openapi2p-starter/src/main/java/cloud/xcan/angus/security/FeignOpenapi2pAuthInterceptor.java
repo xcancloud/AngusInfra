@@ -9,7 +9,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.app.verify.ver.Guard;
-import cloud.xcan.angus.security.model.remote.dto.ClientSigninDto;
+import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
 import feign.RequestInterceptor;
@@ -57,7 +57,7 @@ public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
                   0x5EC1A30F4C2E0F61L}).toString() /* => "MAIN_LICENSE_PATH" */));
       try {
         ClientSignInVo result = clientSign2pOpenRemote.signin(
-            new ClientSigninDto().setClientId(guard.var126())
+            new ClientSignInDto().setClientId(guard.var126())
                 .setClientSecret(guard.var127())
                 .setScope(SIGN2P_TOKEN_CLIENT_SCOPE)).orElseContentThrow();
         this.openapi2pToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();

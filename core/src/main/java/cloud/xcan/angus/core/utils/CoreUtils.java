@@ -32,7 +32,7 @@ import cloud.xcan.angus.spec.SpecConstant;
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Entity;
 import cloud.xcan.angus.spec.utils.ObjectUtils;
-import cloud.xcan.angus.validator.Passd;
+import cloud.xcan.angus.validator.Password;
 import jakarta.persistence.Id;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -525,7 +525,7 @@ public class CoreUtils {
   }
 
   /**
-   * Must be after running {@link Passd} verification
+   * Must be after running {@link Password} verification
    */
   public static PasswordStrength calcPasswordStrength(String password) {
     int typesNum = 0;

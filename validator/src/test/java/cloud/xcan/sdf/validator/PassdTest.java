@@ -37,7 +37,7 @@ public class PassdTest {
 @Data
 class PassBean1 {
 
-  @Passd()
+  @Password()
   private String pass1 = null;
 }
 
@@ -46,7 +46,7 @@ class PassBean1 {
 @NoArgsConstructor
 class PassBean2 {
 
-  @Passd(minSize = 3, allowDigits = false, allowSpecialChar = false, allowUpperCase = false)
+  @Password(minSize = 3, allowDigits = false, allowSpecialChar = false, allowUpperCase = false)
   private String pass2 = "ab";
 
 }

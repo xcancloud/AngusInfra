@@ -89,7 +89,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
   private String schemaUsername;
 
   /**
-   * Passd of the database to execute DDL scripts (if different).
+   * Password of the database to execute DDL scripts (if different).
    */
   private String schemaPassword;
 
@@ -104,7 +104,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
   private String dataUsername;
 
   /**
-   * Passd of the database to execute DML scripts (if different).
+   * Password of the database to execute DML scripts (if different).
    */
   private String dataPassword;
 

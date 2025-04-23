@@ -5,19 +5,19 @@ import static java.lang.Character.isLowerCase;
 import static java.lang.Character.isUpperCase;
 import static java.util.stream.Collectors.toSet;
 
-import cloud.xcan.angus.validator.Passd;
+import cloud.xcan.angus.validator.Password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class PassdValidator implements ConstraintValidator<Passd, String> {
+public class PasswordValidator implements ConstraintValidator<Password, String> {
 
   public final static Set<Character> SPECIAL_CHARS = "`-=[];',./~!@#$%^&*()_+{}:\"<>?".chars()
       .mapToObj(i -> (char) i).collect(toSet());
 
-  private Passd annotation;
+  private Password annotation;
 
   private static double calcRepeatRate(String value) {
     StringBuilder noRepeat = new StringBuilder();
@@ -33,7 +33,7 @@ public class PassdValidator implements ConstraintValidator<Passd, String> {
   }
 
   @Override
-  public void initialize(Passd constraintAnnotation) {
+  public void initialize(Password constraintAnnotation) {
     annotation = constraintAnnotation;
   }
 

@@ -61,26 +61,26 @@
   </issueManagement>
 
   <distributionManagement>
-    <!-- Release -->
     <repository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>xcan-maven-release</id>
+      <name>XCan Release</name>
+      <url>https://nexus.xcan.cloud/repository/xcan-maven-release/</url>
     </repository>
-
-    <!-- Snapshot -->
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>xcan-maven-snapshot</id>
+      <name>XCan Snapshot</name>
+      <url>https://nexus.xcan.cloud/repository/xcan-maven-snapshot/</url>
+      <uniqueVersion>false</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
 
   <developers>
     <developer>
-      <id>LiuXiaoLong</id>
-      <name>LiuXiaoLong</name>
+      <id>xiaolong.liu</id>
+      <name>XiaoLong Liu</name>
       <email>lxl@xcan.cloud</email>
       <organization>XCan Open Source Team</organization>
-      <organizationUrl>http://www.xcan.cloud/help</organizationUrl>
+      <organizationUrl>https://www.xcan.cloud/help</organizationUrl>
       <roles>
         <role>Developer</role>
         <role>Project Manager</role>

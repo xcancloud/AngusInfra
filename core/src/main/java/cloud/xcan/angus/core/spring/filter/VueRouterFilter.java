@@ -22,7 +22,7 @@ public class VueRouterFilter implements Filter {
     if (!uri.startsWith("/static") // For default forward
         // For vue forward
         && !uri.startsWith("/assets") && !uri.startsWith("/meta")
-        && !uri.startsWith("/iconfont") /*&& !uri.startsWith("/favicon.ico")*/
+        && !uri.startsWith("/iconfont") && !uri.startsWith("/favicon.ico")
         // For api forward, Note: /apis route Used by web front-end
         && !uri.startsWith("/api/") && !uri.startsWith("/innerapi/") && !uri.startsWith("/pubapi/")
         && !uri.startsWith("/openapi2p/") && !uri.startsWith("/actuator")

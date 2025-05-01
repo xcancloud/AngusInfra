@@ -64,23 +64,23 @@
     <repository>
       <id>xcan-maven-release</id>
       <name>XCan Release</name>
-      <url>http://nexus.xcan.work/repository/xcan-maven-release/</url>
+      <url>https://nexus.xcan.cloud/repository/xcan-maven-release/</url>
     </repository>
     <snapshotRepository>
       <id>xcan-maven-snapshot</id>
       <name>XCan Snapshot</name>
-      <url>http://nexus.xcan.work/repository/xcan-maven-snapshot/</url>
+      <url>https://nexus.xcan.cloud/repository/xcan-maven-snapshot/</url>
       <uniqueVersion>false</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
 
   <developers>
     <developer>
-      <id>LiuXiaoLong</id>
-      <name>LiuXiaoLong</name>
+      <id>xiaolong.liu</id>
+      <name>XiaoLong Liu</name>
       <email>lxl@xcan.cloud</email>
       <organization>XCan Open Source Team</organization>
-      <organizationUrl>http://www.xcan.cloud/help</organizationUrl>
+      <organizationUrl>https://www.xcan.cloud/help</organizationUrl>
       <roles>
         <role>Developer</role>
         <role>Project Manager</role>

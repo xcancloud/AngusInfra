@@ -16,14 +16,12 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_METHODS
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_ORIGIN;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getTimeZone;
-import static cloud.xcan.angus.spec.utils.ClassUtils.classSafe;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.ApiType;
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
-import cloud.xcan.angus.core.utils.CoreUtils;
 import cloud.xcan.angus.core.utils.PrincipalContextUtils;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -45,7 +43,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;

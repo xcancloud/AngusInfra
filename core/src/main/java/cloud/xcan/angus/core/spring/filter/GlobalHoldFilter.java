@@ -98,7 +98,8 @@ public class GlobalHoldFilter implements Filter {
     }
     Principal principal = PrincipalContext.createIfAbsent();
     try {
-      if (path.startsWith("/oauth2") || path.startsWith("/swagger") || "/".equals(path)) {
+      if (path.startsWith("/oauth2") || path.startsWith("/swagger")
+          || path.startsWith("/eureka") || "/".equals(path)) {
         filterChain.doFilter(servletRequest, servletResponse);
         return;
       }

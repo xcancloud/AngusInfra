@@ -143,11 +143,6 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     return new JoinSupplier();
   }
 
-  //  @Bean
-  //  DelayOrderQueueManager delayOrderQueueManager(){
-  //    return new DelayOrderQueueManager();
-  //  }
-
   /**
    * Fix:: java.nio.file.NoSuchFileException:
    * /tmp/undertow.1819.4153244082753775934/undertow6191513646749224630upload
@@ -207,15 +202,14 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   @Bean
   public FilterRegistrationBean<GlobalHoldFilter> registrationGlobalHoldFilterBean(
       ApplicationInfo applicationInfo, GlobalProperties globalProperties) {
-    FilterRegistrationBean<GlobalHoldFilter> p1 = new FilterRegistrationBean<>();
-    p1.setName(new Str0(new long[]{0xC45EBCB08961D86CL, 0xC2965FA579D3998FL, 0xD6AFF3C0B882A938L})
-        .toString() /* => "globalHoldFilter" */);
-    p1.setFilter(new GlobalHoldFilter(applicationInfo, globalProperties));
-    p1.setDispatcherTypes(DispatcherType.REQUEST);
-    p1.addUrlPatterns("/*");
+    FilterRegistrationBean<GlobalHoldFilter> registrationBean = new FilterRegistrationBean<>();
+    registrationBean.setName("globalHoldFilter");
+    registrationBean.setFilter(new GlobalHoldFilter(applicationInfo, globalProperties));
+    registrationBean.setDispatcherTypes(DispatcherType.REQUEST);
+    registrationBean.addUrlPatterns("/*");
     // Must be executed after RequestContextFilter(OrderedRequestContextFilter) to prevent being overwritten
-    p1.setOrder(REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
-    return p1;
+    registrationBean.setOrder(REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
+    return registrationBean;
   }
 
   @Override

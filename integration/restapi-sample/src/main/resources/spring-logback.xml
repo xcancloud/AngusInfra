@@ -63,7 +63,7 @@
     <appender-ref ref="ERROR_FILE"/>
   </appender>
 
-  <springProfile name="local,dev,beta,beta2,beta3">
+  <springProfile name="local,dev,beta">
     <root level="INFO">
       <appender-ref ref="STDOUT"/>
       <appender-ref ref="FILE_ASYNC"/>
@@ -71,7 +71,7 @@
     </root>
   </springProfile>
 
-  <springProfile name="pre,prod">
+  <springProfile name="prod">
     <root level="INFO">
       <appender-ref ref="FILE_ASYNC"/>
       <appender-ref ref="ERROR_FILE_ASYNC"/>

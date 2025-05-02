@@ -34,7 +34,7 @@ public class PrincipalContextUtils {
     if (isNull(principal.getOptTenantId())) {
       return principal.getTenantId();
     }
-    if (!principal.isMultiTenantCtrl() || isJobOrDoorApi()
+    if (!principal.isMultiTenantCtrl() || isJobOrInnerApi()
         || (isOpClient(principal) && isToUser())) {
       return principal.getOptTenantId();
     }
@@ -644,11 +644,11 @@ public class PrincipalContextUtils {
     return ApiType.VIEW.equals(PrincipalContext.getApiType());
   }
 
-  public static boolean isDoorApi() {
+  public static boolean isInnerApi() {
     return ApiType.DOOR_API.equals(PrincipalContext.getApiType());
   }
 
-  public static boolean isDoorApi(Principal principal) {
+  public static boolean isInnerApi(Principal principal) {
     return ApiType.DOOR_API.equals(principal.getApiType());
   }
 
@@ -660,12 +660,12 @@ public class PrincipalContextUtils {
     return ApiType.PUB_VIEW.equals(PrincipalContext.getApiType());
   }
 
-  public static boolean isJobOrDoorApi() {
-    return isJob() || isDoorApi();
+  public static boolean isJobOrInnerApi() {
+    return isJob() || isInnerApi();
   }
 
-  public static boolean isJobOrDoorApi(Principal principal) {
-    return isJob(principal) || isDoorApi(principal);
+  public static boolean isJobOrInnerApi(Principal principal) {
+    return isJob(principal) || isInnerApi(principal);
   }
 
   public static boolean isJob() {

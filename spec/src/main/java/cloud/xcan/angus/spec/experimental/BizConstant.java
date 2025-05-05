@@ -63,8 +63,6 @@ public interface BizConstant {
   String GM_SERVICE_ARTIFACT_ID = "XCAN-ANGUSGM.BOOT";
   String TESTER_SERVICE = "AngusTester";
   String TESTER_SERVICE_ARTIFACT_ID = "XCAN-ANGUSTESTER.BOOT";
-  String CTRL_SERVICE = "AngusCtrl";
-  String CTRL_SERVICE_ARTIFACT_ID = "XCAN-ANGUSCTRL.BOOT";
 
   /**
    * String is null in database

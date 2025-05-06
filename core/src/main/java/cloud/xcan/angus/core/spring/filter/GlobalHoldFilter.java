@@ -170,29 +170,31 @@ public class GlobalHoldFilter implements Filter {
 
     // Retrieve and parse cookie value.
     Cookie cookie = WebUtils.getCookie(request, LOCALE_COOKIE_NAME);
-    String value = cookie.getValue();
-    String localePart = value;
-    String timeZonePart = null;
-    int separatorIndex = localePart.indexOf('/');
-    if (separatorIndex == -1) {
-      // Leniently accept older cookies separated by a space...
-      separatorIndex = localePart.indexOf(' ');
-    }
-    if (separatorIndex >= 0) {
-      localePart = value.substring(0, separatorIndex);
-      timeZonePart = value.substring(separatorIndex + 1);
-    }
-    try {
-      locale = (!"-".equals(localePart) ? StringUtils.parseLocale(localePart) : null);
-      if (timeZonePart != null) {
-        timeZone = StringUtils.parseTimeZoneString(timeZonePart);
+    if (nonNull(cookie)){
+      String value = cookie.getValue();
+      String localePart = value;
+      String timeZonePart = null;
+      int separatorIndex = localePart.indexOf('/');
+      if (separatorIndex == -1) {
+        // Leniently accept older cookies separated by a space...
+        separatorIndex = localePart.indexOf(' ');
       }
-    } catch (IllegalArgumentException ex) {
-      log.warn(new Str0(new long[]{0xB4868A81A976C489L, 0xFB892E4C53656C13L, 0x47CB7822503FC4CL,
-          0xBFDF0C0D164B3776L}).toString() /* => "Parsed cookie value [" */
-          + cookie.getValue() + new Str0(
-          new long[]{0xD281F85B9AD531A7L, 0xDAF571CC3856E648L, 0x982A4A28A21B0C07L})
-          .toString() /* => "] into locale '" */ + locale + "'");
+      if (separatorIndex >= 0) {
+        localePart = value.substring(0, separatorIndex);
+        timeZonePart = value.substring(separatorIndex + 1);
+      }
+      try {
+        locale = (!"-".equals(localePart) ? StringUtils.parseLocale(localePart) : null);
+        if (timeZonePart != null) {
+          timeZone = StringUtils.parseTimeZoneString(timeZonePart);
+        }
+      } catch (IllegalArgumentException ex) {
+        log.warn(new Str0(new long[]{0xB4868A81A976C489L, 0xFB892E4C53656C13L, 0x47CB7822503FC4CL,
+            0xBFDF0C0D164B3776L}).toString() /* => "Parsed cookie value [" */
+            + cookie.getValue() + new Str0(
+            new long[]{0xD281F85B9AD531A7L, 0xDAF571CC3856E648L, 0x982A4A28A21B0C07L})
+            .toString() /* => "] into locale '" */ + locale + "'");
+      }
     }
 
     if (isNull(timeZone) && nonNull(applicationInfo.getTimezone())) {

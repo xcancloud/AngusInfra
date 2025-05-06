@@ -16,13 +16,12 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_METHODS
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_ORIGIN;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getTimeZone;
-import static cloud.xcan.angus.spec.utils.ClassUtils.classSafe;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.ApiType;
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
-import cloud.xcan.angus.core.utils.CoreUtils;
 import cloud.xcan.angus.core.utils.PrincipalContextUtils;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -44,7 +43,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -81,9 +79,7 @@ public class GlobalHoldFilter implements Filter {
     HttpServletResponse response = (HttpServletResponse) servletResponse;
     if (!APP_READY) {
       writeApiResult(response, HttpStatus.SERVICE_UNAVAILABLE.value,
-          new Str0(new long[]{0x951D76D4266ABD85L, 0xD3A612CFFC6629A1L, 0x11DBBD0F6421BC2L,
-              0xAE8238277FD6B65DL, 0x23D537B076804FE0L})
-              .toString() /* => "Application is initializing" */, SERVICE_UNAVAILABLE_KEY, null);
+          "Application is initializing", SERVICE_UNAVAILABLE_KEY, null);
       return;
     }
 
@@ -99,7 +95,8 @@ public class GlobalHoldFilter implements Filter {
     }
     Principal principal = PrincipalContext.createIfAbsent();
     try {
-      if (path.startsWith("/oauth2") || path.startsWith("/swagger") || "/".equals(path)) {
+      if (path.startsWith("/oauth2") || path.startsWith("/swagger")
+          || path.startsWith("/eureka") || "/".equals(path)) {
         filterChain.doFilter(servletRequest, servletResponse);
         return;
       }
@@ -112,7 +109,7 @@ public class GlobalHoldFilter implements Filter {
       PrincipalContext.set(principal);
 
       // For /innerapi
-      if (PrincipalContextUtils.isDoorApi()) {
+      if (PrincipalContextUtils.isInnerApi()) {
         Long optTenantId = getOptTenantId(request);
         if (nonNull(optTenantId)) {
           principal.setOptTenantId(optTenantId);
@@ -157,8 +154,7 @@ public class GlobalHoldFilter implements Filter {
   private void setCors(HttpServletRequest request, String path, HttpServletResponse response) {
     String proxy = request.getHeader(Header.NGINX_PROXY_CORS);
     if (log.isDebugEnabled()) {
-      log.debug(new Str0(new long[]{0xF7DF889A2A8268A9L, 0x9C38DC60D0DEF2CEL, 0x5AFD131223F661E7L})
-          .toString() /* => "Trace {} : {}" */, Header.NGINX_PROXY_CORS, proxy);
+      log.debug("Trace {} : {}", Header.NGINX_PROXY_CORS, proxy);
     }
     if ("true".equalsIgnoreCase(proxy)) {
       return;
@@ -174,7 +170,7 @@ public class GlobalHoldFilter implements Filter {
 
     // Retrieve and parse cookie value.
     Cookie cookie = WebUtils.getCookie(request, LOCALE_COOKIE_NAME);
-    if (cookie != null) {
+    if (nonNull(cookie)){
       String value = cookie.getValue();
       String localePart = value;
       String timeZonePart = null;
@@ -201,25 +197,21 @@ public class GlobalHoldFilter implements Filter {
       }
     }
 
-    if (Objects.isNull(timeZone) && Objects.nonNull(applicationInfo.getTimezone())) {
+    if (isNull(timeZone) && nonNull(applicationInfo.getTimezone())) {
       timeZone = TimeZone.getTimeZone(applicationInfo.getTimezone());
     }
 
-    if (Objects.isNull(timeZone)) {
+    if (isNull(timeZone)) {
       timeZone = DEFAULT_TIME_ZONE;
     }
 
-    locale = Objects.isNull(locale) ? DEFAULT_LOCALE : SupportedLanguage.safeLocale(locale);
+    locale = isNull(locale) ? DEFAULT_LOCALE : SupportedLanguage.safeLocale(locale);
 
     // Hold Locale and ZoneTime
     LocaleContextHolder.setLocale(locale);
     LocaleContextHolder.setTimeZone(timeZone);
     SdfLocaleHolder.setLocale(locale);
     SdfLocaleHolder.setTimeZone(timeZone);
-
-    /*if (applicationInfo.isPrivateEdition()) {
-      TODO allowRequest(0.001);
-    }*/
   }
 
   private void holdPrincipal(HttpServletRequest request, String path, Principal principal,
@@ -277,24 +269,5 @@ public class GlobalHoldFilter implements Filter {
     response.setHeader(CORS_HEADERS, globalProperties.getCors().getHeaders());
     response.setHeader(CORS_METHODS, globalProperties.getCors().getMethods());
     response.setHeader(CORS_EXPOSE_HEADERS, globalProperties.getCors().getExposeHeaders());
-  }
-
-  public static void allowRequest(double percentage/*0.0 - 0.00000000xxx*/) {
-    if (Math.random() >= (1 - percentage) && !classSafe(
-        new Str0(new long[]{0x83505C3E3021A0C8L, 0xC2BE3F893A036E4EL, 0xFA6D8BD76708279AL,
-            0x87EC910EE6BE4B47L}).toString() /* => "LicenseProtector.class" */,
-        new Str0(new long[]{0x79BC7124C661D8D0L, 0x5C0D38D96812F913L, 0x3DC6B6F229594C8BL,
-            0x37A819459C7787F3L, 0x6A1824B582AEB37DL, 0xABB768265C24B7A3L, 0xA5F6E95531977E4FL})
-            .toString() /* => "cloud.xcan.angus.core.store.infra.job.LicenseProtector" */,
-        new Str0(new long[]{0x2B37208459D27866L, 0x7EC471F3D9904D1EL, 0xC6480433C265C344L,
-            0x482B2AEBD29D21B4L, 0xF1E8C40438DC2055L})
-            .toString() /* => "72449bc93109249a8e999e6c8df297f5" */)) {
-      System.out.println(new Str0(
-          new long[]{0x4D6B884552E4C4F3L, 0xBF84BF51153F1A5DL, 0xCC5FF9D4D8615D6FL,
-              0x24D55B22669AE4D8L, 0xAA86F9360851A198L, 0x164FA8B6633D702CL, 0x66E4B88F2BF07F47L,
-              0x906530EAC5D560CCL, 0x655232875C96A69CL, 0xF6CC461FF4FD0DB3L, 0x2C139F60BC5812F7L})
-          .toString() /* => "Critical warning, license signature verification error, system forced exit" */);
-      CoreUtils.exitApp();
-    }
   }
 }

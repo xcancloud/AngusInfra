@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author XiaoLong Liu
  */
-@FeignClient(name = "ClientSignInnerApi", url = "${OAUTH2_ENDPOINT_PREFIX}")
+@FeignClient(name = "ClientSignInnerApi", url = "${GM_APIS_URL_PREFIX}")
 public interface ClientSignInnerApiRemote {
 
   @Operation(

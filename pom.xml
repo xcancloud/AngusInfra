@@ -140,23 +140,6 @@
       </build>
     </profile>
     <profile>
-      <id>env.beta</id>
-      <properties>
-        <profile.active>beta</profile.active>
-      </properties>
-      <build>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <includes>
-              <include>cert/XCanTest.publicCert.keystore</include>
-              <include>cert/license.lic</include>
-            </includes>
-          </resource>
-        </resources>
-      </build>
-    </profile>
-    <profile>
       <id>env.prod</id>
       <properties>
         <profile.active>prod</profile.active>
@@ -211,7 +194,7 @@
 
     <!-- Deploy only community edition -->
     <profile>
-      <id>dist.community</id>
+      <id>edition.community</id>
       <properties>
         <profile.active>priv</profile.active>
         <editionType>COMMUNITY</editionType>
@@ -222,7 +205,7 @@
     </profile>
     <!-- Deploy only enterprise edition -->
     <profile>
-      <id>dist.enterprise</id>
+      <id>edition.enterprise</id>
       <properties>
         <profile.active>priv</profile.active>
         <editionType>ENTERPRISE</editionType>
@@ -233,7 +216,7 @@
     </profile>
     <!-- Deploy only datacenter edition -->
     <profile>
-      <id>dist.datacenter</id>
+      <id>edition.datacenter</id>
       <properties>
         <profile.active>priv</profile.active>
         <editionType>DATACENTER</editionType>
@@ -244,7 +227,7 @@
     </profile>
     <!-- Deploy only cloud service edition -->
     <profile>
-      <id>dist.cloudService</id>
+      <id>edition.cloudService</id>
       <properties>
         <editionType>CLOUD_SERVICE</editionType>
         <editionName>CloudService</editionName>
@@ -262,7 +245,6 @@
         <excludes>
           <exclude>application-local.yml</exclude>
           <exclude>application-dev.yml</exclude>
-          <exclude>application-beta.yml</exclude>
           <exclude>application-prod.yml</exclude>
           <exclude>application-priv.yml</exclude>
         </excludes>
@@ -282,7 +264,9 @@
       <resource>
         <directory>src/main/scripts</directory>
         <includes>
-          <include>startenv.sh</include>
+          <include>init-*.sh</include>
+          <include>startup-*.sh</include>
+          <include>shutdown-*.sh</include>
         </includes>
         <filtering>true</filtering>
         <targetPath>${project.basedir}/target</targetPath>
@@ -322,15 +306,6 @@
             <nonFilteredFileExtension>keystore</nonFilteredFileExtension>
             <nonFilteredFileExtension>p12</nonFilteredFileExtension>
             <nonFilteredFileExtension>pem</nonFilteredFileExtension>
-            <!--            <nonFilteredFileExtension>css</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>otf</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>eot</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>svg</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>ttf</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>woff</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>woff2</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>png</nonFilteredFileExtension>-->
-            <!--            <nonFilteredFileExtension>js</nonFilteredFileExtension>-->
           </nonFilteredFileExtensions>
           <delimiters>
             <encoding>UTF-8</encoding>

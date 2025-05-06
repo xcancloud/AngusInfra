@@ -1,10 +1,6 @@
 package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.AUTHORITY_SCOPE_PREFIX;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.INNER_API_TOKEN_CLIENT_SCOPE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.INNER_AUTH_RESOURCES;
-import static cloud.xcan.angus.spec.experimental.BizConstant.OPENAPI_AUTH_RESOURCES;
 
 import cloud.xcan.angus.security.handler.CustomAccessDeniedHandler;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;

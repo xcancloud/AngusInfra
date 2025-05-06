@@ -1,8 +1,6 @@
 package cloud.xcan.angus.core.enums;
 
 import static cloud.xcan.angus.core.spring.SpringContextHolder.getBean;
-import static cloud.xcan.angus.spec.experimental.BizConstant.CTRL_SERVICE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.CTRL_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TESTER_SERVICE;
@@ -64,8 +62,6 @@ public class EnumStoreInMemory implements EnumStore {
           boolean isTesterOrCtrlService = isNotEmpty(appInfo.getArtifactId()) && (
               appInfo.getArtifactId().equalsIgnoreCase(TESTER_SERVICE)
                   || appInfo.getArtifactId().equalsIgnoreCase(TESTER_SERVICE_ARTIFACT_ID)
-                  || appInfo.getArtifactId().equalsIgnoreCase(CTRL_SERVICE)
-                  || appInfo.getArtifactId().equalsIgnoreCase(CTRL_SERVICE_ARTIFACT_ID)
           );
           if (isAngusModelEnum && !isTesterOrCtrlService) {
             continue;

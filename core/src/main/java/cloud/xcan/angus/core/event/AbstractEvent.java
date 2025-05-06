@@ -2,7 +2,6 @@ package cloud.xcan.angus.core.event;
 
 import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT;
 
-import cloud.xcan.angus.api.enums.EventType;
 import cloud.xcan.angus.spec.EventObject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;

@@ -245,7 +245,6 @@
         <excludes>
           <exclude>application-local.yml</exclude>
           <exclude>application-dev.yml</exclude>
-          <exclude>application-beta.yml</exclude>
           <exclude>application-prod.yml</exclude>
           <exclude>application-priv.yml</exclude>
         </excludes>

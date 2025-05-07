@@ -17,7 +17,10 @@ public class GlobalProperties {
   @Setter
   public static class Cors {
 
-    private Boolean enabled = false;
+    private Boolean enabled = true;
+    /**
+     * All paths take effect when not set.
+     */
     private String[] startWithPaths;
     private String credentials = "true";
     private String origin = "*";
@@ -40,11 +43,12 @@ public class GlobalProperties {
     if (!cors.getEnabled()) {
       return false;
     }
-    if (cors.startWithPaths != null) {
-      for (String startsWithPath : cors.startWithPaths) {
-        if ("/".equals(startsWithPath) || uri.startsWith(startsWithPath)) {
-          return true;
-        }
+    if (cors.startWithPaths == null || cors.startWithPaths.length == 0) {
+      return true;
+    }
+    for (String startsWithPath : cors.startWithPaths) {
+      if ("/".equals(startsWithPath) || uri.startsWith(startsWithPath)) {
+        return true;
       }
     }
     return false;

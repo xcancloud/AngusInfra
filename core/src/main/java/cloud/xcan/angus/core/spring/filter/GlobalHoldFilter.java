@@ -1,6 +1,7 @@
 package cloud.xcan.angus.core.spring.filter;
 
 import static cloud.xcan.angus.core.spring.boot.ApplicationInfo.APP_READY;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isInnerApi;
 import static cloud.xcan.angus.core.utils.ServletUtils.getAndSetRequestId;
 import static cloud.xcan.angus.core.utils.ServletUtils.getAuthServiceCode;
 import static cloud.xcan.angus.core.utils.ServletUtils.getUserAgent;
@@ -16,6 +17,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_METHODS
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_ORIGIN;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getTimeZone;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 
@@ -93,6 +95,7 @@ public class GlobalHoldFilter implements Filter {
       response.setStatus(HttpStatus.OK.value);
       return;
     }
+
     Principal principal = PrincipalContext.createIfAbsent();
     try {
       if (path.startsWith("/oauth2") || path.startsWith("/swagger")
@@ -109,7 +112,7 @@ public class GlobalHoldFilter implements Filter {
       PrincipalContext.set(principal);
 
       // For /innerapi
-      if (PrincipalContextUtils.isInnerApi()) {
+      if (isInnerApi()) {
         Long optTenantId = getOptTenantId(request);
         if (nonNull(optTenantId)) {
           principal.setOptTenantId(optTenantId);
@@ -119,10 +122,7 @@ public class GlobalHoldFilter implements Filter {
       setResponseHeader(response, principal);
 
       if (log.isDebugEnabled()) {
-        log.debug(new Str0(new long[]{0xF8BCCB8FC3FF2B57L, 0xD53BD967DE6F6A59L, 0x75678ED0AE50945BL,
-                0x56C6AD5D241CF79L, 0xCEB2B1A1101B7D7AL, 0x9E2DC812AC2E3C1CL, 0x997C01824C5CBB67L,
-                0xD4DC8A204B95ED4AL, 0x4900FE08A1319997L})
-                .toString() /* => "Hold principal, locale: {} ,timeZoneId: {}, requestId: {}" */,
+        log.debug("Hold principal, locale: {} ,timeZoneId: {}, requestId: {}",
             getLocale(), getTimeZone().getID(), principal.getRequestId());
       }
 
@@ -135,17 +135,13 @@ public class GlobalHoldFilter implements Filter {
       PrincipalContext.remove();
       ThreadContext.remove();
       if (log.isDebugEnabled()) {
-        log.debug(new Str0(new long[]{0xB0084D3CCD769F84L, 0xDFB7F66F205E57FFL, 0x18124C9366441414L,
-            0xAAC633AB02D56ED3L, 0x74177CD171D61294L})
-            .toString() /* => "Remove MDC requestId : {}" */, principal.getRequestId());
+        log.debug("Remove MDC requestId : {}", principal.getRequestId());
       }
       principal = null;
       LocaleContextHolder.resetLocaleContext();
       SdfLocaleHolder.resetLocaleContext();
       if (log.isDebugEnabled()) {
-        log.debug(new Str0(new long[]{0x37AFF0693EA73930L, 0x53755FC142A1D5B4L, 0xA80612F2E3CD5CEAL,
-            0x640C839A861AB21CL, 0x3AEBAFD1F7EC59F3L})
-            .toString() /* => "Remove MDC requestId : {}" */, MDC.get(AuthKey.REQUEST_ID));
+        log.debug("Remove MDC requestId : {}", MDC.get(AuthKey.REQUEST_ID));
       }
       MDC.remove(AuthKey.REQUEST_ID);
     }
@@ -189,11 +185,7 @@ public class GlobalHoldFilter implements Filter {
           timeZone = StringUtils.parseTimeZoneString(timeZonePart);
         }
       } catch (IllegalArgumentException ex) {
-        log.warn(new Str0(new long[]{0xB4868A81A976C489L, 0xFB892E4C53656C13L, 0x47CB7822503FC4CL,
-            0xBFDF0C0D164B3776L}).toString() /* => "Parsed cookie value [" */
-            + cookie.getValue() + new Str0(
-            new long[]{0xD281F85B9AD531A7L, 0xDAF571CC3856E648L, 0x982A4A28A21B0C07L})
-            .toString() /* => "] into locale '" */ + locale + "'");
+        log.warn("Parsed cookie value [" + cookie.getValue() + "] into locale '" + locale + "'");
       }
     }
 
@@ -233,8 +225,7 @@ public class GlobalHoldFilter implements Filter {
 
   public Long getOptTenantId(HttpServletRequest req) {
     String optTenantId = req.getHeader(Header.OPT_TENANT_ID);
-    return org.apache.commons.lang3.StringUtils.isEmpty(optTenantId) ? null
-        : Long.valueOf(optTenantId);
+    return isEmpty(optTenantId) ? null : Long.valueOf(optTenantId);
   }
 
   private void setResponseHeader(HttpServletResponse response, Principal principal) {

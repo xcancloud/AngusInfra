@@ -90,8 +90,8 @@
     <mysql-connector.version>8.0.31</mysql-connector.version>
     <postgresql.version>42.7.5</postgresql.version>
 
-    <slf4j.version>2.0.17</slf4j.version>
-    <logback.verison>1.5.17</logback.verison>
+    <slf4j.version>2.0.13</slf4j.version>
+    <logback.verison>1.5.6</logback.verison>
     <janino.version>3.1.4</janino.version>
     <lombok.version>1.18.36</lombok.version>
     <aspectjweaver.version>1.9.6</aspectjweaver.version>
@@ -685,6 +685,12 @@
         <groupId>io.swagger.parser.v3</groupId>
         <artifactId>swagger-parser-v2-converter</artifactId>
         <version>${swagger3-parser.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>io.swagger.validator.v3</groupId>

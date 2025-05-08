@@ -51,7 +51,7 @@ public class L2CacheAutoConfigurer {
   @ConditionalOnMissingBean(name = "l2cacheRedisObjectMapper")
   public ObjectMapper l2cacheRedisObjectMapper() {
     ObjectMapper mapper = new ObjectMapper();
-    SimpleModule simpleModule = new SimpleModule();
+    SimpleModule simpleModule = new SimpleModule("l2cacheSimpleModule");
     simpleModule.addSerializer(Long.TYPE, new ToStringSerializer(Long.TYPE));
     simpleModule.addSerializer(Long.class, new ToStringSerializer(Long.class));
     simpleModule.addSerializer(TimeValue.class, new TimeValueSerializer());
@@ -59,7 +59,8 @@ public class L2CacheAutoConfigurer {
     simpleModule.addSerializer(BigDecimal.class, new BigDecimalSerializer());
     simpleModule.addDeserializer(BigDecimal.class, new BigDecimalDeSerializer());
     mapper.registerModule(simpleModule);
-    mapper.registerModule(new EnumModule());
+
+    mapper.registerModule(new EnumModule("l2cacheEnumModule"));
     mapper.registerModule(new CoreJackson2Module());
     mapper.registerModule(new JavaTimeModule());
 

@@ -16,15 +16,10 @@
 
 package cloud.xcan.angus.web;
 
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT_10;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT_4;
-import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
-
-import cloud.xcan.angus.core.enums.EnumConverterFactory;
-import cloud.xcan.angus.core.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import cloud.xcan.angus.core.jackson.JacksonProperties;
+import cloud.xcan.angus.core.jackson.JacksonProperties.ConstructorDetectorStrategy;
 import cloud.xcan.angus.spec.jackson.EnumModule;
+import cloud.xcan.angus.spec.jackson.JavaTimeModule;
 import cloud.xcan.angus.spec.jackson.serializer.TimeValueDeSerializer;
 import cloud.xcan.angus.spec.jackson.serializer.TimeValueSerializer;
 import cloud.xcan.angus.spec.unit.TimeValue;
@@ -35,21 +30,17 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -57,24 +48,34 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Stream;
+import org.springframework.aot.hint.ReflectionHints;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jackson.JsonComponentModule;
+import org.springframework.boot.jackson.JsonMixinModule;
+import org.springframework.boot.jackson.JsonMixinModuleEntries;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.Ordered;
-import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Auto configuration for Jackson. The following auto-configuration will get applied:
@@ -86,11 +87,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * </ul>
  *
  * @author XiaoLong Liu
+ * @see JacksonAutoConfiguration
+ * @see MappingJackson2HttpMessageConverter
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ObjectMapper.class, WebMvcConfigurer.class})
 @EnableConfigurationProperties(JacksonProperties.class)
-public class JacksonAutoConfigurer implements WebMvcConfigurer {
+public class JacksonAutoConfigurer {
 
   private static final Map<?, Boolean> FEATURE_DEFAULTS;
 
@@ -101,14 +103,29 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
     FEATURE_DEFAULTS = Collections.unmodifiableMap(featureDefaults);
   }
 
-  @Override
-  public void addFormatters(FormatterRegistry registry) {
-    registry.addConverterFactory(new EnumConverterFactory());
-  }
-
   @Bean
   public JsonComponentModule jsonComponentModule() {
     return new JsonComponentModule();
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  static class JacksonMixinConfiguration {
+
+    @Bean
+    static JsonMixinModuleEntries jsonMixinModuleEntries(ApplicationContext context) {
+      List<String> packages =
+          AutoConfigurationPackages.has(context) ? AutoConfigurationPackages.get(context)
+              : Collections.emptyList();
+      return JsonMixinModuleEntries.scan(context, packages);
+    }
+
+    @Bean
+    JsonMixinModule jsonMixinModule(ApplicationContext context, JsonMixinModuleEntries entries) {
+      JsonMixinModule jsonMixinModule = new JsonMixinModule();
+      jsonMixinModule.registerEntries(entries, context.getClassLoader());
+      return jsonMixinModule;
+    }
+
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -117,36 +134,17 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
 
     @Bean
     @Primary
-    @ConditionalOnMissingBean
-    ObjectMapper jacksonObjectMapper(Jackson2ObjectMapperBuilder builder) {
-      ObjectMapper mapper = builder.createXmlMapper(false).build();
-      // SDF config
-      SimpleModule simpleModule = new SimpleModule();
-      simpleModule.addSerializer(Long.TYPE, new ToStringSerializer(Long.TYPE));
-      simpleModule.addSerializer(Long.class, new ToStringSerializer(Long.class));
-      simpleModule.addSerializer(TimeValue.class, new TimeValueSerializer());
-      simpleModule.addDeserializer(TimeValue.class, new TimeValueDeSerializer());
-      // simpleModule.addSerializer(BigDecimal.class, new BigDecimalSerializer());
-      // simpleModule.addDeserializer(BigDecimal.class, new BigDecimalDeSerializer());
-      mapper.registerModule(simpleModule);
-      mapper.registerModule(new EnumModule());
-
-      // Exception: Could not read JSON: The class with cloud.xcan.angus.api.commonlink.setting.Setting and name of cloud.xcan.angus.api.commonlink.setting.Setting is not in the allowlist. If you believe this class is safe to deserialize, please provide an explicit mapping using Jackson annotations or by providing a Mixin.
-      // If the serialization is only done by a trusted source, you can also enable default typing.
-      // objectMapper.addMixIn(CacheMessage.class, CacheMessageMixin.class); // Fix method 1
-      // mapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL); // Fix method 2, recommend!!!
-      // mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-
-      // mapper.setSerializationInclusion(Include.NON_EMPTY); -> Note: The null object is utilized by the front-end.
-      mapper.setSerializationInclusion(Include.NON_NULL);
-      mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-      mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-      mapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-      mapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-      //mapper.configure(SerializationFeature.WRITE_BIGDECIMAL_AS_PLAIN, true);
-      return mapper;
+    ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
+      ObjectMapper objectMapper = builder.createXmlMapper(false).build();
+      objectMapper.setSerializationInclusion(Include.NON_NULL);
+      objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+      objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+      objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
+      objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+      objectMapper.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
+      return objectMapper;
     }
+
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -158,6 +156,7 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
     ParameterNamesModule parameterNamesModule() {
       return new ParameterNamesModule(JsonCreator.Mode.DEFAULT);
     }
+
   }
 
   @Configuration(proxyBeanMethods = false)
@@ -165,7 +164,7 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
   static class JacksonObjectMapperBuilderConfiguration {
 
     @Bean
-    @Scope("prototype")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     @ConditionalOnMissingBean
     Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(ApplicationContext applicationContext,
         List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
@@ -181,35 +180,32 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
         customizer.customize(builder);
       }
     }
+
   }
 
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
-  @EnableConfigurationProperties(JacksonProperties.class)
+  @EnableConfigurationProperties(org.springframework.boot.autoconfigure.jackson.JacksonProperties.class)
   static class Jackson2ObjectMapperBuilderCustomizerConfiguration {
 
     @Bean
     StandardJackson2ObjectMapperBuilderCustomizer standardJacksonObjectMapperBuilderCustomizer(
-        ApplicationContext applicationContext, JacksonProperties jacksonProperties) {
-      return new StandardJackson2ObjectMapperBuilderCustomizer(applicationContext,
-          jacksonProperties);
+        JacksonProperties jacksonProperties, ObjectProvider<Module> modules) {
+      return new StandardJackson2ObjectMapperBuilderCustomizer(jacksonProperties,
+          modules.stream().toList());
     }
 
     static final class StandardJackson2ObjectMapperBuilderCustomizer
         implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
-      private final ApplicationContext applicationContext;
-
       private final JacksonProperties jacksonProperties;
 
-      StandardJackson2ObjectMapperBuilderCustomizer(ApplicationContext applicationContext,
-          JacksonProperties jacksonProperties) {
-        this.applicationContext = applicationContext;
-        this.jacksonProperties = jacksonProperties;
-      }
+      private final Collection<Module> modules;
 
-      private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory, Class<T> type) {
-        return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
+      StandardJackson2ObjectMapperBuilderCustomizer(JacksonProperties jacksonProperties,
+          Collection<Module> modules) {
+        this.jacksonProperties = jacksonProperties;
+        this.modules = modules;
       }
 
       @Override
@@ -219,24 +215,12 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
 
       @Override
       public void customize(Jackson2ObjectMapperBuilder builder) {
-
         if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
           builder.serializationInclusion(this.jacksonProperties.getDefaultPropertyInclusion());
         }
         if (this.jacksonProperties.getTimeZone() != null) {
           builder.timeZone(this.jacksonProperties.getTimeZone());
         }
-
-        builder.serializers(
-            new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_FMT)),
-            new LocalDateSerializer(DateTimeFormatter.ofPattern(DATE_FMT_4)),
-            new LocalTimeSerializer(DateTimeFormatter.ofPattern(DATE_FMT_10))
-        );
-        builder.deserializers(
-            new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATE_FMT)),
-            new LocalDateDeserializer(DateTimeFormatter.ofPattern(DATE_FMT_4)),
-            new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DATE_FMT_10))
-        );
         configureFeatures(builder, FEATURE_DEFAULTS);
         configureVisibility(builder, this.jacksonProperties.getVisibility());
         configureFeatures(builder, this.jacksonProperties.getDeserialization());
@@ -244,10 +228,14 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
         configureFeatures(builder, this.jacksonProperties.getMapper());
         configureFeatures(builder, this.jacksonProperties.getParser());
         configureFeatures(builder, this.jacksonProperties.getGenerator());
+        configureFeatures(builder, this.jacksonProperties.getDatatype().getEnum());
+        configureFeatures(builder, this.jacksonProperties.getDatatype().getJsonNode());
         configureDateFormat(builder);
         configurePropertyNamingStrategy(builder);
-        configureModules(builder);
+        configureModules(builder, jacksonProperties);
         configureLocale(builder);
+        configureDefaultLeniency(builder);
+        configureConstructorDetector(builder);
       }
 
       private void configureFeatures(Jackson2ObjectMapperBuilder builder,
@@ -316,10 +304,8 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
           String fieldName) {
         // Find the field (this way we automatically support new constants
         // that may be added by Jackson in the future)
-        Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
-            PropertyNamingStrategy.class);
-        assertNotNull(field, () -> "Constant named '" + fieldName + "' not found on "
-            + PropertyNamingStrategy.class.getName());
+        Field field = findPropertyNamingStrategyField(fieldName);
+        Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found");
         try {
           builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
         } catch (Exception ex) {
@@ -327,9 +313,94 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
         }
       }
 
-      private void configureModules(Jackson2ObjectMapperBuilder builder) {
-        Collection<Module> moduleBeans = getBeans(this.applicationContext, Module.class);
-        builder.modulesToInstall(moduleBeans.toArray(new Module[0]));
+      private Field findPropertyNamingStrategyField(String fieldName) {
+        return ReflectionUtils.findField(PropertyNamingStrategies.class,
+            fieldName, PropertyNamingStrategy.class);
+      }
+
+      private void configureModules(Jackson2ObjectMapperBuilder builder,
+          JacksonProperties jacksonProperties) {
+        // Use builder.modules() to find well known modules, see Jackson2ObjectMapperBuilder#registerWellKnownModulesIfAvailable()
+        // builder.modulesToInstall(this.modules.toArray(new Module[0]));
+
+        // Customized registerWellKnownModulesIfAvailable() and rewrite JavaTimeModule
+        List<Module> allModules = registerWellKnownModulesIfAvailable(jacksonProperties);
+        allModules.addAll(modules);
+
+        // Use builder.modules() to close Jackson2ObjectMapperBuilder#findWellKnownModules
+        builder.modules(allModules);
+      }
+
+      /**
+       * @see Jackson2ObjectMapperBuilder#registerWellKnownModulesIfAvailable()
+       */
+      @SuppressWarnings("unchecked")
+      private List<Module> registerWellKnownModulesIfAvailable(
+          JacksonProperties jacksonProperties) {
+        List<Module> modules = new ArrayList<>();
+        ClassLoader moduleClassLoader = Jackson2ObjectMapperBuilder.class.getClassLoader();
+        try {
+          Class<? extends Module> jdk8ModuleClass = (Class<? extends Module>)
+              ClassUtils.forName("com.fasterxml.jackson.datatype.jdk8.Jdk8Module",
+                  moduleClassLoader);
+          Module jdk8Module = BeanUtils.instantiateClass(jdk8ModuleClass);
+          modules.add(jdk8Module);
+        } catch (ClassNotFoundException ex) {
+          // jackson-datatype-jdk8 not available
+        }
+
+        try {
+          Class<? extends Module> parameterNamesModuleClass = (Class<? extends Module>)
+              ClassUtils.forName("com.fasterxml.jackson.module.paramnames.ParameterNamesModule",
+                  moduleClassLoader);
+          Module parameterNamesModule = BeanUtils.instantiateClass(parameterNamesModuleClass);
+          modules.add(parameterNamesModule);
+        } catch (ClassNotFoundException ex) {
+          // jackson-module-parameter-names not available
+        }
+
+        // try {
+        //   Class<? extends Module> javaTimeModuleClass = (Class<? extends Module>)
+        //      ClassUtils.forName("com.fasterxml.jackson.datatype.jsr310.JavaTimeModule",
+        //      moduleClassLoader);
+        //   Module javaTimeModule = BeanUtils.instantiateClass(javaTimeModuleClass);
+        //   modulesToRegister.set(javaTimeModule.getTypeId(), javaTimeModule);
+        // } catch (ClassNotFoundException ex) {
+        //   // jackson-datatype-jsr310 not available
+        // }
+
+        addCustomModule(jacksonProperties, modules);
+
+        // Kotlin present?
+        if (KotlinDetector.isKotlinPresent()) {
+          try {
+            Class<? extends Module> kotlinModuleClass = (Class<? extends Module>)
+                ClassUtils.forName("com.fasterxml.jackson.module.kotlin.KotlinModule",
+                    moduleClassLoader);
+            Module kotlinModule = BeanUtils.instantiateClass(kotlinModuleClass);
+            modules.add(kotlinModule);
+          } catch (ClassNotFoundException ex) {
+            // jackson-module-kotlin not available
+          }
+        }
+        return modules;
+      }
+
+      private static void addCustomModule(JacksonProperties jacksonProperties, List<Module> modules) {
+        JavaTimeModule javaTimeModule = new JavaTimeModule("customJavaTimeModule",
+            jacksonProperties.getDateFormat(), jacksonProperties.getLocaleDateFormat(),
+            jacksonProperties.getLocaleTimeFormat());
+        modules.add(javaTimeModule);
+
+        SimpleModule simpleModule = new SimpleModule("customSimpleModule");
+        simpleModule.addSerializer(Long.TYPE, new ToStringSerializer(Long.TYPE));
+        simpleModule.addSerializer(Long.class, new ToStringSerializer(Long.class));
+        simpleModule.addSerializer(TimeValue.class, new TimeValueSerializer());
+        simpleModule.addDeserializer(TimeValue.class, new TimeValueDeSerializer());
+        modules.add(simpleModule);
+
+        EnumModule enumModule = new EnumModule("customEnumModule");
+        modules.add(enumModule);
       }
 
       private void configureLocale(Jackson2ObjectMapperBuilder builder) {
@@ -339,6 +410,64 @@ public class JacksonAutoConfigurer implements WebMvcConfigurer {
         }
       }
 
+      private void configureDefaultLeniency(Jackson2ObjectMapperBuilder builder) {
+        Boolean defaultLeniency = this.jacksonProperties.getDefaultLeniency();
+        if (defaultLeniency != null) {
+          builder.postConfigurer(
+              (objectMapper) -> objectMapper.setDefaultLeniency(defaultLeniency));
+        }
+      }
+
+      private void configureConstructorDetector(Jackson2ObjectMapperBuilder builder) {
+        ConstructorDetectorStrategy strategy = this.jacksonProperties.getConstructorDetector();
+        if (strategy != null) {
+          builder.postConfigurer((objectMapper) -> {
+            switch (strategy) {
+              case USE_PROPERTIES_BASED ->
+                  objectMapper.setConstructorDetector(ConstructorDetector.USE_PROPERTIES_BASED);
+              case USE_DELEGATING ->
+                  objectMapper.setConstructorDetector(ConstructorDetector.USE_DELEGATING);
+              case EXPLICIT_ONLY ->
+                  objectMapper.setConstructorDetector(ConstructorDetector.EXPLICIT_ONLY);
+              default -> objectMapper.setConstructorDetector(ConstructorDetector.DEFAULT);
+            }
+          });
+        }
+      }
+
     }
+
+  }
+
+  static class JacksonAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+
+    @Override
+    public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+      if (ClassUtils.isPresent("com.fasterxml.jackson.databind.PropertyNamingStrategy",
+          classLoader)) {
+        registerPropertyNamingStrategyHints(hints.reflection());
+      }
+    }
+
+    /**
+     * Register hints for the {@code configurePropertyNamingStrategyField} method to use.
+     *
+     * @param hints reflection hints
+     */
+    private void registerPropertyNamingStrategyHints(ReflectionHints hints) {
+      registerPropertyNamingStrategyHints(hints, PropertyNamingStrategies.class);
+    }
+
+    private void registerPropertyNamingStrategyHints(ReflectionHints hints, Class<?> type) {
+      Stream.of(type.getDeclaredFields())
+          .filter(this::isPropertyNamingStrategyField)
+          .forEach(hints::registerField);
+    }
+
+    private boolean isPropertyNamingStrategyField(Field candidate) {
+      return ReflectionUtils.isPublicStaticFinal(candidate)
+          && candidate.getType().isAssignableFrom(PropertyNamingStrategy.class);
+    }
+
   }
 }

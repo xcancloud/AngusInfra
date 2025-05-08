@@ -17,10 +17,14 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Locale;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;
+import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
+import org.springdoc.webmvc.api.OpenApiWebMvcResource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +32,10 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+/**
+ * @see OpenApiWebMvcResource#openapiJson(HttpServletRequest, String, Locale)
+ * @see MultipleOpenApiWebMvcResource#openapiJson(HttpServletRequest, String, String, Locale)
+ */
 @Configuration
 @ConditionalOnProperty(name = {"springdoc.api-docs.enabled"}, matchIfMissing = true)
 //@EnableConfigurationProperties({SpringDocConfigProperties.class})

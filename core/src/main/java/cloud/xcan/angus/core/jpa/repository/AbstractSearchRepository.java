@@ -118,7 +118,11 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (!CollectionUtils.isEmpty(criteria)) {
       setQueryParameter(queryCount, criteria, mainClz);
     }
-    return ((BigInteger) queryCount.getSingleResult()).longValue();
+    Object count = queryCount.getSingleResult();
+    if (count instanceof BigInteger) {
+      return ((BigInteger) count).longValue();
+    }
+    return (Long) count;
   }
 
   @Override

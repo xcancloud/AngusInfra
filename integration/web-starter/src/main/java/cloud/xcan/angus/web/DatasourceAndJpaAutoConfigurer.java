@@ -15,11 +15,16 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.HashMap;
 import java.util.List;
 import javax.sql.DataSource;
+import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
+import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
+import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
@@ -54,6 +59,18 @@ import org.springframework.util.CollectionUtils;
 @Import(HibernateJpaConfiguration.class)
 @ConditionalOnProperty(name = "xcan.datasource.enabled", havingValue = "true")
 public class DatasourceAndJpaAutoConfigurer {
+
+  @Bean
+  @ConditionalOnMissingBean
+  public PhysicalNamingStrategy physicalNamingStrategy() {
+    return new CamelCaseToUnderscoresNamingStrategy();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public ImplicitNamingStrategy implicitNamingStrategy() {
+    return new ImplicitNamingStrategyJpaCompliantImpl();
+  }
 
   @Primary
   @Bean("dataSourceProperties")

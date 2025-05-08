@@ -28,9 +28,12 @@ import cloud.xcan.angus.core.spring.security.PrincipalPermissionService;
 import cloud.xcan.angus.validator.ValidatorProperties;
 import cloud.xcan.angus.web.endpoint.AppWorkspaceEndpoint;
 import cloud.xcan.angus.web.endpoint.MessageEndpoint;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +49,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -70,6 +75,9 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
         .toString() /* => "Application core auto configuration is enabled" */
     );
   }
+
+  @Resource
+  private ObjectMapper objectMapper;
 
   @Bean("appWorkspaceInit")
   public ApplicationInit workspaceInit() {
@@ -215,5 +223,15 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(localeChangeInterceptor());
+  }
+
+  /**
+   * It is important to configure configureMessageConverters() and specify a custom objectMapper
+   * after implementing WebMvcConfigurer interface. Otherwise, an objectMapper will be created
+   * internally, which will cause the custom serialization to not take effect.
+   */
+  @Override
+  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
   }
 }

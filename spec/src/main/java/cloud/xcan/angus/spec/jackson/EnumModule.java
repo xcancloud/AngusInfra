@@ -24,7 +24,11 @@ import java.io.IOException;
 public class EnumModule extends SimpleModule {
 
   public EnumModule() {
-    super("jacksonEnumTypeModule", Version.unknownVersion());
+    this("jacksonEnumTypeModule");
+  }
+
+  public EnumModule(String name) {
+    super(name, Version.unknownVersion());
     this.setDeserializers(new EnumDeserializers());
     this.addSerializer(new EnumSerializer());
   }

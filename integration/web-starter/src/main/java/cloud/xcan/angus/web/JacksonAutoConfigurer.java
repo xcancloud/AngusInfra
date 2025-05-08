@@ -71,6 +71,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.Ordered;
+import org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
@@ -89,6 +90,7 @@ import org.springframework.util.ReflectionUtils;
  * @author XiaoLong Liu
  * @see JacksonAutoConfiguration
  * @see MappingJackson2HttpMessageConverter
+ * @see AbstractJackson2HttpMessageConverter
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JacksonProperties.class)

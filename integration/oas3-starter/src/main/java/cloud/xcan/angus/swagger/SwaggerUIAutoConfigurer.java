@@ -1,6 +1,5 @@
 package cloud.xcan.angus.swagger;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import java.util.List;
 import org.springdoc.core.properties.SwaggerUiConfigParameters;
@@ -11,8 +10,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -33,8 +30,8 @@ public class SwaggerUIAutoConfigurer implements WebMvcConfigurer {
   @Resource
   private WebProperties webProperties;
 
-  @Resource
-  private ObjectMapper objectMapper;
+  public SwaggerUIAutoConfigurer() {
+  }
 
   @Bean
   public SwaggerUiConfigParameters swaggerUiConfigParameters(
@@ -72,13 +69,4 @@ public class SwaggerUIAutoConfigurer implements WebMvcConfigurer {
         .setViewName("forward:" + contextPath + "swagger-ui/index.html");
   }
 
-  /**
-   * It is important to configure configureMessageConverters() and specify a custom objectMapper
-   * after implementing WebMvcConfigurer interface. Otherwise, an objectMapper will be created
-   * internally, which will cause the custom serialization to not take effect.
-   */
-  @Override
-  public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-    converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
-  }
 }

@@ -25,6 +25,7 @@ import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.filter.GlobalHoldFilter;
 import cloud.xcan.angus.core.spring.filter.GlobalProperties;
 import cloud.xcan.angus.core.spring.security.PrincipalPermissionService;
+import cloud.xcan.angus.swagger.ByteArrayToStringConverter;
 import cloud.xcan.angus.validator.ValidatorProperties;
 import cloud.xcan.angus.web.endpoint.AppWorkspaceEndpoint;
 import cloud.xcan.angus.web.endpoint.MessageEndpoint;
@@ -232,6 +233,7 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
    */
   @Override
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+    converters.add(0, new ByteArrayToStringConverter());
     converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
   }
 }

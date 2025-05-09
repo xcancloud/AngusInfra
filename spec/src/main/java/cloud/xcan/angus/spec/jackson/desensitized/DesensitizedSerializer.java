@@ -51,7 +51,7 @@ public class DesensitizedSerializer extends JsonSerializer<String> implements
         case BANK_CARD:
           newValue = DesensitizedUtils.bankCard(value);
           break;
-        case PASSD:
+        case PASSWORD:
           newValue = DesensitizedUtils.password(value);
           break;
         case CAR_NUMBER:

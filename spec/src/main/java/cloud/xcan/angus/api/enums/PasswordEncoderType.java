@@ -5,7 +5,7 @@ import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.locale.EnumValueMessage;
 
 @EndpointRegister
-public enum PassdEncoderType implements ValueObject<PassdEncoderType>, EnumValueMessage<String> {
+public enum PasswordEncoderType implements ValueObject<PasswordEncoderType>, EnumValueMessage<String> {
   PLAINTEXT("noop"),
   BCRYPT("bcrypt"),
   MD4("MD4"),
@@ -18,7 +18,7 @@ public enum PassdEncoderType implements ValueObject<PassdEncoderType>, EnumValue
 
   String value;
 
-  PassdEncoderType(String value) {
+  PasswordEncoderType(String value) {
     this.value = value;
   }
 

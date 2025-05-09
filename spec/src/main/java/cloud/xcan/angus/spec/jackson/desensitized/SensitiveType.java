@@ -8,6 +8,6 @@ public enum SensitiveType {
   ADDRESS,
   EMAIL,
   BANK_CARD,
-  PASSD,
+  PASSWORD,
   CAR_NUMBER;
 }

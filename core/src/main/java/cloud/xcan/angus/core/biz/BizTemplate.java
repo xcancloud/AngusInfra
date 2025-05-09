@@ -1,12 +1,11 @@
 package cloud.xcan.angus.core.biz;
 
 
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenantCtrlByApiType;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasOriginalOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpClient;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isPrivateEdition;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
+import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
@@ -19,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class BizTemplate<T> {
 
   protected String bizKey0;
-  protected transient boolean defaultMultiTenantCtrl;
-  protected transient boolean multiTenantAutoCtrlWhenOpClient;
+  protected boolean multiTenantCtrl = true;
+  protected boolean autoCtrlWhenOpClient;
   private final String[] requiredToPolicy;
 
   protected BizTemplate() {
@@ -31,52 +30,53 @@ public abstract class BizTemplate<T> {
     this(bizKey0, true, false);
   }
 
-  protected BizTemplate(boolean defaultMultiTenantCtrl) {
-    this("", defaultMultiTenantCtrl, false);
+  protected BizTemplate(boolean multiTenantCtrl) {
+    this("", multiTenantCtrl, false);
   }
 
-  protected BizTemplate(boolean defaultMultiTenantCtrl, String... requiredToPolicy) {
-    this("", defaultMultiTenantCtrl, false, requiredToPolicy);
+  protected BizTemplate(boolean multiTenantCtrl, String... requiredToPolicy) {
+    this("", multiTenantCtrl, false, requiredToPolicy);
   }
 
-  protected BizTemplate(boolean defaultMultiTenantCtrl, boolean multiTenantAutoCtrlWhenOpClient) {
-    this("", defaultMultiTenantCtrl, multiTenantAutoCtrlWhenOpClient);
+  protected BizTemplate(boolean multiTenantCtrl, boolean autoCtrlWhenOpClient) {
+    this("", multiTenantCtrl, autoCtrlWhenOpClient);
   }
 
-  protected BizTemplate(boolean defaultMultiTenantCtrl, boolean multiTenantAutoCtrlWhenOpClient,
+  protected BizTemplate(boolean multiTenantCtrl, boolean autoCtrlWhenOpClient,
       String... requiredToPolicy) {
-    this("", defaultMultiTenantCtrl, multiTenantAutoCtrlWhenOpClient, requiredToPolicy);
+    this("", multiTenantCtrl, autoCtrlWhenOpClient, requiredToPolicy);
   }
 
-  protected BizTemplate(String bizKey0, boolean defaultMultiTenantCtrl,
-      boolean multiTenantAutoCtrlWhenOpClient, String... requiredTOPolicy) {
+  protected BizTemplate(String bizKey0, boolean multiTenantCtrl,
+      boolean autoCtrlWhenOpClient, String... requiredTOPolicy) {
     this.bizKey0 = bizKey0;
-    this.defaultMultiTenantCtrl = defaultMultiTenantCtrl;
-    this.multiTenantAutoCtrlWhenOpClient = multiTenantAutoCtrlWhenOpClient;
+    this.multiTenantCtrl = multiTenantCtrl;
+    this.autoCtrlWhenOpClient = autoCtrlWhenOpClient && isOpClient();
     this.requiredToPolicy = requiredTOPolicy;
     Principal principal = PrincipalContext.get();
+
     if (isNotEmpty(requiredTOPolicy)) {
       // Used by TenantInterceptor
       principal.setRequiredToPolicy(requiredTOPolicy);
     }
-    if (!defaultMultiTenantCtrl) {
+
+    if (!multiTenantCtrl) {
+      // Disable multi-tenancy control: Users must manually manage multi-tenant data isolation, including adding tenant ID conditions in SQL statements.
       principal.setMultiTenantCtrl(false);
-    } else if (!decideMultiTenantCtrlByApiType(principal)) {
-      principal.setMultiTenantCtrl(false);
+    } else if (!isOpClient() ||
+        (isUserAction() && !OWNER_TENANT_ID.equals(principal.getTenantId()))) {
+      // Force enable multi-tenancy control: Multi-tenancy control is mandatory for non-operation client and tenant.
+      principal.setMultiTenantCtrl(true);
     } else {
-      boolean autoClosed = false;
-      if (this.multiTenantAutoCtrlWhenOpClient) {
-        // Attempt to close automatically
-        autoClosed = closeMultiTenantCtrlIfNonOptTenantId();
-      }
-      // Open when closing fails
-      if (!autoClosed) {
-        principal.setMultiTenantCtrl(true);
+      // When the operation client doesn't specify a tenant, multi-tenancy control is disabled to allow querying data across all tenants.
+      if (this.autoCtrlWhenOpClient) {
+        principal.setMultiTenantCtrl(hasOriginalOptTenantId());
       }
     }
   }
 
-  protected void checkParams() {};
+  protected void checkParams() {
+  }
 
   protected abstract T process();
 
@@ -101,9 +101,6 @@ public abstract class BizTemplate<T> {
       throw e;
     } finally {
       afterProcess();
-      if (isUserAction() && isPrivateEdition()) {
-        //TODO checkAccess(0.01);
-      }
     }
   }
 
@@ -137,30 +134,14 @@ public abstract class BizTemplate<T> {
     return bizKey0;
   }
 
-  public boolean isDefaultMultiTenantCtrl() {
-    return this.defaultMultiTenantCtrl;
-  }
-
-  public boolean isMultiTenantAutoCtrlWhenOpClient() {
-    return this.multiTenantAutoCtrlWhenOpClient;
-  }
-
   public void enableMultiTenantCtrl() {
-    this.defaultMultiTenantCtrl = true;
+    this.multiTenantCtrl = true;
     setMultiTenantCtrl(true);
   }
 
   public void closeMultiTenantCtrl() {
-    this.defaultMultiTenantCtrl = false;
+    this.multiTenantCtrl = false;
     setMultiTenantCtrl(false);
-  }
-
-  public boolean closeMultiTenantCtrlIfNonOptTenantId() {
-    if (isOpClient() && !hasOriginalOptTenantId()) {
-      closeMultiTenantCtrl();
-      return true;
-    }
-    return false;
   }
 
   protected void checkPolicy() {

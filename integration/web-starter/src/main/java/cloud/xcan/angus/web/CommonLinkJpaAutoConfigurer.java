@@ -7,9 +7,9 @@ import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
 import cloud.xcan.angus.datasource.config.DataSourceProperties;
 import cloud.xcan.angus.datasource.config.HikariProperties;
 import cloud.xcan.angus.jpa.CommonLinkHibernateJpaConfiguration;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,15 +21,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -45,7 +42,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @AutoConfigureAfter({DataSourceAutoConfiguration.class})
 @Import(CommonLinkHibernateJpaConfiguration.class)
 @ConditionalOnProperty(name = "xcan.datasource.commonlink.enabled", havingValue = "true")
-public class CommonLinkDatasourceAndJpaAutoConfigurer {
+public class CommonLinkJpaAutoConfigurer {
 
   @Bean("commonLinkDataSourceProperties")
   @ConfigurationProperties(prefix = "xcan.datasource.commonlink.mysql")
@@ -63,40 +60,28 @@ public class CommonLinkDatasourceAndJpaAutoConfigurer {
 
   @Bean(name = "commonLinkDataSource")
   public DataSource commonLinkDataSource(
-      @Qualifier("commonLinkDataSourceProperties") DataSourceProperties commonLinkDataSourceProperties,
+      @Qualifier("commonLinkDataSourceProperties") DataSourceProperties dataSourceProperties,
       HikariProperties hikariProperties) {
-    HikariDataSource dataSource = commonLinkDataSourceProperties.initializeDataSourceBuilder()
-        .type(HikariDataSource.class).build();
-    dataSource.setPoolName(hikariProperties.getPoolName() + "CommonLink");
-    dataSource.setMaximumPoolSize(hikariProperties.getMaximumPoolSize());
-    dataSource.setMinimumIdle(hikariProperties.getMinimumIdle());
-    dataSource.setMaxLifetime(hikariProperties.getMaxLifetime());
-    dataSource.setLeakDetectionThreshold(30000);
-    dataSource.setConnectionTimeout(hikariProperties.getConnectionTimeout());
-    dataSource.setValidationTimeout(hikariProperties.getValidationTimeout());
-    dataSource.setIdleTimeout(hikariProperties.getIdleTimeout());
-    dataSource.setInitializationFailTimeout(hikariProperties.getInitializationFailTimeout());
-    dataSource.setAutoCommit(hikariProperties.isAutoCommit());
-    dataSource.setReadOnly(hikariProperties.isReadOnly());
-    dataSource.setConnectionTestQuery(hikariProperties.getConnectionTestQuery());
-    return dataSource;
-  }
+    HikariConfig hikariConfig = new HikariConfig();
+    hikariConfig.setJdbcUrl(dataSourceProperties.getUrl());
+    hikariConfig.setUsername(dataSourceProperties.getUsername());
+    hikariConfig.setPassword(dataSourceProperties.getPassword());
+    hikariConfig.setDriverClassName(dataSourceProperties.getDriverClassName());
 
-  @Bean(name = "commonLinkEntityManagerFactory")
-  public LocalContainerEntityManagerFactoryBean commonLinkEntityManagerFactory(
-      EntityManagerFactoryBuilder builder,
-      @Qualifier("commonLinkDataSource") DataSource commonLinkDataSource) {
-    return builder
-        .dataSource(commonLinkDataSource)
-        .packages("cloud.xcan.angus.api.commonlink")
-        //.properties(properties)
-        .build();
-  }
+    hikariConfig.setPoolName(hikariProperties.getPoolName());
+    hikariConfig.setMaximumPoolSize(hikariProperties.getMaximumPoolSize());
+    hikariConfig.setMinimumIdle(hikariProperties.getMinimumIdle());
+    hikariConfig.setMaxLifetime(hikariProperties.getMaxLifetime());
+    hikariConfig.setLeakDetectionThreshold(30000);
+    hikariConfig.setConnectionTimeout(hikariProperties.getConnectionTimeout());
+    hikariConfig.setValidationTimeout(hikariProperties.getValidationTimeout());
+    hikariConfig.setIdleTimeout(hikariProperties.getIdleTimeout());
+    hikariConfig.setInitializationFailTimeout(hikariProperties.getInitializationFailTimeout());
+    hikariConfig.setAutoCommit(hikariProperties.isAutoCommit());
+    hikariConfig.setReadOnly(hikariProperties.isReadOnly());
+    hikariConfig.setConnectionTestQuery(hikariProperties.getConnectionTestQuery());
 
-  @Bean(name = "commonLinkTransactionManager")
-  public PlatformTransactionManager commonLinkTransactionManager(
-      @Qualifier("commonLinkEntityManagerFactory") EntityManagerFactory commonLinkEntityManagerFactory) {
-    return new JpaTransactionManager(commonLinkEntityManagerFactory);
+    return new HikariDataSource(hikariConfig);
   }
 
   @EnableTransactionManagement

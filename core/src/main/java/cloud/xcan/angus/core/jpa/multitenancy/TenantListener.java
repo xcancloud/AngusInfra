@@ -25,15 +25,10 @@ public class TenantListener {
   @PreRemove
   public void beforeAnyUpdate(TenantAware entity) {
     Principal principal = PrincipalContext.get();
-    if (!decideMultiTenantCtrlByApiType(principal)
-        || !isMultiTenantCtrl(principal)) {
+    // Multi-tenancy control is disabled: Users must manually manage multi-tenant data isolation, including adding tenant ID conditions in SQL statements.
+    if (!principal.isMultiTenantCtrl() || !decideMultiTenantCtrlByApiType(principal)) {
       return;
     }
-    // Fix:: The operation administrator operates himself tenant
-    //      Long opTenantId = getRealOptTenantId(principal);
-    //      if (isTopUser() && isNull(opTenantId)) {
-    //        return sql;
-    //      }
     entity.setTenantId(getOptTenantId(principal));
   }
 

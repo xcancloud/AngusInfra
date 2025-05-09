@@ -23,8 +23,8 @@ public class EnumEndpoint {
   }
 
   @ReadOperation
-  public List<Value> enumOne(@Selector String path) {
-    return enumStore.get(path);
+  public List<Value> enumOne(@Selector String name) {
+    return enumStore.get(name);
   }
 
 }

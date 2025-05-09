@@ -96,18 +96,12 @@ public class EnumStoreInMemory implements EnumStore {
 
   @Override
   public List<Value> get(String name) {
-    if (!checkCache()) {
-      return null;
-    }
     Value[] values = ALL_STORE.get(name);
     return Objects.isNull(values) ? Collections.emptyList() : Arrays.asList(values);
   }
 
   @Override
   public Map<String, Value[]> get() {
-    if (!checkCache()) {
-      return null;
-    }
     return ALL_STORE;
   }
 
@@ -119,24 +113,5 @@ public class EnumStoreInMemory implements EnumStore {
   public void clearStore() {
     ALL_STORE.clear();
     ENDPOINT_REGISTER_STORE.clear();
-  }
-
-  private boolean checkCache() {
-    try {
-      Assert.notEmpty(ALL_STORE, "All enums can not be empty");
-      Assert.notNull(getBean(
-          new Str0(new long[]{0x2C2A5B3FA95108E4L, 0x41543111699BA0A2L, 0x4A8ADEE3E3B4F01CL})
-              .toString() /* => "dCacheManager" */), "DCache is empty");
-    } catch (Exception e) {
-      if (SpringContextHolder.getCtx() instanceof ConfigurableApplicationContext closable) {
-        System.out.println(new Str0(
-            new long[]{0xFBE1B679968A5928L, 0x9C8723410DC6E9E2L, 0xFD44F079DD30374EL,
-                0x370ABD98F3B928BFL, 0xBCFB830EEFFE98F1L, 0x18C1336D4B13241BL})
-            .toString() /* => "Internal application error: LE-0909" */);
-        closable.close();
-        return false;
-      }
-    }
-    return true;
   }
 }

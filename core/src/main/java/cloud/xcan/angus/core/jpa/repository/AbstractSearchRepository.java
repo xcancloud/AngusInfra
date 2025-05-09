@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.jpa.repository;
 
-import static cloud.xcan.angus.core.jpa.JpaMetadataUtils.getJpaColumnName;
+import static cloud.xcan.angus.core.jpa.JpaMetadataUtils.getColumnName;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
@@ -135,7 +135,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
           continue;
         }
-        String columnName = getJpaColumnName(entityManager, mainClz, criteria0.getKey());
+        String columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
         if (isEmpty(columnName)) {
           continue;
         }
@@ -234,7 +234,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
         continue;
       }
-      String columnName = getJpaColumnName(entityManager, mainClz, criteria0.getKey());
+      String columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
       if (isEmpty(columnName)) {
         continue;
       }
@@ -298,7 +298,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (isNotEmpty(match)) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < match.length; i++) {
-        sb.append(alias).append(".").append(getJpaColumnName(entityManager, mainClz, match[i]));
+        sb.append(alias).append(".").append(getColumnName(entityManager, mainClz, match[i]));
         if (i != match.length - 1) {
           sb.append(",");
         }
@@ -311,12 +311,12 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (isNotEmpty(fields)) {
       return fields;
     }
-    return getJpaColumnName(entityManager, mainClz, criteria0.getKey());
+    return getColumnName(entityManager, mainClz, criteria0.getKey());
   }
 
   public boolean hasDeletedField(Class<T> mainClz) {
     try {
-      String name = getJpaColumnName(entityManager, mainClz, "deleted");
+      String name = getColumnName(entityManager, mainClz, "deleted");
       return isNotEmpty(name);
     } catch (Exception e) {
       return false;

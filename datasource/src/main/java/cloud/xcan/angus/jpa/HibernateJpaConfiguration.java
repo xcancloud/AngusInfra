@@ -74,8 +74,7 @@ public class HibernateJpaConfiguration extends JpaBaseConfiguration {
         metadataProviders.getIfAvailable());
     this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
         physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(),
-        beanFactory,
-        hibernatePropertiesCustomizers.orderedStream().collect(Collectors.toList()));
+        beanFactory, hibernatePropertiesCustomizers.orderedStream().collect(Collectors.toList()));
   }
 
   private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(

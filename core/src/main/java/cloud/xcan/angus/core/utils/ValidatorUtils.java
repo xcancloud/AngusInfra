@@ -1,5 +1,7 @@
 package cloud.xcan.angus.core.utils;
 
+import static cloud.xcan.angus.core.biz.ProtocolAssert.assertTrue;
+import static cloud.xcan.angus.core.spring.SpringContextHolder.getBean;
 import static cloud.xcan.angus.core.utils.CoreUtils.exitApp;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.MOBILE_FORMAT_ERROR;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.MOBILE_FORMAT_ERROR_KEY;
@@ -10,12 +12,13 @@ import static org.apache.commons.io.IOUtils.toByteArray;
 
 import cloud.xcan.angus.api.enums.EditionType;
 import cloud.xcan.angus.api.obf.Str0;
-import cloud.xcan.angus.core.biz.ProtocolAssert;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.spec.utils.crypto.MD5Utils;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.Assert;
 
 public class ValidatorUtils {
 
@@ -83,7 +86,7 @@ public class ValidatorUtils {
   }
 
   public static void checkMobile(String mobile) {
-    ProtocolAssert.assertTrue(Pattern.matches(REGEX_MOBILE, mobile), MOBILE_FORMAT_ERROR,
+    assertTrue(Pattern.matches(REGEX_MOBILE, mobile), MOBILE_FORMAT_ERROR,
         MOBILE_FORMAT_ERROR_KEY, new Object[]{mobile});
   }
 
@@ -96,7 +99,7 @@ public class ValidatorUtils {
   }
 
   public static void checkChinaMobile(String mobile) {
-    ProtocolAssert.assertTrue(Pattern.matches(REGEX_CHINA_MOBILE, mobile), MOBILE_FORMAT_ERROR,
+    assertTrue(Pattern.matches(REGEX_CHINA_MOBILE, mobile), MOBILE_FORMAT_ERROR,
         MOBILE_FORMAT_ERROR_KEY, new Object[]{mobile});
   }
 
@@ -131,8 +134,7 @@ public class ValidatorUtils {
         }
       }
     }
-    ProtocolAssert.assertTrue(res, MOBILE_FORMAT_ERROR, MOBILE_FORMAT_ERROR_KEY,
-        new Object[]{mobile});
+    assertTrue(res, MOBILE_FORMAT_ERROR, MOBILE_FORMAT_ERROR_KEY, new Object[]{mobile});
   }
 
   public static boolean isEmail(String email) {
@@ -140,7 +142,7 @@ public class ValidatorUtils {
   }
 
   public static void checkEmail(String email) {
-    ProtocolAssert.assertTrue(Pattern.matches(REGEX_EMAIL, email), PARAM_FORMAT_ERROR_T,
+    assertTrue(Pattern.matches(REGEX_EMAIL, email), PARAM_FORMAT_ERROR_T,
         PARAM_FORMAT_ERROR_KEY, new Object[]{email, "email"});
   }
 
@@ -149,7 +151,7 @@ public class ValidatorUtils {
   }
 
   public static void checkChinese(String chinese) {
-    ProtocolAssert.assertTrue(Pattern.matches(REGEX_CHINESE, chinese), PARAM_FORMAT_ERROR_T,
+    assertTrue(Pattern.matches(REGEX_CHINESE, chinese), PARAM_FORMAT_ERROR_T,
         PARAM_FORMAT_ERROR_KEY, new Object[]{chinese, "chinese"});
   }
 
@@ -158,7 +160,7 @@ public class ValidatorUtils {
   }
 
   public static void checkChinaIdCard(String idCard) {
-    ProtocolAssert.assertTrue(Pattern.matches(REGEX_CHINA_ID_CARD, idCard), PARAM_FORMAT_ERROR_T,
+    assertTrue(Pattern.matches(REGEX_CHINA_ID_CARD, idCard), PARAM_FORMAT_ERROR_T,
         PARAM_FORMAT_ERROR_KEY, new Object[]{idCard, "idCard"});
   }
 
@@ -167,12 +169,12 @@ public class ValidatorUtils {
   }
 
   public static void checkUrl(String url) {
-    ProtocolAssert.assertTrue(REGEX_URL.matcher(url).matches(), PARAM_FORMAT_ERROR_T,
+    assertTrue(REGEX_URL.matcher(url).matches(), PARAM_FORMAT_ERROR_T,
         PARAM_FORMAT_ERROR_KEY, new Object[]{url, "url"});
   }
 
   public static void checkIpAddress(String ipAddress) {
-    ProtocolAssert.assertTrue(REGEX_IPV4.matcher(ipAddress).matches(), PARAM_FORMAT_ERROR_T,
+    assertTrue(REGEX_IPV4.matcher(ipAddress).matches(), PARAM_FORMAT_ERROR_T,
         PARAM_FORMAT_ERROR_KEY, new Object[]{ipAddress, "ip"});
   }
 
@@ -210,5 +212,23 @@ public class ValidatorUtils {
           .toString() /* => "Critical warning, license signature verification error, system forced exit" */);
       exitApp();
     }
+  }
+
+  private boolean checkDCache() {
+    try {
+      Assert.notNull(getBean(
+          new Str0(new long[]{0x2C2A5B3FA95108E4L, 0x41543111699BA0A2L, 0x4A8ADEE3E3B4F01CL})
+              .toString() /* => "dCacheManager" */), "DCache is empty");
+    } catch (Exception e) {
+      if (SpringContextHolder.getCtx() instanceof ConfigurableApplicationContext closable) {
+        System.out.println(new Str0(
+            new long[]{0xFBE1B679968A5928L, 0x9C8723410DC6E9E2L, 0xFD44F079DD30374EL,
+                0x370ABD98F3B928BFL, 0xBCFB830EEFFE98F1L, 0x18C1336D4B13241BL})
+            .toString() /* => "Internal application error: LE-0909" */);
+        closable.close();
+        return false;
+      }
+    }
+    return true;
   }
 }

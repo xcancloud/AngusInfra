@@ -122,6 +122,8 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+    operations-sorter: alpha
+    tags-sorter: alpha
   open-api:
     info:
       title: RESTFul api sample

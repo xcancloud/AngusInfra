@@ -49,15 +49,15 @@ public abstract class BizTemplate<T> {
   }
 
   protected BizTemplate(String bizKey0, boolean defaultMultiTenantCtrl,
-      boolean multiTenantAutoCtrlWhenOpClient, String... requiredToPolicy) {
+      boolean multiTenantAutoCtrlWhenOpClient, String... requiredTOPolicy) {
     this.bizKey0 = bizKey0;
     this.defaultMultiTenantCtrl = defaultMultiTenantCtrl;
     this.multiTenantAutoCtrlWhenOpClient = multiTenantAutoCtrlWhenOpClient;
-    this.requiredToPolicy = requiredToPolicy;
+    this.requiredToPolicy = requiredTOPolicy;
     Principal principal = PrincipalContext.get();
-    if (isNotEmpty(requiredToPolicy)) {
+    if (isNotEmpty(requiredTOPolicy)) {
       // Used by TenantInterceptor
-      principal.setRequiredToPolicy(requiredToPolicy);
+      principal.setRequiredToPolicy(requiredTOPolicy);
     }
     if (!defaultMultiTenantCtrl) {
       principal.setMultiTenantCtrl(false);

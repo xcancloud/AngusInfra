@@ -30,7 +30,7 @@ class User {
   private String fullname = "张三";
 
   @JsonSerialize(using = DesensitizedSerializer.class)
-  @Desensitized(type = SensitiveType.PASSD)
+  @Desensitized(type = SensitiveType.PASSWORD)
   private String passd = "1123@321";
 
   @JsonSerialize(using = DesensitizedSerializer.class)

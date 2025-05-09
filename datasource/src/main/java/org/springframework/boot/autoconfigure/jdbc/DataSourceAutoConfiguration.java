@@ -26,4 +26,6 @@ import org.springframework.context.annotation.Import;
     DataSourceCheckpointRestoreConfiguration.class})
 public class DataSourceAutoConfiguration {
 
+  // Do in JpaAutoConfigurer and CommonLinkJpaAutoConfigurer
+
 }

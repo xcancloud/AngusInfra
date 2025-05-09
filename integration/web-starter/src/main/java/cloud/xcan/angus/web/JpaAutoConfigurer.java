@@ -1,6 +1,8 @@
 package cloud.xcan.angus.web;
 
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+
 import cloud.xcan.angus.core.jpa.repository.SimpleSummaryRepository;
 import cloud.xcan.angus.core.jpa.repository.SummaryRepository;
 import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
@@ -9,10 +11,9 @@ import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
 import cloud.xcan.angus.datasource.config.DataSourceProperties;
 import cloud.xcan.angus.datasource.config.HikariProperties;
 import cloud.xcan.angus.jpa.HibernateJpaConfiguration;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import java.util.HashMap;
 import java.util.List;
 import javax.sql.DataSource;
 import org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy;
@@ -30,7 +31,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -39,10 +40,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -58,7 +56,7 @@ import org.springframework.util.CollectionUtils;
 @AutoConfigureAfter({DataSourceAutoConfiguration.class})
 @Import(HibernateJpaConfiguration.class)
 @ConditionalOnProperty(name = "xcan.datasource.enabled", havingValue = "true")
-public class DatasourceAndJpaAutoConfigurer {
+public class JpaAutoConfigurer {
 
   @Bean
   @ConditionalOnMissingBean
@@ -92,46 +90,26 @@ public class DatasourceAndJpaAutoConfigurer {
   @Bean(name = "dataSource")
   public DataSource dataSource(DataSourceProperties dataSourceProperties,
       HikariProperties hikariProperties) {
-    HikariDataSource dataSource = dataSourceProperties.initializeDataSourceBuilder()
-        .type(HikariDataSource.class).build();
-    dataSource.setPoolName(hikariProperties.getPoolName());
-    dataSource.setMaximumPoolSize(hikariProperties.getMaximumPoolSize());
-    dataSource.setMinimumIdle(hikariProperties.getMinimumIdle());
-    dataSource.setMaxLifetime(hikariProperties.getMaxLifetime());
-    dataSource.setLeakDetectionThreshold(30000);
-    dataSource.setConnectionTimeout(hikariProperties.getConnectionTimeout());
-    dataSource.setValidationTimeout(hikariProperties.getValidationTimeout());
-    dataSource.setIdleTimeout(hikariProperties.getIdleTimeout());
-    dataSource.setInitializationFailTimeout(hikariProperties.getInitializationFailTimeout());
-    dataSource.setAutoCommit(hikariProperties.isAutoCommit());
-    dataSource.setReadOnly(hikariProperties.isReadOnly());
-    dataSource.setConnectionTestQuery(hikariProperties.getConnectionTestQuery());
-    return dataSource;
-  }
+    HikariConfig hikariConfig = new HikariConfig();
+    hikariConfig.setJdbcUrl(dataSourceProperties.getUrl());
+    hikariConfig.setUsername(dataSourceProperties.getUsername());
+    hikariConfig.setPassword(dataSourceProperties.getPassword());
+    hikariConfig.setDriverClassName(dataSourceProperties.getDriverClassName());
 
-  @Bean
-  @Primary
-  public EntityManagerFactoryBuilder entityManagerFactoryBuilder() {
-    return new EntityManagerFactoryBuilder(new HibernateJpaVendorAdapter(), new HashMap<>(), null);
-  }
+    hikariConfig.setPoolName(hikariProperties.getPoolName());
+    hikariConfig.setMaximumPoolSize(hikariProperties.getMaximumPoolSize());
+    hikariConfig.setMinimumIdle(hikariProperties.getMinimumIdle());
+    hikariConfig.setMaxLifetime(hikariProperties.getMaxLifetime());
+    hikariConfig.setLeakDetectionThreshold(30000);
+    hikariConfig.setConnectionTimeout(hikariProperties.getConnectionTimeout());
+    hikariConfig.setValidationTimeout(hikariProperties.getValidationTimeout());
+    hikariConfig.setIdleTimeout(hikariProperties.getIdleTimeout());
+    hikariConfig.setInitializationFailTimeout(hikariProperties.getInitializationFailTimeout());
+    hikariConfig.setAutoCommit(hikariProperties.isAutoCommit());
+    hikariConfig.setReadOnly(hikariProperties.isReadOnly());
+    hikariConfig.setConnectionTestQuery(hikariProperties.getConnectionTestQuery());
 
-  @Primary
-  @Bean(name = "entityManagerFactory")
-  public LocalContainerEntityManagerFactoryBean entityManagerFactory(
-      EntityManagerFactoryBuilder builder, @Qualifier("dataSource") DataSource dataSource,
-      DataSourceExtraProperties jpaExtraProperties) {
-    return builder
-        .dataSource(dataSource)
-        .packages(jpaExtraProperties.getEntityPackages())
-        //.properties(properties)
-        .build();
-  }
-
-  @Primary
-  @Bean(name = "transactionManager")
-  public PlatformTransactionManager transactionManager(
-      @Qualifier("entityManagerFactory") EntityManagerFactory entityManagerFactory) {
-    return new JpaTransactionManager(entityManagerFactory);
+    return new HikariDataSource(hikariConfig);
   }
 
   @Bean
@@ -139,7 +117,7 @@ public class DatasourceAndJpaAutoConfigurer {
       DataSourceProperties dataSourceProperties) {
     ResourceDatabasePopulator rdp = new ResourceDatabasePopulator();
     List<String> schemaScripts = dataSourceProperties.getSchema();
-    if (!CollectionUtils.isEmpty(schemaScripts)) {
+    if (isNotEmpty(schemaScripts)) {
       for (String sql : schemaScripts) {
         rdp.addScript(new ClassPathResource(sql));
       }

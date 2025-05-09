@@ -3,7 +3,6 @@ package cloud.xcan.angus.core.jpa.interceptor;
 import static cloud.xcan.angus.core.utils.CoreUtils.getAnnotationClasses;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenantCtrlByApiType;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TENANT_ID_DB_KEY;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
@@ -15,12 +14,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import lombok.Data;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.resource.jdbc.spi.StatementInspector;
-import org.springframework.util.CollectionUtils;
 
 /**
  * The alias `as` keyword is not supported.
@@ -28,14 +24,12 @@ import org.springframework.util.CollectionUtils;
  * @author XiaoLong Liu
  */
 @Slf4j
-@Data
-@Accessors(chain = true)
 public class TenantInterceptor implements StatementInspector {
 
   public static Set<String> TENANT_TABLES = new CopyOnWriteArraySet<>();
 
   public TenantInterceptor() {
-    if (CollectionUtils.isEmpty(TENANT_TABLES)) {
+    if (isEmpty(TENANT_TABLES)) {
       TENANT_TABLES = loadAnnotationTable("cloud.xcan.angus", MultiTenant.class);
     }
   }
@@ -44,15 +38,11 @@ public class TenantInterceptor implements StatementInspector {
   public String inspect(String sql) {
     Principal principal = PrincipalContext.get();
     try {
-      if (!isMultiTenantCtrl(principal) || !decideMultiTenantCtrlByApiType(principal)
+      // Multi-tenancy control is disabled: Users must manually manage multi-tenant data isolation, including adding tenant ID conditions in SQL statements.
+      if (!principal.isMultiTenantCtrl() || !decideMultiTenantCtrlByApiType(principal)
           || isEmpty(TENANT_TABLES)) {
         return sql;
       }
-      // Fix:: The operation administrator operates himself tenant
-      //      Long opTenantId = getRealOptTenantId(principal);
-      //      if (isTopUser() && isNull(opTenantId)) {
-      //        return sql;
-      //      }
 
       if (log.isDebugEnabled()) {
         log.debug("Parse the original sql：{}", sql);
@@ -139,7 +129,7 @@ public class TenantInterceptor implements StatementInspector {
         } else if ("left".equalsIgnoreCase(whereStr) || "inner".equalsIgnoreCase(whereStr)
             || "right".equalsIgnoreCase(whereStr) || "join".equalsIgnoreCase(whereStr)) {
           // exist both alias and join
-          // continue search where where exist join
+          // continue search where exist join
           int whereIndex = sql.indexOf("WHERE");
           whereIndex = whereIndex > 0 ? whereIndex : sql.indexOf("where");
           if (whereIndex <= 0) { // none where

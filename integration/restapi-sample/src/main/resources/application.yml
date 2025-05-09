@@ -103,7 +103,7 @@ spring:
   # JPA Configuration Parameters
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     #show-sql: true
     properties:
       hibernate:

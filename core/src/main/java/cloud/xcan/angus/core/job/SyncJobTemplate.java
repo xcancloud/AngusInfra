@@ -3,6 +3,8 @@ package cloud.xcan.angus.core.job;
 import cloud.xcan.angus.core.utils.AppEnvUtils;
 import cloud.xcan.angus.spec.annotations.DoInFuture;
 import cloud.xcan.angus.spec.experimental.DistributedLock;
+import cloud.xcan.angus.spec.principal.Principal;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,9 @@ public class SyncJobTemplate implements JobTemplate {
 
     String reqId = UUID.randomUUID().toString();
     try {
+      Principal principal = PrincipalContext.create();
+      principal.setMultiTenantCtrl(false);
+
       boolean tryLock = distributedLock.tryLock(lockKey, reqId, timeout, unit);
       if (!tryLock) {
         log.warn("[{}] Acquire lock failed", lockKey);
@@ -40,6 +45,7 @@ public class SyncJobTemplate implements JobTemplate {
     } catch (Exception e) {
       log.error("[{}] Job task failed: {}", lockKey, e.getMessage(), e);
     } finally {
+      PrincipalContext.remove();
       distributedLock.releaseLock(lockKey, reqId);
     }
   }

@@ -213,7 +213,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       boolean deleted, String tenantId, String tenantName, String tenantRealNameStatus,
       String directoryId, String defaultLanguage, String defaultTimeZone) {
     Assert.isTrue(username != null && !username.isEmpty() && password != null,
-        "Cannot pass null or empty values to constructor");
+        "Cannot password null or empty values to constructor");
 
     this.username = username;
     this.password = password;

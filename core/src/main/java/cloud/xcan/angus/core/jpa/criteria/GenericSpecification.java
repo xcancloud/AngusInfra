@@ -1,5 +1,7 @@
 package cloud.xcan.angus.core.jpa.criteria;
 
+import static cloud.xcan.angus.core.biz.ProtocolAssert.assertNotNull;
+import static cloud.xcan.angus.core.biz.ProtocolAssert.throw0;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_T;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
@@ -8,8 +10,8 @@ import static cloud.xcan.angus.spec.utils.DateUtils.getLocalDateTime;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeInValue;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringValue;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.BooleanUtils.toBoolean;
 
-import cloud.xcan.angus.core.biz.ProtocolAssert;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
 import cloud.xcan.angus.spec.annotations.NonNullable;
@@ -22,14 +24,15 @@ import jakarta.persistence.criteria.Root;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 /**
@@ -63,81 +66,64 @@ public class GenericSpecification<T> implements Specification<T> {
 
   @Override
   public Predicate toPredicate(@NonNullable Root<T> root, @NonNullable CriteriaQuery<?> query,
-      CriteriaBuilder cb) {
-    Predicate predicate = cb.conjunction();
+      CriteriaBuilder builder) {
+    // @formatter:off
+    List<Predicate> predicates = new ArrayList<>();
     for (SearchCriteria criteria0 : criteria) {
       if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
         continue;
       }
       if (criteria0.getOp().noValue()) {
         if (criteria0.getOp().equals(SearchOperation.IS_NULL)) {
-          predicate.getExpressions().add(cb.isNull(root.get(criteria0.getKey())));
+          predicates.add(builder.isNull(root.get(criteria0.getKey())));
         } else if (criteria0.getOp().equals(SearchOperation.IS_NOT_NULL)) {
-          predicate.getExpressions().add(cb.isNotNull(root.get(criteria0.getKey())));
+          predicates.add(builder.isNotNull(root.get(criteria0.getKey())));
         }
         continue;
       }
       Object opValue = criteria0.getValue();
       Class<?> keyType = root.get(criteria0.getKey()).getJavaType();
       if (isDateTypeKey(keyType)) {
-        LocalDateTime dateValue;
         Object value = criteria0.getValue();
-        if (value instanceof LocalDateTime) {
-          dateValue = (LocalDateTime) value;
-        } else {
-          dateValue = getLocalDateTime(value.toString().replaceAll("\"", ""));
-        }
-        ProtocolAssert.assertNotNull(dateValue, PARAM_FORMAT_ERROR_T, PARAM_FORMAT_ERROR_KEY,
-            new Object[]{criteria0.getKey(), value});
+        LocalDateTime dateValue = value instanceof LocalDateTime ? (LocalDateTime) value
+            : getLocalDateTime(value.toString().replaceAll("\"", ""));
+        assertNotNull(dateValue, PARAM_FORMAT_ERROR_T, PARAM_FORMAT_ERROR_KEY, new Object[]{criteria0.getKey(), value});
         if (criteria0.getOp().equals(SearchOperation.GREATER_THAN)) {
-          predicate.getExpressions().add(cb.greaterThan(root.<LocalDateTime>get(criteria0.getKey()),
-              cb.literal(dateValue)));
+          predicates.add(builder.greaterThan(root.<LocalDateTime>get(criteria0.getKey()), builder.literal(dateValue)));
         } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN)) {
-          predicate.getExpressions()
-              .add(cb.lessThan(root.<LocalDateTime>get(criteria0.getKey()), cb.literal(dateValue)));
+          predicates.add(builder.lessThan(root.<LocalDateTime>get(criteria0.getKey()), builder.literal(dateValue)));
         } else if (criteria0.getOp().equals(SearchOperation.GREATER_THAN_EQUAL)) {
-          predicate.getExpressions()
-              .add(cb.greaterThanOrEqualTo(root.<LocalDateTime>get(criteria0.getKey()),
-                  cb.literal(dateValue)));
+          predicates.add(builder.greaterThanOrEqualTo(root.<LocalDateTime>get(criteria0.getKey()), builder.literal(dateValue)));
         } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN_EQUAL)) {
-          predicate.getExpressions()
-              .add(cb.lessThanOrEqualTo(root.<LocalDateTime>get(criteria0.getKey()),
-                  cb.literal(dateValue)));
+          predicates.add(builder.lessThanOrEqualTo(root.<LocalDateTime>get(criteria0.getKey()), builder.literal(dateValue)));
         } else if (criteria0.getOp().equals(SearchOperation.EQUAL)) {
-          predicate.getExpressions()
-              .add(cb.equal(root.<LocalDateTime>get(criteria0.getKey()), cb.literal(dateValue)));
+          predicates.add(builder.equal(root.<LocalDateTime>get(criteria0.getKey()), builder.literal(dateValue)));
         }
       } else {
         String stringValue = safeStringValue(opValue.toString());
         if (criteria0.getOp().equals(SearchOperation.GREATER_THAN)) {
-          predicate.getExpressions().add(cb.greaterThan(
-              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+          predicates.add(builder.greaterThan(root.get(criteria0.getKey()), Long.parseLong(stringValue)));
         } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN)) {
-          predicate.getExpressions().add(cb.lessThan(
-              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+          predicates.add(builder.lessThan(root.get(criteria0.getKey()), Long.parseLong(stringValue)));
         } else if (criteria0.getOp().equals(SearchOperation.GREATER_THAN_EQUAL)) {
-          predicate.getExpressions().add(cb.greaterThanOrEqualTo(
-              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+          predicates.add(builder.greaterThanOrEqualTo(root.get(criteria0.getKey()), Long.parseLong(stringValue)));
         } else if (criteria0.getOp().equals(SearchOperation.LESS_THAN_EQUAL)) {
-          predicate.getExpressions().add(cb.lessThanOrEqualTo(
-              root.get(criteria0.getKey()), Long.parseLong(stringValue)));
+          predicates.add(builder.lessThanOrEqualTo(root.get(criteria0.getKey()), Long.parseLong(stringValue)));
         } else if (criteria0.getOp().equals(SearchOperation.EQUAL)) {
           if (keyType.isEnum()) {
             Value<?>[] values = (Value<?>[]) keyType.getEnumConstants();
             for (Value<?> value : values) {
               if (stringValue.equalsIgnoreCase((String) value.getValue())) {
-                predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey()), value));
+                predicates.add(builder.equal(root.get(criteria0.getKey()), value));
               }
             }
           } else {
             if (nonNull(toBooleanObject(opValue.toString()))) {
-              predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey()),
-                  BooleanUtils.toBoolean(opValue.toString())));
+              predicates.add(builder.equal(root.get(criteria0.getKey()), toBoolean(opValue.toString())));
             } else if (opValue instanceof String) {
-              predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey()), stringValue));
+              predicates.add(builder.equal(root.get(criteria0.getKey()), stringValue));
             } else {
-              predicate.getExpressions().add(cb.equal(root.get(criteria0.getKey())
-                  .as(opValue.getClass()), opValue));
+              predicates.add(builder.equal(root.get(criteria0.getKey()).as(opValue.getClass()), opValue));
             }
           }
         } else if (criteria0.getOp().equals(SearchOperation.NOT_EQUAL)) {
@@ -145,47 +131,43 @@ public class GenericSpecification<T> implements Specification<T> {
             Value<?>[] values = (Value<?>[]) keyType.getEnumConstants();
             for (Value<?> value : values) {
               if (stringValue.equalsIgnoreCase((String) value.getValue())) {
-                predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey()), value));
+                predicates.add(builder.notEqual(root.get(criteria0.getKey()), value));
               }
             }
           } else {
             if (nonNull(toBooleanObject(opValue.toString()))) {
-              predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey()),
-                  BooleanUtils.toBoolean(opValue.toString())));
+              predicates.add(builder.notEqual(root.get(criteria0.getKey()), toBoolean(opValue.toString())));
             } else if (opValue instanceof String) {
-              predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey()), stringValue));
+              predicates.add(builder.notEqual(root.get(criteria0.getKey()), stringValue));
             } else {
-              predicate.getExpressions().add(cb.notEqual(root.get(criteria0.getKey())
-                  .as(opValue.getClass()), opValue));
+              predicates.add(builder.notEqual(root.get(criteria0.getKey()).as(opValue.getClass()), opValue));
             }
           }
         } else if (criteria0.getOp().equals(SearchOperation.IN)) {
-          In<?> inClause = getInCriteria(root, cb, criteria0, opValue, safeInValue(stringValue));
+          In<?> inClause = getInCriteria(root, builder, criteria0, opValue, safeInValue(stringValue));
           if (Objects.isNull(inClause)) {
             continue;
           }
-          predicate.getExpressions().add(cb.and(inClause));
+          predicates.add(builder.and(inClause));
         } else if (criteria0.getOp().equals(SearchOperation.NOT_IN)) {
-          In<?> inClause = getInCriteria(root, cb, criteria0, opValue, safeInValue(stringValue));
+          In<?> inClause = getInCriteria(root, builder, criteria0, opValue, safeInValue(stringValue));
           if (Objects.isNull(inClause)) {
             continue;
           }
-          predicate.getExpressions().add(cb.and(cb.not(inClause)));
+          predicates.add(builder.and(builder.not(inClause)));
         } else if (criteria0.getOp().equals(SearchOperation.MATCH)) {
-          predicate.getExpressions()
-              .add(cb.like(root.get(criteria0.getKey()), "%" + stringValue + "%"));
+          predicates.add(builder.like(root.get(criteria0.getKey()), "%" + stringValue + "%"));
         } else if (criteria0.getOp().equals(SearchOperation.MATCH_END)) {
-          predicate.getExpressions().add(cb.like(root.get(criteria0.getKey()), stringValue + "%"));
+          predicates.add(builder.like(root.get(criteria0.getKey()), stringValue + "%"));
         } else if (criteria0.getOp().equals(SearchOperation.NOT_MATCH)) {
-          predicate.getExpressions()
-              .add(cb.notLike(root.get(criteria0.getKey()), "%" + stringValue + "%"));
+          predicates.add(builder.notLike(root.get(criteria0.getKey()), "%" + stringValue + "%"));
         } else if (criteria0.getOp().equals(SearchOperation.NOT_MATCH_END)) {
-          predicate.getExpressions()
-              .add(cb.notLike(root.get(criteria0.getKey()), stringValue + "%"));
+          predicates.add(builder.notLike(root.get(criteria0.getKey()), stringValue + "%"));
         }
       }
     }
-    return predicate;
+    return builder.and(predicates.toArray(new Predicate[0]));
+    // @formatter:on
   }
 
   private boolean isDateTypeKey(Class<?> keyClass) {
@@ -241,7 +223,7 @@ public class GenericSpecification<T> implements Specification<T> {
       }
       return inClause;
     }
-    ProtocolAssert.throw0(UNSUPPORTED_FILTER_FIELD_T2, UNSUPPORTED_FILTER_FIELD_KEY,
+    throw0(UNSUPPORTED_FILTER_FIELD_T2, UNSUPPORTED_FILTER_FIELD_KEY,
         new Object[]{criteria.getKey(), criteria.getOp().getValue()});
     return null;
   }

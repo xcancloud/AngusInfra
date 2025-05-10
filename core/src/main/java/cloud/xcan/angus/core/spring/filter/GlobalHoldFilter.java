@@ -234,26 +234,6 @@ public class GlobalHoldFilter implements Filter {
     response.setHeader(Header.REQUEST_ID, principal.getRequestId());
   }
 
-  /**
-   * TODO Referring to the nginx configuration, cross-domain is allowed when the top-level domain
-   * name is the same.
-   *
-   * <pre>
-   *             set $flag '0';
-   *             if ( $http_origin ~* ^(http?://.*.xcan.cloud$) ){
-   *                  set $flag '1';
-   *             }
-   *
-   *             if ($flag = '1') {
-   *                  add_header 'Access-Control-Allow-Origin' $http_origin;
-   *                  add_header 'Access-Control-Allow-Credentials' 'true';
-   *                  add_header 'Access-Control-Allow-Methods' 'GET,POST,PUT,PATCH,DELETE';
-   *                  add_header 'Access-Control-Allow-Headers' *;
-   *             }
-   * </pre>
-   *
-   * @see `CorsConfigBuilder`
-   */
   private void allowCors(HttpServletResponse response) {
     response.addHeader(CORS_CREDENTIALS, globalProperties.getCors().getCredentials());
     response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());

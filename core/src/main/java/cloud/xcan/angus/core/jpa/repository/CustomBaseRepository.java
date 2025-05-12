@@ -14,18 +14,17 @@ public interface CustomBaseRepository<T> {
   }
 
   default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable,
-      Class<T> mainClz, Function<? super Object[], T> mapper,
-      Object[] params, String[] match) {
+      Class<T> mainClz, Function<? super Object[], T> mapper, Object[] params, String[] match) {
     return find0(criteria, pageable, mainClz, mapper, params, match);
   }
 
-  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClz,
-      String[] match) {
+  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable,
+      Class<T> mainClz, String[] match) {
     return find0(criteria, pageable, mainClz, null, null, match);
   }
 
-  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable, Class<T> mainClz,
-      Object[] params, String[] match) {
+  default Page<T> find(Set<SearchCriteria> criteria, Pageable pageable,
+      Class<T> mainClz, Object[] params, String[] match) {
     return find0(criteria, pageable, mainClz, null, params, match);
   }
 

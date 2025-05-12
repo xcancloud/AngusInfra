@@ -35,7 +35,7 @@ public class SneakyLogConfigurerObfuscatedTest {
     System.out.println("----");
 
     // SchedulerAutoConfigurer
-    System.out.println(Obj0.var0("SDF-Scheduler"));
+    System.out.println(Obj0.var0("Angus-Scheduler"));
 
     System.out.println("----");
 

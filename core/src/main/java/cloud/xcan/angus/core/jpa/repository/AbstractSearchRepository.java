@@ -9,6 +9,7 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringInValue;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringValue;
+import static cloud.xcan.angus.spec.utils.StringUtils.camelToUnder;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.biz.ProtocolAssert;
@@ -85,7 +86,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       Pageable pageable, Class<T> mainClz, Function<? super Object[], T> mapper,
       Object[] params, StringBuilder sql) {
     Order order = pageable.getSort().get().findFirst().get();
-    sql.append(" ORDER BY ").append(StringUtils.camelToUnder(order.getProperty())).append(" ")
+    sql.append(" ORDER BY ").append(camelToUnder(order.getProperty())).append(" ")
         .append(order.getDirection());
     if (Objects.nonNull(mapper)) {
       Query queryList = getEntityManager().createNativeQuery(

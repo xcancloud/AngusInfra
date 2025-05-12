@@ -2,21 +2,18 @@ package cloud.xcan.angus.core.jpa.entity.projection;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * Used to project(projection) id and code fields when returning from a query.
+ * Used to project(projection) id fields when returning from a query.
  */
 @Setter
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
-public class IdAndCode {
+@Accessors(chain = true)
+public class TenantId {
 
-  private Long id;
-
-  private String code;
+  private Long tenantId;
 
 }

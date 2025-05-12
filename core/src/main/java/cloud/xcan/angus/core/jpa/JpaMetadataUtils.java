@@ -52,4 +52,9 @@ public class JpaMetadataUtils {
     Attribute<?, ?> attribute = entityType.findAttribute(fieldName);
     return attribute != null ? StringUtils.camelToUnder(attribute.getName()) : null;
   }
+
+  public static <T> boolean hasAttribute(EntityType<T> entityType, String propertyName) {
+    return entityType.getDeclaredAttributes().stream()
+        .anyMatch(attribute -> attribute.getName().equals(propertyName));
+  }
 }

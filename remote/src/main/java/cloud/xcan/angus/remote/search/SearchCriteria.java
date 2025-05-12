@@ -280,7 +280,7 @@ public class SearchCriteria implements Serializable {
     if (nonNull(criteria)) {
       return new HashSet<>(Arrays.asList(criteria));
     }
-    return null;
+    return new HashSet<>();
   }
 
   public static Builder newBuilder() {

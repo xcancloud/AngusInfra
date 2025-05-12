@@ -7,6 +7,8 @@ import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_E
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
 import static cloud.xcan.angus.spec.utils.DateUtils.getLocalDateTime;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeInValue;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringValue;
 import static java.util.Objects.nonNull;
@@ -29,9 +31,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -44,16 +46,20 @@ public class GenericSpecification<T> implements Specification<T> {
 
   private final Set<SearchCriteria> criteria;
 
+  @Setter
+  private boolean distinct = false;
+
   public GenericSpecification() {
-    this(null);
+    this(null, false);
   }
 
   public GenericSpecification(Set<SearchCriteria> filters) {
-    if (nonNull(filters)) {
-      this.criteria = new HashSet<>(filters);
-    } else {
-      this.criteria = new HashSet<>();
-    }
+    this(filters, false);
+  }
+
+  public GenericSpecification(Set<SearchCriteria> filters, boolean distinct) {
+    this.criteria = nonNull(filters) ? new HashSet<>(filters) : new HashSet<>();
+    this.distinct = distinct;
   }
 
   public Specification<?> toPredicate(SearchCriteria... criteria) {
@@ -68,6 +74,7 @@ public class GenericSpecification<T> implements Specification<T> {
   public Predicate toPredicate(@NonNullable Root<T> root, @NonNullable CriteriaQuery<?> query,
       CriteriaBuilder builder) {
     // @formatter:off
+    query.distinct(distinct);
     List<Predicate> predicates = new ArrayList<>();
     for (SearchCriteria criteria0 : criteria) {
       if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
@@ -145,13 +152,13 @@ public class GenericSpecification<T> implements Specification<T> {
           }
         } else if (criteria0.getOp().equals(SearchOperation.IN)) {
           In<?> inClause = getInCriteria(root, builder, criteria0, opValue, safeInValue(stringValue));
-          if (Objects.isNull(inClause)) {
+          if (isNull(inClause)) {
             continue;
           }
           predicates.add(builder.and(inClause));
         } else if (criteria0.getOp().equals(SearchOperation.NOT_IN)) {
           In<?> inClause = getInCriteria(root, builder, criteria0, opValue, safeInValue(stringValue));
-          if (Objects.isNull(inClause)) {
+          if (isNull(inClause)) {
             continue;
           }
           predicates.add(builder.and(builder.not(inClause)));
@@ -177,6 +184,10 @@ public class GenericSpecification<T> implements Specification<T> {
 
   private In<?> getInCriteria(Root<T> root, CriteriaBuilder cb, SearchCriteria criteria,
       Object opValue, String stringValue) {
+    if (isEmpty(opValue) && isEmpty(stringValue)) {
+      return null;
+    }
+
     In<Object> inClause = cb.in(root.get(criteria.getKey()));
     if (opValue instanceof Collection) {
       for (Object o : (Collection<?>) opValue) {
@@ -198,6 +209,7 @@ public class GenericSpecification<T> implements Specification<T> {
         return inClause;
       }
     }
+
     String[] values = stringValue.split(",");
     Class<?> keyType = root.get(criteria.getKey()).getJavaType();
     if (Long.class == keyType) {
@@ -223,8 +235,6 @@ public class GenericSpecification<T> implements Specification<T> {
       }
       return inClause;
     }
-    throw0(UNSUPPORTED_FILTER_FIELD_T2, UNSUPPORTED_FILTER_FIELD_KEY,
-        new Object[]{criteria.getKey(), criteria.getOp().getValue()});
     return null;
   }
 

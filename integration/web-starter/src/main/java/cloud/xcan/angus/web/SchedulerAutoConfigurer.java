@@ -35,7 +35,7 @@ public class SchedulerAutoConfigurer implements SchedulingConfigurer {
     threadPoolTaskScheduler.setPoolSize(propertis.getThreadPoolSize());
     threadPoolTaskScheduler.setThreadNamePrefix(
         new Str0(new long[]{0x6788F19143F55F35L, 0x47FD4ECB7A0921ABL, 0xAE1A4EA6C2D34405L})
-            .toString() /* => "SDF-Scheduler" */);
+            .toString() /* => "Angus-Scheduler" */);
     threadPoolTaskScheduler.initialize();
     taskRegistrar.setTaskScheduler(threadPoolTaskScheduler);
   }

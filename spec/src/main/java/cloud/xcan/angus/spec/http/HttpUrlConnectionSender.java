@@ -37,7 +37,7 @@ public class HttpUrlConnectionSender implements HttpSender {
   private static final String TRUST_ALL = String.format("%s.trustAll", HttpSender.class.getName());
   private static final ConnectionConfigurator CONNECTION_CONFIGURATOR = createConnectionConfigurator();
   private static final String ACCEPT_HEADER_VALUE = "application/json, application/yaml, */*";
-  private static final String USER_AGENT_HEADER_VALUE = "SDF-HttpSender";
+  private static final String USER_AGENT_HEADER_VALUE = "Angus-HttpSender";
 
   private static final int DEFAULT_CONNECT_TIMEOUT_MS = 3000;
   private static final int DEFAULT_READ_TIMEOUT_MS = 30000;

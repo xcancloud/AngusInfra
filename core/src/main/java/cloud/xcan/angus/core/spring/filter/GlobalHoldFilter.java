@@ -22,9 +22,7 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.ApiType;
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
-import cloud.xcan.angus.core.utils.PrincipalContextUtils;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.http.HttpMethod;

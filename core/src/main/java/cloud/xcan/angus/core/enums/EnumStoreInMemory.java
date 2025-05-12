@@ -1,14 +1,11 @@
 package cloud.xcan.angus.core.enums;
 
-import static cloud.xcan.angus.core.spring.SpringContextHolder.getBean;
 import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.GM_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TESTER_SERVICE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TESTER_SERVICE_ARTIFACT_ID;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.angus.api.obf.Str0;
-import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.experimental.Value;
@@ -21,8 +18,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.reflections.Reflections;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 public class EnumStoreInMemory implements EnumStore {

@@ -152,7 +152,7 @@
     <swagger2.version>1.6.14</swagger2.version>
     <swagger3.version>2.2.29</swagger3.version>
     <swagger3-parser.version>2.1.23</swagger3-parser.version>
-    <swagger-validator.version>2.1.2</swagger-validator.version>
+    <swagger-validator.version>2.1.6</swagger-validator.version>
 
     <testng.version>7.11.0</testng.version>
     <junit.version>4.13.2</junit.version>

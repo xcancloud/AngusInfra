@@ -4,8 +4,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.ENUM_MESSAGE_PREFIX
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isBlank;
 import static cloud.xcan.angus.spec.utils.StringUtils.underToUpperCamel;
 
-import cloud.xcan.angus.spec.utils.StringUtils;
-
 /**
  * @author XiaoLong Liu
  */

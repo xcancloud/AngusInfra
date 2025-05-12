@@ -63,6 +63,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-common</artifactId>
+      <version>${springdoc-openapi.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>io.github.openfeign</groupId>
       <artifactId>feign-okhttp</artifactId>
     </dependency>

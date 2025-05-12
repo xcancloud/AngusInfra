@@ -3,7 +3,6 @@ package cloud.xcan.angus.core.jpa.multitenancy;
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenantCtrlByApiType;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
 
 import cloud.xcan.angus.core.jpa.interceptor.TenantInterceptor;
 import cloud.xcan.angus.spec.principal.Principal;

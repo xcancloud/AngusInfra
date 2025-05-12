@@ -18,7 +18,6 @@ import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
 import cloud.xcan.angus.spec.experimental.Value;
 import cloud.xcan.angus.spec.utils.ReflectionUtils;
-import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

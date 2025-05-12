@@ -7,6 +7,8 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_OPERATION_PLATFORM_CODE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
 import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_CLIENT_ID;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getApiType;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getClientId;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
@@ -124,7 +126,7 @@ public class PrincipalContextUtils {
    * Check if the operation client is visiting
    */
   public static boolean isOpClient() {
-    return XCAN_OPERATION_PLATFORM_CODE.equals(PrincipalContext.getClientId());
+    return XCAN_OPERATION_PLATFORM_CODE.equals(getClientId());
   }
 
   /**
@@ -138,7 +140,7 @@ public class PrincipalContextUtils {
    * Check if the tenant client is visiting
    */
   public static boolean isTenantClient() {
-    return XCAN_TENANT_PLATFORM_CODE.equals(PrincipalContext.getClientId());
+    return XCAN_TENANT_PLATFORM_CODE.equals(getClientId());
   }
 
   /**
@@ -617,7 +619,7 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isApi() {
-    return ApiType.API.equals(PrincipalContext.getApiType());
+    return ApiType.API.equals(getApiType());
   }
 
   public static boolean isApi(Principal principal) {
@@ -625,7 +627,7 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isOpenApi() {
-    return ApiType.OPEN_API.equals(PrincipalContext.getApiType());
+    return ApiType.OPEN_API.equals(getApiType());
   }
 
   public static boolean isOpenApi(Principal principal) {
@@ -633,7 +635,7 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isOpenApi2p() {
-    return ApiType.OPEN_API_2P.equals(PrincipalContext.getApiType());
+    return ApiType.OPEN_API_2P.equals(getApiType());
   }
 
   public static boolean isOpenApi2p(Principal principal) {
@@ -641,11 +643,11 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isView() {
-    return ApiType.VIEW.equals(PrincipalContext.getApiType());
+    return ApiType.VIEW.equals(getApiType());
   }
 
   public static boolean isInnerApi() {
-    return ApiType.DOOR_API.equals(PrincipalContext.getApiType());
+    return ApiType.DOOR_API.equals(getApiType());
   }
 
   public static boolean isInnerApi(Principal principal) {
@@ -653,11 +655,11 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isPubApi() {
-    return ApiType.PUB_API.equals(PrincipalContext.getApiType());
+    return ApiType.PUB_API.equals(getApiType());
   }
 
   public static boolean isPubView() {
-    return ApiType.PUB_VIEW.equals(PrincipalContext.getApiType());
+    return ApiType.PUB_VIEW.equals(getApiType());
   }
 
   public static boolean isJobOrInnerApi() {
@@ -669,13 +671,11 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isJob() {
-    return PrincipalContext.getApiType() == null && DEFAULT_CLIENT_ID.equals(
-        PrincipalContext.getClientId());
+    return getApiType() == null && DEFAULT_CLIENT_ID.equals(getClientId());
   }
 
   public static boolean isJob(Principal principal) {
-    return principal.getApiType() == null && DEFAULT_CLIENT_ID.equals(
-        PrincipalContext.getClientId());
+    return principal.getApiType() == null && DEFAULT_CLIENT_ID.equals(getClientId());
   }
 
   public static boolean isCloudServiceEdition() {

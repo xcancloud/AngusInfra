@@ -22,7 +22,7 @@ public class Example {
   private String $ref = null;
   private java.util.Map<String, Object> extensions = null;
 
-  private boolean valueSet;
+  private boolean valueSetFlag;
 
   /**
    * returns the summary property from a Example instance.
@@ -74,7 +74,7 @@ public class Example {
 
   public void setValue(Object value) {
     this.value = value;
-    valueSet = true;
+    valueSetFlag = true;
   }
 
   public Example value(Object value) {
@@ -157,12 +157,12 @@ public class Example {
     return this;
   }
 
-  public boolean getValueSet() {
-    return valueSet;
+  public boolean getValueSetFlag() {
+    return valueSetFlag;
   }
 
-  public void setValueSet(boolean valueSet) {
-    this.valueSet = valueSet;
+  public void setValueSetFlag(boolean valueSetFlag) {
+    this.valueSetFlag = valueSetFlag;
   }
 
   @Override

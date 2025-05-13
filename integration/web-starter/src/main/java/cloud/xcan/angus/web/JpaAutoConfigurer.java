@@ -57,6 +57,8 @@ import org.springframework.util.CollectionUtils;
 @ConditionalOnProperty(name = "xcan.datasource.enabled", havingValue = "true")
 public class JpaAutoConfigurer {
 
+
+
   @Bean
   @ConditionalOnMissingBean
   public PhysicalNamingStrategy physicalNamingStrategy() {

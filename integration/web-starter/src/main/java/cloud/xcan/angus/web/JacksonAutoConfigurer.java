@@ -28,6 +28,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -98,6 +99,8 @@ public class JacksonAutoConfigurer {
 
   private static final Map<?, Boolean> FEATURE_DEFAULTS;
 
+  public static final String PRIMARY_OBJECT_MAPPER_BEAN_NAME = "objectMapper";
+
   static {
     Map<Object, Boolean> featureDefaults = new HashMap<>();
     featureDefaults.put(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
@@ -134,11 +137,12 @@ public class JacksonAutoConfigurer {
   @ConditionalOnClass(Jackson2ObjectMapperBuilder.class)
   static class JacksonObjectMapperConfiguration {
 
-    @Bean
     @Primary
+    @Bean(PRIMARY_OBJECT_MAPPER_BEAN_NAME)
     ObjectMapper objectMapper(Jackson2ObjectMapperBuilder builder) {
       ObjectMapper objectMapper = builder.createXmlMapper(false).build();
       objectMapper.setSerializationInclusion(Include.NON_NULL);
+      objectMapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
       objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
       objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
       objectMapper.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);

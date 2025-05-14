@@ -75,6 +75,11 @@
     </dependency>
 
     <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-infra.auth-openapi2p-starter</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
     </dependency>

@@ -591,7 +591,9 @@ public class CoreUtils {
   }
 
   public static void exitApp() {
-    SpringApplication.exit(SpringContextHolder.getCtx(), () -> -1);
+    if (nonNull(SpringContextHolder.getCtx())){
+      SpringApplication.exit(SpringContextHolder.getCtx(), () -> -1);
+    }
     System.exit(-1);
   }
 

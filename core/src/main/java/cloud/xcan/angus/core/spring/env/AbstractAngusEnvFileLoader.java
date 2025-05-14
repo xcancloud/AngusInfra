@@ -59,31 +59,31 @@ public abstract class AbstractAngusEnvFileLoader implements EnvironmentPostProce
   private static final String COMMON_ENV_FILE = ".common.env";
   private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
+  public static final Properties envs = new Properties();
+
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment,
       SpringApplication application) {
     // Load the main environment file.
-    Properties envProperties = loadCommonEnvFile();
+    loadCommonEnvFile();
     // Load other environment files.
-    loadAdditionalEnvFiles(envProperties);
+    loadAdditionalEnvFiles();
     // Load or overwrite external env files.
-    loadOrRewriteFromExternalEnvFiles(envProperties);
+    loadOrRewriteFromExternalEnvFiles();
     // Register the variable to the Spring Environment.\
-    environment.getPropertySources()
-        .addFirst(new PropertiesPropertySource("customEnv", envProperties));
+    environment.getPropertySources().addFirst(new PropertiesPropertySource("customEnv", envs));
   }
 
-  public Properties loadCommonEnvFile() {
+  public void loadCommonEnvFile() {
     String searchDir = new SpringAppDirUtils().getConfDir();
     Path envPath = Paths.get(searchDir, COMMON_ENV_FILE);
     if (Files.exists(envPath)) {
-      return loadEnvFile(envPath);
+      loadEnvFile(envPath);
     }
-    return new Properties();
   }
 
-  public void loadAdditionalEnvFiles(Properties envProperties) {
-    String envFiles = envProperties.getProperty(ENV_FILES_KEY, "");
+  public void loadAdditionalEnvFiles() {
+    String envFiles = envs.getProperty(ENV_FILES_KEY, "");
     if (isNotBlank(envFiles)) {
       List<String> filesToLoad = Arrays.stream(envFiles.split(","))
           .map(String::trim).filter(s -> !s.isEmpty()).toList();
@@ -91,24 +91,22 @@ public abstract class AbstractAngusEnvFileLoader implements EnvironmentPostProce
       for (String file : filesToLoad) {
         Path filePath = Paths.get(searchDir, file);
         if (Files.exists(filePath)) {
-          envProperties.putAll(loadEnvFile(filePath));
+          loadEnvFile(filePath);
           break;
         }
       }
     }
   }
 
-  public abstract void loadOrRewriteFromExternalEnvFiles(Properties envProperties);
+  public abstract void loadOrRewriteFromExternalEnvFiles();
 
-  public Properties loadEnvFile(Path filePath) {
-    Properties props = new Properties();
+  public void loadEnvFile(Path filePath) {
     try {
       Resource resource = resourceLoader.getResource("file:" + filePath);
-      props.load(resource.getInputStream());
+      envs.load(resource.getInputStream());
     } catch (IOException e) {
       throw new IllegalStateException("Failed to load env file: " + filePath, e);
     }
-    return props;
   }
 
   @Override
@@ -116,4 +114,5 @@ public abstract class AbstractAngusEnvFileLoader implements EnvironmentPostProce
     // Ensure loading first
     return Ordered.HIGHEST_PRECEDENCE;
   }
+
 }

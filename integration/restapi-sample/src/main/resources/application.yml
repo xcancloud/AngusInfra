@@ -9,7 +9,7 @@ eureka:
     initial-instance-info-replication-interval-seconds: 10
     registry-fetch-interval-seconds: 10
     serviceUrl:
-      defaultZone: http://${GM_EUREKA_USER_NAME:discovery}:${GM_EUREKA_USER_PASSWORD:discovery}@${GM_HOST:localhost}:${GM_PORT:1801}/eureka/
+      defaultZone: http://${EUREKA_USER_NAME:discovery}:${EUREKA_USER_PASSWORD:discovery}@${GM_HOST:localhost}:${GM_PORT:1801}/eureka/
   instance:
     app-name: '@artifactId@'
     instance-id: ${spring.cloud.client.ip-address}:${server.port}

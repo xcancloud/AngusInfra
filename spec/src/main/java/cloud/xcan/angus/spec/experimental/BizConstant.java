@@ -278,7 +278,6 @@ public interface BizConstant {
       "/view/**"
   };
 
-
   String[] OPENAPI_AUTH_RESOURCES = {
       "/openapi/**"
   };

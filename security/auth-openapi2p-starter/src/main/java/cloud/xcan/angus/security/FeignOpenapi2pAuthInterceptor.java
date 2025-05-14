@@ -37,7 +37,7 @@ public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
   }
 
   private String getToken() {
-    // Test support for cloud service edition
+    // Test support for cloud service edition or broadcast (such as: broadcastQueryConnections2RemoteCtrl())
     if (isCloudServiceEdition() && isNotEmpty(getAuthorization())) {
       return getAuthorization();
     }

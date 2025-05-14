@@ -90,11 +90,23 @@ public class OpenApiAutoConfigurer {
   @Bean
   @Conditional(CloudServiceEditionCondition.class)
   // Private version does not display inner API docs
-  public GroupedOpenApi doorApi() {
+  public GroupedOpenApi innerApi() {
     return GroupedOpenApi.builder()
         .displayName("/innerapi (Inner System Api Document)")
         .group("Inner")
         .pathsToMatch("/innerapi/v1/**")
+        .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .build();
+  }
+
+  @Bean
+  @Conditional(CloudServiceEditionCondition.class)
+  // Private version does not display inner API docs
+  public GroupedOpenApi open2pApi() {
+    return GroupedOpenApi.builder()
+        .displayName("/openapi2p (Inner System Api Document)")
+        .group("Open2p")
+        .pathsToMatch("/openapi2p/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .build();
   }

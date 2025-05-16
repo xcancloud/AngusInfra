@@ -1,5 +1,6 @@
 package cloud.xcan.angus.spec.utils;
 
+import static cloud.xcan.angus.spec.experimental.BizConstant.AppDir.LICENSE_DIR_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AppDir.PLUGINS_DIR_NAME;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
@@ -30,16 +31,15 @@ public class AppDirUtils {
       return dir.endsWith(File.separator) ? dir : dir + File.separator;
     }
     String path = AppDir.LIB_DIR_NAME + File.separator;
-    // 指定Springboot项目依赖lib目录
-    // 方式1：
+    // Specify the lib directory for Spring Boot project dependencies
+    // Method 1:
     // java -cp ./lib/* com.example.demo.DemoApplication
-    // 在上述命令中，-cp ./lib/*指定了类路径，其中./lib/*表示所有依赖项（包括JAR文件和类文件）都在./lib目录中，并使用通配符*来表示所有文件
-    // 方式2：
+    // In the above command, -cp ./lib/* specifies the classpath, where ./lib/* indicates that all dependencies (including JAR files and class files) are in the ./lib directory, using the wildcard * to represent all files.
+    // Method 2:
     // java -Dloader.path=./lib/ -jar demo.jar
-    // 用-Dloader.path参数来指定lib目录的路径，使用-Dloader.path参数指定lib目录的路径可以让应用程序在运行时动态添加类路径，以加载额外的类或资源
-    // 参考：https://blog.csdn.net/Zhai_ZB/article/details/122013533
-    return isEmpty(homeDir) ? System
-        .getProperty("loader.path") /* Fix:: + File.separator*/
+    // Use the -Dloader.path parameter to specify the path to the lib directory; using the -Dloader.path parameter allows the application to dynamically add the classpath at runtime to load additional classes or resources.
+    // Reference: https://blog.csdn.net/Zhai_ZB/article/details/122013533
+    return isEmpty(homeDir) ? System.getProperty("loader.path") /* Fix:: + File.separator*/
         : homeDir + path;
   }
 
@@ -210,6 +210,14 @@ public class AppDirUtils {
 
   public String getBizConfDir(String homeDir, String bizDir) {
     return getConfDir(homeDir) + bizDir + File.separator;
+  }
+
+  public String getLicenceDir() {
+    return getLicenceDir(getHomeDir());
+  }
+
+  public String getLicenceDir(String homeDir) {
+    return getStaticDir(homeDir) + LICENSE_DIR_NAME + File.separator;
   }
 
   public static long getUsedDiskSpace() {

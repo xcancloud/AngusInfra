@@ -1,6 +1,8 @@
 package cloud.xcan.angus.web.listener;
 
 import static cloud.xcan.angus.core.app.verx.VerxRegister.cacheManager;
+import static cloud.xcan.angus.core.spring.SpringContextHolder.getCtx;
+import static cloud.xcan.angus.core.spring.SpringContextHolder.registerBean;
 import static cloud.xcan.angus.core.utils.AppEnvUtils.initSneakyLogDir;
 import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AppCache.openedAppCache;
@@ -84,7 +86,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
       if (openedAppCache()){
         // Note: Register the main application cache manager, must be initialized at the beginning.
         // Used by application initialization verification
-        SpringContextHolder.registerBean(VerxRegister.class, new Str0(
+        registerBean(VerxRegister.class, new Str0(
             new long[]{0x34CC9A19DE6ECD99L, 0x9D0E22B0DC98A9ADL, 0xB94135F40269A5C7L})
             .toString() /* => "dCacheManager" */);
 
@@ -97,7 +99,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
         } catch (Exception e) {
           System.out.println("\n***********" + AM + "*************\n" + "\t cause: " + e.getMessage());
           if (runAtJar()) {
-            SpringApplication.exit(SpringContextHolder.getCtx(), () -> -1);
+            SpringApplication.exit(getCtx(), () -> -1);
             exit(-1);
           }
         }
@@ -105,7 +107,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
     } catch (Exception e) {
       System.out.println("\n***********" + IM + "*************\n" + "\t cause: " + e.getMessage());
       if (runAtJar()) {
-        SpringApplication.exit(SpringContextHolder.getCtx(), () -> -1);
+        SpringApplication.exit(getCtx(), () -> -1);
         exit(-1);
       }
     }

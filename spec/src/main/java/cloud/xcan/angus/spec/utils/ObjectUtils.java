@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.StringTokenizer;
@@ -1724,17 +1725,14 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 
   public static boolean isBasicType(Object object) {
     Class className = object.getClass();
-    if (className.equals(Integer.class) ||
+    return className.equals(Integer.class) ||
         className.equals(Byte.class) ||
         className.equals(Long.class) ||
         className.equals(Double.class) ||
         className.equals(Float.class) ||
         className.equals(Character.class) ||
         className.equals(Short.class) ||
-        className.equals(Boolean.class)) {
-      return true;
-    }
-    return false;
+        className.equals(Boolean.class);
   }
 
   public static boolean isTrueValue(String value) {
@@ -2551,5 +2549,14 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
   public static BigDecimal formatDecimal(double rate, String pattern) {
     DecimalFormat df = new DecimalFormat(pattern);
     return BigDecimal.valueOf(Double.parseDouble(df.format(rate)));
+  }
+
+  public static Map<String, String> convertToMap(Properties properties) {
+    Map<String, String> map = new HashMap<>();
+    for (String key : properties.stringPropertyNames()) {
+      String value = properties.getProperty(key);
+      map.put(key, value);
+    }
+    return map;
   }
 }

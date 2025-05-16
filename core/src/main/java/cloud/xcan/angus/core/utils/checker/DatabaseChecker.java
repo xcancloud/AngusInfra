@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.spring.env.checker;
+package cloud.xcan.angus.core.utils.checker;
 
 import static cloud.xcan.angus.api.enums.SupportedDbType.MYSQL;
 import static cloud.xcan.angus.api.enums.SupportedDbType.POSTGRES;

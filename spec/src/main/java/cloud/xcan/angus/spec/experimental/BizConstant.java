@@ -590,7 +590,7 @@ public interface BizConstant {
     String COMMON_ENV_FILE = ".common.env";
 
     String PRIVATE_ENV_NAME = ".priv.env";
-    String PRIVATE_STATIC_ENV_NAME = ".env.priv";
+    String PRIVATE_STATIC_ENV_NAME = "env.priv";
 
     String DEFAULT_ADMIN_USER_ID = "1000000";
     String DEFAULT_ADMIN_USERNAME = "admin";

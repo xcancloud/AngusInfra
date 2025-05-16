@@ -8,6 +8,7 @@ import static cloud.xcan.angus.remote.message.ProtocolException.M.MOBILE_FORMAT_
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_T;
 import static cloud.xcan.angus.spec.utils.NetworkUtils.REGEX_IPV4;
+import static cloud.xcan.angus.validator.impl.DomainValidator.DOMAIN_PATTERN;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
 import cloud.xcan.angus.api.enums.EditionType;
@@ -176,6 +177,15 @@ public class ValidatorUtils {
   public static void checkIpAddress(String ipAddress) {
     assertTrue(REGEX_IPV4.matcher(ipAddress).matches(), PARAM_FORMAT_ERROR_T,
         PARAM_FORMAT_ERROR_KEY, new Object[]{ipAddress, "ip"});
+  }
+
+  public static void checkDomain(String domain) {
+    assertTrue(isDomain(domain), PARAM_FORMAT_ERROR_T,
+        PARAM_FORMAT_ERROR_KEY, new Object[]{domain, "domain"});
+  }
+
+  public static boolean isDomain(String domain) {
+    return DOMAIN_PATTERN.matcher(domain).matches();
   }
 
   public static void checkValidParams(Object param) {

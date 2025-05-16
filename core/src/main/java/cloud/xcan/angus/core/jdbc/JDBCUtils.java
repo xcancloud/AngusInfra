@@ -3,13 +3,16 @@ package cloud.xcan.angus.core.jdbc;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.SQLParameterReplacer.replaceParameters;
 
+import cloud.xcan.angus.spec.utils.FileUtils;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -294,7 +297,7 @@ public class JDBCUtils {
    * @throws FullSQLException
    */
   public static void executeScript(final Connection connection, final String scriptFile)
-      throws FullSQLException {
+      throws FullSQLException, FileNotFoundException {
     executeScript(connection, new File(scriptFile));
   }
 
@@ -303,25 +306,22 @@ public class JDBCUtils {
    *
    * @param connection JDBC connection
    * @param scriptFile SQL script file
-   * @throws FullSQLException
    */
   public static void executeScript(final Connection connection, final File scriptFile)
-      throws FullSQLException {
-    executeScript(connection, scriptFile, null);
+      throws FullSQLException, FileNotFoundException {
+    executeScript(connection, FileUtils.readFile(new FileInputStream(scriptFile)), null);
   }
 
   /**
    * Only execute sql script.
    *
    * @param connection JDBC connection
-   * @param scriptFile SQL script file
-   * @throws FullSQLException
+   * @param sqlScript  SQL script file
    */
-  public static void executeScript(final Connection connection, final File scriptFile,
-      Map<String, Object> variables)
-      throws FullSQLException {
+  public static void executeScript(final Connection connection, final String sqlScript,
+      Map<String, ?> variables) throws FullSQLException {
     String sql0 = null;
-    try (BufferedReader reader = new BufferedReader(new FileReader(scriptFile))) {
+    try (BufferedReader reader = new BufferedReader(new StringReader(sqlScript))) {
       StringBuilder sql = new StringBuilder();
       String line;
       while ((line = reader.readLine()) != null) {

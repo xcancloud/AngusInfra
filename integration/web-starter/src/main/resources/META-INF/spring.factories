@@ -16,12 +16,4 @@ org.springframework.context.ApplicationListener=\
   cloud.xcan.angus.web.listener.ApplicationReadyListener,\
   cloud.xcan.angus.web.listener.ApplicationInitListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
-  cloud.xcan.angus.core.spring.env.DefaultAngusEnvFileLoader
-##WebFlux Core For Gateway
-#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-#  cloud.xcan.angus.web.CommonAutoConfigurer,\
-#  cloud.xcan.angus.web.CoreAutoConfigurer,\
-#  cloud.xcan.angus.web.RedisAutoConfigurer,\
-#  cloud.xcan.angus.web.EnumRegisterAutoConfigurer,\
-#  cloud.xcan.angus.web.JpaAutoConfigurer,\
-#  cloud.xcan.angus.web.CommonLinkJpaAutoConfigurer
+  cloud.xcan.angus.core.spring.env.ConfigurableApplicationAndEnvLoader

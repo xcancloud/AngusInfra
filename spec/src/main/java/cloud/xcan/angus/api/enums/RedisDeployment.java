@@ -1,7 +1,7 @@
-package cloud.xcan.angus.lettucex.config;
+package cloud.xcan.angus.api.enums;
 
 
-public enum Deployment {
+public enum RedisDeployment {
   SINGLE, SENTINEL, CLUSTER;
 
   public boolean isSentinel() {

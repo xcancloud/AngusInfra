@@ -31,6 +31,7 @@ import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.spec.SpecConstant;
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Entity;
+import cloud.xcan.angus.spec.utils.IOUtils;
 import cloud.xcan.angus.spec.utils.ObjectUtils;
 import cloud.xcan.angus.validator.Password;
 import jakarta.persistence.Id;
@@ -62,6 +63,7 @@ import org.reflections.Reflections;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.data.domain.Page;
+import org.springframework.data.repository.init.ResourceReader;
 import org.springframework.lang.NonNull;
 import org.springframework.util.CollectionUtils;
 
@@ -591,7 +593,7 @@ public class CoreUtils {
   }
 
   public static void exitApp() {
-    if (nonNull(SpringContextHolder.getCtx())){
+    if (nonNull(SpringContextHolder.getCtx())) {
       SpringApplication.exit(SpringContextHolder.getCtx(), () -> -1);
     }
     System.exit(-1);
@@ -622,6 +624,16 @@ public class CoreUtils {
       filters.add(in("createdBy", createdBys));
     }
     return filters;
+  }
+
+  public static String getResourceFileContent(String file) {
+    try {
+      InputStream inputStream = ResourceReader.class.getClassLoader()
+          .getResourceAsStream(file);
+      return IOUtils.toString(inputStream);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public static boolean runAtJar() {

@@ -7,6 +7,7 @@ import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import java.io.File;
 import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -70,27 +71,6 @@ public class SpringContextHolder implements ApplicationContextAware {
     return SpringContextHolder.getBean(DefaultBidGenerator.class);
   }
 
-  public static DCache getDCache(String no, String path) throws Exception {
-    XmlParamImpl keyStoreParam = new XmlParamImpl(SpringContextHolder.class,
-        writePublicFileWhenNotExists(),
-        new Str0(new long[]{0x9075DEA4AA0771D7L, 0x935CFB439D332924L, 0xED9FF7237A6D5E81L,
-            0x1001CC8579DB66F6L}).toString() /* => "XCanTest.publicCert" */,
-        new Str0(new long[]{0x7869588FAE36AF5AL, 0xB856282BB4C6E64AL, 0x5B72D7AD4F157C91L,
-            0x915A8841D1BB3865L}).toString() /* => "xcan@store@pub_cNui8V" */, null);
-    ParseParamImpl cipherParam = new ParseParamImpl(no + new Str0(
-        new long[]{0xBF2BA088E7A43113L, 0x5E55F8833FCC6697L, 0xCC2F4EF25303A77BL,
-            0x19ED7C344E0032FAL}).toString() /* => ".435E9A3AB63ED118" */);
-    DCacheParamImpl licenseParam = new DCacheParamImpl(
-        new cloud.xcan.angus.api.obf.Str0( // Same with cloud.xcan.angus.License.SUBJECT
-            new long[]{0x1E6B43C60AC22C6DL, 0x8423C94847116C1AL, 0xC4EE5C2A8A84EAB2L,
-                0xD27DB35290719CD5L}).toString() /* => "XCan Product License" */, keyStoreParam,
-        cipherParam);
-    DCacheManager lm = new DCacheManager(licenseParam);
-    File file = keyStoreParam.getDCacheFile(path);
-    lm.install(file);
-    return lm.getCon();
-  }
-
   public static boolean isProd() {
     String[] profiles = SpringContextHolder.getCtx().getEnvironment().getActiveProfiles();
     if (profiles.length != 0) {
@@ -109,5 +89,43 @@ public class SpringContextHolder implements ApplicationContextAware {
     return new Str0(new long[]{0x23B748A968A51B4AL, 0x18317A1449BDB49L, 0x2478AB091CEF106L})
         .toString() /* => "CLOUD_SERVICE" */.equalsIgnoreCase(info.getEditionType());
   }
+
+  public static DCache getDCache(String no, String path) throws Exception {
+    XmlParamImpl keyStoreParam = getKeyStoreParam();
+    DCacheManager lm = getDCacheManager(no, keyStoreParam);
+    File file = keyStoreParam.getDCacheFile(path);
+    lm.install(file);
+    return lm.getCon();
+  }
+
+  public static DCache getDCache0(String no, String path) throws Exception {
+    XmlParamImpl keyStoreParam = getKeyStoreParam();
+    DCacheManager lm = getDCacheManager(no, keyStoreParam);
+    File file = keyStoreParam.getDCacheFile(path);
+    lm.installNoValidate(file);
+    return lm.getCon();
+  }
+
+  public static @NotNull XmlParamImpl getKeyStoreParam() {
+    return new XmlParamImpl(SpringContextHolder.class,
+        writePublicFileWhenNotExists(),
+        new Str0(new long[]{0x9075DEA4AA0771D7L, 0x935CFB439D332924L, 0xED9FF7237A6D5E81L,
+            0x1001CC8579DB66F6L}).toString() /* => "XCanTest.publicCert" */,
+        new Str0(new long[]{0x7869588FAE36AF5AL, 0xB856282BB4C6E64AL, 0x5B72D7AD4F157C91L,
+            0x915A8841D1BB3865L}).toString() /* => "xcan@store@pub_cNui8V" */, null);
+  }
+
+  public static @NotNull DCacheManager getDCacheManager(String no, XmlParamImpl keyStoreParam) {
+    ParseParamImpl cipherParam = new ParseParamImpl(no + new Str0(
+        new long[]{0xBF2BA088E7A43113L, 0x5E55F8833FCC6697L, 0xCC2F4EF25303A77BL,
+            0x19ED7C344E0032FAL}).toString() /* => ".435E9A3AB63ED118" */);
+    DCacheParamImpl licenseParam = new DCacheParamImpl(
+        new cloud.xcan.angus.api.obf.Str0( // Same with cloud.xcan.angus.License.SUBJECT
+            new long[]{0x1E6B43C60AC22C6DL, 0x8423C94847116C1AL, 0xC4EE5C2A8A84EAB2L,
+                0xD27DB35290719CD5L}).toString() /* => "XCan Product License" */, keyStoreParam,
+        cipherParam);
+    return new DCacheManager(licenseParam);
+  }
+
 
 }

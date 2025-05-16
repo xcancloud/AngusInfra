@@ -12,6 +12,8 @@ import cloud.xcan.angus.spec.unit.ShortTimeUnit;
 import cloud.xcan.angus.spec.unit.TimeValue;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 /**
  * XCan biz constant
@@ -63,6 +65,8 @@ public interface BizConstant {
   String GM_SERVICE_ARTIFACT_ID = "XCAN-ANGUSGM.BOOT";
   String TESTER_SERVICE = "AngusTester";
   String TESTER_SERVICE_ARTIFACT_ID = "XCAN-ANGUSTESTER.BOOT";
+
+  List<String> MAIN_APP_SERVICES = List.of(TESTER_SERVICE);
 
   /**
    * String is null in database
@@ -396,6 +400,14 @@ public interface BizConstant {
 
     Duration MAX_TOKEN_VALIDITY_PERIOD = Duration.ofDays(50 * 365);
 
+    static Date getMaxFreeOpenDate(){
+      return new Date(System.currentTimeMillis() + MAX_TOKEN_VALIDITY_PERIOD.toMillis());
+    }
+
+    static Date getMaxTrialOpenDate(){
+      return new Date(System.currentTimeMillis() + Duration.ofDays(6 * 30).toMillis());
+    }
+
     String USER_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0x7B11B48BEA942518L, 0xF8BF08BD6A9D124DL, 0xB9DCE6E85E26CF1DL}).toString() /* => "user_trust" */;
     String SYS_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xB0E3E630F772EDCCL, 0x19AB604C3E331BA7L, 0xC76133C9AFDC132L}).toString() /* => "system_trust" */;
     String INNER_API_TOKEN_CLIENT_SCOPE = new Str0(new long[]{0xC455951C87AD5803L, 0x35805C099A01ECBCL, 0xD171894DFA6FCDCL}).toString() /* => "inner_api_trust" */;
@@ -569,6 +581,35 @@ public interface BizConstant {
     String SUB_APP_DIR_NAME = "apps";
     String STATICS_DIR = "STATICS_DIR";
     String STATICS_DIR_NAME = "statics";
+    String LICENSE_DIR = "LICENSE_DIR";
+    String LICENSE_DIR_NAME = "lic";
+  }
+
+  interface PrivateAppConfig{
+    String ENV_FILES_KEY = "ENV_FILES";
+    String COMMON_ENV_FILE = ".common.env";
+
+    String PRIVATE_ENV_NAME = ".priv.env";
+    String PRIVATE_STATIC_ENV_NAME = ".env.priv";
+
+    String DEFAULT_ADMIN_USER_ID = "1000000";
+    String DEFAULT_ADMIN_USERNAME = "admin";
+    String DEFAULT_ADMIN_PASSWORD = "admin@123";
+
+    Long DEFAULT_PRIVATE_TENANT_ID = 1000L;
+
+    String DEFAULT_HOST = "127.0.0.1";
+
+    String DEFAULT_MYSQL_DB = "Angus";
+    int DEFAULT_MYSQL_PORT = 3306;
+    String DEFAULT_MYSQL_USER = "root";
+    String DEFAULT_MYSQL_PASSWORD = "Angus123";
+
+    int DEFAULT_REDIS_PORT = 6379;
+
+    int DEFAULT_GM_PORT = 8802;
+    int DEFAULT_TESTER_PORT = 8901;
+
   }
 
   interface AppCache {

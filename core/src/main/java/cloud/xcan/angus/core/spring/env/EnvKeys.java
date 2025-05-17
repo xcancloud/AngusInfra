@@ -72,4 +72,5 @@ public interface EnvKeys {
   /* Statics */
   String VITE_GM_URL_PREFIX = "VITE_GM_URL_PREFIX";
   String VITE_TESTER_URL_PREFIX = "VITE_TESTER_URL_PREFIX";
+
 }

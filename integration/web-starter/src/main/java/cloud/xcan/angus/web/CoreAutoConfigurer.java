@@ -38,9 +38,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -53,13 +56,15 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
-import org.typelevel.v.Str0;
 
 @Slf4j
 @EnableWebMvc
@@ -72,14 +77,17 @@ import org.typelevel.v.Str0;
 public class CoreAutoConfigurer implements WebMvcConfigurer {
 
   public CoreAutoConfigurer() {
-    log.info(new Str0(new long[]{0xBB8E64A8ED7C5246L, 0x70EC3B767ED05DF0L, 0x27B9335F2C9DE8C9L,
-        0x3B02D575C6E4FAD2L, 0x7FBB5045D794EF31L, 0x6945B0EE00E1BA85L, 0x823D8F5BAC42AD0EL})
-        .toString() /* => "Application core auto configuration is enabled" */
-    );
+    log.info("Application core auto configuration is enabled");
   }
 
   @Resource
   private ObjectMapper objectMapper;
+
+  @Value("${server.servlet.context-path:'/'}")
+  private String contextPath;
+
+  @Autowired
+  private WebProperties webProperties;
 
   @Bean("appWorkspaceInit")
   public ApplicationInit workspaceInit() {
@@ -237,5 +245,26 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     converters.add(0, new ByteArrayToStringConverter());
     converters.add(new ResourceHttpMessageConverter());
     converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
+  }
+
+
+  @Override
+  public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    String baseUrl = StringUtils.trimTrailingCharacter(contextPath, '/');
+    registry.addResourceHandler("/**")
+        .addResourceLocations(webProperties.getResources().getStaticLocations())
+        .resourceChain(true);
+    registry.addResourceHandler("/webjars/**")
+        .addResourceLocations("classpath:/META-INF/resources/webjars/")
+        .resourceChain(true);
+    registry.addResourceHandler(baseUrl + "swagger-ui/**")
+        .addResourceLocations("classpath:/META-INF/resources/webjars/swagger-ui/")
+        .resourceChain(true);
+  }
+
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addViewController(contextPath + "swagger-ui/")
+        .setViewName("forward:" + contextPath + "swagger-ui/index.html");
   }
 }

@@ -19,17 +19,16 @@ public class VueRouterFilter implements Filter {
 
     // Forward to index.html if the request is not a static resource
     String uri = request.getRequestURI();
-    if (!uri.startsWith("/static") // For default forward
+    if (!uri.startsWith("/statics") // For default forward
         // For vue forward
         && !uri.startsWith("/assets") && !uri.startsWith("/meta")
         && !uri.startsWith("/iconfont") && !uri.startsWith("/favicon.ico")
         // For api forward, Note: /apis route Used by web front-end
-        && !uri.startsWith("/api/") && !uri.startsWith("/innerapi/") && !uri.startsWith("/pubapi/")
-        && !uri.startsWith("/openapi2p/") && !uri.startsWith("/actuator")
-        && !uri.startsWith("/pubview/")
+        && !uri.startsWith("/api/") && !uri.startsWith("/innerapi/")
+        && !uri.startsWith("/pubapi/") && !uri.startsWith("/openapi2p/")
+        && !uri.startsWith("/pubview/") && !uri.startsWith("/actuator")
         // For swagger forward
-        && !uri.startsWith("/swagger-ui/") && !uri.startsWith("/swagger-resources")
-        && !uri.startsWith("/webjars")
+        && !uri.startsWith("/swagger") && !uri.startsWith("/eureka") && !uri.startsWith("/webjars")
         && !uri.startsWith("/v3/api-docs") && !uri.startsWith("/v2/api-docs")
     ) {
       String indexPage = "/index.html";

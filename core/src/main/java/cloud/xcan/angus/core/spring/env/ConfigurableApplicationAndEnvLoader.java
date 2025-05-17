@@ -15,6 +15,7 @@ import static cloud.xcan.angus.spec.utils.JsonUtils.fromJson;
 import static cloud.xcan.angus.spec.utils.NetworkUtils.getValidIpv4;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.io.FileUtils.listFiles;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import cloud.xcan.angus.api.pojo.Pair;
@@ -38,10 +39,7 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public static final Map<String, Pair<String, DCache>> localDCaches = new HashMap<>();
 
-  private final ServiceLoader<ConfigurableApplication> configurableServices;
-
   public ConfigurableApplicationAndEnvLoader() {
-    configurableServices = ServiceLoader.load(ConfigurableApplication.class);
   }
 
   @Override
@@ -60,6 +58,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
     try {
       loadLicenseFromLocal();
 
+      ServiceLoader<ConfigurableApplication>configurableServices
+          = ServiceLoader.load(ConfigurableApplication.class);
       for (ConfigurableApplication configurableService : configurableServices) {
         configurableService.doConfigureApplication(environment, envs);
       }
@@ -70,25 +70,12 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
   }
 
   public static void loadLicenseFromLocal() {
-    Collection<File> caches = FileUtils.listFiles(new File(appDir.getLicenceDir(appHomeDir)),
+    Collection<File> caches = listFiles(new File(appDir.getLicenceDir(appHomeDir)),
         new String[]{".lic"}, false);
     if (isNotEmpty(caches)) {
       for (File cache : caches) {
         try {
-          String no = cache.getName().split("\\.")[0];
-          XmlParamImpl keyStoreParam = getKeyStoreParam();
-          DCacheManager lm = getDCacheManager(no, keyStoreParam);
-          File file = keyStoreParam.getDCacheFile(cache.getPath());
-          lm.installNoValidate(file);
-          System.out.printf("---> License %s parsing successfully\n", cache.getName());
-          DCache dCache = lm.getCon();
-          // Only verify the main application, plugin expiration should not affect the use of the main application.
-          if (MAIN_APP_SERVICES.contains(dCache.getPco())) {
-            lm.var();
-            System.out.printf("---> License %s validate successfully\n", cache.getName());
-            System.setProperty(AppCache.a, "installed");
-          }
-          localDCaches.put(no, Pair.of(dCache.getPco(), dCache));
+          loadDCacheByFile(cache);
         } catch (Exception e) {
           System.err.printf("---> License %s parsing or validate failed, cause: %s\n",
               cache.getName(), e.getMessage());
@@ -146,4 +133,20 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
     return EnvHelper.getInt(EnvKeys.TESTER_PORT, DEFAULT_TESTER_PORT);
   }
 
+  private static void loadDCacheByFile(File cache) throws Exception {
+    String no = cache.getName().split("\\.")[0];
+    XmlParamImpl keyStoreParam = getKeyStoreParam();
+    DCacheManager lm = getDCacheManager(no, keyStoreParam);
+    File file = keyStoreParam.getDCacheFile(cache.getPath());
+    lm.installNoValidate(file);
+    System.out.printf("---> License %s parsing successfully\n", cache.getName());
+    DCache dCache = lm.getCon();
+    // Only verify the main application, plugin expiration should not affect the use of the main application.
+    if (MAIN_APP_SERVICES.contains(dCache.getPco())) {
+      lm.var();
+      System.out.printf("---> License %s validate successfully\n", cache.getName());
+      System.setProperty(AppCache.a, "installed");
+    }
+    localDCaches.put(no, Pair.of(dCache.getPco(), dCache));
+  }
 }

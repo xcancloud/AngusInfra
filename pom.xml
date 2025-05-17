@@ -236,48 +236,15 @@
       <dependencies/>
     </profile>
   </profiles>
-
+  
   <!-- Building configuration -->
   <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
-        <excludes>
-          <exclude>application-local.yml</exclude>
-          <exclude>application-dev.yml</exclude>
-          <exclude>application-prod.yml</exclude>
-          <exclude>application-priv.yml</exclude>
-        </excludes>
-        <filtering>true</filtering>
         <includes>
           <include>**/*</include>
         </includes>
-      </resource>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>application-${profile.active}.yml</include>
-          <include>spring-logback.xml</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/scripts</directory>
-        <includes>
-          <include>init-*.sh</include>
-          <include>startup-*.sh</include>
-          <include>shutdown-*.sh</include>
-        </includes>
-        <filtering>true</filtering>
-        <targetPath>${project.basedir}/target</targetPath>
-      </resource>
-      <resource>
-        <directory>src/main/docker</directory>
-        <includes>
-          <include>Dockerfile</include>
-        </includes>
-        <filtering>true</filtering>
-        <targetPath>${project.basedir}/target</targetPath>
       </resource>
     </resources>
 

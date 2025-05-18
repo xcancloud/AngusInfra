@@ -398,7 +398,8 @@ public interface BizConstant {
     String CUSTOM_ACCESS_TOKEN = "customAccessToken";
     String ACCESS_TOKEN_EXPIRED_DATE = "accessTokenExpiredDate";
 
-    Duration MAX_TOKEN_VALIDITY_PERIOD = Duration.ofDays(50 * 365);
+    // 50 * 365 ->  Incorrect datetime value: '2075-05-06 21:46:39.428757' for column 'access_token_expires_at'
+    Duration MAX_TOKEN_VALIDITY_PERIOD = Duration.ofDays(10 * 365);
 
     static Date getMaxFreeOpenDate(){
       return new Date(System.currentTimeMillis() + MAX_TOKEN_VALIDITY_PERIOD.toMillis());

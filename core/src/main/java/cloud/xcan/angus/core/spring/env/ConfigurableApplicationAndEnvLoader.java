@@ -57,7 +57,7 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
     try {
       loadLicenseFromLocal();
 
-      ServiceLoader<ConfigurableApplication>configurableServices
+      ServiceLoader<ConfigurableApplication> configurableServices
           = ServiceLoader.load(ConfigurableApplication.class);
       for (ConfigurableApplication configurableService : configurableServices) {
         configurableService.doConfigureApplication(environment, envs);

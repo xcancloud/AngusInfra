@@ -101,7 +101,7 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public static String getGMWebsite() {
     String website = EnvHelper.getString(EnvKeys.GM_WEBSITE);
-    if (isNotBlank(website) && isUrl(website)) {
+    if (isNotBlank(website) && !isUrl(website)) {
       throw new IllegalStateException(String.format("Website %s is not valid", website));
     }
     return isNotBlank(website) ? website
@@ -118,7 +118,7 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public static String getTesterWebsite() {
     String website = EnvHelper.getString(EnvKeys.TESTER_WEBSITE);
-    if (isNotBlank(website) && isUrl(website)) {
+    if (isNotBlank(website) && !isUrl(website)) {
       throw new IllegalStateException(String.format("Website %s is not valid", website));
     }
     return isNotBlank(website) ? website

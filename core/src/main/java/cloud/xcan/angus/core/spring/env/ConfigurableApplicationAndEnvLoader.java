@@ -21,7 +21,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import cloud.xcan.angus.api.pojo.Pair;
 import cloud.xcan.angus.core.app.ProductInfo;
 import cloud.xcan.angus.spec.experimental.BizConstant.AppCache;
-import cloud.xcan.angus.spec.utils.FileUtils;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -104,7 +103,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
     if (isNotBlank(website) && !isUrl(website)) {
       throw new IllegalStateException(String.format("Website %s is not valid", website));
     }
-    return isNotBlank(website) ? website
+    return isNotBlank(website)
+        ? website.startsWith("http") ? website : String.format("http://%s", website)
         : String.format("http://%s:%s", getInstallGMHost(), getInstallGMPort());
   }
 
@@ -121,7 +121,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
     if (isNotBlank(website) && !isUrl(website)) {
       throw new IllegalStateException(String.format("Website %s is not valid", website));
     }
-    return isNotBlank(website) ? website
+    return isNotBlank(website)
+        ? website.startsWith("http") ? website : String.format("http://%s", website)
         : String.format("http://%s:%s", getInstallTesterHost(), getInstallTesterPort());
   }
 

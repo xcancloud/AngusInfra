@@ -57,6 +57,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
+import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -227,6 +228,21 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     registrationBean.addUrlPatterns("/*");
     // Must be executed after RequestContextFilter(OrderedRequestContextFilter) to prevent being overwritten
     registrationBean.setOrder(REQUEST_WRAPPER_FILTER_MAX_ORDER - 100);
+    return registrationBean;
+  }
+
+  /**
+   * Depend on RequestContextHolder#getRequestAttributes(), else return null.
+   */
+  @Bean
+  public FilterRegistrationBean<RequestContextFilter> registrationRequestContextFilterBean() {
+    FilterRegistrationBean<RequestContextFilter> registrationBean = new FilterRegistrationBean<>();
+    registrationBean.setName("requestContextFilter");
+    registrationBean.setFilter(new RequestContextFilter());
+    registrationBean.setDispatcherTypes(DispatcherType.REQUEST);
+    registrationBean.addUrlPatterns("/*");
+    // Must be executed after RequestContextFilter(OrderedRequestContextFilter) to prevent being overwritten
+    registrationBean.setOrder(REQUEST_WRAPPER_FILTER_MAX_ORDER - 200);
     return registrationBean;
   }
 

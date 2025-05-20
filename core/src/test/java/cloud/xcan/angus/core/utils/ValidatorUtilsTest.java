@@ -78,4 +78,19 @@ public class ValidatorUtilsTest {
     assertTrue(ValidatorUtils.isMobile("US", "15417543010"));
     assertTrue(!ValidatorUtils.isMobile("US", "0015417543010"));
   }
+
+  @Test
+  public void testDomain() {
+    assertTrue(ValidatorUtils.isDomain("www.xcan.com"));
+    assertTrue(ValidatorUtils.isDomain("www.xcan.com"));
+    assertTrue(!ValidatorUtils.isDomain("https://www.xcan.com/"));
+    assertTrue(!ValidatorUtils.isDomain("http://www.xcan.com/"));
+    assertTrue(!ValidatorUtils.isDomain("http://127.0.0.1:8011"));
+    assertTrue(ValidatorUtils.isDomain("www.xcan.com"));
+    assertTrue(ValidatorUtils.isDomain("xcan.com"));
+    assertTrue(!ValidatorUtils.isDomain("127.0.0.1"));
+    assertTrue(!ValidatorUtils.isDomain("127.0.0.1:8011"));
+    assertTrue(!ValidatorUtils.isDomain("127.0.0.1:8011"));
+
+  }
 }

@@ -4,6 +4,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.isUserSignInToken;
 
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.sql.Types;
+import java.util.List;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementSetter;
@@ -27,7 +28,7 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
       "DELETE FROM " + TABLE_NAME + " WHERE registered_client_id = ?";
 
   private static final String REMOVE_AUTHORIZATION_BY_PRINCIPAL_SQL =
-      "DELETE FROM " + TABLE_NAME + " WHERE principal_name = ?";
+      "DELETE FROM " + TABLE_NAME + " WHERE principal_name IN ?";
 
   private static final String UPDATE_USER_ALLOW_DUPLICATE_LOGIN_SQL =
       "UPDATE " + TABLE_NAME + " SET user_allow_duplicate_login = ? WHERE id = ?";
@@ -68,7 +69,7 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
   }
 
   @Override
-  public void removeByPrincipalName(String principalName) {
+  public void removeByPrincipalName(List<String> principalName) {
     Assert.notNull(principalName, "principalName cannot be null");
     SqlParameterValue[] parameters = new SqlParameterValue[]{
         new SqlParameterValue(Types.VARCHAR, principalName)};

@@ -23,9 +23,9 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_REQUEST_AGENT;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_REQUEST_DEVICE_ID;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_REQUEST_REMOTE_ADDR;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
@@ -140,6 +140,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
   @Override
   public void destroy() {
+    super.destroy();
   }
 
   public boolean holdAuthPrincipal(
@@ -175,9 +176,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object tenantName = client.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
       Object clientSource = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
       Object clientName = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
-      Object userAgent = attributes.get(INTROSPECTION_REQUEST_AGENT);
-      Object deviceId = attributes.get(INTROSPECTION_REQUEST_DEVICE_ID);
-      Object remoteAddr = attributes.get(INTROSPECTION_REQUEST_REMOTE_ADDR);
+      Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
+      Object deviceId = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID);
+      Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
       principal.setAuthorization(getAuthorization(request))
           .setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
@@ -223,9 +224,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object defaultLanguage = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE);
       Object defaultTimeZone = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
       Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
-      Object userAgent = attributes.get(INTROSPECTION_REQUEST_AGENT);
-      Object deviceId = attributes.get(INTROSPECTION_REQUEST_DEVICE_ID);
-      Object remoteAddr = attributes.get(INTROSPECTION_REQUEST_REMOTE_ADDR);
+      Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
+      Object deviceId = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID);
+      Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
       principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
           .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())

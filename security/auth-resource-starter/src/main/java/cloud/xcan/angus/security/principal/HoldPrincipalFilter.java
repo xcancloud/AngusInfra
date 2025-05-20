@@ -24,6 +24,9 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_REQUEST_AGENT;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_REQUEST_DEVICE_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
@@ -173,14 +176,23 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object tenantName = client.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
       Object clientSource = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
       Object clientName = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
-      principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
+      Object userAgent = attributes.get(INTROSPECTION_REQUEST_AGENT);
+      Object deviceId = attributes.get(INTROSPECTION_REQUEST_DEVICE_ID);
+      Object remoteAddr = attributes.get(INTROSPECTION_REQUEST_REMOTE_ADDR);
+      principal.setAuthorization(getAuthorization(request))
+          .setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
           .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Tenant level settings should be used
           .setDefaultTimeZone(null) // TODO Tenant level settings should be used
           .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
-          .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
+          .setClientId(clientId.toString())
+          .setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setUserId(-1L).setFullName(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
-          .setUsername(clientId.toString()/*default*/).setSysAdmin(false).setToUser(false).setMainDeptId(-1L).setCountry(null);
+          .setUsername(clientId.toString()/*default*/).setSysAdmin(false)
+          .setToUser(false).setMainDeptId(-1L).setCountry(null)
+          .setDeviceId(nonNull(deviceId) ? deviceId.toString() : null)
+          .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
+          .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null);
       if (log.isDebugEnabled()) {
         log.debug("Hold client principal info : {}", principal);
       }
@@ -209,10 +221,12 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object tenantName = user.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
       Object country = user.get(INTROSPECTION_CLAIM_NAMES_COUNTRY);
       Object clientSource = user.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
-      Object deviceId = user.get(INTROSPECTION_CLAIM_NAMES_DEVICE_ID);
       Object defaultLanguage = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE);
       Object defaultTimeZone = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
       Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
+      Object userAgent = attributes.get(INTROSPECTION_REQUEST_AGENT);
+      Object deviceId = attributes.get(INTROSPECTION_REQUEST_DEVICE_ID);
+      Object remoteAddr = attributes.get(INTROSPECTION_REQUEST_REMOTE_ADDR);
       principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
           .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
@@ -227,6 +241,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setMainDeptId(nonNull(mainDeptId) ? Long.valueOf(mainDeptId.toString()) : null)
           .setCountry(nonNull(country) ? country.toString() : null)
           .setDeviceId(nonNull(deviceId) ? deviceId.toString() : null)
+          .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
+          .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
           .setPermissions(isNull(permissions) ? Collections.emptyList()
               : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()));
       if (log.isDebugEnabled()) {

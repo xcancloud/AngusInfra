@@ -26,6 +26,7 @@ import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.http.HttpMethod;
+import cloud.xcan.angus.spec.http.HttpRequestHeader;
 import cloud.xcan.angus.spec.http.HttpStatus;
 import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
@@ -154,7 +155,7 @@ public class GlobalHoldFilter implements Filter {
       return;
     }
     if (globalProperties.isDefault(path) || globalProperties.allowedPaths(path)) {
-      allowCors(response);
+      allowCors(request, response);
     }
   }
 
@@ -232,9 +233,13 @@ public class GlobalHoldFilter implements Filter {
     response.setHeader(Header.REQUEST_ID, principal.getRequestId());
   }
 
-  private void allowCors(HttpServletResponse response) {
+  private void allowCors(HttpServletRequest request, HttpServletResponse response) {
+    if (request.getHeader(HttpRequestHeader.Origin.getValue()) != null) {
+      response.setHeader(CORS_ORIGIN, request.getHeader(HttpRequestHeader.Origin.getValue()));
+    }else {
+      response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
+    }
     response.addHeader(CORS_CREDENTIALS, globalProperties.getCors().getCredentials());
-    response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
     response.setHeader(CORS_HEADERS, globalProperties.getCors().getHeaders());
     response.setHeader(CORS_METHODS, globalProperties.getCors().getMethods());
     response.setHeader(CORS_EXPOSE_HEADERS, globalProperties.getCors().getExposeHeaders());

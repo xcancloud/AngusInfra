@@ -29,7 +29,6 @@ public interface SecurityConstant {
   String INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS = "tenantRealNameStatus";
   String INTROSPECTION_CLAIM_NAMES_COUNTRY = "country";
   String INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE = "clientSource";
-  String INTROSPECTION_CLAIM_NAMES_DEVICE_ID = "deviceId";
   String INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID = "directoryId";
   String INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE = "defaultLanguage";
   String INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE = "defaultTimeZone";
@@ -46,5 +45,9 @@ public interface SecurityConstant {
   String INTROSPECTION_CLAIM_NAMES_BIZ_TAG = "bizTag";
   // String INTROSPECTION_CLAIM_NAMES_TENANT_ID = "tenantId";
   // String INTROSPECTION_CLAIM_NAMES_TENANT_NAME = "tenantName";
+
+  String INTROSPECTION_REQUEST_AGENT = "userAgent";
+  String INTROSPECTION_REQUEST_DEVICE_ID = "deviceId";
+  String INTROSPECTION_REQUEST_REMOTE_ADDR = "remoteAddr";
 
 }

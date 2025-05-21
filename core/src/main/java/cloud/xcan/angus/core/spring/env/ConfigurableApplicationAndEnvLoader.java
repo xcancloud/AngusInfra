@@ -6,6 +6,7 @@ import static cloud.xcan.angus.core.spring.env.EnvHelper.getString;
 import static cloud.xcan.angus.core.spring.env.EnvKeys.GM_ADMIN_FULL_NAME;
 import static cloud.xcan.angus.core.utils.CoreUtils.exitApp;
 import static cloud.xcan.angus.core.utils.CoreUtils.getResourceFileContent;
+import static cloud.xcan.angus.core.utils.ValidatorUtils.isDomain;
 import static cloud.xcan.angus.core.utils.ValidatorUtils.isUrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAIN_APP_SERVICES;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.DEFAULT_GM_PORT;
@@ -100,12 +101,9 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public static String getGMWebsite() {
     String website = EnvHelper.getString(EnvKeys.GM_WEBSITE);
-    if (isNotBlank(website) && !isUrl(website)) {
-      throw new IllegalStateException(String.format("Website %s is not valid", website));
-    }
     return isNotBlank(website)
-        ? website.startsWith("http") ? website : String.format("http://%s", website)
-        : String.format("http://%s:%s", getInstallGMHost(), getInstallGMPort());
+        ? (website.startsWith("http") ? website : String.format("http://%s", website))
+        : (String.format("http://%s:%s", getInstallGMHost(), getInstallGMPort()));
   }
 
   public static String getInstallGMHost() {
@@ -118,12 +116,9 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public static String getTesterWebsite() {
     String website = EnvHelper.getString(EnvKeys.TESTER_WEBSITE);
-    if (isNotBlank(website) && !isUrl(website)) {
-      throw new IllegalStateException(String.format("Website %s is not valid", website));
-    }
     return isNotBlank(website)
-        ? website.startsWith("http") ? website : String.format("http://%s", website)
-        : String.format("http://%s:%s", getInstallTesterHost(), getInstallTesterPort());
+        ? (website.startsWith("http") ? website : String.format("http://%s", website))
+        : (String.format("http://%s:%s", getInstallTesterHost(), getInstallTesterPort()));
   }
 
   public static String getInstallTesterHost() {

@@ -10,7 +10,9 @@ import cloud.xcan.angus.spec.http.HttpSender.Request;
 import cloud.xcan.angus.spec.http.HttpSender.Response;
 import cloud.xcan.angus.spec.http.HttpUrlConnectionSender;
 import cloud.xcan.angus.spec.utils.JsonUtils;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -31,19 +33,20 @@ public class HttpBroadcastInvoker {
    * @param apiPath   API endpoint path (e.g., "/api/v1/notify")
    * @param payload   Request payload
    */
-  public void broadcast(String serviceId, String apiPath, Object payload) throws Throwable {
+  public Map<String, ApiLocaleResult<?>> broadcast(
+      String serviceId, String apiPath, Object payload) throws Throwable {
     List<String> instanceUrls = serviceDiscoveryHelper.getAllInstanceUrls(serviceId);
+    Map<String, ApiLocaleResult<?>> results = new HashMap<>();
     for (String baseUrl : instanceUrls) {
       String fullUrl = baseUrl + apiPath; // API path appended to instance URL
       Response response = Request.build(fullUrl, httpSender)
           .withHeader(AuthKey.AUTHORIZATION, getAuthorization())
           .withJsonContent(JsonUtils.toJson(payload))
           .send();
+      log.info("[Success] Instance {} responded: {}", baseUrl, response.body());
       ApiLocaleResult<?> responseBody = JsonUtils.fromJson(response.body(), ApiLocaleResult.class);
-      if (nonNull(responseBody)) {
-        responseBody.orElseThrow();
-      }
-      log.info("[Success] Instance {} responded: {}", baseUrl, response);
+      results.put(baseUrl, responseBody);
     }
+    return results;
   }
 }

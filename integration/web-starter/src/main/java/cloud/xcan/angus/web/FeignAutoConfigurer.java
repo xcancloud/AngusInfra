@@ -8,8 +8,8 @@ import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
 import cloud.xcan.angus.core.fegin.FilterQueryMapEncoder;
 import cloud.xcan.angus.core.utils.GsonUtils;
 import cloud.xcan.angus.remote.ApiResult;
-import cloud.xcan.angus.remote.client.DynamicFeignClient;
-import cloud.xcan.angus.remote.client.FeignBroadcastInvoker;
+import cloud.xcan.angus.remote.client.HttpBroadcastInvoker;
+import cloud.xcan.angus.remote.client.FeignRemoteFactory;
 import cloud.xcan.angus.remote.client.ServiceDiscoveryHelper;
 import cloud.xcan.angus.security.FeignInnerApiAuthInterceptor;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -52,12 +52,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 public class FeignAutoConfigurer {
 
   @Bean
-  public DynamicFeignClient dynamicFeignClient(Client client, Encoder encoder, Decoder decoder,
+  public FeignRemoteFactory feignRemoteFactory(Client client, Encoder encoder, Decoder decoder,
       Contract contract, FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
-    return Feign.builder().client(client)
-        .encoder(encoder).decoder(decoder).contract(contract)
-        .requestInterceptor(feignInnerApiAuthInterceptor)
-        .target(DynamicFeignClient.class, "dynamic-feign-client");
+    return new FeignRemoteFactory(client, encoder, decoder, contract, feignInnerApiAuthInterceptor);
   }
 
   @Bean
@@ -66,9 +63,8 @@ public class FeignAutoConfigurer {
   }
 
   @Bean
-  public FeignBroadcastInvoker broadcastInvoker(DynamicFeignClient dynamicFeignClient,
-      ServiceDiscoveryHelper serviceDiscoveryHelper) {
-    return new FeignBroadcastInvoker(dynamicFeignClient, serviceDiscoveryHelper);
+  public HttpBroadcastInvoker httpBroadcastInvoker(ServiceDiscoveryHelper serviceDiscoveryHelper) {
+    return new HttpBroadcastInvoker(serviceDiscoveryHelper);
   }
 
   @Profile({"local", "dev", "beta"})

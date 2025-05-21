@@ -102,8 +102,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
   public static String getGMWebsite() {
     String website = EnvHelper.getString(EnvKeys.GM_WEBSITE);
     return isNotBlank(website)
-        ? website.startsWith("http") ? website : String.format("http://%s", website)
-        : String.format("http://%s:%s", getInstallGMHost(), getInstallGMPort());
+        ? (website.startsWith("http") ? website : String.format("http://%s", website))
+        : (String.format("http://%s:%s", getInstallGMHost(), getInstallGMPort()));
   }
 
   public static String getInstallGMHost() {
@@ -117,8 +117,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
   public static String getTesterWebsite() {
     String website = EnvHelper.getString(EnvKeys.TESTER_WEBSITE);
     return isNotBlank(website)
-        ? website.startsWith("http") ? website : String.format("http://%s", website)
-        : String.format("http://%s:%s", getInstallTesterHost(), getInstallTesterPort());
+        ? (website.startsWith("http") ? website : String.format("http://%s", website))
+        : (String.format("http://%s:%s", getInstallTesterHost(), getInstallTesterPort()));
   }
 
   public static String getInstallTesterHost() {

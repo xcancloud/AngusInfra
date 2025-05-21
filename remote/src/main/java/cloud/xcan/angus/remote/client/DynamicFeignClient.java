@@ -20,46 +20,41 @@ public interface DynamicFeignClient {
   /**
    * Sends a GET request to a dynamically specified URL.
    *
-   * @param url         Target endpoint URL (injected via @Param)
    * @param queryParams Request query parameters
    */
   @GetMapping
-  ApiLocaleResult<?> get(URI url, @SpringQueryMap Object queryParams);
+  ApiLocaleResult<?> get(@SpringQueryMap Object queryParams);
 
   /**
    * Sends a POST request to a dynamically specified URL.
    *
-   * @param url  Target endpoint URL (injected via @Param)
    * @param body Request payload
    */
   @PostMapping
-  ApiLocaleResult<?> post(URI url, @RequestBody Object body);
+  ApiLocaleResult<?> post( @RequestBody Object body);
 
   /**
    * Sends a PUT request to a dynamically specified URL.
    *
-   * @param url  Target endpoint URL (injected via @Param)
    * @param body Request payload
    */
   @PutMapping
-  ApiLocaleResult<?> put(URI url, @RequestBody Object body);
+  ApiLocaleResult<?> put( @RequestBody Object body);
 
   /**
    * Sends a PATCH request to a dynamically specified URL.
    *
-   * @param url  Target endpoint URL (injected via @Param)
    * @param body Request payload
    */
   @PatchMapping
-  ApiLocaleResult<?> patch(URI url, @RequestBody Object body);
+  ApiLocaleResult<?> patch(@RequestBody Object body);
 
   /**
    * Sends a DELETE request to a dynamically specified URL.
    *
-   * @param url         Target endpoint URL (injected via @Param)
    * @param queryParams Request query parameters
    */
   @DeleteMapping
-  void delete(URI url, @SpringQueryMap Object queryParams);
+  void delete( @SpringQueryMap Object queryParams);
 
 }

@@ -5,6 +5,7 @@ import cloud.xcan.angus.api.enums.PushMediaType;
 import cloud.xcan.angus.api.enums.ReceiveObjectType;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -40,6 +41,8 @@ public class Message {
 
   private Date sendDate;
 
+  private Map<String, Object> ext;
+
   public Message() {
   }
 
@@ -57,6 +60,7 @@ public class Message {
         .append("sendBy", sendBy)
         .append("sendByName", sendByName)
         .append("sendDate", sendDate)
+        .append("ext", ext)
         .toString();
   }
 
@@ -72,6 +76,7 @@ public class Message {
     setSendBy(builder.sendBy);
     setSendByName(builder.sendByName);
     setSendDate(builder.sendDate);
+    setExt(builder.ext);
   }
 
   public static Builder newBuilder() {
@@ -91,6 +96,7 @@ public class Message {
     private Long sendBy;
     private String sendByName;
     private Date sendDate;
+    private Map<String, Object> ext;
 
     private Builder() {
     }
@@ -147,6 +153,11 @@ public class Message {
 
     public Builder sendDate(Date val) {
       sendDate = val;
+      return this;
+    }
+
+    public Builder ext(Map<String, Object> val) {
+      ext = val;
       return this;
     }
 

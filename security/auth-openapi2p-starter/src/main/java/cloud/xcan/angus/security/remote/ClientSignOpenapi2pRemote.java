@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author XiaoLong Liu
  */
-@FeignClient(name = "XCAN-ANGUSGM.BOOT", url = "${xcan.cloud.gmApiUrlPrefix}")
+@FeignClient(name = "XCAN-ANGUSGM.BOOT", url = "${xcan.cloud.gmApiUrlPrefix:undefined}")
 public interface ClientSignOpenapi2pRemote {
 
   @Operation(

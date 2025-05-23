@@ -112,8 +112,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     }
     // Important: If login in with a mobile or email and there are multiple accounts,
     // if the userId is not specified, the first valid account will be used by default.
-    UserDetails user = users.stream().filter(UserDetails::isEnabled).toList()
-        .get(0); // contains no GrantedAuthority[]
+    UserDetails user = users.get(0); // contains no GrantedAuthority[]
     Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
     if (this.enableAuthorities) {
       dbAuthsSet.addAll(loadUserAuthorities(user.getUsername()));

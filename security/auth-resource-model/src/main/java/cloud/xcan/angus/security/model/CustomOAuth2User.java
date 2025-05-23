@@ -1,8 +1,10 @@
 package cloud.xcan.angus.security.model;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
 import static java.util.Objects.nonNull;
 
+import cloud.xcan.angus.api.enums.PasswordStrength;
 import cloud.xcan.angus.spec.experimental.EntitySupport;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -212,8 +214,8 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       Instant lastModifiedPasswordDate, Instant expiredDate,
       boolean deleted, String tenantId, String tenantName, String tenantRealNameStatus,
       String directoryId, String defaultLanguage, String defaultTimeZone) {
-    Assert.isTrue(username != null && !username.isEmpty() && password != null,
-        "Cannot password null or empty values to constructor");
+    Assert.isTrue(username != null && !username.isEmpty() /*&& password != null*/,
+        "Cannot username null or empty values to constructor");
 
     this.username = username;
     this.password = password;
@@ -227,7 +229,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.firstName = firstName;
     this.lastName = lastName;
     this.fullName = fullName;
-    this.passwordStrength = passwordStrength;
+    this.passwordStrength = stringSafe(passwordStrength, PasswordStrength.UNKNOWN.getValue());
     this.sysAdmin = sysAdmin;
     this.toUser = toUser;
     this.mobile = mobile;
@@ -295,12 +297,12 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   @JsonIgnore
   @Transient
-  public boolean isPasswordExpired(){
+  public boolean isPasswordExpired() {
     return !credentialsNonExpired || nonNull(password)
         && nonNull(passwordExpiredDate) && passwordExpiredDate.isBefore(Instant.now());
   }
 
-  public boolean isSetPassword(){
+  public boolean isSetPassword() {
     return this.setPassword || isNotEmpty(password);
   }
 
@@ -830,7 +832,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     }
 
     public CustomOAuth2User build() {
-      String encodedPassword = this.passwordEncoder.apply(this.password);
+      String encodedPassword = nonNull(password) ? passwordEncoder.apply(this.password) : null;
       return new CustomOAuth2User(this.username, encodedPassword, !this.disabled,
           !this.accountExpired, !this.credentialsExpired, !this.accountLocked, this.authorities,
           this.id, this.firstName, this.lastName, this.fullName, this.passwordStrength,

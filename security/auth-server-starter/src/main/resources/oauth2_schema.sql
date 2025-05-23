@@ -75,7 +75,7 @@ create table oauth2_user
     email                       varchar(100) NOT NULL DEFAULT '',
     mobile                      varchar(16)  NOT NULL DEFAULT '',
     main_dept_id                varchar(32)  NOT NULL DEFAULT '-1',
-    password_strength           varchar(20)  NOT NULL DEFAULT '',
+    password_strength           varchar(20)  DEFAULT NULL,
     password_expired_date       timestamp NULL DEFAULT NULL,
     last_modified_password_date timestamp NULL DEFAULT NULL,
     expired_date                timestamp NULL DEFAULT NULL,

@@ -49,7 +49,6 @@ import org.springframework.util.Assert;
 @Slf4j
 @Setter
 @Getter
-@Accessors(chain = true)
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> implements UserDetails,
     CredentialsContainer, Cloneable {

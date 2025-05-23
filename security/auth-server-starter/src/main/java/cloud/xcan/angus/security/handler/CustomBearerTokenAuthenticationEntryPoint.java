@@ -1,5 +1,6 @@
 package cloud.xcan.angus.security.handler;
 
+import static cloud.xcan.angus.remote.message.http.Unauthorized.M.INVALID_ACCOUNT_STATUS;
 import static cloud.xcan.angus.remote.message.http.Unauthorized.M.INVALID_PASSWORD;
 import static cloud.xcan.angus.remote.message.http.Unauthorized.M.INVALID_PASSWORD_KEY;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
@@ -15,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -84,6 +86,9 @@ public final class CustomBearerTokenAuthenticationEntryPoint implements Authenti
     } else if (authException instanceof BadCredentialsException) {
       body.put("error", INVALID_PASSWORD_KEY);
       body.put("error_description", MessageHolder.message(INVALID_PASSWORD));
+    } else if (authException instanceof AccountStatusException) {
+      body.put("error", INVALID_ACCOUNT_STATUS);
+      body.put("error_description", authException.getMessage());
     }
     String wwwAuthenticate = computeWWWAuthenticateHeaderValue(parameters);
     response.addHeader(HttpHeaders.WWW_AUTHENTICATE, wwwAuthenticate);

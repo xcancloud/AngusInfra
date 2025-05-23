@@ -147,5 +147,7 @@ public class Unauthorized extends AbstractResultMessageException {
     String INVALID_ACCESS_SECRET = "xcm.invalid.access.secret";
     String INVALID_ACCESS_SECRET_KEY = "invalid_access_secret";
 
+    String INVALID_ACCOUNT_STATUS = "invalid_account_status";
+
   }
 }

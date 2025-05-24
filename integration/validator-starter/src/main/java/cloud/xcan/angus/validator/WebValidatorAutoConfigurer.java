@@ -7,6 +7,7 @@ import jakarta.validation.executable.ExecutableValidator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
@@ -57,16 +58,17 @@ public class WebValidatorAutoConfigurer {
    */
   @Bean
   public Validator validator(ValidatorProperties validatorProperties) {
-    ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)
+    try (ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)
         .configure()
         .addProperty("hibernate.validator.fail_fast", "true")
         // Note: Testing classpath:/ in xcan-angus is not supported！ Supported in spring MessageSource?
         .messageInterpolator(new ResourceBundleMessageInterpolator(
-            new AggregateResourceBundleLocator(List.of(validatorProperties.getAllI18ns()).stream()
+            new AggregateResourceBundleLocator(Stream.of(validatorProperties.getAllI18ns())
                 .map(x -> x.replaceFirst("classpath:/", "")).collect(
                     Collectors.toList()))))
-        .buildValidatorFactory();
-    return validatorFactory.getValidator();
+        .buildValidatorFactory()) {
+      return validatorFactory.getValidator();
+    }
   }
 
   @Primary
@@ -82,9 +84,8 @@ public class WebValidatorAutoConfigurer {
 
   @Bean
   @ConditionalOnMissingBean
-  public MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
-      @Lazy Validator validator,
-      ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
+  public static MethodValidationPostProcessor methodValidationPostProcessor(Environment environment,
+      @Lazy Validator validator, ObjectProvider<MethodValidationExcludeFilter> excludeFilters) {
     FilteredMethodValidationPostProcessor processor = new FilteredMethodValidationPostProcessor(
         excludeFilters.orderedStream());
     boolean proxyTargetClass = environment

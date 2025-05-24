@@ -591,8 +591,11 @@ public interface BizConstant {
     String ENV_FILES_KEY = "ENV_FILES";
     String COMMON_ENV_FILE = ".common.env";
 
+    String ENV_NAME_FORMAT = ".%s.env";
     String PRIVATE_ENV_NAME = ".priv.env";
     String PRIVATE_STATIC_ENV_NAME = "env.priv";
+
+    List<String> ENV_PROFILES = List.of("local", "dev", "prod", "priv");
 
     String DEFAULT_ADMIN_USER_ID = "1000000";
     String DEFAULT_ADMIN_USERNAME = "admin";

@@ -6,7 +6,11 @@ import static cloud.xcan.angus.core.spring.env.EnvKeys.APP_NAME;
 import static cloud.xcan.angus.core.spring.env.EnvKeys.APP_VERSION;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.COMMON_ENV_FILE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.ENV_FILES_KEY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.ENV_NAME_FORMAT;
+import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.ENV_PROFILES;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.PRIVATE_ENV_NAME;
+import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import cloud.xcan.angus.api.enums.EditionType;
@@ -20,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -65,6 +70,7 @@ import org.springframework.core.io.ResourceLoader;
  * @see PropertySourcesPlaceholderConfigurer
  * @see DefaultEarliestEnvLoader
  */
+@Slf4j
 public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ordered {
 
   private final ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -77,6 +83,7 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
   public static String appName;
   public static String appVersion;
   public static EditionType appEdition;
+  private String[] activeProfiles;
 
   public static ProductInfo productInfo;
 
@@ -118,12 +125,14 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
     appName = environment.getProperty(APP_NAME, "");
     appVersion = environment.getProperty(APP_VERSION, "");
     appEdition = EditionType.valueOf(environment.getProperty(APP_EDITION, COMMUNITY.getValue()));
+    activeProfiles = environment.getActiveProfiles();
   }
 
   public void loadCommonEnvFile() {
     String searchDir = new SpringAppDirUtils().getConfDir();
     Path envPath = Paths.get(searchDir, COMMON_ENV_FILE);
     if (Files.exists(envPath)) {
+      System.out.printf("Loading common env file %s\n", envPath.getFileName().toString());
       loadEnvFile(envPath);
     }
   }
@@ -131,13 +140,33 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
   public void loadAdditionalEnvFiles() {
     List<String> filesToLoad = new ArrayList<>();
 
+    String envFiles = envs.getProperty(ENV_FILES_KEY, "");
+    if (isNotBlank(envFiles)) {
+      List<String> envs = Arrays.stream(envFiles.split(","))
+          .map(String::trim).filter(s -> !s.isEmpty()).toList();
+      for (String env : envs) {
+        boolean isProfile = false;
+        for (String profile : ENV_PROFILES) {
+          if (env.contains(profile)) {
+            isProfile = true;
+            break;
+          }
+        }
+        if (!isProfile) {
+          filesToLoad.add(env);
+        }
+      }
+    }
+
     if (appEdition.isPrivatization()) {
       filesToLoad.add(PRIVATE_ENV_NAME);
-    } else {
-      String envFiles = envs.getProperty(ENV_FILES_KEY, "");
-      if (isNotBlank(envFiles)) {
-        filesToLoad.addAll(Arrays.stream(envFiles.split(","))
-            .map(String::trim).filter(s -> !s.isEmpty()).toList());
+    } else if (nonNull(activeProfiles)) {
+      for (String activeProfile : activeProfiles) {
+        if (ENV_PROFILES.contains(activeProfile)) {
+          String profileEnv = format(ENV_NAME_FORMAT, activeProfile);
+          filesToLoad.add(profileEnv);
+          break;
+        }
       }
     }
 
@@ -145,17 +174,10 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
     for (String file : filesToLoad) {
       Path filePath = Paths.get(searchDir, file);
       if (Files.exists(filePath)) {
+        System.out.printf("Loading env file %s\n", filePath.getFileName().toString());
         loadEnvFile(filePath);
         break;
       }
-    }
-  }
-
-  public void loadPrivateEnvFile() {
-    String searchDir = new SpringAppDirUtils().getConfDir();
-    Path envPath = Paths.get(searchDir, PRIVATE_ENV_NAME);
-    if (Files.exists(envPath)) {
-      loadEnvFile(envPath);
     }
   }
 

@@ -47,8 +47,8 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
     // Avoid setting `X-Frame-Options: deny` in the HTTP response header,
     // which causes the browser to reject the page from being loaded within <frame></frame>
     http.headers(headers -> headers
-            .frameOptions(FrameOptionsConfig::sameOrigin)
-        //.frameOptions(FrameOptionsConfig::disable)
+        // .frameOptions(FrameOptionsConfig::sameOrigin)
+        .frameOptions(FrameOptionsConfig::disable)
     );
     return http.build();
   }

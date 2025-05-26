@@ -265,6 +265,9 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
   }
 
+  /**
+   * Fix: Browser auto write `Priority: u=0` in header, and conflicts with execution, use cases, and task list queries.
+   */
   @Override
   public void addFormatters(FormatterRegistry registry) {
     registry.addConverter(new StringToPriorityConverter());

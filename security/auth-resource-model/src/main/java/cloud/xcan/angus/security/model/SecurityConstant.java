@@ -1,8 +1,10 @@
 package cloud.xcan.angus.security.model;
 
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.PRINCIPAL;
+
 public interface SecurityConstant {
 
-  String INTROSPECTION_CLAIM_NAMES_PRINCIPAL = "principal";
+  String INTROSPECTION_CLAIM_NAMES_PRINCIPAL = PRINCIPAL;
   String INTROSPECTION_CLAIM_NAMES_PERMISSION = "permissions";
   String INTROSPECTION_CLAIM_NAMES_GRANT_TYPE = "grant_type";
 

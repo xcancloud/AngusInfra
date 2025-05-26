@@ -19,22 +19,22 @@ public class VueRouterFilter implements Filter {
 
     // Forward to index.html if the request is not a static resource
     String uri = request.getRequestURI();
-    if (!uri.startsWith("/statics") // For default forward
-        // For vue forward
-        && !uri.startsWith("/assets") && !uri.startsWith("/meta")
-        && !uri.startsWith("/iconfont") && !uri.startsWith("/favicon.ico")
+    if (uri.startsWith("/statics") || uri.startsWith("/ws") // For default forward
         // For api forward, Note: /apis route Used by web front-end
-        && !uri.startsWith("/api/") && !uri.startsWith("/innerapi/")
-        && !uri.startsWith("/pubapi/") && !uri.startsWith("/openapi2p/")
-        && !uri.startsWith("/pubview/") && !uri.startsWith("/actuator")
+        || uri.startsWith("/api/") || uri.startsWith("/innerapi/")
+        || uri.startsWith("/pubapi/") || uri.startsWith("/openapi2p/")
+        || uri.startsWith("/pubview/") || uri.startsWith("/actuator")
+        // For vue forward
+        || uri.startsWith("/assets") || uri.startsWith("/meta")
+        || uri.startsWith("/iconfont") || uri.equals("/favicon.ico")
         // For swagger forward
-        && !uri.startsWith("/swagger") && !uri.startsWith("/eureka") && !uri.startsWith("/webjars")
-        && !uri.startsWith("/v3/api-docs") && !uri.startsWith("/v2/api-docs")
+        || uri.startsWith("/swagger") || uri.startsWith("/eureka") || uri.startsWith("/webjars")
+        || uri.startsWith("/v3/api-docs") || uri.startsWith("/v2/api-docs")
     ) {
+      chain.doFilter(req, res);
+    } else {
       String indexPage = "/index.html";
       request.getRequestDispatcher(indexPage).forward(request, response);
-    } else {
-      chain.doFilter(req, res);
     }
   }
 

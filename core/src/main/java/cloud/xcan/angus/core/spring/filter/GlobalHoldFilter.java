@@ -165,7 +165,7 @@ public class GlobalHoldFilter implements Filter {
 
     // Retrieve and parse cookie value.
     Cookie cookie = WebUtils.getCookie(request, LOCALE_COOKIE_NAME);
-    if (nonNull(cookie)){
+    if (nonNull(cookie)) {
       String value = cookie.getValue();
       String localePart = value;
       String timeZonePart = null;
@@ -236,7 +236,7 @@ public class GlobalHoldFilter implements Filter {
   private void allowCors(HttpServletRequest request, HttpServletResponse response) {
     if (request.getHeader(HttpRequestHeader.Origin.getValue()) != null) {
       response.setHeader(CORS_ORIGIN, request.getHeader(HttpRequestHeader.Origin.getValue()));
-    }else {
+    } else {
       response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
     }
     response.addHeader(CORS_CREDENTIALS, globalProperties.getCors().getCredentials());

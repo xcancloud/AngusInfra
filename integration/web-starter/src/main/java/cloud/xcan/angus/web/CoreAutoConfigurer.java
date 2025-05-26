@@ -22,6 +22,7 @@ import cloud.xcan.angus.core.exception.DefaultGlobalExceptionAdvice;
 import cloud.xcan.angus.core.fegin.interceptor.FeignRequestInterceptor;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.core.spring.converter.StringToPriorityConverter;
 import cloud.xcan.angus.core.spring.filter.GlobalHoldFilter;
 import cloud.xcan.angus.core.spring.filter.GlobalProperties;
 import cloud.xcan.angus.core.spring.security.PrincipalPermissionService;
@@ -53,6 +54,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -263,6 +265,10 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
   }
 
+  @Override
+  public void addFormatters(FormatterRegistry registry) {
+    registry.addConverter(new StringToPriorityConverter());
+  }
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {

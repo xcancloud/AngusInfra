@@ -234,11 +234,12 @@ public class GlobalHoldFilter implements Filter {
   }
 
   private void allowCors(HttpServletRequest request, HttpServletResponse response) {
-    if (request.getHeader(HttpRequestHeader.Origin.getValue()) != null) {
-      response.setHeader(CORS_ORIGIN, request.getHeader(HttpRequestHeader.Origin.getValue()));
-    }else {
-      response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
-    }
+    //    if (request.getHeader(HttpRequestHeader.Origin.getValue()) != null) {
+    //      response.setHeader(CORS_ORIGIN, request.getHeader(HttpRequestHeader.Origin.getValue()));
+    //    }else {
+    //      response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
+    //    }
+    response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
     response.addHeader(CORS_CREDENTIALS, globalProperties.getCors().getCredentials());
     response.setHeader(CORS_HEADERS, globalProperties.getCors().getHeaders());
     response.setHeader(CORS_METHODS, globalProperties.getCors().getMethods());

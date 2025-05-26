@@ -8,7 +8,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class MutableHttpServletRequest extends HttpServletRequestWrapper {
 
   private final Map<String, String> customHeaders;
@@ -24,7 +26,7 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
   public MutableHttpServletRequest(HttpServletRequest request) {
     super(request);
     this.customHeaders = new HashMap<>();
-    this.headersToRemove = Set.of("Priority");
+    this.headersToRemove = Set.of("Priority", "priority");
   }
 
   public void putHeader(String name, String value) {
@@ -35,6 +37,7 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
   public String getHeader(String name) {
     // Return null to indicate that the header field does not exist
     if (headersToRemove.contains(name)) {
+      log.info("Removing incompatible headers for the backend '{}'", name);
       return null;
     }
 
@@ -49,6 +52,7 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
   @Override
   public Enumeration<String> getHeaders(String name) {
     if (headersToRemove.contains(name)) {
+      log.info("Removing incompatible headers for the backend '{}'", name);
       return Collections.emptyEnumeration();
     }
 
@@ -66,7 +70,9 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
     Enumeration<String> originalNames = super.getHeaderNames();
     while (originalNames.hasMoreElements()) {
       String name = originalNames.nextElement();
-      if (!headersToRemove.contains(name)) {
+      if (headersToRemove.contains(name)) {
+        log.info("Removing incompatible headers for the backend '{}'", name);
+      }else {
         filteredNames.add(name);
       }
     }

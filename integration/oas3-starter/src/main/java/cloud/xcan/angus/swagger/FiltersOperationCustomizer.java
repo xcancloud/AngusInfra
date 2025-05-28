@@ -17,13 +17,15 @@ public class FiltersOperationCustomizer implements OperationCustomizer {
 
   @Override
   public Operation customize(Operation operation, HandlerMethod handlerMethod) {
-      if (operation.getParameters() == null) return operation;
+    if (operation.getParameters() == null) {
+      return operation;
+    }
 
     List<Parameter> parameters = new ArrayList<>();
     for (Parameter param : operation.getParameters()) {
-      if ("filters".equals(param.getName()) && isListOfSearchCriteria(handlerMethod)) {
+      if ("filters".equals(param.getName())) {
         parameters.addAll(generateFilterParameters());
-      }else {
+      } else {
         parameters.add(param);
       }
     }

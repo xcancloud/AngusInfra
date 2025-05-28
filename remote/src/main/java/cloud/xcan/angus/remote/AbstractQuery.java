@@ -9,6 +9,11 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringValue;
 
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
@@ -21,6 +26,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Getter
 @Setter
@@ -39,7 +45,9 @@ public abstract class AbstractQuery extends CommDto implements Serializable {
   protected abstract OrderSort getDefaultOrderSort();
 
   @Size(max = MAX_FILTER_SIZE)
-  @Schema(description = "Filter conditions, Max 20")
+  @Parameter(style = ParameterStyle.FORM, explode = Explode.TRUE,
+      description = "Dynamic filter and search conditions, max " + MAX_FILTER_SIZE,
+      array = @ArraySchema(schema = @Schema(type = "object", implementation = SearchCriteria.class)))
   private List<SearchCriteria> filters = new ArrayList<>();
 
   public boolean containsKey(String key) {

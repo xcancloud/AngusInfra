@@ -7,6 +7,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SC
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
+import cloud.xcan.angus.remote.AbstractQuery;
 import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
@@ -20,6 +21,7 @@ import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Locale;
 import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;
@@ -54,6 +56,11 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
+  public FiltersOperationCustomizer filtersOperationCustomizer() {
+    return new FiltersOperationCustomizer();
+  }
+
+  @Bean
   public OpenAPI openAPI(SpringDocConfigProperties doc) {
     OpenAPI openAPI = doc.getOpenApi();
     Assert.assertNotNull(openAPI, "OpenAPI config should not be null");
@@ -61,7 +68,8 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public GroupedOpenApi userApi(ApplicationInfo applicationInfo) {
+  public GroupedOpenApi userApi(ApplicationInfo applicationInfo,
+      FiltersOperationCustomizer filtersOperationCustomizer) {
     GroupedOpenApi openApi;
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
@@ -72,6 +80,7 @@ public class OpenApiAutoConfigurer {
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
       // Cloud service edition
@@ -82,6 +91,7 @@ public class OpenApiAutoConfigurer {
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
     return openApi;
@@ -90,29 +100,32 @@ public class OpenApiAutoConfigurer {
   @Bean
   @Conditional(CloudServiceEditionCondition.class)
   // Private version does not display inner API docs
-  public GroupedOpenApi innerApi() {
+  public GroupedOpenApi innerApi(FiltersOperationCustomizer filtersOperationCustomizer) {
     return GroupedOpenApi.builder()
         .displayName("/innerapi (Inner System Api Document)")
         .group("Inner")
         .pathsToMatch("/innerapi/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
 
   @Bean
   @Conditional(CloudServiceEditionCondition.class)
   // Private version does not display inner API docs
-  public GroupedOpenApi open2pApi() {
+  public GroupedOpenApi open2pApi(FiltersOperationCustomizer filtersOperationCustomizer) {
     return GroupedOpenApi.builder()
         .displayName("/openapi2p (Inner System Api Document)")
         .group("Open2p")
         .pathsToMatch("/openapi2p/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
 
   @Bean
-  public GroupedOpenApi publicApi(ApplicationInfo applicationInfo) {
+  public GroupedOpenApi publicApi(ApplicationInfo applicationInfo,
+      FiltersOperationCustomizer filtersOperationCustomizer) {
     GroupedOpenApi openApi;
     if (applicationInfo.isPrivateEdition()) {
       // Private edition
@@ -122,6 +135,7 @@ public class OpenApiAutoConfigurer {
           .pathsToMatch("/pubapi/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
+          .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
       // Cloud service edition
@@ -131,6 +145,7 @@ public class OpenApiAutoConfigurer {
           .pathsToMatch("/pubapi/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
+          .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
     return openApi;
@@ -143,7 +158,6 @@ public class OpenApiAutoConfigurer {
           .isAnnotationPresent(PrivateEdition.class);
       // Check method level annotation
       boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(PrivateEdition.class);
-
       return !hasClassAnnotation && !hasMethodAnnotation;
     };
   }
@@ -166,7 +180,8 @@ public class OpenApiAutoConfigurer {
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_HTTP_NAME))
         // Use OAuth2 opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_OAUTH2_NAME))
-        .getComponents().addSecuritySchemes(SECURITY_SCHEME_USER_HTTP_NAME,
+        .getComponents()
+        .addSecuritySchemes(SECURITY_SCHEME_USER_HTTP_NAME,
             new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
@@ -193,7 +208,8 @@ public class OpenApiAutoConfigurer {
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_HTTP_NAME))
         // Use OAuth2 opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_OAUTH2_NAME))
-        .getComponents().addSecuritySchemes(SECURITY_SCHEME_SYS_HTTP_NAME,
+        .getComponents()
+        .addSecuritySchemes(SECURITY_SCHEME_SYS_HTTP_NAME,
             new SecurityScheme()
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")

@@ -20,10 +20,10 @@ public enum SupportedLanguage implements EnumMessage<String> {
   }
 
   public Locale toLocale() {
-    return switch (this) {
-      case en -> Locale.ENGLISH;
-      default -> Locale.CHINA;
-    };
+    if (this == SupportedLanguage.en) {
+      return Locale.ENGLISH;
+    }
+    return Locale.CHINA;
   }
 
   public static boolean contain(String value) {

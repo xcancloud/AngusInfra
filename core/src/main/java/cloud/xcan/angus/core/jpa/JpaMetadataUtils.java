@@ -1,5 +1,6 @@
 package cloud.xcan.angus.core.jpa;
 
+import cloud.xcan.angus.spec.utils.ReflectionUtils;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
@@ -37,8 +38,9 @@ public class JpaMetadataUtils {
     // 1. Check @Column annotation
     Field javaField;
     try {
-      javaField = entityClass.getDeclaredField(fieldName);
-    } catch (NoSuchFieldException e) {
+      // Will searches all superclasses
+      javaField = ReflectionUtils.findField(entityClass, fieldName);
+    } catch (Exception e) {
       return null;
     }
     Column columnAnnotation = javaField.getAnnotation(Column.class);

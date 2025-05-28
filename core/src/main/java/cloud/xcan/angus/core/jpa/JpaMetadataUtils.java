@@ -36,11 +36,9 @@ public class JpaMetadataUtils {
    */
   public static String getColumnName(EntityManager em, Class<?> entityClass, String fieldName) {
     // 1. Check @Column annotation
-    Field javaField;
-    try {
-      // Will searches all superclasses
-      javaField = ReflectionUtils.findField(entityClass, fieldName);
-    } catch (Exception e) {
+    // Will searches all superclasses
+    Field javaField = ReflectionUtils.findField(entityClass, fieldName);
+    if (javaField == null) {
       return null;
     }
     Column columnAnnotation = javaField.getAnnotation(Column.class);

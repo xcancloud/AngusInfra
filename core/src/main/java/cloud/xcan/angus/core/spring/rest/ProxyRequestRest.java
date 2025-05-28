@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/pubapi/v1/proxy")
 public class ProxyRequestRest {
 
-  @Operation(description = "Call other servers and return the results directly to the client", operationId = "proxy:request:pub")
+  @Operation(summary = "Call other servers and return the results directly to the client", operationId = "proxy:request:pub")
   @RequestMapping(value = "/**")
   public void proxy(HttpServletRequest request, HttpServletResponse response)
       throws IOException, URISyntaxException {

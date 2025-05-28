@@ -42,7 +42,7 @@ public class Var implements Serializable {
   //  private static final int PROPERTY_productSignature = 28;
   //  private static final int PROPERTY_productName = 29;
   //  private static final int PROPERTY_productSignatureArtifact = 30;
-  //  private static final int PROPERTY_mainLcsNo = 31;
+  //  private static final int PROPERTY_mainLicenseNo = 31;
 
   public static String var1 = new Oar1(new long[]{0x95398B05818E7424L, 0xCA0255B0B77EDDD1L})
       .toString() /* => "cam" */;

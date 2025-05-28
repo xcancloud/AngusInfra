@@ -6,6 +6,8 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.validator.StringEnums;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -38,23 +40,13 @@ public class SearchCriteria implements Serializable {
   public static final List<String> IGNORE_FIELDS = List
       .of(FILERS_KEY, PAGE_NO_KEY, PAGE_SIZE_KEY, INFO_SCOPE_KEY);
 
-  /**
-   * Filter field
-   */
   @Length(max = MAX_NAME_LENGTH)
-  @Schema(description = "Filter field")
+  @Schema(description = "Filter field name")
   private String key;
 
-  /**
-   * Field value
-   */
   @Schema(description = "Filter value")
   private Object value;
 
-  /**
-   * Comparison condition
-   */
-  @StringEnums(enumClass = SearchOperation.class)
   @Schema(description = "Filter condition")
   private SearchOperation op;
 

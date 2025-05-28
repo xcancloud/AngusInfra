@@ -18,8 +18,6 @@ public class SwaggerUIAutoConfigurer {
   public static final String[] DEFAULT_SUBMIT_METHODS = new String[]{
       "get", "put", "post", "delete", "options", "head", "patch", "trace"};
 
-
-
   public SwaggerUIAutoConfigurer() {
   }
 
@@ -41,5 +39,10 @@ public class SwaggerUIAutoConfigurer {
     configParameters.setSupportedSubmitMethods(List.of(DEFAULT_SUBMIT_METHODS));
     return configParameters;
   }
+
+//  @Bean
+//  public OperationCustomizer filtersOperationCustomizer() {
+//    return new FiltersOperationCustomizer();
+//  }
 
 }

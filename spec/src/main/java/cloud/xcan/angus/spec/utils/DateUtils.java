@@ -7,6 +7,7 @@ import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT_4_P;
 import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT_P;
 import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_DATE_FORMAT;
 import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_DATE_TIME_FORMAT;
+import static java.util.Objects.nonNull;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -159,4 +160,7 @@ public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils 
     return dateTime.toLocalDateTime();
   }
 
+  public static Instant asInstant(LocalDateTime date) {
+    return nonNull(date) ? date.atZone(ZoneId.systemDefault()).toInstant() : null;
+  }
 }

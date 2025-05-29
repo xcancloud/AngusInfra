@@ -111,7 +111,20 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
     }
 
     String clientSecret = clientAuthentication.getCredentials().toString();
-    if (!this.passwordEncoder.matches(clientSecret, registeredClient.getClientSecret())) {
+
+    // When generating user or system access tokens using encrypted client secret internally
+    if (clientSecret.startsWith("{") && !clientSecret.equals(registeredClient.getClientSecret())) {
+      if (this.logger.isDebugEnabled()) {
+        this.logger.debug(LogMessage.format(
+            "Invalid request: client_secret does not match" + " for registered client '%s'",
+            registeredClient.getId()));
+      }
+      throwInvalidClient(OAuth2ParameterNames.CLIENT_SECRET);
+    }
+
+    // When generating access tokens using not encrypted client secret by user
+    if (!clientSecret.startsWith("{")
+        && !this.passwordEncoder.matches(clientSecret, registeredClient.getClientSecret())) {
       if (this.logger.isDebugEnabled()) {
         this.logger.debug(LogMessage.format(
             "Invalid request: client_secret does not match" + " for registered client '%s'",

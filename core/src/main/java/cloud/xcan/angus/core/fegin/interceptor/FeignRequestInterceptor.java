@@ -50,7 +50,7 @@ public class FeignRequestInterceptor implements RequestInterceptor {
     }
 
     // 2. relay principal
-    Principal principal = PrincipalContext.tl.get();
+    Principal principal = PrincipalContext.threadLocal.get();
     if (principal != null) {
       ApiType apiType = ApiType.findByUri(template.path());
       if (apiType.isUserTypeApi()) {

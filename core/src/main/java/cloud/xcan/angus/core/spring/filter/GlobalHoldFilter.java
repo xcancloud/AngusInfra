@@ -95,19 +95,23 @@ public class GlobalHoldFilter implements Filter {
       return;
     }
 
+    boolean firstRequest = isEmpty(request.getHeader(Header.REQUEST_ID));
+
+    MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
+    String requestId = getAndSetRequestId(mutableRequest); // Request id is required for oauth2 generate user token
     Principal principal = PrincipalContext.createIfAbsent();
+    principal.setRequestId(requestId);
+
     try {
       if (path.startsWith("/oauth2") || path.startsWith("/swagger")
           || path.startsWith("/eureka") || "/".equals(path)) {
-        filterChain.doFilter(servletRequest, servletResponse);
+        filterChain.doFilter(mutableRequest, servletResponse);
         return;
       }
 
-      MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
-
       holdAndInitLocale(request);
 
-      holdPrincipal(request, path, principal, mutableRequest);
+      holdPrincipal(request, path, principal);
       PrincipalContext.set(principal);
 
       // For /innerapi
@@ -143,6 +147,9 @@ public class GlobalHoldFilter implements Filter {
         log.debug("Remove MDC requestId : {}", MDC.get(AuthKey.REQUEST_ID));
       }
       MDC.remove(AuthKey.REQUEST_ID);
+      if (firstRequest){
+        PrincipalContext.remoteRequestAttribute();
+      }
     }
   }
 
@@ -205,10 +212,8 @@ public class GlobalHoldFilter implements Filter {
     SdfLocaleHolder.setTimeZone(timeZone);
   }
 
-  private void holdPrincipal(HttpServletRequest request, String path, Principal principal,
-      MutableHttpServletRequest mutableRequest) {
-    principal.setRequestId(getAndSetRequestId(mutableRequest))
-        .setRemoteAddress(request.getRemoteAddr())
+  private void holdPrincipal(HttpServletRequest request, String path, Principal principal) {
+    principal.setRemoteAddress(request.getRemoteAddr())
         .setUserAgent(getUserAgent(request))
         .setRequestAcceptTime(LocalDateTime.now())
         .setServiceCode(applicationInfo.getArtifactId())

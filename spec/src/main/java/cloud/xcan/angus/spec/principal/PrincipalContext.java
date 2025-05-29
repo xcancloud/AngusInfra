@@ -1,6 +1,7 @@
 package cloud.xcan.angus.spec.principal;
 
 
+import static cloud.xcan.angus.spec.experimental.Assert.assertNotEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.enums.ApiType;
@@ -10,11 +11,14 @@ import cloud.xcan.angus.api.enums.Platform;
 import cloud.xcan.angus.api.enums.ResourceAclType;
 import cloud.xcan.angus.spec.annotations.DoInFuture;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PrincipalContext {
 
@@ -23,29 +27,31 @@ public class PrincipalContext {
    * its own value inside a ThreadLocal, the InheritableThreadLocal grants access to values to a
    * thread and all child threads created by that thread.
    */
-  public static ThreadLocal<Principal> tl = new InheritableThreadLocal<>();
+  public static ThreadLocal<Principal> threadLocal = new InheritableThreadLocal<>();
+
+  public static Map<String, Map<String, Object>> request = new ConcurrentHashMap<>();
 
   public static void set(Principal principal) {
-    tl.set(principal);
+    threadLocal.set(principal);
   }
 
   public static Principal create() {
     Principal principal = new Principal();
-    tl.set(principal);
+    threadLocal.set(principal);
     return principal;
   }
 
-  public static Principal createIfAbsent(){
-    Principal principal = tl.get();
+  public static Principal createIfAbsent() {
+    Principal principal = threadLocal.get();
     if (principal == null) {
       principal = new Principal();
-      tl.set(principal);
+      threadLocal.set(principal);
     }
     return principal;
   }
 
   public static Principal get() {
-    Principal principal = tl.get();
+    Principal principal = threadLocal.get();
     if (principal == null) {
       principal = new Principal(); // Only temp principal
       // tl.set(principal);
@@ -54,7 +60,7 @@ public class PrincipalContext {
   }
 
   public static void remove() {
-    tl.remove();
+    threadLocal.remove();
   }
 
   /**
@@ -223,5 +229,45 @@ public class PrincipalContext {
     Principal principal = get();
     principal.getExtensions().put(key, values);
     return principal.getExtensions();
+  }
+
+  public static void setRequestAttribute(String key, Object value) {
+    String requestId = getRequestId();
+    assertNotEmpty(requestId, "requestId is not set");
+    if (request.containsKey(requestId)) {
+      request.get(requestId).put(key, value);
+    } else {
+      Map<String, Object> attributes = new HashMap<>();
+      attributes.put(key, value);
+      request.put(requestId, attributes);
+    }
+  }
+
+  public static Object getRequestAttribute(String key) {
+    String requestId = getRequestId();
+    assertNotEmpty(requestId, "requestId is not set");
+    return request.containsKey(requestId) ? request.get(requestId).get(key) : null;
+  }
+
+  public static Boolean getRequestBooleanAttribute(String key) {
+    String requestId = getRequestId();
+    assertNotEmpty(requestId, "requestId is not set");
+    return request.containsKey(requestId) ? (Boolean) request.get(requestId).get(key) : null;
+  }
+
+  public static String getRequestStringAttribute(String key) {
+    String requestId = getRequestId();
+    assertNotEmpty(requestId, "requestId is not set");
+    return request.containsKey(requestId) ? (String) request.get(requestId).get(key) : null;
+  }
+
+  public static Instant getRequestInstantAttribute(String key) {
+    String requestId = getRequestId();
+    assertNotEmpty(requestId, "requestId is not set");
+    return request.containsKey(requestId) ? (Instant) request.get(requestId).get(key) : null;
+  }
+
+  public static void remoteRequestAttribute() {
+    request.remove(getRequestId());
   }
 }

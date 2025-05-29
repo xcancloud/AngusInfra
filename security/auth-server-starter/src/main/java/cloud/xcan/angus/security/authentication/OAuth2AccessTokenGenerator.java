@@ -3,10 +3,11 @@ package cloud.xcan.angus.security.authentication;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.ACCESS_TOKEN_EXPIRED_DATE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.MAX_TOKEN_VALIDITY_PERIOD;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestBooleanAttribute;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestInstantAttribute;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Collections;
@@ -73,12 +74,12 @@ public final class OAuth2AccessTokenGenerator implements OAuth2TokenGenerator<OA
 
     // Customizing the expiration time of user access tokens.
     Instant expiresAt;
-    Object customAccessToken = PrincipalContext.getExtension(CUSTOM_ACCESS_TOKEN);
-    if (nonNull(customAccessToken) && Boolean.parseBoolean(customAccessToken.toString())) {
-      Object accessTokenExpiredDate = PrincipalContext.getExtension(ACCESS_TOKEN_EXPIRED_DATE);
+    Boolean customAccessToken = getRequestBooleanAttribute(CUSTOM_ACCESS_TOKEN);
+    if (nonNull(customAccessToken) && customAccessToken) {
+      Instant accessTokenExpiredDate = getRequestInstantAttribute(ACCESS_TOKEN_EXPIRED_DATE);
       // The token is permanently valid when the value is null.
       expiresAt = isNull(accessTokenExpiredDate)
-          ? issuedAt.plus(MAX_TOKEN_VALIDITY_PERIOD) : (Instant) accessTokenExpiredDate;
+          ? issuedAt.plus(MAX_TOKEN_VALIDITY_PERIOD) : accessTokenExpiredDate;
     } else {
       expiresAt = issuedAt.plus(registeredClient.getTokenSettings().getAccessTokenTimeToLive());
     }

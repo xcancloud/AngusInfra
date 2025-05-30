@@ -481,6 +481,9 @@ public interface BizConstant {
     String COOKIE = "Cookie";
 
     String USER_AGENT = "User-Agent";
+    String REMOTE_ADDR_IN_QUERY = "remoteAddr";
+    String REQUEST_ID_IN_QUERY = "requestId";
+    String DEVICE_ID_IN_QUERY = "deviceId";
 
     String CORS_CREDENTIALS = "Access-Control-Allow-Credentials";
     String CORS_ORIGIN = "Access-Control-Allow-Origin";

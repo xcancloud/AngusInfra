@@ -2,6 +2,9 @@ package cloud.xcan.angus.security.introspection;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.AUTHORITY_SCOPE_PREFIX;
 
+import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -106,6 +109,7 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
   private HttpHeaders requestHeaders() {
     HttpHeaders headers = new HttpHeaders();
     headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+    headers.add(Header.REQUEST_ID, PrincipalContext.getRequestId());
     return headers;
   }
 

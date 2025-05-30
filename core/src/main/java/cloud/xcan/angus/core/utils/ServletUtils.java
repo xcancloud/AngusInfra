@@ -74,6 +74,14 @@ public class ServletUtils {
     return StringUtils.isBlank(userAgent) ? "" : userAgent;
   }
 
+  public static String getDeviceId(HttpServletRequest request) {
+    String deviceId = request.getHeader(Header.AUTH_DEVICE_ID);
+    if (StringUtils.isBlank(deviceId)) {
+      deviceId = request.getParameter(Header.DEVICE_ID_IN_QUERY);
+    }
+    return StringUtils.isBlank(deviceId) ? "" : deviceId;
+  }
+
   public static String getAuthServiceCode(HttpServletRequest request) {
     String serviceCode = request.getParameter(AuthKey.AUTH_SERVICE_CODE);
     return StringUtils.isBlank(serviceCode) ? AuthKey.DEFAULT_AUTH_SERVICE_CODE

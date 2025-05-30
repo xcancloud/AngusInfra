@@ -41,13 +41,19 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTH_DEVICE_ID;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.DEVICE_ID_IN_QUERY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_IN_QUERY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REQUEST_ID_IN_QUERY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.http.HttpRequestHeader.User_Agent;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestStringAttribute;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
 import static org.springframework.web.context.request.RequestContextHolder.getRequestAttributes;
 
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URL;
 import java.security.Principal;
@@ -241,12 +247,13 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE, user.getDefaultTimeZone());
 
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
+   String requestId = request.getHeader(Header.REQUEST_ID);
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT,
-        stringSafe(request.getHeader(User_Agent.getValue())));
+        stringSafe(getRequestStringAttribute(requestId, USER_AGENT)));
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID,
-        stringSafe(request.getHeader(AUTH_DEVICE_ID)));
+        stringSafe(getRequestStringAttribute(requestId, DEVICE_ID_IN_QUERY)));
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR,
-        stringSafe(request.getRemoteAddr()));
+        stringSafe(getRequestStringAttribute(requestId, REMOTE_ADDR_IN_QUERY)));
     return claims;
   }
 

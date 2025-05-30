@@ -4,6 +4,7 @@ import static cloud.xcan.angus.core.spring.boot.ApplicationInfo.APP_READY;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isInnerApi;
 import static cloud.xcan.angus.core.utils.ServletUtils.getAndSetRequestId;
 import static cloud.xcan.angus.core.utils.ServletUtils.getAuthServiceCode;
+import static cloud.xcan.angus.core.utils.ServletUtils.getDeviceId;
 import static cloud.xcan.angus.core.utils.ServletUtils.getUserAgent;
 import static cloud.xcan.angus.core.utils.ServletUtils.writeApiResult;
 import static cloud.xcan.angus.remote.message.http.ServiceUnavailable.M.SERVICE_UNAVAILABLE_KEY;
@@ -15,6 +16,9 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_EXPOSE_
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_HEADERS;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_METHODS;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_ORIGIN;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.DEVICE_ID_IN_QUERY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_IN_QUERY;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getTimeZone;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
@@ -46,6 +50,7 @@ import java.time.LocalDateTime;
 import java.util.Locale;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.MDC;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.StringUtils;
@@ -95,12 +100,10 @@ public class GlobalHoldFilter implements Filter {
       return;
     }
 
-    boolean firstRequest = isEmpty(request.getHeader(Header.REQUEST_ID));
+    boolean rootRequest = isEmpty(request.getHeader(Header.REQUEST_ID));
 
     MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
-    String requestId = getAndSetRequestId(mutableRequest); // Request id is required for oauth2 generate user token
-    Principal principal = PrincipalContext.createIfAbsent();
-    principal.setRequestId(requestId);
+    Principal principal = assemblePrincipalRemote(mutableRequest, request, rootRequest);
 
     try {
       if (path.startsWith("/oauth2") || path.startsWith("/swagger")
@@ -109,28 +112,22 @@ public class GlobalHoldFilter implements Filter {
         return;
       }
 
-      holdAndInitLocale(request);
+      initLocaleHolder(request);
 
-      holdPrincipal(request, path, principal);
-      PrincipalContext.set(principal);
+      assemblePrincipalRequest(request, path, principal);
 
-      // For /innerapi
-      if (isInnerApi()) {
-        Long optTenantId = getOptTenantId(request);
-        if (nonNull(optTenantId)) {
-          principal.setOptTenantId(optTenantId);
-        }
-      }
+      relayOptTenantId(request, principal);
 
       setResponseHeader(response, principal);
+
+      MDC.put(AuthKey.REQUEST_ID, principal.getRequestId());
+
+      PrincipalContext.set(principal);
 
       if (log.isDebugEnabled()) {
         log.debug("Hold principal, locale: {} ,timeZoneId: {}, requestId: {}",
             getLocale(), getTimeZone().getID(), principal.getRequestId());
       }
-
-      // Add requestId to MDC
-      MDC.put(AuthKey.REQUEST_ID, principal.getRequestId());
 
       filterChain.doFilter(mutableRequest, servletResponse);
 
@@ -147,11 +144,13 @@ public class GlobalHoldFilter implements Filter {
         log.debug("Remove MDC requestId : {}", MDC.get(AuthKey.REQUEST_ID));
       }
       MDC.remove(AuthKey.REQUEST_ID);
-      if (firstRequest){
+      if (rootRequest) {
         PrincipalContext.remoteRequestAttribute();
       }
     }
   }
+
+
 
   private void setCors(HttpServletRequest request, String path, HttpServletResponse response) {
     String proxy = request.getHeader(Header.NGINX_PROXY_CORS);
@@ -166,7 +165,16 @@ public class GlobalHoldFilter implements Filter {
     }
   }
 
-  private void holdAndInitLocale(HttpServletRequest request) {
+  private void relayOptTenantId(HttpServletRequest request, Principal principal) {
+    if (isInnerApi()) {
+      Long optTenantId = getOptTenantId(request);
+      if (nonNull(optTenantId)) {
+        principal.setOptTenantId(optTenantId);
+      }
+    }
+  }
+
+  private void initLocaleHolder(HttpServletRequest request) {
     Locale locale = null;
     TimeZone timeZone = null;
 
@@ -212,10 +220,26 @@ public class GlobalHoldFilter implements Filter {
     SdfLocaleHolder.setTimeZone(timeZone);
   }
 
-  private void holdPrincipal(HttpServletRequest request, String path, Principal principal) {
-    principal.setRemoteAddress(request.getRemoteAddr())
-        .setUserAgent(getUserAgent(request))
-        .setRequestAcceptTime(LocalDateTime.now())
+  private static @NotNull Principal assemblePrincipalRemote(
+      MutableHttpServletRequest mutableRequest, HttpServletRequest request, boolean rootRequest) {
+    // Request id is required for oauth2 generate user token
+    String requestId = getAndSetRequestId(mutableRequest);
+    String remoteAddr = request.getRemoteAddr();
+    String userAgent = getUserAgent(request);
+    String deviceId = getDeviceId(request);
+    Principal principal = PrincipalContext.createIfAbsent();
+    principal.setRequestId(requestId).setRemoteAddress(remoteAddr)
+        .setUserAgent(userAgent).setDeviceId(deviceId);
+    if (rootRequest){
+      PrincipalContext.setRequestAttribute(REMOTE_ADDR_IN_QUERY, remoteAddr);
+      PrincipalContext.setRequestAttribute(USER_AGENT, userAgent);
+      PrincipalContext.setRequestAttribute(DEVICE_ID_IN_QUERY, deviceId);
+    }
+    return principal;
+  }
+
+  private void assemblePrincipalRequest(HttpServletRequest request, String path, Principal principal) {
+    principal.setRequestAcceptTime(LocalDateTime.now())
         .setServiceCode(applicationInfo.getArtifactId())
         .setServiceName(applicationInfo.getName())
         .setAuthServiceCode(getAuthServiceCode(request))

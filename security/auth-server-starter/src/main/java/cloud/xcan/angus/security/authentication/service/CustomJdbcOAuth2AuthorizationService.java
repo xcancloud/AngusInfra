@@ -4,6 +4,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCE
 import static cloud.xcan.angus.spec.experimental.BizConstant.isUserSignInToken;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestBooleanAttribute;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.sql.Types;
@@ -53,20 +54,21 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
   @Override
   public void save(OAuth2Authorization authorization) {
     String clientSource = authorization.getAttribute(AuthKey.CLIENT_SOURCE);
-    Boolean customAccessToken = getRequestBooleanAttribute(CUSTOM_ACCESS_TOKEN);
-    if (isUserSignInToken(clientSource)
-        // Allow duplicate generation of user access tokens
-        && (isNull(customAccessToken) || !customAccessToken)) {
+    if (isUserSignInToken(clientSource)) {
       removePreviousLogin(authorization);
     }
     super.save(authorization);
     if (isUserSignInToken(clientSource)) {
-      setForbidDuplicateLogin(authorization.getId());
+      // Allow duplicate generation of user access tokens
+      Boolean customAccessToken = getRequestBooleanAttribute(CUSTOM_ACCESS_TOKEN);
+      if (nonNull(customAccessToken) && customAccessToken) {
+        setForbidDuplicateLogin(authorization.getId());
+      }
     }
   }
 
   @Override
-  public void removeByClientId(String clientId){
+  public void removeByClientId(String clientId) {
     Assert.notNull(clientId, "clientId cannot be null");
     SqlParameterValue[] parameters = new SqlParameterValue[]{
         new SqlParameterValue(Types.VARCHAR, clientId)};
@@ -96,7 +98,7 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
   private void setForbidDuplicateLogin(String id) {
     Assert.notNull(id, "authorization id cannot be null");
     SqlParameterValue[] parameters = new SqlParameterValue[]{
-        new SqlParameterValue(Types.BOOLEAN, false),
+        new SqlParameterValue(Types.BOOLEAN, true),
         new SqlParameterValue(Types.VARCHAR, id)
     };
     PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);

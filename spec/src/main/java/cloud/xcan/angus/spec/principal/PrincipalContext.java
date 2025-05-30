@@ -244,30 +244,46 @@ public class PrincipalContext {
   }
 
   public static Object getRequestAttribute(String key) {
-    String requestId = getRequestId();
+    return getRequestAttribute(getRequestId(), key);
+  }
+
+  public static Object getRequestAttribute(String requestId, String key) {
     assertNotEmpty(requestId, "requestId is not set");
     return request.containsKey(requestId) ? request.get(requestId).get(key) : null;
   }
 
   public static Boolean getRequestBooleanAttribute(String key) {
-    String requestId = getRequestId();
+    return getRequestBooleanAttribute(getRequestId(), key);
+  }
+
+  public static Boolean getRequestBooleanAttribute(String requestId,String key) {
     assertNotEmpty(requestId, "requestId is not set");
     return request.containsKey(requestId) ? (Boolean) request.get(requestId).get(key) : null;
   }
 
   public static String getRequestStringAttribute(String key) {
-    String requestId = getRequestId();
+    return getRequestStringAttribute(getRequestId(), key);
+  }
+
+  public static String getRequestStringAttribute(String requestId,String key) {
     assertNotEmpty(requestId, "requestId is not set");
     return request.containsKey(requestId) ? (String) request.get(requestId).get(key) : null;
   }
 
   public static Instant getRequestInstantAttribute(String key) {
-    String requestId = getRequestId();
+    return getRequestInstantAttribute(getRequestId(), key);
+  }
+
+  public static Instant getRequestInstantAttribute(String requestId, String key) {
     assertNotEmpty(requestId, "requestId is not set");
     return request.containsKey(requestId) ? (Instant) request.get(requestId).get(key) : null;
   }
 
   public static void remoteRequestAttribute() {
-    request.remove(getRequestId());
+    remoteRequestAttribute(getRequestId());
+  }
+
+  public static void remoteRequestAttribute(String requestId) {
+    request.remove(requestId);
   }
 }

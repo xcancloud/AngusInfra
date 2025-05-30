@@ -79,11 +79,19 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
   private ObjectUtils() { /* no instance */ }
 
   /**
-   * @param value integer value
+   * @param value string value
    * @return value, if it's not null, or return "" if the value is null.
    */
   public static String stringSafe(String value) {
     return isNull(value) ? "" : value;
+  }
+
+  /**
+   * @param value object value
+   * @return value, if it's not null, or return "" if the value is null.
+   */
+  public static String stringSafe(Object value) {
+    return isNull(value) ? "" : value.toString();
   }
 
   /**

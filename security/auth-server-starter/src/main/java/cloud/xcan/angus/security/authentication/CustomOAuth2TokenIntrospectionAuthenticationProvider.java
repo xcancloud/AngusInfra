@@ -30,6 +30,9 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PERMISSION;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PLATFORM;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PRINCIPAL;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SCOPES;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SYS_ADMIN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
@@ -37,13 +40,9 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTH_DEVICE_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.DEVICE_ID_IN_QUERY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_IN_QUERY;
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REQUEST_ID_IN_QUERY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.http.HttpRequestHeader.User_Agent;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestStringAttribute;
@@ -247,13 +246,15 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE, user.getDefaultTimeZone());
 
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
-   String requestId = request.getHeader(Header.REQUEST_ID);
-    claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT,
-        stringSafe(getRequestStringAttribute(requestId, USER_AGENT)));
-    claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID,
-        stringSafe(getRequestStringAttribute(requestId, DEVICE_ID_IN_QUERY)));
-    claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR,
-        stringSafe(getRequestStringAttribute(requestId, REMOTE_ADDR_IN_QUERY)));
+    String requestId = request.getHeader(Header.REQUEST_ID);
+    if (isNotEmpty(requestId)) {
+      claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT,
+          stringSafe(getRequestStringAttribute(requestId, USER_AGENT)));
+      claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID,
+          stringSafe(getRequestStringAttribute(requestId, DEVICE_ID_IN_QUERY)));
+      claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR,
+          stringSafe(getRequestStringAttribute(requestId, REMOTE_ADDR_IN_QUERY)));
+    }
     return claims;
   }
 

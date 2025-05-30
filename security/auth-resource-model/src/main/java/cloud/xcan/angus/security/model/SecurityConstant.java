@@ -48,6 +48,7 @@ public interface SecurityConstant {
   // String INTROSPECTION_CLAIM_NAMES_TENANT_ID = "tenant_id";
   // String INTROSPECTION_CLAIM_NAMES_TENANT_NAME = "tenant_name";
 
+  String INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id = "request_id";
   String INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT = "user_agent";
   String INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID = "device_id";
   String INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR = "remote_addr";

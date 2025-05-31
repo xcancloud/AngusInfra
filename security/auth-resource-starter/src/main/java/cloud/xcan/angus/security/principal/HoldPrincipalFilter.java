@@ -15,6 +15,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_FULL_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_GRANT_TYPE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PERMISSION;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PRINCIPAL;
@@ -227,6 +228,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
       Object deviceId = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID);
       Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
+      Object isUserToken = attributes.get(INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN);
+
       principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
           .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
@@ -244,7 +247,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
           .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
           .setPermissions(isNull(permissions) ? Collections.emptyList()
-              : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()));
+              : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()))
+          .setUserToken(nonNull(isUserToken) && Boolean.parseBoolean(isUserToken.toString()));
       if (log.isDebugEnabled()) {
         log.debug("Hold principal info : {}", principal);
       }

@@ -46,8 +46,7 @@ public enum ApiType implements ValueObject<ApiType>, EnumValueMessage<String> {
   }
 
   public boolean isAuthApi() {
-    return this.equals(API) || this.equals(VIEW) || this.equals(OPEN_API)
-        || this.equals(OPEN_API_2P);
+    return this.equals(API) || this.equals(OPEN_API) || this.equals(OPEN_API_2P);
   }
 
   @Override

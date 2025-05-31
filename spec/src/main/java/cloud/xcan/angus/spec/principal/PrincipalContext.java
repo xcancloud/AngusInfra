@@ -2,6 +2,8 @@ package cloud.xcan.angus.spec.principal;
 
 
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotEmpty;
+import static cloud.xcan.angus.spec.experimental.BizConstant.ClientSource.XCAN_2P_SIGNIN;
+import static cloud.xcan.angus.spec.experimental.BizConstant.ClientSource.XCAN_SYS_TOKEN;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.enums.ApiType;
@@ -200,6 +202,12 @@ public class PrincipalContext {
     return get().getPermissions();
   }
 
+  public static boolean isSystemAccess() {
+    Principal principal = get();
+    return principal.isUserToken() || XCAN_SYS_TOKEN.equals(principal.getClientSource())
+        || XCAN_2P_SIGNIN.equals(principal.getClientSource());
+  }
+
   public static Map<String, ?> getExtensions() {
     return get().getExtensions();
   }
@@ -256,7 +264,7 @@ public class PrincipalContext {
     return getRequestBooleanAttribute(getRequestId(), key);
   }
 
-  public static Boolean getRequestBooleanAttribute(String requestId,String key) {
+  public static Boolean getRequestBooleanAttribute(String requestId, String key) {
     assertNotEmpty(requestId, "requestId is not set");
     return request.containsKey(requestId) ? (Boolean) request.get(requestId).get(key) : null;
   }
@@ -265,7 +273,7 @@ public class PrincipalContext {
     return getRequestStringAttribute(getRequestId(), key);
   }
 
-  public static String getRequestStringAttribute(String requestId,String key) {
+  public static String getRequestStringAttribute(String requestId, String key) {
     assertNotEmpty(requestId, "requestId is not set");
     return request.containsKey(requestId) ? (String) request.get(requestId).get(key) : null;
   }

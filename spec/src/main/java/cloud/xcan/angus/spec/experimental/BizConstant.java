@@ -337,6 +337,7 @@ public interface BizConstant {
     String CLIENT_NAME = "client_name";
     String CLIENT_SECRET = new Str0(new long[]{0x7A2E43F1E76B6153L, 0xFC45C7301C3CAB2FL, 0x554D36C13AEC2F9L}).toString() /* => "client_secret" */;
     String CLIENT_SOURCE = "client_source";
+    String CUSTOM_ACCESS_TOKEN_NAME = "token_name";
     String SCOPE = "scope";
     String AUTHORITY_SCOPE_PREFIX = "SCOPE_";
     String DEFAULT_SCOPE = "trust";

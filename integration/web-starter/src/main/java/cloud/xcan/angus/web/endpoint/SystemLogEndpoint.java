@@ -156,9 +156,9 @@ public class SystemLogEndpoint {
           rf.seek(0);
         }
       }
-      byte[] tempbytes = new byte[(int) (rf.length() - rf.getFilePointer())];
-      rf.readFully(tempbytes);
-      return new String(tempbytes, UTF8);
+      byte[] tempBytes = new byte[(int) (rf.length() - rf.getFilePointer())];
+      rf.readFully(tempBytes);
+      return new String(tempBytes, UTF8);
     } catch (Exception e) {
       log.error(e.getMessage());
     } finally {

@@ -103,7 +103,7 @@ public class OpenApiAutoConfigurer {
   public GroupedOpenApi innerApi(FiltersOperationCustomizer filtersOperationCustomizer) {
     return GroupedOpenApi.builder()
         .displayName("/innerapi (Inner System Api Document)")
-        .group("Inner")
+        .group("inner")
         .pathsToMatch("/innerapi/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .addOperationCustomizer(filtersOperationCustomizer)
@@ -116,7 +116,7 @@ public class OpenApiAutoConfigurer {
   public GroupedOpenApi open2pApi(FiltersOperationCustomizer filtersOperationCustomizer) {
     return GroupedOpenApi.builder()
         .displayName("/openapi2p (Inner System Api Document)")
-        .group("Open2p")
+        .group("openapi2p")
         .pathsToMatch("/openapi2p/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .addOperationCustomizer(filtersOperationCustomizer)

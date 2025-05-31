@@ -89,7 +89,8 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
     String path = request.getRequestURI();
     // Note: Only API logs are recorded. Inner calls and static resource requests are not logged.
-    if (path.startsWith("/api/v1/auth/user")
+    if (path.startsWith("/api/v1/auth/user") || path.startsWith("/api/v1/client")
+        || path.startsWith("/api/v1/systemlog") || path.startsWith("/api/v1/log")
         || (!path.startsWith("/api/") && !path.startsWith("/openapi/"))) {
       filterChain.doFilter(request, response);
       return;

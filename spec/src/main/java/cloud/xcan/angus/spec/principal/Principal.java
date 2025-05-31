@@ -111,6 +111,8 @@ public class Principal implements Serializable {
    */
   private String[] requiredToPolicy;
 
+  private boolean isUserToken = false;
+
   private Map<String, Object> extensions = new HashMap<>();
 
 }

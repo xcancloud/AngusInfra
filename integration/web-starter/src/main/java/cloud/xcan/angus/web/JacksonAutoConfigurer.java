@@ -18,6 +18,8 @@ package cloud.xcan.angus.web;
 
 import cloud.xcan.angus.core.jackson.JacksonProperties;
 import cloud.xcan.angus.core.jackson.JacksonProperties.ConstructorDetectorStrategy;
+import cloud.xcan.angus.core.jackson.MultiValueMapDeserializer;
+import cloud.xcan.angus.core.jackson.MultiValueMapSerializer;
 import cloud.xcan.angus.spec.jackson.EnumModule;
 import cloud.xcan.angus.spec.jackson.JavaTimeModule;
 import cloud.xcan.angus.spec.jackson.serializer.TimeValueDeSerializer;
@@ -77,6 +79,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -403,6 +406,8 @@ public class JacksonAutoConfigurer {
         simpleModule.addSerializer(Long.class, new ToStringSerializer(Long.class));
         simpleModule.addSerializer(TimeValue.class, new TimeValueSerializer());
         simpleModule.addDeserializer(TimeValue.class, new TimeValueDeSerializer());
+        simpleModule.addDeserializer(LinkedMultiValueMap.class, new MultiValueMapDeserializer());
+        simpleModule.addSerializer(LinkedMultiValueMap.class, new MultiValueMapSerializer());
         modules.add(simpleModule);
 
         EnumModule enumModule = new EnumModule("customEnumModule");

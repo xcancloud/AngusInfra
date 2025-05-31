@@ -1,6 +1,8 @@
 package cloud.xcan.angus.security.authentication.password;
 
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.createHash;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN_NAME;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestStringAttribute;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.security.authentication.client.ClientSecretAuthenticationProvider;
@@ -9,7 +11,6 @@ import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -159,6 +160,11 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
         .attribute(OAuth2ParameterNames.SCOPE, authorizedScopes)
         .attribute(Principal.class.getName(), passwordAuthentication);
 
+    String userTokenName = getRequestStringAttribute(CUSTOM_ACCESS_TOKEN_NAME);
+    if (isNotEmpty(userTokenName)) {
+      authorizationBuilder.attribute(AuthKey.CUSTOM_ACCESS_TOKEN_NAME, userTokenName);
+    }
+
     if (registeredClient instanceof CustomOAuth2RegisteredClient client
         && isNotEmpty(client.getSource())) {
       authorizationBuilder.attribute(AuthKey.CLIENT_SOURCE, client.getSource());
@@ -244,9 +250,8 @@ public final class OAuth2PasswordAuthenticationProvider implements Authenticatio
       log.trace("Saved authorization");
     }
 
-    Map<String, Object> additionalParameters = Collections.emptyMap();
+    Map<String, Object> additionalParameters = new HashMap<>();
     if (idToken != null) {
-      additionalParameters = new HashMap<>();
       additionalParameters.put(OidcParameterNames.ID_TOKEN, idToken.getTokenValue());
     }
 

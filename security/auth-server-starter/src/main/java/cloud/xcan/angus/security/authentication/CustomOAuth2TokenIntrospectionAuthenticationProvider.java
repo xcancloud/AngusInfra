@@ -22,6 +22,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_FULL_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_GRANT_TYPE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_LAST_MODIFIED_PASSWORD_DATE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_LAST_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID;
@@ -41,6 +42,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTH_DEVICE_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.DEVICE_ID_IN_QUERY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_IN_QUERY;
@@ -48,7 +50,9 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.http.HttpRequestHeader.User_Agent;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestStringAttribute;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
+import static java.util.Objects.nonNull;
 import static org.springframework.web.context.request.RequestContextHolder.getRequestAttributes;
 
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
@@ -201,7 +205,8 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
         if (principal instanceof UsernamePasswordAuthenticationToken) {
           CustomOAuth2User user = (CustomOAuth2User)
               ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toUserPrincipalClaim(user));
+          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
+              toUserPrincipalClaim(user, authorization.getAttributes()));
           if (isNotEmpty(user.getAuthorities())) {
             tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, user.getAuthorities()
                 .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
@@ -215,7 +220,11 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     return tokenClaims.build();
   }
 
-  private static Map<String, Object> toUserPrincipalClaim(CustomOAuth2User user) {
+  private static Map<String, Object> toUserPrincipalClaim(CustomOAuth2User user,
+      Map<String, Object> attributes) {
+    String userTokenName = nonNull(attributes) && attributes.containsKey(CUSTOM_ACCESS_TOKEN_NAME)
+        ? attributes.get(CUSTOM_ACCESS_TOKEN_NAME).toString() : null;
+
     Map<String, Object> claims = new HashMap<>();
     claims.put(INTROSPECTION_CLAIM_NAMES_USERNAME, user.getUsername());
     claims.put(INTROSPECTION_CLAIM_NAMES_ENABLED, user.isEnabled());
@@ -225,7 +234,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_ID, user.getId());
     claims.put(INTROSPECTION_CLAIM_NAMES_FIRST_NAME, user.getFirstName());
     claims.put(INTROSPECTION_CLAIM_NAMES_LAST_NAME, user.getLastName());
-    claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, user.getFullName());
+    claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, nullSafe(userTokenName, user.getFullName()));
     //claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
     claims.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, user.isSysAdmin());
     claims.put(INTROSPECTION_CLAIM_NAMES_TO_USER, user.isToUser());
@@ -245,6 +254,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID, user.getDirectoryId());
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE, user.getDefaultLanguage());
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE, user.getDefaultTimeZone());
+    claims.put(INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN, nonNull(userTokenName));
 
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
     String requestId = request.getHeader(Header.REQUEST_ID);
@@ -289,27 +299,21 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     Object value = claims.get(OAuth2TokenIntrospectionClaimNames.ISS);
     if (value != null && !(value instanceof URL)) {
       URL convertedValue = ClaimConversionService.getSharedInstance().convert(value, URL.class);
-      if (convertedValue != null) {
-        convertedClaims.put(OAuth2TokenIntrospectionClaimNames.ISS, convertedValue);
-      }
+      convertedClaims.put(OAuth2TokenIntrospectionClaimNames.ISS, convertedValue);
     }
 
     value = claims.get(OAuth2TokenIntrospectionClaimNames.SCOPE);
     if (value != null && !(value instanceof List)) {
       Object convertedValue = ClaimConversionService.getSharedInstance()
           .convert(value, OBJECT_TYPE_DESCRIPTOR, LIST_STRING_TYPE_DESCRIPTOR);
-      if (convertedValue != null) {
-        convertedClaims.put(OAuth2TokenIntrospectionClaimNames.SCOPE, convertedValue);
-      }
+      convertedClaims.put(OAuth2TokenIntrospectionClaimNames.SCOPE, convertedValue);
     }
 
     value = claims.get(OAuth2TokenIntrospectionClaimNames.AUD);
     if (value != null && !(value instanceof List)) {
       Object convertedValue = ClaimConversionService.getSharedInstance()
           .convert(value, OBJECT_TYPE_DESCRIPTOR, LIST_STRING_TYPE_DESCRIPTOR);
-      if (convertedValue != null) {
-        convertedClaims.put(OAuth2TokenIntrospectionClaimNames.AUD, convertedValue);
-      }
+      convertedClaims.put(OAuth2TokenIntrospectionClaimNames.AUD, convertedValue);
     }
 
     return convertedClaims;

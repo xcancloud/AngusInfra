@@ -34,6 +34,7 @@ public interface SecurityConstant {
   String INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID = "directory_id";
   String INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE = "default_language";
   String INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE = "default_time_zone";
+  String INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN = "user_token";
 
   String INTROSPECTION_CLAIM_NAMES_CLIENT_ID_ISSUED_AT = "client_id_issued_at";
   String INTROSPECTION_CLAIM_NAMES_CLIENT_SECRET_EXPIRES_AT = "client_secret_expires_at";

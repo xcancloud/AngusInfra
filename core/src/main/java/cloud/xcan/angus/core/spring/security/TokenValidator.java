@@ -7,9 +7,11 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.ACCESS_TOKE
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.PRINCIPAL;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.spring.env.EnvHelper;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -33,14 +35,15 @@ public class TokenValidator {
       throw new AccessDeniedException("Access token is missing");
     }
 
-    Map<String, Object> principal = validate(token);
+    Map<String, Object> principal = validate(token,
+        request.getHeaders().getFirst(Header.REQUEST_ID));
     if (principal == null) {
       throw new AccessDeniedException("Invalid access token");
     }
     return principal;
   }
 
-  public static Map<String, Object> validate(String token) {
+  public static Map<String, Object> validate(String token, String requestId) {
     RestTemplate restTemplate = new RestTemplate();
 
     Object url = EnvHelper.getString(GM_APIS_URL_PREFIX);
@@ -53,6 +56,7 @@ public class TokenValidator {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     headers.setBasicAuth(clientId, clientSecret);
+    headers.add(Header.REQUEST_ID, stringSafe(requestId));
 
     MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
     requestBody.add("token", token);

@@ -33,6 +33,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SCOPES;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SYS_ADMIN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
@@ -248,6 +249,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
     String requestId = request.getHeader(Header.REQUEST_ID);
     if (isNotEmpty(requestId)) {
+      claims.put(INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id, requestId);
       claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT,
           stringSafe(getRequestStringAttribute(requestId, USER_AGENT)));
       claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID,

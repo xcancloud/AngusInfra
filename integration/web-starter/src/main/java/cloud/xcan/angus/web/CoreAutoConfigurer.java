@@ -35,6 +35,7 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Objects;
 import java.util.TimeZone;
@@ -57,6 +58,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.RequestContextFilter;
@@ -262,6 +264,7 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
     converters.add(0, new ByteArrayToStringConverter());
     converters.add(new ResourceHttpMessageConverter());
+    converters.add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
     converters.add(new MappingJackson2HttpMessageConverter(objectMapper));
   }
 

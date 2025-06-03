@@ -5,12 +5,10 @@ import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.springdoc.core.customizers.OperationCustomizer;
-import org.springframework.core.MethodParameter;
 import org.springframework.web.method.HandlerMethod;
 
 public class FiltersOperationCustomizer implements OperationCustomizer {
@@ -31,17 +29,6 @@ public class FiltersOperationCustomizer implements OperationCustomizer {
     }
     operation.setParameters(parameters);
     return operation;
-  }
-
-  private boolean isListOfSearchCriteria(HandlerMethod handlerMethod) {
-    for (MethodParameter methodParam : handlerMethod.getMethodParameters()) {
-      try {
-        Field field = methodParam.getParameterType().getDeclaredField("filters");
-        return List.class.isAssignableFrom(field.getType());
-      } catch (NoSuchFieldException e) {
-      }
-    }
-    return false;
   }
 
   private List<Parameter> generateFilterParameters() {

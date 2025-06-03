@@ -12,6 +12,7 @@ import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.security.OAuthFlow;
 import io.swagger.v3.oas.models.security.OAuthFlows;
 import io.swagger.v3.oas.models.security.Scopes;
@@ -19,6 +20,8 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.customizers.ParameterCustomizer;
@@ -45,6 +48,9 @@ public class OpenApiAutoConfigurer {
 
   @Value("${springdoc.oauth2.token-url: http://localhost:9090/oauth2/token}")
   private String oauth2TokenUrl;
+
+  private static final List<String> ALLOWED_STATUS_CODES
+      = Arrays.asList("200", "201", "204", "404");
 
   /**
    * Resolve jakarta.servlet.ServletException: Could not resolve view with name
@@ -80,6 +86,7 @@ public class OpenApiAutoConfigurer {
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .addOpenApiCustomizer(removeDefaultResponses())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
@@ -91,6 +98,7 @@ public class OpenApiAutoConfigurer {
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .addOpenApiCustomizer(removeDefaultResponses())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
@@ -106,6 +114,7 @@ public class OpenApiAutoConfigurer {
         .group("inner")
         .pathsToMatch("/innerapi/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .addOpenApiCustomizer(removeDefaultResponses())
         .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
@@ -119,6 +128,7 @@ public class OpenApiAutoConfigurer {
         .group("openapi2p")
         .pathsToMatch("/openapi2p/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .addOpenApiCustomizer(removeDefaultResponses())
         .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
@@ -135,6 +145,7 @@ public class OpenApiAutoConfigurer {
           .pathsToMatch("/pubapi/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
+          .addOpenApiCustomizer(removeDefaultResponses())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
@@ -145,6 +156,7 @@ public class OpenApiAutoConfigurer {
           .pathsToMatch("/pubapi/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
+          .addOpenApiCustomizer(removeDefaultResponses())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
@@ -228,5 +240,19 @@ public class OpenApiAutoConfigurer {
                             .addString("write", "Write Permission"))))
                 .description("Use OAuth2 opaque tokens for authentication")
         );
+  }
+
+  private OpenApiCustomizer removeDefaultResponses() {
+    return openApi -> openApi.getPaths().values().forEach(pathItem -> {
+      pathItem.readOperations().forEach(this::filterResponses);
+    });
+  }
+
+  private void filterResponses(Operation operation) {
+    if (operation.getResponses() != null) {
+      operation.getResponses().keySet().removeIf(
+          key -> !ALLOWED_STATUS_CODES.contains(key)
+      );
+    }
   }
 }

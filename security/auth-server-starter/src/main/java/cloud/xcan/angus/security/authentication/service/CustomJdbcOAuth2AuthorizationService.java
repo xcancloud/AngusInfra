@@ -4,7 +4,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCE
 import static cloud.xcan.angus.spec.experimental.BizConstant.isUserSignInToken;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestBooleanAttribute;
 import static java.util.Objects.isNull;
-import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.sql.Types;
@@ -56,14 +55,17 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
     String clientSource = authorization.getAttribute(AuthKey.CLIENT_SOURCE);
     Boolean customAccessToken = getRequestBooleanAttribute(CUSTOM_ACCESS_TOKEN);
 
+    // Remote duplicate authorization
+    if (isUserSignInToken(clientSource) && (isNull(customAccessToken) || !customAccessToken)) {
+      removePreviousDuplicateLogin(authorization);
+    }
+
+    // Allow duplicate by default
     super.save(authorization);
-    if (isUserSignInToken(clientSource)) {
-      // Allow duplicate generation of user access tokens
-      if (nonNull(customAccessToken) && customAccessToken) {
-        setForbidDuplicateLogin(authorization.getId());
-      }else {
-        removePreviousLogin(authorization);
-      }
+
+    // Forbid duplicate generation of user access tokens
+    if (isUserSignInToken(clientSource) && (isNull(customAccessToken) || !customAccessToken)) {
+      setForbidDuplicateLogin(authorization.getId());
     }
   }
 
@@ -85,12 +87,12 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
     this.getJdbcOperations().update(REMOVE_AUTHORIZATION_BY_PRINCIPAL_SQL, pss);
   }
 
-  private void removePreviousLogin(OAuth2Authorization authorization) {
+  private void removePreviousDuplicateLogin(OAuth2Authorization authorization) {
     Assert.notNull(authorization, "authorization cannot be null");
     SqlParameterValue[] parameters = new SqlParameterValue[]{
         new SqlParameterValue(Types.VARCHAR, authorization.getRegisteredClientId()),
         new SqlParameterValue(Types.VARCHAR, authorization.getPrincipalName()),
-        new SqlParameterValue(Types.BOOLEAN, false)};
+        new SqlParameterValue(Types.BOOLEAN, true)};
     PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);
     this.getJdbcOperations().update(REMOVE_PREVIOUS_AUTHORIZATION_SQL, pss);
   }
@@ -98,7 +100,7 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
   private void setForbidDuplicateLogin(String id) {
     Assert.notNull(id, "authorization id cannot be null");
     SqlParameterValue[] parameters = new SqlParameterValue[]{
-        new SqlParameterValue(Types.BOOLEAN, true),
+        new SqlParameterValue(Types.BOOLEAN, false),
         new SqlParameterValue(Types.VARCHAR, id)
     };
     PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);

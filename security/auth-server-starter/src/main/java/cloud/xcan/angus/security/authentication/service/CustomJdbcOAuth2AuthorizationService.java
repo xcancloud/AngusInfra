@@ -3,7 +3,7 @@ package cloud.xcan.angus.security.authentication.service;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN;
 import static cloud.xcan.angus.spec.experimental.BizConstant.isUserSignInToken;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestBooleanAttribute;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
@@ -54,15 +54,15 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
   @Override
   public void save(OAuth2Authorization authorization) {
     String clientSource = authorization.getAttribute(AuthKey.CLIENT_SOURCE);
-    if (isUserSignInToken(clientSource)) {
-      removePreviousLogin(authorization);
-    }
+    Boolean customAccessToken = getRequestBooleanAttribute(CUSTOM_ACCESS_TOKEN);
+
     super.save(authorization);
     if (isUserSignInToken(clientSource)) {
       // Allow duplicate generation of user access tokens
-      Boolean customAccessToken = getRequestBooleanAttribute(CUSTOM_ACCESS_TOKEN);
       if (nonNull(customAccessToken) && customAccessToken) {
         setForbidDuplicateLogin(authorization.getId());
+      }else {
+        removePreviousLogin(authorization);
       }
     }
   }

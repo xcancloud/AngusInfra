@@ -92,7 +92,7 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
     SqlParameterValue[] parameters = new SqlParameterValue[]{
         new SqlParameterValue(Types.VARCHAR, authorization.getRegisteredClientId()),
         new SqlParameterValue(Types.VARCHAR, authorization.getPrincipalName()),
-        new SqlParameterValue(Types.BOOLEAN, true)};
+        new SqlParameterValue(Types.BOOLEAN, false)};
     PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);
     this.getJdbcOperations().update(REMOVE_PREVIOUS_AUTHORIZATION_SQL, pss);
   }

@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 @Setter
 @Getter
@@ -110,5 +111,13 @@ public final class Pair<K, V> implements Entry<K, V>, Comparator<Pair<K, V>> {
   @Override
   public int hashCode() {
     return Objects.hash(name, value);
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this)
+        .append("name", name)
+        .append("value", value)
+        .toString();
   }
 }

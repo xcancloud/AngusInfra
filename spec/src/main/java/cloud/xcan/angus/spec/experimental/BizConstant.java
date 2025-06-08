@@ -436,8 +436,8 @@ public interface BizConstant {
   }
 
   static boolean isUserSignInToken(String clientSource) {
-    return nonNull(clientSource) && (clientSource.equals(ClientSource.XCAN_TP_SIGNIN)
-        || clientSource.equals(ClientSource.XCAN_OP_SIGNIN)
+    return nonNull(clientSource) && ((clientSource.equals(ClientSource.XCAN_TP_SIGNIN)
+        || clientSource.equals(ClientSource.XCAN_OP_SIGNIN))
         /*|| clientSource.equals(ClientSource.XCAN_2P_SIGNIN) -> System sign in */);
   }
 

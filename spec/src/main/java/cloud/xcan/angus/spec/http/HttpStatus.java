@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 @EndpointRegister
 public enum HttpStatus implements EnumMessage<String> {
 
+  UNKNOWN(0, HttpStatusSeries.UNKNOWN, "Unknown"),
+
   // 1xx Informational
 
   /**
@@ -629,11 +631,7 @@ public enum HttpStatus implements EnumMessage<String> {
    * @throws IllegalArgumentException if this enum has no constant for the specified numeric value
    */
   public static HttpStatus valueOf(int statusCode) {
-    HttpStatus status = resolve(statusCode);
-    if (status == null) {
-      throw new IllegalArgumentException("No matching constant for [" + statusCode + "]");
-    }
-    return status;
+    return resolve(statusCode);
   }
 
   /**
@@ -648,7 +646,7 @@ public enum HttpStatus implements EnumMessage<String> {
         return status;
       }
     }
-    return null;
+    return UNKNOWN;
   }
 
   /**

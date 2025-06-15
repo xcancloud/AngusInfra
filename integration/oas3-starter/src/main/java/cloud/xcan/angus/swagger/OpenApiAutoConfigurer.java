@@ -18,10 +18,13 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import io.swagger.v3.oas.models.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -85,6 +88,7 @@ public class OpenApiAutoConfigurer {
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
@@ -97,6 +101,7 @@ public class OpenApiAutoConfigurer {
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
@@ -113,6 +118,7 @@ public class OpenApiAutoConfigurer {
         .pathsToMatch("/innerapi/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .addOpenApiCustomizer(removeDefaultResponses())
+        .addOpenApiCustomizer(sortTagsAlphabetically())
         .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
@@ -127,6 +133,7 @@ public class OpenApiAutoConfigurer {
         .pathsToMatch("/openapi2p/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .addOpenApiCustomizer(removeDefaultResponses())
+        .addOpenApiCustomizer(sortTagsAlphabetically())
         .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
@@ -144,6 +151,7 @@ public class OpenApiAutoConfigurer {
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
@@ -155,6 +163,7 @@ public class OpenApiAutoConfigurer {
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
@@ -252,5 +261,17 @@ public class OpenApiAutoConfigurer {
           key -> !ALLOWED_STATUS_CODES.contains(key)
       );
     }
+  }
+
+  private OpenApiCustomizer sortTagsAlphabetically() {
+    return openApi -> {
+      List<Tag> tags = openApi.getTags();
+      if (tags != null) {
+        List<Tag> sortedTags = tags.stream()
+            .sorted(Comparator.comparing(Tag::getName))
+            .collect(Collectors.toList());
+        openApi.setTags(sortedTags);
+      }
+    };
   }
 }

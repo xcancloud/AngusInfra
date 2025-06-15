@@ -1,7 +1,6 @@
 package cloud.xcan.angus.remote.client;
 
 import cloud.xcan.angus.remote.ApiLocaleResult;
-import java.net.URI;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

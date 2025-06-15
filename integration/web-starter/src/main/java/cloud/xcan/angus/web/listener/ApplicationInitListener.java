@@ -14,7 +14,6 @@ import cloud.xcan.angus.core.app.AppPropertiesRegisterInit;
 import cloud.xcan.angus.core.app.AppWorkspaceInit;
 import cloud.xcan.angus.core.app.ApplicationInit;
 import cloud.xcan.angus.core.app.verx.VerxRegister;
-import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.utils.AppEnvUtils;
 import cloud.xcan.angus.spec.locale.MessageHolder;

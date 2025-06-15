@@ -3,6 +3,8 @@ package cloud.xcan.angus.api.pojo;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -80,6 +82,8 @@ public final class Pair<K, V> implements Entry<K, V>, Comparator<Pair<K, V>> {
     return pairs;
   }
 
+  @JsonIgnore
+  @Schema(hidden = true)
   @Override
   public K getKey() {
     return name;

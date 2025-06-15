@@ -7,7 +7,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SC
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
-import cloud.xcan.angus.remote.AbstractQuery;
 import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
@@ -19,12 +18,14 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import io.swagger.v3.oas.models.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import org.springdoc.core.customizers.OpenApiCustomizer;
-import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;
@@ -87,6 +88,7 @@ public class OpenApiAutoConfigurer {
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
@@ -99,6 +101,7 @@ public class OpenApiAutoConfigurer {
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(globalUserSecurityCustomizer())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
@@ -115,6 +118,7 @@ public class OpenApiAutoConfigurer {
         .pathsToMatch("/innerapi/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .addOpenApiCustomizer(removeDefaultResponses())
+        .addOpenApiCustomizer(sortTagsAlphabetically())
         .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
@@ -129,6 +133,7 @@ public class OpenApiAutoConfigurer {
         .pathsToMatch("/openapi2p/v1/**")
         .addOpenApiCustomizer(globalSysSecurityCustomizer())
         .addOpenApiCustomizer(removeDefaultResponses())
+        .addOpenApiCustomizer(sortTagsAlphabetically())
         .addOperationCustomizer(filtersOperationCustomizer)
         .build();
   }
@@ -146,6 +151,7 @@ public class OpenApiAutoConfigurer {
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     } else {
@@ -157,6 +163,7 @@ public class OpenApiAutoConfigurer {
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
           .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
           .build();
     }
@@ -254,5 +261,17 @@ public class OpenApiAutoConfigurer {
           key -> !ALLOWED_STATUS_CODES.contains(key)
       );
     }
+  }
+
+  private OpenApiCustomizer sortTagsAlphabetically() {
+    return openApi -> {
+      List<Tag> tags = openApi.getTags();
+      if (tags != null) {
+        List<Tag> sortedTags = tags.stream()
+            .sorted(Comparator.comparing(Tag::getName))
+            .collect(Collectors.toList());
+        openApi.setTags(sortedTags);
+      }
+    };
   }
 }

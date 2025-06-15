@@ -6,7 +6,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_PARAM_NAME_LENG
 import cloud.xcan.angus.api.enums.AuthIn;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.Objects;

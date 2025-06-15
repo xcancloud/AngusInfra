@@ -5,7 +5,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_PRIORITY;
 import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.locale.EnumMessage;
 import cloud.xcan.angus.spec.locale.MessageHolder;
-import com.fasterxml.jackson.annotation.JsonCreator;
 import java.util.Locale;
 
 

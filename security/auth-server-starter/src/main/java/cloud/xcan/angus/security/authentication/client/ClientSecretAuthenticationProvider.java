@@ -1,13 +1,7 @@
 package cloud.xcan.angus.security.authentication.client;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN_NAME;
-import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestStringAttribute;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

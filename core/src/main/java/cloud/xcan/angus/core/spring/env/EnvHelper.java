@@ -2,12 +2,10 @@ package cloud.xcan.angus.core.spring.env;
 
 import static cloud.xcan.angus.core.spring.env.AbstractEnvLoader.envs;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 import cloud.xcan.angus.spec.setting.SystemSetting;
 import cloud.xcan.angus.spec.setting.SystemSettingUtils;
 import cloud.xcan.angus.spec.utils.EnumUtils;
-import org.apache.poi.ss.formula.functions.T;
 
 public class EnvHelper {
 

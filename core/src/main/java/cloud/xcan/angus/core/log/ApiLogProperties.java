@@ -14,7 +14,6 @@ import cloud.xcan.angus.core.app.AppPropertiesRegister;
 import cloud.xcan.angus.remote.ApiConstant.ApiLog;
 import cloud.xcan.angus.remote.ApiConstant.Service;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;

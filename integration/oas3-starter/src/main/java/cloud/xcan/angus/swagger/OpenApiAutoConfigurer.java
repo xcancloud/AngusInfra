@@ -7,7 +7,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SC
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
-import cloud.xcan.angus.remote.AbstractQuery;
 import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
@@ -24,7 +23,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import org.springdoc.core.customizers.OpenApiCustomizer;
-import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;

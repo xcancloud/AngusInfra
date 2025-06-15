@@ -6,8 +6,6 @@ import static cloud.xcan.angus.core.spring.env.EnvHelper.getString;
 import static cloud.xcan.angus.core.spring.env.EnvKeys.GM_ADMIN_FULL_NAME;
 import static cloud.xcan.angus.core.utils.CoreUtils.exitApp;
 import static cloud.xcan.angus.core.utils.CoreUtils.getResourceFileContent;
-import static cloud.xcan.angus.core.utils.ValidatorUtils.isDomain;
-import static cloud.xcan.angus.core.utils.ValidatorUtils.isUrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAIN_APP_SERVICES;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.DEFAULT_GM_PORT;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.DEFAULT_PRIVATE_TENANT_ID;

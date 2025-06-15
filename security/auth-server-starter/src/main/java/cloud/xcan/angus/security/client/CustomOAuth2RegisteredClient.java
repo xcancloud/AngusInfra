@@ -1,8 +1,6 @@
 package cloud.xcan.angus.security.client;
 
 import cloud.xcan.angus.spec.experimental.Resources;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;

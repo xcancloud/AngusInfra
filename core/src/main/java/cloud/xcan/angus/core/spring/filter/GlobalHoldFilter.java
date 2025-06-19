@@ -23,6 +23,7 @@ import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getTimeZone;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
+import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.ApiType;
@@ -31,6 +32,7 @@ import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.http.HttpMethod;
 import cloud.xcan.angus.spec.http.HttpRequestHeader;
+import cloud.xcan.angus.spec.http.HttpResponseHeader;
 import cloud.xcan.angus.spec.http.HttpStatus;
 import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
@@ -74,6 +76,8 @@ public class GlobalHoldFilter implements Filter {
   private final ApplicationInfo applicationInfo;
   private final GlobalProperties globalProperties;
 
+  private final int OPTION_MAX_AGE = 3 * 24 * 60 * 60;
+
   public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties) {
     this.applicationInfo = applicationInfo;
     this.globalProperties = globalProperties;
@@ -96,7 +100,8 @@ public class GlobalHoldFilter implements Filter {
 
     // Processing option debugging requests for browser
     if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
-      response.setStatus(HttpStatus.OK.value);
+      response.setHeader(HttpResponseHeader.Access_Control_Max_Age.value, valueOf(OPTION_MAX_AGE));
+      response.setStatus(HttpStatus.NO_CONTENT.value);
       return;
     }
 
@@ -149,7 +154,6 @@ public class GlobalHoldFilter implements Filter {
       }
     }
   }
-
 
 
   private void setCors(HttpServletRequest request, String path, HttpServletResponse response) {
@@ -230,7 +234,7 @@ public class GlobalHoldFilter implements Filter {
     Principal principal = PrincipalContext.createIfAbsent();
     principal.setRequestId(requestId).setRemoteAddress(remoteAddr)
         .setUserAgent(userAgent).setDeviceId(deviceId);
-    if (rootRequest){
+    if (rootRequest) {
       PrincipalContext.setRequestAttribute(REMOTE_ADDR_IN_QUERY, remoteAddr);
       PrincipalContext.setRequestAttribute(USER_AGENT, userAgent);
       PrincipalContext.setRequestAttribute(DEVICE_ID_IN_QUERY, deviceId);
@@ -238,7 +242,8 @@ public class GlobalHoldFilter implements Filter {
     return principal;
   }
 
-  private void assemblePrincipalRequest(HttpServletRequest request, String path, Principal principal) {
+  private void assemblePrincipalRequest(HttpServletRequest request, String path,
+      Principal principal) {
     principal.setRequestAcceptTime(LocalDateTime.now())
         .setServiceCode(applicationInfo.getArtifactId())
         .setServiceName(applicationInfo.getName())

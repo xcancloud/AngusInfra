@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import javax.net.SocketFactory;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLSocketFactory;
@@ -78,6 +80,10 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
               }
           },
           new java.security.SecureRandom());
+
+      HttpsURLConnection.setDefaultSSLSocketFactory(sslcontext.getSocketFactory());
+      HostnameVerifier allHostsValid = (hostname, session) -> true;
+      HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
     } catch (Exception e) {
       throw new IllegalStateException("Could not create the SSL context", e);
     }
@@ -91,6 +97,10 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
    */
   public static synchronized SocketFactory getDefault() {
     return new TrustAllSSLSocketFactory();
+  }
+
+  public static synchronized void disableSSLVerification(){
+    new TrustAllSSLSocketFactory();
   }
 
   /**

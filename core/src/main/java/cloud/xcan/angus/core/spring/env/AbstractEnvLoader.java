@@ -18,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import cloud.xcan.angus.api.enums.EditionType;
 import cloud.xcan.angus.core.app.ProductInfo;
 import cloud.xcan.angus.core.utils.SpringAppDirUtils;
+import cloud.xcan.angus.spec.annotations.Beta;
 import cloud.xcan.angus.spec.utils.ssl.TrustAllSSLSocketFactory;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -195,7 +196,9 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
     }
   }
 
-  private void disableSslVerification() {
+  @Beta
+  public void disableSslVerification() {
+    System.out.println("Disabling SSL verification");
     boolean disableSslVerification = EnvHelper.getBoolean(DISABLE_SSL_VERIFICATION,
         DEFAULT_DISABLE_SSL_VERIFICATION);
     if (disableSslVerification){

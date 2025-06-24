@@ -4,6 +4,8 @@ import static cloud.xcan.angus.api.enums.EditionType.COMMUNITY;
 import static cloud.xcan.angus.core.spring.env.EnvKeys.APP_EDITION;
 import static cloud.xcan.angus.core.spring.env.EnvKeys.APP_NAME;
 import static cloud.xcan.angus.core.spring.env.EnvKeys.APP_VERSION;
+import static cloud.xcan.angus.core.spring.env.EnvKeys.DEFAULT_DISABLE_SSL_VERIFICATION;
+import static cloud.xcan.angus.core.spring.env.EnvKeys.DISABLE_SSL_VERIFICATION;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.COMMON_ENV_FILE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.ENV_FILES_KEY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.PrivateAppConfig.ENV_NAME_FORMAT;
@@ -16,6 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import cloud.xcan.angus.api.enums.EditionType;
 import cloud.xcan.angus.core.app.ProductInfo;
 import cloud.xcan.angus.core.utils.SpringAppDirUtils;
+import cloud.xcan.angus.spec.utils.ssl.TrustAllSSLSocketFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -105,6 +108,8 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
     loadOrRewriteFromExternalEnvFiles(environment, envs);
     // Register the variable to the Spring Environment.\
     environment.getPropertySources().addFirst(new PropertiesPropertySource("customEnv", envs));
+    // Disable ssl verification for self-signed certificate
+    disableSslVerification();
     // Configure and install application
     configureApplication(environment, application);
   }
@@ -190,4 +195,11 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
     }
   }
 
+  private void disableSslVerification() {
+    boolean disableSslVerification = EnvHelper.getBoolean(DISABLE_SSL_VERIFICATION,
+        DEFAULT_DISABLE_SSL_VERIFICATION);
+    if (disableSslVerification){
+      TrustAllSSLSocketFactory.disableSSLVerification();
+    }
+  }
 }

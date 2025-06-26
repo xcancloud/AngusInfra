@@ -21,12 +21,10 @@ import org.hibernate.validator.constraints.Length;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ServerVariable {
 
-  //@NotEmpty
   @Schema(description = "An enumeration of string values to be used if the substitution options are from a limited set. Note: The array MUST NOT be empty.",
       type = "array", example = "[\"prod\", \"dev\", \"beta\"]")
   private List<String> _enum = null;
 
-  //@NotEmpty
   @Length(max = MAX_PARAM_NAME_LENGTH)
   @Schema(description =
       "The default value to use for substitution, which SHALL be sent if an alternate value is not supplied. Note: This behavior is different than the Schema Object's treatment of default values, because in those cases parameter values are optional. "

@@ -59,6 +59,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
       ServiceLoader<ConfigurableApplication> configurableServices
           = ServiceLoader.load(ConfigurableApplication.class);
       for (ConfigurableApplication configurableService : configurableServices) {
+        System.out.println(
+            "Configuring application with " + configurableService.getClass().getName());
         configurableService.doConfigureApplication(environment, envs);
       }
     } catch (Exception e) {
@@ -97,6 +99,12 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
         : getString(GM_ADMIN_FULL_NAME, "Unknown");
   }
 
+  public static String getGMApisUrlPrefix() {
+    // Allow use http override https
+    String apiUrlPrefix = EnvHelper.getString(EnvKeys.GM_APIS_URL_PREFIX);
+    return isNotBlank(apiUrlPrefix) ? apiUrlPrefix : getGMWebsite();
+  }
+
   public static String getGMWebsite() {
     String website = EnvHelper.getString(EnvKeys.GM_WEBSITE);
     return isNotBlank(website)
@@ -110,6 +118,12 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public static int getInstallGMPort() {
     return EnvHelper.getInt(EnvKeys.GM_PORT, DEFAULT_GM_PORT);
+  }
+
+  public static String getTesterApisUrlPrefix() {
+    // Allow use http override https
+    String apiUrlPrefix = EnvHelper.getString(EnvKeys.TESTER_APIS_SERVER_URL);
+    return isNotBlank(apiUrlPrefix) ? apiUrlPrefix : getTesterWebsite();
   }
 
   public static String getTesterWebsite() {

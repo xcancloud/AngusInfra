@@ -35,6 +35,7 @@ public class BannerPrinter {
     try {
       String banner = StreamUtils.copyToString(this.resource.openStream(), StandardCharsets.UTF_8);
       log.info(DECORATION_CHARD + "\n" + banner);
+      System.out.println(DECORATION_CHARD + "\n" + banner);
     } catch (Exception ex) {
       log.warn(String.format("Application banner not printable: %s (%s: '%s')", this.resource,
           ex.getClass(), ex.getMessage()), ex);

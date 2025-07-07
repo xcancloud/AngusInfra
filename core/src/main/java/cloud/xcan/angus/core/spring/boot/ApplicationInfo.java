@@ -93,6 +93,7 @@ public class ApplicationInfo {
             .append("  @_@ ").append(this.getLicenseUrl()).append("\n");
       }
       log.info(sb.toString());
+      System.out.println(sb.toString());
     } catch (Exception e) {
       log.error("Print application ready information exception: {}", e.getMessage());
     }

@@ -47,5 +47,6 @@ public class ApplicationReadyListener implements ApplicationListener<Application
             new Str0(new long[]{0xDE8A7821AAA21FFCL, 0x19722CF1D5858191L, 0xE8D3E0CC7DC7F5L})
                 .toString() /* => " is ready" */).append("\033[0m\n");
     log.info(sb.toString());
+    System.out.println(sb.toString());
   }
 }

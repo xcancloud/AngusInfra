@@ -37,6 +37,13 @@ public class AppSettingHelper {
     return setting;
   }
 
+  public static Setting getSetting(String defaultPropertiesFile, Class<?> loadResourceClass) {
+    if (setting == null) {
+      setting = new Setting(defaultPropertiesFile, null, loadResourceClass);
+    }
+    return setting;
+  }
+
   public static Setting getSetting(String defaultPropertiesFile, String customPropertiesFile,
       Class<?> loadResourceClass) {
     if (setting == null) {
@@ -156,6 +163,11 @@ public class AppSettingHelper {
     public long getLong(String key, long defaultValue) {
       String value = getString(key);
       return isEmpty(value) ? defaultValue : Long.parseLong(value.trim());
+    }
+
+    public double getDouble(String key, double defaultValue) {
+      String value = getString(key);
+      return isEmpty(value) ? defaultValue : Double.parseDouble(value.trim());
     }
 
     public boolean getBoolean(String key) {

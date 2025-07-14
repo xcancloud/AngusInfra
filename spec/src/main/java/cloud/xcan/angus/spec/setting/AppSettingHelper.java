@@ -37,6 +37,13 @@ public class AppSettingHelper {
     return setting;
   }
 
+  public static Setting getSetting(String defaultPropertiesFile, Class<?> loadResourceClass) {
+    if (setting == null) {
+      setting = new Setting(defaultPropertiesFile, null, loadResourceClass);
+    }
+    return setting;
+  }
+
   public static Setting getSetting(String defaultPropertiesFile, String customPropertiesFile,
       Class<?> loadResourceClass) {
     if (setting == null) {

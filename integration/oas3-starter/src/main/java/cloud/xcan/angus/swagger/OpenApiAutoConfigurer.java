@@ -4,6 +4,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SC
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_SYS_OAUTH2_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_HTTP_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_OAUTH2_NAME;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -47,7 +49,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 //@EnableConfigurationProperties({SpringDocConfigProperties.class})
 public class OpenApiAutoConfigurer {
 
-  @Value("${springdoc.oauth2.token-url: http://localhost:9090/oauth2/token}")
+  @Value("${springdoc.oauth2.token-url:http://localhost:9090/oauth2/token}")
   private String oauth2TokenUrl;
 
   private static final List<String> ALLOWED_STATUS_CODES
@@ -68,10 +70,24 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public OpenAPI openAPI(SpringDocConfigProperties doc) {
+  public OpenAPI openAPI(SpringDocConfigProperties doc, ApplicationInfo applicationInfo) {
     OpenAPI openAPI = doc.getOpenApi();
     Assert.assertNotNull(openAPI, "OpenAPI config should not be null");
+
+    if (!applicationInfo.isProdProfile()) {
+      addSelfHostServer(applicationInfo, openAPI);
+    }
     return openAPI;
+  }
+
+  private static void addSelfHostServer(ApplicationInfo applicationInfo, OpenAPI openAPI) {
+    String url = String.format("http://%s", applicationInfo.getInstanceId());
+    if (isNull(openAPI.getServers())
+        || openAPI.getServers().stream().noneMatch(x -> url.equals(x.getUrl()))) {
+      Server selfHost = new Server();
+      selfHost.setUrl(url);
+      openAPI.addServersItem(selfHost);
+    }
   }
 
   @Bean

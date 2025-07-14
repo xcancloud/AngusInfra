@@ -102,26 +102,29 @@ public class AppSettingHelper {
       Properties props = new Properties();
 
       InputStream is = null;
-      String confDir = getConfDir();
-      if (confDir != null) {
-        if (!confDir.endsWith(File.separator)) {
-          confDir += File.separator;
-        }
-        Path path = Paths.get(confDir + file);
-        if (custom && Files.exists(path)) {
-          try {
-            is = Files.newInputStream(path);
-          } catch (IOException e) {
-            log.error("Read {} exception", path.toString(), e);
+
+      if (file != null) {
+        String confDir = getConfDir();
+        if (confDir != null) {
+          if (!confDir.endsWith(File.separator)) {
+            confDir += File.separator;
+          }
+          Path path = Paths.get(confDir + file);
+          if (custom && Files.exists(path)) {
+            try {
+              is = Files.newInputStream(path);
+            } catch (IOException e) {
+              log.error("Read {} exception", path.toString(), e);
+            }
           }
         }
-      }
-
-      if (is == null) {
-        is = loadResourceClassClass.getResourceAsStream(file);
 
         if (is == null) {
-          is = loadResourceClassClass.getClassLoader().getResourceAsStream(file);
+          is = loadResourceClassClass.getResourceAsStream(file);
+
+          if (is == null) {
+            is = loadResourceClassClass.getClassLoader().getResourceAsStream(file);
+          }
         }
       }
 

@@ -32,6 +32,9 @@ public class ApplicationInfo {
   private String editionType = "";
   private String version = "";
   private String description = "";
+  /**
+   * local, dev, prod, priv...
+   */
   private String profile = "";
   private InstanceType runtime;
   private String timezone;
@@ -62,6 +65,14 @@ public class ApplicationInfo {
 
   public boolean isEdition(EditionType editionType) {
     return editionType.getValue().equalsIgnoreCase(this.editionType);
+  }
+
+  public boolean isProdProfile() {
+    return profile != null && !profile.isEmpty() && "prod".equalsIgnoreCase(profile);
+  }
+
+  public boolean isPrivateProfile() {
+    return profile != null && !profile.isEmpty() && "priv".equalsIgnoreCase(profile);
   }
 
   public void printAppInfo() {

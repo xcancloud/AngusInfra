@@ -165,6 +165,11 @@ public class AppSettingHelper {
       return isEmpty(value) ? defaultValue : Long.parseLong(value.trim());
     }
 
+    public double getDouble(String key, double defaultValue) {
+      String value = getString(key);
+      return isEmpty(value) ? defaultValue : Double.parseDouble(value.trim());
+    }
+
     public boolean getBoolean(String key) {
       String value = getString(key);
       return !isEmpty(value) && Boolean.parseBoolean(value.trim());

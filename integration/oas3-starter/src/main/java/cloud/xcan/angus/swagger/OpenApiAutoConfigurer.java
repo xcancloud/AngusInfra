@@ -4,6 +4,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SC
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_SYS_OAUTH2_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_HTTP_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_OAUTH2_NAME;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
@@ -20,14 +21,12 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import org.checkerframework.checker.units.qual.A;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -75,12 +74,20 @@ public class OpenApiAutoConfigurer {
     OpenAPI openAPI = doc.getOpenApi();
     Assert.assertNotNull(openAPI, "OpenAPI config should not be null");
 
-    if (!applicationInfo.isProdProfile()){
-      Server selfHost = new Server();
-      selfHost.setUrl(String.format("http://%s", applicationInfo.getInstanceId()));
-      openAPI.addServersItem(selfHost);
+    if (!applicationInfo.isProdProfile()) {
+      addSelfHostServer(applicationInfo, openAPI);
     }
     return openAPI;
+  }
+
+  private static void addSelfHostServer(ApplicationInfo applicationInfo, OpenAPI openAPI) {
+    String url = String.format("http://%s", applicationInfo.getInstanceId());
+    if (isNull(openAPI.getServers())
+        || openAPI.getServers().stream().noneMatch(x -> url.equals(x.getUrl()))) {
+      Server selfHost = new Server();
+      selfHost.setUrl(url);
+      openAPI.addServersItem(selfHost);
+    }
   }
 
   @Bean

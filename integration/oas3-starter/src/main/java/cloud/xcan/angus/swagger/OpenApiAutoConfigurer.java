@@ -18,13 +18,16 @@ import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import org.checkerframework.checker.units.qual.A;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springdoc.core.filters.OpenApiMethodFilter;
 import org.springdoc.core.models.GroupedOpenApi;
@@ -47,7 +50,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 //@EnableConfigurationProperties({SpringDocConfigProperties.class})
 public class OpenApiAutoConfigurer {
 
-  @Value("${springdoc.oauth2.token-url: http://localhost:9090/oauth2/token}")
+  @Value("${springdoc.oauth2.token-url:http://localhost:9090/oauth2/token}")
   private String oauth2TokenUrl;
 
   private static final List<String> ALLOWED_STATUS_CODES
@@ -68,9 +71,15 @@ public class OpenApiAutoConfigurer {
   }
 
   @Bean
-  public OpenAPI openAPI(SpringDocConfigProperties doc) {
+  public OpenAPI openAPI(SpringDocConfigProperties doc, ApplicationInfo applicationInfo) {
     OpenAPI openAPI = doc.getOpenApi();
     Assert.assertNotNull(openAPI, "OpenAPI config should not be null");
+
+    if (!applicationInfo.isProdProfile()){
+      Server selfHost = new Server();
+      selfHost.setUrl(String.format("http://%s", applicationInfo.getInstanceId()));
+      openAPI.addServersItem(selfHost);
+    }
     return openAPI;
   }
 

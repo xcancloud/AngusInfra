@@ -37,7 +37,8 @@ public class ProxyRequestRest {
   public static final String PROXY_ENDPOINT = "/pubapi/v1/proxy";
   public static final String TARGET_ADDR_PARAMETER = "targetAddr";
 
-  @Operation(summary = "Call other servers and return the results directly to the client", operationId = "proxy:request:pub")
+  @Operation(summary = "Call other servers and return the results directly to the client",
+      hidden = true, operationId = "proxy:request:pub")
   @RequestMapping(value = "/**")
   public void proxy(HttpServletRequest request, HttpServletResponse response)
       throws IOException, URISyntaxException {

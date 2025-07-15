@@ -27,7 +27,7 @@ public interface ClientSignOpenapi2pRemote {
       @ApiResponse(responseCode = "200", description = "Sign-in successfully")
   })
   @ResponseStatus(HttpStatus.OK)
-  @PostMapping(value = "/pubapi/v1/client/signin")
+  @PostMapping(value = "/pubapi/v1/auth/client/signin")
   ApiLocaleResult<ClientSignInVo> signin(@Valid @RequestBody ClientSignInDto dto);
 
 }

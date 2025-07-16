@@ -222,7 +222,7 @@ public class OpenApiAutoConfigurer {
                 .scheme("bearer")
                 .bearerFormat("opaque")
                 .description("Use existing opaque tokens for authentication")
-        ).addSecuritySchemes(SECURITY_SCHEME_USER_OAUTH2_NAME,
+        )/*.addSecuritySchemes(SECURITY_SCHEME_USER_OAUTH2_NAME,
             new SecurityScheme()
                 .type(Type.OAUTH2)
                 .scheme("bearer")
@@ -234,7 +234,7 @@ public class OpenApiAutoConfigurer {
                             .addString("read", "Read Permission")
                             .addString("write", "Write Permission"))))
                 .description("Use OAuth2 opaque tokens for authentication")
-        );
+        )*/;
   }
 
   private OpenApiCustomizer globalSysSecurityCustomizer() {
@@ -250,7 +250,7 @@ public class OpenApiAutoConfigurer {
                 .scheme("bearer")
                 .bearerFormat("opaque")
                 .description("Use existing opaque tokens for authentication")
-        ).addSecuritySchemes(SECURITY_SCHEME_SYS_OAUTH2_NAME,
+        )/*.addSecuritySchemes(SECURITY_SCHEME_SYS_OAUTH2_NAME,
             new SecurityScheme()
                 .type(Type.OAUTH2)
                 .scheme("bearer")
@@ -262,7 +262,7 @@ public class OpenApiAutoConfigurer {
                             .addString("read", "Read Permission")
                             .addString("write", "Write Permission"))))
                 .description("Use OAuth2 opaque tokens for authentication")
-        );
+        )*/;
   }
 
   private OpenApiCustomizer removeDefaultResponses() {

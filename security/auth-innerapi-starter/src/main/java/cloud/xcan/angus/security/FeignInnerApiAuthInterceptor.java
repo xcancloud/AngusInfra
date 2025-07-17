@@ -46,7 +46,7 @@ public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
   private synchronized String getToken() {
     if (this.innerApiToken != null
         // Control to obtain once every 15 minutes
-        && System.currentTimeMillis() - this.lastedAuthTime <= this.maxAuthTimeInterval) {
+        && System.currentTimeMillis() - this.lastedAuthTime <= maxAuthTimeInterval) {
       return this.innerApiToken;
     }
 

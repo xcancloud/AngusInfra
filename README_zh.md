@@ -56,7 +56,6 @@
 |------|-----------------------------------------------------------|  
 | **`integration/web-starter`** | RESTful API 快速开发套件，自动配置统一响应格式、全局异常处理及跨域策略                 |  
 | **`integration/oas3-starter`** | OpenAPI 3.x 规范支持，自动生成接口文档并集成 Swagger UI                   |  
-| **`integration/validator-starter`** | 增强校验库，扩展 JSR-380 标准，提供业务级校验规则（如密码/手机号/身份证格式校验）            |  
 
 ### **开发工具链**
 | 模块 | 说明                                        |  

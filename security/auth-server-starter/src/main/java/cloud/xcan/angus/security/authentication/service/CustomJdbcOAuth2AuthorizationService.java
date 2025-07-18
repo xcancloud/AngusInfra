@@ -7,6 +7,7 @@ import static java.util.Objects.isNull;
 
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -31,7 +32,7 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
       "DELETE FROM " + TABLE_NAME + " WHERE registered_client_id = ?";
 
   private static final String REMOVE_AUTHORIZATION_BY_PRINCIPAL_SQL =
-      "DELETE FROM " + TABLE_NAME + " WHERE principal_name IN ?";
+      "DELETE FROM " + TABLE_NAME + " WHERE principal_name IN (%s)";
 
   private static final String UPDATE_USER_ALLOW_DUPLICATE_LOGIN_SQL =
       "UPDATE " + TABLE_NAME + " SET user_allow_duplicate_login = ? WHERE id = ?";
@@ -80,11 +81,12 @@ public class CustomJdbcOAuth2AuthorizationService extends JdbcOAuth2Authorizatio
 
   @Override
   public void removeByPrincipalName(List<String> principalName) {
-    Assert.notNull(principalName, "principalName cannot be null");
-    SqlParameterValue[] parameters = new SqlParameterValue[]{
-        new SqlParameterValue(Types.VARCHAR, principalName)};
-    PreparedStatementSetter pss = new ArgumentPreparedStatementSetter(parameters);
-    this.getJdbcOperations().update(REMOVE_AUTHORIZATION_BY_PRINCIPAL_SQL, pss);
+    if (isNull(principalName) || principalName.isEmpty()) {
+      return;
+    }
+    String placeholders = String.join(",", Collections.nCopies(principalName.size(), "?"));
+    String sql = String.format(REMOVE_AUTHORIZATION_BY_PRINCIPAL_SQL, placeholders);
+    this.getJdbcOperations().update(sql, principalName.toArray());
   }
 
   private void removePreviousDuplicateLogin(OAuth2Authorization authorization) {

@@ -8,9 +8,6 @@ import static cloud.xcan.angus.core.utils.ServletUtils.getDeviceId;
 import static cloud.xcan.angus.core.utils.ServletUtils.getUserAgent;
 import static cloud.xcan.angus.core.utils.ServletUtils.writeApiResult;
 import static cloud.xcan.angus.remote.message.http.ServiceUnavailable.M.SERVICE_UNAVAILABLE_KEY;
-import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_LOCALE;
-import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_TIME_ZONE;
-import static cloud.xcan.angus.spec.SpecConstant.LOCALE_COOKIE_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_CREDENTIALS;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_EXPOSE_HEADERS;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.CORS_HEADERS;
@@ -22,7 +19,6 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getTimeZone;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;
 
@@ -44,19 +40,16 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Locale;
-import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.MDC;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.util.StringUtils;
-import org.springframework.web.util.WebUtils;
+import org.springframework.web.servlet.LocaleResolver;
 
 /**
  * Question:
@@ -75,12 +68,15 @@ public class GlobalHoldFilter implements Filter {
 
   private final ApplicationInfo applicationInfo;
   private final GlobalProperties globalProperties;
+  private final LocaleResolver localeResolver;
 
-  private final int OPTION_MAX_AGE = 3 * 24 * 60 * 60;
+  private static final int OPTION_MAX_AGE = 3 * 24 * 60 * 60;
 
-  public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties) {
+  public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties,
+      LocaleResolver localeResolver) {
     this.applicationInfo = applicationInfo;
     this.globalProperties = globalProperties;
+    this.localeResolver = localeResolver;
   }
 
   @Override
@@ -117,9 +113,9 @@ public class GlobalHoldFilter implements Filter {
         return;
       }
 
-      initLocaleHolder(request);
+      initLocaleContext(request);
 
-      assemblePrincipalRequest(request, path, principal);
+      assemblePrincipal(request, path, principal);
 
       relayOptTenantId(request, principal);
 
@@ -178,50 +174,10 @@ public class GlobalHoldFilter implements Filter {
     }
   }
 
-  private void initLocaleHolder(HttpServletRequest request) {
-    Locale locale = null;
-    TimeZone timeZone = null;
-
-    // Retrieve and parse cookie value.
-    Cookie cookie = WebUtils.getCookie(request, LOCALE_COOKIE_NAME);
-    if (nonNull(cookie)) {
-      String value = cookie.getValue();
-      String localePart = value;
-      String timeZonePart = null;
-      int separatorIndex = localePart.indexOf('/');
-      if (separatorIndex == -1) {
-        // Leniently accept older cookies separated by a space...
-        separatorIndex = localePart.indexOf(' ');
-      }
-      if (separatorIndex >= 0) {
-        localePart = value.substring(0, separatorIndex);
-        timeZonePart = value.substring(separatorIndex + 1);
-      }
-      try {
-        locale = (!"-".equals(localePart) ? StringUtils.parseLocale(localePart) : null);
-        if (timeZonePart != null) {
-          timeZone = StringUtils.parseTimeZoneString(timeZonePart);
-        }
-      } catch (IllegalArgumentException ex) {
-        log.warn("Parsed cookie value [" + cookie.getValue() + "] into locale '" + locale + "'");
-      }
-    }
-
-    if (isNull(timeZone) && nonNull(applicationInfo.getTimezone())) {
-      timeZone = TimeZone.getTimeZone(applicationInfo.getTimezone());
-    }
-
-    if (isNull(timeZone)) {
-      timeZone = DEFAULT_TIME_ZONE;
-    }
-
-    locale = isNull(locale) ? DEFAULT_LOCALE : SupportedLanguage.safeLocale(locale);
-
-    // Hold Locale and ZoneTime
+  private void initLocaleContext(HttpServletRequest request) {
+    Locale locale = localeResolver.resolveLocale(request);
     LocaleContextHolder.setLocale(locale);
-    LocaleContextHolder.setTimeZone(timeZone);
     SdfLocaleHolder.setLocale(locale);
-    SdfLocaleHolder.setTimeZone(timeZone);
   }
 
   private static @NotNull Principal assemblePrincipalRemote(
@@ -242,7 +198,7 @@ public class GlobalHoldFilter implements Filter {
     return principal;
   }
 
-  private void assemblePrincipalRequest(HttpServletRequest request, String path,
+  private void assemblePrincipal(HttpServletRequest request, String path,
       Principal principal) {
     principal.setRequestAcceptTime(LocalDateTime.now())
         .setServiceCode(applicationInfo.getArtifactId())

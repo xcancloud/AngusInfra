@@ -36,6 +36,7 @@ import static cloud.xcan.angus.remote.message.http.MethodNotSupported.M.METHOD_N
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.HANDLER_NOT_FOUND_KEY;
 import static cloud.xcan.angus.remote.message.http.ResourceNotFound.MKey.HANDLER_NOT_FOUND_T;
 import static cloud.xcan.angus.spec.locale.MessageHolder.message;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isBlank;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -130,7 +131,8 @@ public class DefaultGlobalExceptionAdvice {
    */
   @ResponseStatus(HttpStatus.OK)
   @ExceptionHandler(cloud.xcan.angus.core.biz.exception.BizException.class)
-  public ApiResult<?> handleCustomException(cloud.xcan.angus.core.biz.exception.BizException e, HttpServletResponse response) {
+  public ApiResult<?> handleCustomException(cloud.xcan.angus.core.biz.exception.BizException e,
+      HttpServletResponse response) {
     return buildApiResult(e.getCode(), getLocaleMessage(e), e.getType(), e.getLevel(), e,
         e.getEKey(), response);
   }
@@ -188,13 +190,12 @@ public class DefaultGlobalExceptionAdvice {
   public ApiResult<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
       HttpServletResponse response) {
     FieldError fe = e.getBindingResult().getFieldError();
-    if (nonNull(fe)) {
-      String message = message(PARAM_VALIDATION_ERROR_T,
-          new Object[]{fe.getField(), message(fe.getDefaultMessage())});
-      return buildApiResult(PROTOCOL_ERROR_CODE, message, EventType.PROTOCOL,
-          ExceptionLevel.IGNORABLE, e, PARAM_VALIDATION_ERROR_KEY, response);
+    String message = fe.getDefaultMessage();
+    if (isBlank(message)) {
+      message = message(PARAM_VALIDATION_ERROR_T, new Object[]{
+          fe.getField(), fe.getRejectedValue()});
     }
-    return buildApiResult(PROTOCOL_ERROR_CODE, message(PARAM_VALIDATION_ERROR), EventType.PROTOCOL,
+    return buildApiResult(PROTOCOL_ERROR_CODE, message, EventType.PROTOCOL,
         ExceptionLevel.IGNORABLE, e, PARAM_VALIDATION_ERROR_KEY, response);
   }
 
@@ -207,14 +208,10 @@ public class DefaultGlobalExceptionAdvice {
   @ExceptionHandler(BindException.class)
   public ApiResult<?> handleBindException(BindException e, HttpServletResponse response) {
     FieldError fe = e.getFieldError();
-    if (nonNull(fe)) {
-      String error = isNotEmpty(fe.getDefaultMessage())
-          ? message(PARAM_BINDING_ERROR_T2, new Object[]{fe.getField(), fe.getDefaultMessage()})
-          : message(PARAM_BINDING_ERROR_T, new Object[]{fe.getField(), fe.getRejectedValue()});
-      return buildApiResult(PROTOCOL_ERROR_CODE, error, EventType.PROTOCOL,
-          ExceptionLevel.IGNORABLE, e, PARAM_BINDING_ERROR_KEY, response);
-    }
-    return buildApiResult(PROTOCOL_ERROR_CODE, message(PARAM_BINDING_ERROR), EventType.PROTOCOL,
+    String error = isNotEmpty(fe.getDefaultMessage())
+        ? message(PARAM_BINDING_ERROR_T2, new Object[]{fe.getField(), fe.getDefaultMessage()})
+        : message(PARAM_BINDING_ERROR_T, new Object[]{fe.getField(), fe.getRejectedValue()});
+    return buildApiResult(PROTOCOL_ERROR_CODE, error, EventType.PROTOCOL,
         ExceptionLevel.IGNORABLE, e, PARAM_BINDING_ERROR_KEY, response);
   }
 

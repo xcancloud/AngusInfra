@@ -214,7 +214,7 @@ public class OpenApiAutoConfigurer {
         // Use existing opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_HTTP_NAME))
         // Use OAuth2 opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_OAUTH2_NAME))
+        //.addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_OAUTH2_NAME))
         .getComponents()
         .addSecuritySchemes(SECURITY_SCHEME_USER_HTTP_NAME,
             new SecurityScheme()
@@ -242,7 +242,7 @@ public class OpenApiAutoConfigurer {
         // Use existing opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_HTTP_NAME))
         // Use OAuth2 opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_OAUTH2_NAME))
+        //.addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_OAUTH2_NAME))
         .getComponents()
         .addSecuritySchemes(SECURITY_SCHEME_SYS_HTTP_NAME,
             new SecurityScheme()

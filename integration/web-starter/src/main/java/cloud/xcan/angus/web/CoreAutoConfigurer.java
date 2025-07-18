@@ -1,6 +1,5 @@
 package cloud.xcan.angus.web;
 
-import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_LOCALE;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_TIME_ZONE;
 import static cloud.xcan.angus.spec.SpecConstant.LOCALE_COOKIE_NAME;
@@ -25,18 +24,20 @@ import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.converter.StringToPriorityConverter;
 import cloud.xcan.angus.core.spring.filter.GlobalHoldFilter;
 import cloud.xcan.angus.core.spring.filter.GlobalProperties;
+import cloud.xcan.angus.core.spring.locale.MultiSourceLocaleResolver;
 import cloud.xcan.angus.core.spring.security.PrincipalPermissionService;
 import cloud.xcan.angus.swagger.ByteArrayToStringConverter;
-import cloud.xcan.angus.validator.ValidatorProperties;
 import cloud.xcan.angus.web.endpoint.AppWorkspaceEndpoint;
 import cloud.xcan.angus.web.endpoint.MessageEndpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
@@ -51,10 +52,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
-import org.springframework.context.MessageSource;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -62,6 +62,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.RequestContextFilter;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -77,7 +78,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 @AutoConfigureAfter(CommonAutoConfigurer.class)
 @ConditionalOnClass(WebMvcConfigurer.class)
 @EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class,
-    VerxProperties.class, ValidatorProperties.class, MultipartProperties.class})
+    VerxProperties.class, MultipartProperties.class})
 @ConditionalOnProperty(name = "xcan.core.enabled", havingValue = "true", matchIfMissing = false)
 public class CoreAutoConfigurer implements WebMvcConfigurer {
 
@@ -112,18 +113,6 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   @Bean("appBeanReadyInit")
   public ApplicationInit appBeanReadyInit() {
     return new AppBeanReadyInit();
-  }
-
-  @Bean("messageSource")
-  public MessageSource messageSource(ValidatorProperties validatorProperties) {
-    ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-    messageSource.setBasenames(validatorProperties.getAllI18ns());
-    messageSource.setCacheSeconds(-1);
-    //messageSource.setCacheSeconds((int) ShortTimeUnit.HOURS.toSeconds(2));
-    messageSource.setDefaultEncoding(DEFAULT_ENCODING);
-    messageSource.setConcurrentRefresh(true);
-    messageSource.setDefaultLocale(DEFAULT_LOCALE);
-    return messageSource;
   }
 
   @Bean
@@ -198,36 +187,13 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     return new DefaultGlobalExceptionAdvice();
   }
 
-  /**
-   * //@see DispatcherServlet#initStrategies(ApplicationContext content)
-   * <p>
-   * //@see DispatcherServlet#buildLocaleContext(HttpServletRequest request)
-   */
-  @Bean(LOCALE_RESOLVER_BEAN_NAME)
-  public LocaleResolver localeResolver(ApplicationInfo applicationInfo) {
-    CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-    localeResolver.setCookieName(LOCALE_COOKIE_NAME);
-    localeResolver.setDefaultLocale(DEFAULT_LOCALE);
-    if (Objects.nonNull(applicationInfo.getTimezone())) {
-      localeResolver.setDefaultTimeZone(TimeZone.getTimeZone(applicationInfo.getTimezone()));
-    } else {
-      localeResolver.setDefaultTimeZone(DEFAULT_TIME_ZONE);
-    }
-    localeResolver.setCookieMaxAge(24 * 60 * 60);
-    return localeResolver;
-  }
-
-  @Bean
-  public LocaleChangeInterceptor localeChangeInterceptor() {
-    return new LocaleChangeInterceptor();
-  }
-
   @Bean
   public FilterRegistrationBean<GlobalHoldFilter> registrationGlobalHoldFilterBean(
-      ApplicationInfo applicationInfo, GlobalProperties globalProperties) {
+      ApplicationInfo applicationInfo, GlobalProperties globalProperties,
+      LocaleResolver localeResolver) {
     FilterRegistrationBean<GlobalHoldFilter> registrationBean = new FilterRegistrationBean<>();
     registrationBean.setName("globalHoldFilter");
-    registrationBean.setFilter(new GlobalHoldFilter(applicationInfo, globalProperties));
+    registrationBean.setFilter(new GlobalHoldFilter(applicationInfo, globalProperties, localeResolver));
     registrationBean.setDispatcherTypes(DispatcherType.REQUEST);
     registrationBean.addUrlPatterns("/*");
     // Must be executed after RequestContextFilter(OrderedRequestContextFilter) to prevent being overwritten
@@ -250,10 +216,27 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     return registrationBean;
   }
 
-  @Override
-  public void addInterceptors(InterceptorRegistry registry) {
-    registry.addInterceptor(localeChangeInterceptor());
+  /**
+   * @see DispatcherServlet#initStrategies(ApplicationContext content)
+   * <p>
+   * @see DispatcherServlet#buildLocaleContext(HttpServletRequest request)
+   */
+  @Bean(LOCALE_RESOLVER_BEAN_NAME)
+  public MultiSourceLocaleResolver localeResolver() {
+    MultiSourceLocaleResolver resolver = new MultiSourceLocaleResolver();
+    resolver.setDefaultLocale(DEFAULT_LOCALE);
+    return resolver;
   }
+
+  //  @Bean
+  //  public LocaleChangeInterceptor localeChangeInterceptor() {
+  //    return new LocaleChangeInterceptor();
+  //  }
+
+  //  @Override
+  //  public void addInterceptors(InterceptorRegistry registry) {
+  //    registry.addInterceptor(localeChangeInterceptor());
+  //  }
 
   /**
    * It is important to configure configureMessageConverters() and specify a custom objectMapper

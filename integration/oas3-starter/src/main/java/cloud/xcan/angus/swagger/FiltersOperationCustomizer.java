@@ -13,7 +13,7 @@ import org.springframework.web.method.HandlerMethod;
 
 public class FiltersOperationCustomizer implements OperationCustomizer {
 
-  public static int FILTER_PARAMETERS = 1;
+  public static int FILTER_PARAMETERS = 2;
 
   @Override
   public Operation customize(Operation operation, HandlerMethod handlerMethod) {

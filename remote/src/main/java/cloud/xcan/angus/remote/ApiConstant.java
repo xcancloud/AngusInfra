@@ -157,7 +157,7 @@ public interface ApiConstant {
     /**
      * Maximum length of filtered column name
      */
-    int MAX_FILTER_COLUMN_LENGTH = 80;
+    int MAX_FILTER_COLUMN_LENGTH = 100;
   }
 
   /**

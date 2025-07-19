@@ -13,7 +13,7 @@ public class CommDto implements Serializable {
   /**
    * @see SearchCriteria#INFO_SCOPE_KEY
    */
-  @Schema(description = "Query information scope")
+  @Schema(description = "Query information scope", hidden = true)
   public InfoScope infoScope;
 
   //  /**

@@ -13,6 +13,8 @@ import org.springframework.web.method.HandlerMethod;
 
 public class FiltersOperationCustomizer implements OperationCustomizer {
 
+  public static int FILTER_PARAMETERS = 1;
+
   @Override
   public Operation customize(Operation operation, HandlerMethod handlerMethod) {
     if (operation.getParameters() == null) {
@@ -33,24 +35,24 @@ public class FiltersOperationCustomizer implements OperationCustomizer {
 
   private List<Parameter> generateFilterParameters() {
     List<Parameter> params = new ArrayList<>();
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < FILTER_PARAMETERS; i++) {
       params.add(new Parameter()
           .in("query")
           .name("filters[" + i + "].key")
-          .description("Filter field name")
+          .description("Customize the filter parameter name. Note: The parameter name must be a whitelist parameter")
           .schema(new StringSchema()));
 
       params.add(new Parameter()
           .in("query")
           .name("filters[" + i + "].op")
-          .description("Filter condition (EQUAL, NOT_EQUAL, GREATER_THAN, etc.)")
+          .description("Customize the filter condition (EQUAL, NOT_EQUAL, GREATER_THAN, etc.)")
           .schema(new StringSchema()._enum(Arrays.stream(SearchOperation.values()).map(
               SearchOperation::getValue).toList())));
 
       params.add(new Parameter()
           .in("query")
           .name("filters[" + i + "].value")
-          .description("Filter value")
+          .description("Customize the filter value")
           .schema(new Schema<>().type("object")));
     }
     return params;

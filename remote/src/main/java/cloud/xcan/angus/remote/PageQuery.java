@@ -26,16 +26,17 @@ import org.springframework.data.domain.Sort.Order;
 @Setter
 @Getter
 @EqualsAndHashCode(callSuper = true)
+@Schema(description = "Pagination query parameters")
 public abstract class PageQuery extends AbstractQuery implements Serializable {
 
   @Min(1)
   @Max(MAX_PAGE_NO)
-  @Schema(description = "Page data size, default 1, maximum " + MAX_PAGE_NO)
+  @Schema(description = "Number of pages for paginated data, default query is the first page")
   private Integer pageNo = DEFAULT_PAGE_NO;
 
   @Min(1)
   @Max(MAX_PAGE_SIZE)
-  @Schema(description = "Page data size, default 10, maximum " + MAX_PAGE_SIZE)
+  @Schema(description = "The number of items to query per page, default query is the  10 items")
   private Integer pageSize = DEFAULT_PAGE_SIZE;
 
   @Override
@@ -57,10 +58,10 @@ public abstract class PageQuery extends AbstractQuery implements Serializable {
       throw new IllegalArgumentException("Default orderBy not specified");
     }
     String orderBy = isBlank(this.getOrderBy()) ? this.getDefaultOrderBy() : this.getOrderBy();
-    OrderSort orderSort = isNull(this.getOrderSort()) ? this.getDefaultOrderSort()
-        : this.getOrderSort();
-    return PageRequest.of(nullSafe(pageNo, DEFAULT_PAGE_NO) - 1,
-        nullSafe(pageSize, DEFAULT_PAGE_SIZE),
+    OrderSort orderSort = isNull(this.getOrderSort())
+        ? this.getDefaultOrderSort() : this.getOrderSort();
+    return PageRequest.of(
+        nullSafe(pageNo, DEFAULT_PAGE_NO) - 1, nullSafe(pageSize, DEFAULT_PAGE_SIZE),
         Sort.by(new Order(Direction.fromString(orderSort.name()), orderBy)));
   }
 }

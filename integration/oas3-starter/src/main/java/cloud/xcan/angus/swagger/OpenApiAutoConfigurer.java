@@ -1,9 +1,7 @@
 package cloud.xcan.angus.swagger;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_SYS_HTTP_NAME;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_SYS_OAUTH2_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_HTTP_NAME;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SECURITY_SCHEME_USER_OAUTH2_NAME;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
@@ -13,12 +11,8 @@ import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.security.OAuthFlow;
-import io.swagger.v3.oas.models.security.OAuthFlows;
-import io.swagger.v3.oas.models.security.Scopes;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
-import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,16 +74,6 @@ public class OpenApiAutoConfigurer {
     return openAPI;
   }
 
-  private static void addSelfHostServer(ApplicationInfo applicationInfo, OpenAPI openAPI) {
-    String url = String.format("http://%s", applicationInfo.getInstanceId());
-    if (isNull(openAPI.getServers())
-        || openAPI.getServers().stream().noneMatch(x -> url.equals(x.getUrl()))) {
-      Server selfHost = new Server();
-      selfHost.setUrl(url);
-      openAPI.addServersItem(selfHost);
-    }
-  }
-
   @Bean
   public GroupedOpenApi userApi(ApplicationInfo applicationInfo,
       FiltersOperationCustomizer filtersOperationCustomizer) {
@@ -102,7 +86,7 @@ public class OpenApiAutoConfigurer {
           .pathsToMatch("/api/v1/**")
           // Exclude cloud service edition apis
           .addOpenApiMethodFilter(notCloudServiceEditionFilter())
-          .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .addOpenApiCustomizer(addGlobalUserSecurityCustomizer())
           .addOpenApiCustomizer(removeDefaultResponses())
           .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
@@ -115,7 +99,7 @@ public class OpenApiAutoConfigurer {
           .pathsToMatch("/api/v1/**")
           // Exclude privatized edition apis
           .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
-          .addOpenApiCustomizer(globalUserSecurityCustomizer())
+          .addOpenApiCustomizer(addGlobalUserSecurityCustomizer())
           .addOpenApiCustomizer(removeDefaultResponses())
           .addOpenApiCustomizer(sortTagsAlphabetically())
           .addOperationCustomizer(filtersOperationCustomizer)
@@ -132,7 +116,7 @@ public class OpenApiAutoConfigurer {
         .displayName("/innerapi (Inner System Api Document)")
         .group("inner")
         .pathsToMatch("/innerapi/v1/**")
-        .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .addOpenApiCustomizer(addGlobalSysSecurityCustomizer())
         .addOpenApiCustomizer(removeDefaultResponses())
         .addOpenApiCustomizer(sortTagsAlphabetically())
         .addOperationCustomizer(filtersOperationCustomizer)
@@ -147,7 +131,7 @@ public class OpenApiAutoConfigurer {
         .displayName("/openapi2p (Inner System Api Document)")
         .group("openapi2p")
         .pathsToMatch("/openapi2p/v1/**")
-        .addOpenApiCustomizer(globalSysSecurityCustomizer())
+        .addOpenApiCustomizer(addGlobalSysSecurityCustomizer())
         .addOpenApiCustomizer(removeDefaultResponses())
         .addOpenApiCustomizer(sortTagsAlphabetically())
         .addOperationCustomizer(filtersOperationCustomizer)
@@ -186,30 +170,17 @@ public class OpenApiAutoConfigurer {
     return openApi;
   }
 
-  private OpenApiMethodFilter notPrivateServiceEditionFilter() {
-    return handlerMethod -> {
-      // Check class level annotation
-      boolean hasClassAnnotation = handlerMethod.getDeclaringClass()
-          .isAnnotationPresent(PrivateEdition.class);
-      // Check method level annotation
-      boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(PrivateEdition.class);
-      return !hasClassAnnotation && !hasMethodAnnotation;
-    };
+  private void addSelfHostServer(ApplicationInfo applicationInfo, OpenAPI openAPI) {
+    String url = String.format("http://%s", applicationInfo.getInstanceId());
+    if (isNull(openAPI.getServers())
+        || openAPI.getServers().stream().noneMatch(x -> url.equals(x.getUrl()))) {
+      Server selfHost = new Server();
+      selfHost.setUrl(url);
+      openAPI.addServersItem(selfHost);
+    }
   }
 
-  private OpenApiMethodFilter notCloudServiceEditionFilter() {
-    return handlerMethod -> {
-      // Check class level annotation
-      boolean hasClassAnnotation = handlerMethod.getDeclaringClass()
-          .isAnnotationPresent(CloudServiceEdition.class);
-      // Check method level annotation
-      boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(CloudServiceEdition.class);
-
-      return !hasClassAnnotation && !hasMethodAnnotation;
-    };
-  }
-
-  private OpenApiCustomizer globalUserSecurityCustomizer() {
+  private OpenApiCustomizer addGlobalUserSecurityCustomizer() {
     return openApi -> openApi
         // Use existing opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_HTTP_NAME))
@@ -237,7 +208,7 @@ public class OpenApiAutoConfigurer {
         )*/;
   }
 
-  private OpenApiCustomizer globalSysSecurityCustomizer() {
+  private OpenApiCustomizer addGlobalSysSecurityCustomizer() {
     return openApi -> openApi
         // Use existing opaque tokens for authentication
         .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_HTTP_NAME))
@@ -271,11 +242,32 @@ public class OpenApiAutoConfigurer {
     });
   }
 
+  private OpenApiMethodFilter notPrivateServiceEditionFilter() {
+    return handlerMethod -> {
+      // Check class level annotation
+      boolean hasClassAnnotation = handlerMethod.getDeclaringClass()
+          .isAnnotationPresent(PrivateEdition.class);
+      // Check method level annotation
+      boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(PrivateEdition.class);
+      return !hasClassAnnotation && !hasMethodAnnotation;
+    };
+  }
+
+  private OpenApiMethodFilter notCloudServiceEditionFilter() {
+    return handlerMethod -> {
+      // Check class level annotation
+      boolean hasClassAnnotation = handlerMethod.getDeclaringClass()
+          .isAnnotationPresent(CloudServiceEdition.class);
+      // Check method level annotation
+      boolean hasMethodAnnotation = handlerMethod.isAnnotationPresent(CloudServiceEdition.class);
+
+      return !hasClassAnnotation && !hasMethodAnnotation;
+    };
+  }
+
   private void filterResponses(Operation operation) {
     if (operation.getResponses() != null) {
-      operation.getResponses().keySet().removeIf(
-          key -> !ALLOWED_STATUS_CODES.contains(key)
-      );
+      operation.getResponses().keySet().removeIf(key -> !ALLOWED_STATUS_CODES.contains(key));
     }
   }
 

@@ -37,8 +37,8 @@ import org.springframework.util.CollectionUtils;
 
 public class SearchCriteriaBuilder<T extends AbstractQuery> {
 
-  public static final List<String> EXCLUDED_FILTER_FIELDS = List.of("pageNo", "pageSize",
-      "orderBy", "orderSort", "filters");
+  public static final List<String> EXCLUDED_FILTER_FIELDS = List.of(
+      "pageNo", "pageSize", "orderBy", "orderSort", "filters", "fullTextSearch");
 
   public static Map<String, Field[]> DTO_FIELDS = new ConcurrentHashMap<>();
   public static Map<String, List<String>> DTO_NAMES = new ConcurrentHashMap<>();

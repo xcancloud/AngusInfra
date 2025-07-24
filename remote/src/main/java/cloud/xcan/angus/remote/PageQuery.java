@@ -26,17 +26,25 @@ import org.springframework.data.domain.Sort.Order;
 @Setter
 @Getter
 @EqualsAndHashCode(callSuper = true)
-@Schema(description = "Pagination query parameters")
+@Schema(description = """
+    PageQuery is a data structure used for paginated queries with flexible filtering, sorting, and search options.
+
+    Usage:
+     - Specify pagination (pageNo, pageSize) to control result pages.
+     - Use orderBy and orderSort to define sorting field and direction.
+     - Add dynamic filter conditions via filters (array of SearchCriteria).
+     - Enable fullTextSearch for full-text search (default: false, uses DB index search otherwise).
+     - Set infoScope to control the detail level of returned data.""")
 public abstract class PageQuery extends AbstractQuery implements Serializable {
 
   @Min(1)
   @Max(MAX_PAGE_NO)
-  @Schema(description = "Number of pages for paginated data, default query is the first page")
+  @Schema(description = "Page number for paginated data (default: 1)")
   private Integer pageNo = DEFAULT_PAGE_NO;
 
   @Min(1)
   @Max(MAX_PAGE_SIZE)
-  @Schema(description = "The number of items to query per page, default query is the  10 items")
+  @Schema(description = "Number of items per page (default: 10)")
   private Integer pageSize = DEFAULT_PAGE_SIZE;
 
   @Override

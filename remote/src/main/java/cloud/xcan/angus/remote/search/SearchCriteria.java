@@ -27,6 +27,8 @@ import org.hibernate.validator.constraints.Length;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "SearchCriteria is used to define a single filter condition for querying data. "
+    + "Each instance represents a filter on a specific field, with a value and an operator.")
 public class SearchCriteria implements Serializable {
 
   public static final String FILERS_KEY = "filters";
@@ -38,13 +40,13 @@ public class SearchCriteria implements Serializable {
       .of(FILERS_KEY, PAGE_NO_KEY, PAGE_SIZE_KEY, INFO_SCOPE_KEY);
 
   @Length(max = MAX_NAME_LENGTH)
-  @Schema(description = "Filter field name")
+  @Schema(description = "The name of the field to filter on")
   private String key;
 
-  @Schema(description = "Filter value")
+  @Schema(description = "The value to compare the field against")
   private Object value;
 
-  @Schema(description = "Filter condition")
+  @Schema(description = "The comparison operator to use for filtering")
   private SearchOperation op;
 
   private SearchCriteria(Builder builder) {

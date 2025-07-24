@@ -24,10 +24,20 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 @Schema(description =
-    "These parameters collectively create a structured response that provides a clear "
-        + "and informative way for clients to understand the result of their API calls, including the status, "
-        + "any relevant messages, the response data, processing time, and any additional context needed "
-        + "for proper handling of the response.", accessMode = AccessMode.READ_ONLY)
+    """
+        Represents a standard API response structure, providing status, message, data, timestamp, and extensible fields.
+
+        Example usage:
+        ```ts
+        const result: ApiResult = {
+          code: 'S',
+          msg: 'Operation successful',
+          data: { id: 1, name: 'test' },
+          datetime: new Date(),
+          ext: { traceId: 'abc123' }
+        };
+        ```"""
+    , accessMode = AccessMode.READ_ONLY)
 @Setter
 @Getter
 @Accessors(chain = true)
@@ -36,37 +46,27 @@ import lombok.experimental.Accessors;
 public class ApiResult<T> implements Serializable {
 
   @Schema(description = """
-      This parameter represents the `business status code` of the API response.
-      It is used to indicate the success or failure of the API request. Default code value:
-      ***S***: A code of `S` indicate success;
-      ***E0***: Protocol exception could indicate a bad request;
-      ***E1***: Business exception could indicate a bad business handle;
-      ***E2***: System exception could signify a server error;
-      ***E3***: Quota exception could indicate unauthorized quota or insufficient quota;
-      ***XXX***: Custom business status codes for content usually require secondary confirmation or processing by the caller."""
+      Business status code of the API response.
+      - 'S': Success
+      - 'E0': Protocol error (bad request)
+      - 'E1': Business error
+      - 'E2': System error (server error)
+      - 'E3': Quota error (unauthorized or insufficient quota)
+      - 'XXX': Custom business codes (require further handling)"""
   )
   private String code;
 
-  @Schema(description = "This parameter contains a message that provides additional context "
-      + "or information about the API response. This could be a success message, an error description, "
-      + "or any other relevant information that helps the client understand the result of the request.")
+  @Schema(description = "Message providing additional context, such as success or error details.")
   private String msg;
 
-  @Schema(description = "This parameter holds the actual data returned by the API,"
-      + " which is typically the result or exception trace of the requested operation. ")
+  @Schema(description = "Actual response data or error details.")
   private T data;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  @Schema(description =
-      "This parameter represents the server's processing time for the request, formatted as a date-time string. "
-          + "This information can be useful for clients to log when the request was processed or for troubleshooting purposes, "
-          + "as it indicates how long the server took to respond.")
+  @Schema(description = "Server processing timestamp (date-time string).")
   private LocalDateTime datetime;
 
-  @Schema(description = "This parameter is an extensible map that can hold additional information "
-      + "related to the response that doesn't fit into the predefined fields. "
-      + "It allows for flexibility in the API response by enabling the inclusion of extra data "
-      + "that may be useful for the client.")
+  @Schema(description = "Extensible map for extra response information.")
   private Map<String, Object> ext = new HashMap<>();
 
   public ApiResult() {

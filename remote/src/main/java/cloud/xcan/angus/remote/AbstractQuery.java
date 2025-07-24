@@ -34,7 +34,7 @@ import org.hibernate.validator.constraints.Length;
 public abstract class AbstractQuery implements Serializable {
 
   @Length(max = MAX_FILTER_COLUMN_LENGTH)
-  @Schema(description = "Specifies the field used as the basis for sorting the data")
+  @Schema(description = "Field name to sort the data by")
   protected String orderBy;
 
   @Schema(description = "Specifies the direction of the sorting (ascending or descending)")
@@ -43,15 +43,15 @@ public abstract class AbstractQuery implements Serializable {
   /**
    * @see SearchCriteria#INFO_SCOPE_KEY
    */
-  @Schema(description = "Query information scope", hidden = true)
+  @Schema(description = "Scope of information to query (BASIC or DETAIL). "
+      + "Interface performance optimization parameters, only valid for some interfaces")
   public InfoScope infoScope;
 
-  @Schema(description = "Specifies whether to use full-text search, defaulting to false (database index search)")
+  @Schema(description = "Whether to use full-text search (default: false, uses DB index search if false)")
   public boolean fullTextSearch = false;
 
   @Size(max = MAX_FILTER_SIZE)
-  @Parameter(style = ParameterStyle.FORM, explode = Explode.TRUE, in = ParameterIn.QUERY,
-      description = "Dynamic filter and search conditions, max " + MAX_FILTER_SIZE,
+  @Parameter(description = "Dynamic filter/search conditions (array of SearchCriteria)",
       array = @ArraySchema(schema = @Schema(type = "object", implementation = SearchCriteria.class)))
   protected List<SearchCriteria> filters = new ArrayList<>();
 

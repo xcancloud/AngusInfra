@@ -4,7 +4,7 @@ import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.locale.EnumMessage;
 
 @EndpointRegister
-public enum DateType implements EnumMessage<String> {
+public enum DateUnitType implements EnumMessage<String> {
   DAY,
   MONTH,
   YEAR;

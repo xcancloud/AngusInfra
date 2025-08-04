@@ -6,7 +6,6 @@ import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_EVENT_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
-import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR_T;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_BINDING_ERROR_T2;

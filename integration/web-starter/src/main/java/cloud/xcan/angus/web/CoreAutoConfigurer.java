@@ -1,8 +1,6 @@
 package cloud.xcan.angus.web;
 
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_LOCALE;
-import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_TIME_ZONE;
-import static cloud.xcan.angus.spec.SpecConstant.LOCALE_COOKIE_NAME;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.emptySafe;
 import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
 import static org.springframework.web.servlet.DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME;
@@ -37,9 +35,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.TimeZone;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,12 +60,9 @@ import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.i18n.CookieLocaleResolver;
-import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 @Slf4j
 @EnableWebMvc

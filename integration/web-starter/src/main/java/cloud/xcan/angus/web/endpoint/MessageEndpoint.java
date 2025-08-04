@@ -42,7 +42,7 @@ public class MessageEndpoint {
       return Collections.emptyMap();
     }
     Map<String, Map<String, Map<String, I18nMessage>>> cachedMessageMap
-        = i18nMessageAspect.getTypeLanguageMessagesMap();
+        = i18nMessageAspect.getMessagesMap();
     if (isEmpty(cachedMessageMap)) {
       return Collections.emptyMap();
     }

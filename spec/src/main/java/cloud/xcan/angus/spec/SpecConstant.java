@@ -63,7 +63,7 @@ public interface SpecConstant {
   /**
    * Default locale: zh-CN, allowable values: zh-CN,en
    */
-  Locale DEFAULT_LOCALE = Locale.CHINA;
+  Locale DEFAULT_LOCALE = Locale.ENGLISH;
   /**
    * TimeZone key
    */

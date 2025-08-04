@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -21,7 +20,7 @@ public abstract class AbstractJoinAspect {
 
   protected Object aspect(ProceedingJoinPoint joinPoint) throws Throwable {
     Object result = joinPoint.proceed();
-    if (Objects.isNull(result)) {
+    if (isEmpty(result)) {
       return null;
     }
     if (result.getClass().isArray()) {
@@ -30,14 +29,12 @@ public abstract class AbstractJoinAspect {
         return result;
       }
       joinArrayVoName(voArray);
-    } else if (result instanceof Collection) {
-      Collection<?> voCollection = (Collection<?>) result;
+    } else if (result instanceof Collection<?> voCollection) {
       if (voCollection.isEmpty()) {
         return result;
       }
       joinArrayVoName(voCollection.toArray());
-    } else if (result instanceof PageResult) {
-      PageResult<?> pageResult = (PageResult<?>) result;
+    } else if (result instanceof PageResult<?> pageResult) {
       List<?> voList = pageResult.getList();
       if (isEmpty(voList)) {
         return result;

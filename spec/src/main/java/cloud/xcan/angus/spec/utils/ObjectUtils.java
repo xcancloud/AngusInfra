@@ -738,7 +738,7 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
       return ((Optional<?>) obj).isEmpty();
     }
     if (obj instanceof CharSequence) {
-      return ((CharSequence) obj).length() == 0;
+      return ((CharSequence) obj).isEmpty();
     }
     if (obj.getClass().isArray()) {
       return Array.getLength(obj) == 0;
@@ -748,7 +748,7 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
       return isEmpty((Collection<?>) obj);
     }
     if (obj instanceof Map) {
-      return ((Map) obj).isEmpty();
+      return ((Map<?, ?>) obj).isEmpty();
     }
 
     // else

@@ -7,6 +7,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.biz.I18nMessage;
 import cloud.xcan.angus.core.biz.I18nMessageAspect;
+import jakarta.annotation.Resource;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,27 +21,16 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 @Endpoint(id = "messages")
 public class MessageEndpoint {
 
-  @Autowired(required = false)
+  @Resource
   private I18nMessageAspect i18nMessageAspect;
 
-  private final String authKey = new Str0(
-      new long[]{0x2E5F5EE44DE0B1AEL, 0x7900D1B0B65C00B8L, 0x47C923D6D8D5E1CAL})
-      .toString() /* => "sdf@message" */;
-
   @WriteOperation
-  public void clearCache(@Selector String auth) {
-    if (Objects.isNull(i18nMessageAspect) || !authKey.equals(auth)) {
-      return;
-    }
+  public void clearCache() {
     i18nMessageAspect.clearCache();
   }
 
   @ReadOperation
-  public Map<String, Map<String, Map<String, I18nMessage>>> readCache(@Selector String source,
-      String auth, String type) {
-    if (isEmpty(source) || isNull(i18nMessageAspect) || !authKey.equals(auth)) {
-      return Collections.emptyMap();
-    }
+  public Map<String, Map<String, Map<String, I18nMessage>>> readCache(String type) {
     Map<String, Map<String, Map<String, I18nMessage>>> cachedMessageMap
         = i18nMessageAspect.getMessagesMap();
     if (isEmpty(cachedMessageMap)) {

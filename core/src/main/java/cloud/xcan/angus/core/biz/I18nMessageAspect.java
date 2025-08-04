@@ -26,6 +26,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
@@ -55,6 +56,7 @@ public class I18nMessageAspect extends AbstractJoinAspect {
   }
 
   public void clearCache() {
+    log.debug("Clear message cache");
     this.cacheFieldNameMap.clear();
     this.messagesMap.clear();
   }
@@ -66,62 +68,57 @@ public class I18nMessageAspect extends AbstractJoinAspect {
     }
     String lang = getLocale().getLanguage();
     Map<String, Set<String>> fieldNameAndValues = findFieldNameAndValues(voArray);
+    if (isEmpty(fieldNameAndValues)) {
+      return;
+    }
     Class<?> firstClass = voArray[0].getClass();
     for (String fieldName : fieldNameAndValues.keySet()) {
       MessageJoinField fieldNameJoin = cacheFieldNameMap.get(firstClass).get(fieldName);
       String type = fieldNameJoin.type();
 
       // Find from cache
-      Map<String, I18nMessage> messageMap = null;
-      if (messagesMap.containsKey(type)) {
-        messageMap =  messagesMap.get(type).get(lang);
+      Map<String, I18nMessage> typeMessageMap = messagesMap.containsKey(type)
+          ? messagesMap.get(type).get(lang) : null;
+
+      // If not found in the cache, search from the database
+      if (isEmpty(typeMessageMap)) {
+        log.info("The message cache is empty, Find from the database");
+        typeMessageMap = getI18nMessageMap(fieldNameJoin, type, lang, fieldNameAndValues);
+      } else {
+        log.info("The message is found form cache");
       }
 
-      // Not found in cache
-      if (isEmpty(messageMap)) {
-        if (fieldNameJoin.enabledCache()) {
-          // Cache after finding from the database
-          List<? extends I18nMessage> messages = messageRepository.findByType(type);
-          if (isEmpty(messages)) {
-            continue;
-          }
-          cacheMessage(type, messages);
-          if (isNull(messagesMap.get(type)) ||
-              isNull(messagesMap.get(type).get(lang))) {
-            continue;
-          }
-          messageMap = messagesMap.get(type).get(lang);
-        } else {
-          // Find from database
-          if (isEmpty(fieldNameAndValues.get(type))) {
-            continue;
-          }
-          List<? extends I18nMessage> i18nMessages = messageRepository
-              .findByTypeAndLanguageAndDefaultMessageIn(type,
-                  lang, fieldNameAndValues.get(type));
-          if (isEmpty(i18nMessages)) {
-            continue;
-          }
-          messageMap = i18nMessages.stream()
-              .collect(Collectors.toMap(I18nMessage::getDefaultMessage, (p) -> p));
-        }
+      if (isEmpty(typeMessageMap)) {
+        continue;
       }
-      if (isEmpty(messageMap)) {
-        return;
-      }
-      Field voNameField = FieldUtils.getField(firstClass, fieldName, true);
-      for (Object vo : voArray) {
-        Object voValue = voNameField.get(vo);
-        if (isNull(voValue)) {
-          continue;
-        }
-        I18nMessage i18nMessage = messageMap.get(voValue.toString());
-        if (isNull(i18nMessage) || isEmpty(i18nMessage.getI18nMessage())) {
-          continue;
-        }
-        voNameField.set(vo, i18nMessage.getI18nMessage());
-      }
+
+      setFieldValueMessage(voArray, fieldName, firstClass, typeMessageMap);
     }
+  }
+
+  private @Nullable Map<String, I18nMessage> getI18nMessageMap(MessageJoinField fieldNameJoin,
+      String type, String lang, Map<String, Set<String>> fieldNameAndValues) {
+    Map<String, I18nMessage> messageMap;
+    if (fieldNameJoin.enabledCache()) {
+      log.info("Find from the database, cache is enabled");
+      List<? extends I18nMessage> typeMessages = messageRepository.findByType(type);
+      if (isEmpty(typeMessages)) {
+        return null;
+      }
+
+      log.info("Cache after finding from database");
+      cacheTypeMessage(type, typeMessages);
+
+      messageMap = messagesMap.get(type).get(lang);
+    } else {
+      log.info("Look up the message in the database based on the type and default message");
+      Set<String> fieldValues = fieldNameAndValues.get(type);
+      messageMap = messageRepository
+          .findByTypeAndLanguageAndDefaultMessageIn(type, lang, fieldValues)
+          .stream().collect(Collectors.toMap(I18nMessage::getDefaultMessage, (p) -> p));
+    }
+
+    return messageMap;
   }
 
   private Map<String, Set<String>> findFieldNameAndValues(Object[] voArray)
@@ -173,10 +170,7 @@ public class I18nMessageAspect extends AbstractJoinAspect {
     return messageJoinFieldMap;
   }
 
-  private void cacheMessage(String type, List<? extends I18nMessage> i18nMessages) {
-    if (isEmpty(i18nMessages)) {
-      return;
-    }
+  private void cacheTypeMessage(String type, List<? extends I18nMessage> i18nMessages) {
     Map<String, List<I18nMessage>> typeLanguageMap = i18nMessages.stream()
         .collect(Collectors.groupingBy(I18nMessage::getLanguage));
     if (isNotEmpty(typeLanguageMap)) {
@@ -189,6 +183,22 @@ public class I18nMessageAspect extends AbstractJoinAspect {
           messagesMap.put(type, defaultMaps);
         }
       }
+    }
+  }
+
+  private static void setFieldValueMessage(Object[] voArray, String fieldName, Class<?> firstClass,
+      Map<String, I18nMessage> messageMap) throws IllegalAccessException {
+    Field voNameField = FieldUtils.getField(firstClass, fieldName, true);
+    for (Object vo : voArray) {
+      Object voValue = voNameField.get(vo);
+      if (isNull(voValue)) {
+        continue;
+      }
+      I18nMessage i18nMessage = messageMap.get(voValue.toString());
+      if (isNull(i18nMessage) || isEmpty(i18nMessage.getI18nMessage())) {
+        continue;
+      }
+      voNameField.set(vo, i18nMessage.getI18nMessage());
     }
   }
 }

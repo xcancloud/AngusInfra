@@ -275,8 +275,8 @@ public interface BizConstant {
   /**
    * Default date
    */
-  String DEFAULT_DATE_STR = "2001-01-01 00:00:00";
-  LocalDateTime DEFAULT_DATE = LocalDateTime.of(2001, 1, 1, 0, 0, 0);
+  String DEFAULT_DATE_STR = "2021-01-01 00:00:00";
+  LocalDateTime DEFAULT_DATE = LocalDateTime.of(2021, 1, 1, 0, 0, 0);
 
   String[] AUTH_RESOURCES = {
       "/api/**",

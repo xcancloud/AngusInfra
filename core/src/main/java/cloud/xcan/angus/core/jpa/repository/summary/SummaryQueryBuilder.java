@@ -37,7 +37,7 @@ public class SummaryQueryBuilder {
   @Size(max = 10)
   private List<String> groupByColumns;
 
-  private DateRangeType dateRangeType;
+  private DateRangeType dateRangeType = DateRangeType.DAY;
 
   @Size(max = 10)
   private List<Aggregate> aggregates;

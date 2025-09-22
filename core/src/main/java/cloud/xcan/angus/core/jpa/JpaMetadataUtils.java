@@ -39,7 +39,7 @@ public class JpaMetadataUtils {
     // Will searches all superclasses
     Field javaField = ReflectionUtils.findField(entityClass, fieldName);
     if (javaField == null) {
-      return null;
+      return fieldName;
     }
     Column columnAnnotation = javaField.getAnnotation(Column.class);
     if (columnAnnotation != null && !columnAnnotation.name().isEmpty()) {

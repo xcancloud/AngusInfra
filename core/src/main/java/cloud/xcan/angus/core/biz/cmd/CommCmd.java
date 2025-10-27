@@ -330,6 +330,19 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
   }
 
   /**
+   * Update entity
+   *
+   * @param updateEntity Update entity
+   * @param dbEntity Persistent entity
+   */
+  public void update(T updateEntity, T dbEntity) {
+    assertNotNull(updateEntity, "Update entity is empty");
+    assertNotNull(dbEntity, "Database entity is empty");
+    CoreUtils.copyPropertiesIgnoreNull(updateEntity, dbEntity);
+    getRepository().save(dbEntity);
+  }
+
+  /**
    * Update entity, throw 404 when it doesn't exist
    *
    * @param entity Persistent entity

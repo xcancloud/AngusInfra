@@ -18,13 +18,7 @@
     </description>
 
     <dependencies>
-        <!-- Depend on plugin api and core -->
-        <dependency>
-            <groupId>cloud.xcan.angus</groupId>
-            <artifactId>xcan-infra.plugin-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
+        <!-- Depend on plugin core(api) -->
         <dependency>
             <groupId>cloud.xcan.angus</groupId>
             <artifactId>xcan-infra.plugin-core</artifactId>
@@ -35,6 +29,25 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <!-- Spring Data JPA (optional; used when storageType=jpa) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Jakarta Persistence API explicit (helps static analysis) -->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+
+        <!-- Embedded H2 for convenience in starter; consumers can override with their DB -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Lombok -->

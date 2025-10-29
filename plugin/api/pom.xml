@@ -18,6 +18,13 @@
     </description>
 
     <dependencies>
+        <!-- Depend on Angus Spec -->
+        <dependency>
+            <groupId>cloud.xcan.angus</groupId>
+            <artifactId>xcan-infra.spec</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Core Spring context -->
         <dependency>
             <groupId>org.springframework</groupId>

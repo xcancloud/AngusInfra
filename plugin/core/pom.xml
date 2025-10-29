@@ -25,12 +25,6 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Jackson -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
         <!-- Spring Web (for RequestMapping types) -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -41,8 +35,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>6.2.0</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Core Spring context -->

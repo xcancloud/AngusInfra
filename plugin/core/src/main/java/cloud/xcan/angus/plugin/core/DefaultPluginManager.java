@@ -5,6 +5,7 @@ import cloud.xcan.angus.plugin.api.PluginContext;
 import cloud.xcan.angus.plugin.api.PluginManager;
 import cloud.xcan.angus.plugin.api.RestfulPlugin;
 import cloud.xcan.angus.plugin.autoconfigure.PluginProperties;
+import cloud.xcan.angus.plugin.store.PluginStore;
 import cloud.xcan.angus.plugin.exception.PluginException;
 import cloud.xcan.angus.plugin.model.PluginDescriptor;
 import cloud.xcan.angus.plugin.model.PluginInfo;
@@ -35,6 +36,9 @@ public class DefaultPluginManager implements PluginManager {
     private final PluginProperties properties;
     private final DynamicRestEndpointManager restEndpointManager;
 
+    // Optional plugin store (disk or jpa)
+    private PluginStore pluginStore;
+
     private final Map<String, PluginWrapper> plugins = new ConcurrentHashMap<>();
     private final Map<String, PluginClassLoader> classLoaders = new ConcurrentHashMap<>();
 
@@ -44,6 +48,11 @@ public class DefaultPluginManager implements PluginManager {
         this.applicationContext = applicationContext;
         this.properties = properties;
         this.restEndpointManager = restEndpointManager;
+    }
+
+    // Allow auto-config to inject chosen PluginStore implementation
+    public void setPluginStore(PluginStore pluginStore) {
+        this.pluginStore = pluginStore;
     }
 
     @Override
@@ -66,6 +75,28 @@ public class DefaultPluginManager implements PluginManager {
 
     @Override
     public void loadAllPlugins() {
+        // If a PluginStore is configured, prefer listing from it (disk or jpa)
+        if (pluginStore != null) {
+            try {
+                List<String> ids = pluginStore.listPluginIds();
+                for (String id : ids) {
+                    try {
+                        Path p = pluginStore.getPluginPath(id);
+                        if (p != null) {
+                            loadPlugin(p);
+                        } else {
+                            log.warn("Plugin {} listed in store but path not available", id);
+                        }
+                    } catch (Exception e) {
+                        log.error("Failed to load plugin from store: {}", id, e);
+                    }
+                }
+            } catch (IOException e) {
+                log.error("Failed to list plugins from store", e);
+            }
+            return;
+        }
+
         Path pluginDir = Paths.get(properties.getDirectory());
         if (!Files.exists(pluginDir)) {
             log.warn("Plugin directory not found: {}", pluginDir);
@@ -88,6 +119,10 @@ public class DefaultPluginManager implements PluginManager {
     @Override
     public boolean loadPlugin(Path pluginPath) {
         try {
+            if (pluginPath == null) {
+                log.warn("Plugin path is null, cannot load");
+                return false;
+            }
             PluginDescriptor descriptor = readPluginDescriptor(pluginPath);
             if (descriptor == null) return false;
             if (!validatePlugin(descriptor)) return false;
@@ -133,6 +168,53 @@ public class DefaultPluginManager implements PluginManager {
             log.error("Failed to load plugin from: " + pluginPath, e);
             return false;
         }
+    }
+
+    /**
+     * Install plugin bytes into the configured store (disk or jpa) and load it.
+     */
+    @Override
+    public boolean installPlugin(String pluginId, byte[] data) throws PluginException {
+        try {
+            Path stored;
+            if (pluginStore != null) {
+                stored = pluginStore.storePlugin(pluginId, data);
+            } else {
+                Path dir = Paths.get(properties.getDirectory());
+                if (!Files.exists(dir)) Files.createDirectories(dir);
+                stored = dir.resolve(pluginId + ".jar");
+                Files.write(stored, data);
+            }
+            return loadPlugin(stored);
+        } catch (Exception e) {
+            log.error("Failed to install plugin {}", pluginId, e);
+            throw new PluginException("install.failed", e);
+        }
+    }
+
+    /**
+     * Remove plugin from manager and optionally from store.
+     */
+    @Override
+    public boolean removePlugin(String pluginId, boolean removeFromStore) throws PluginException {
+        boolean unloaded = unloadPlugin(pluginId);
+        if (!unloaded) return false;
+        try {
+            if (pluginStore != null && removeFromStore) {
+                return pluginStore.deletePlugin(pluginId);
+            } else if (removeFromStore) {
+                Path p = Paths.get(properties.getDirectory()).resolve(pluginId + ".jar");
+                if (Files.exists(p)) {
+                    Files.delete(p);
+                    return true;
+                }
+                return false;
+            }
+        } catch (Exception e) {
+            log.error("Failed to remove plugin from store: {}", pluginId, e);
+            throw new PluginException("remove.failed", e);
+        }
+        return true;
     }
 
     // Simplified start/stop implementations omitted for brevity; unloadPlugin is implemented to properly close class loaders

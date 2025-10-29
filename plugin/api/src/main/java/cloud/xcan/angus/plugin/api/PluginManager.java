@@ -26,5 +26,10 @@ public interface PluginManager {
     PluginInfo getPluginInfo(String pluginId);
 
     boolean hasPlugin(String pluginId);
-}
 
+    // Management operations: install plugin bytes into store and load
+    boolean installPlugin(String pluginId, byte[] data) throws PluginException;
+
+    // Remove plugin from manager and optionally from store
+    boolean removePlugin(String pluginId, boolean removeFromStore) throws PluginException;
+}

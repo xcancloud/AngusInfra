@@ -16,8 +16,7 @@
   <version>1.0.0</version>
   <packaging>pom</packaging>
   <description>Parent aggregator module for building extensible plugins; manages child modules,
-    versions and
-    dependencies.
+    versions and dependencies.
   </description>
 
   <modules>

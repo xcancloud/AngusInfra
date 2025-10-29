@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cloud.xcan.angus.plugin.autoconfigure.PluginAutoConfiguration
+

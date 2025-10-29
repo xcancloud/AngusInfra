@@ -1,0 +1,7 @@
+{
+  "id": "angus-plugin-github",
+  "pluginClass": "cloud.xcan.angus.plugin.examples.github.GitHubPlugin",
+  "version": "1.0.0",
+  "name": "Angus GitHub Example Plugin"
+}
+

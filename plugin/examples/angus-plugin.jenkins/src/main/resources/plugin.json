@@ -1,0 +1,7 @@
+{
+  "id": "angus-plugin-jenkins",
+  "pluginClass": "cloud.xcan.angus.plugin.examples.jenkins.JenkinsPlugin",
+  "version": "1.0.0",
+  "name": "Angus Jenkins Example Plugin"
+}
+

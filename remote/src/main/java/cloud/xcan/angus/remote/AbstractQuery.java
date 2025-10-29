@@ -2,6 +2,7 @@ package cloud.xcan.angus.remote;
 
 import static cloud.xcan.angus.remote.ApiConstant.RLimit.MAX_FILTER_COLUMN_LENGTH;
 import static cloud.xcan.angus.remote.ApiConstant.RLimit.MAX_FILTER_SIZE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_NAME_LENGTH;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringInValue;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -46,6 +48,21 @@ public abstract class AbstractQuery implements Serializable {
 
   @Schema(description = "Whether to use full-text search (default: false, uses DB index search if false)")
   public boolean fullTextSearch = false;
+
+  @Length(max = MAX_NAME_LENGTH)
+  @Schema(description = "Search keyword")
+  private String keyword;
+
+  @Schema(description = "Tenant ID to which this belongs", example = "1")
+  private Long tenantId;
+  @Schema(description = "ID of the creator", example = "1")
+  private Long createdBy;
+  @Schema(description = "Creation date", example = "2024-10-12 00:00:00")
+  private LocalDateTime createdDate;
+  @Schema(description = "ID of the last modifier", example = "1")
+  private Long lastModifiedBy;
+  @Schema(description = "Last modification date", example = "2024-10-12 00:00:00")
+  private LocalDateTime lastModifiedDate;
 
   @Size(max = MAX_FILTER_SIZE)
   @Parameter(description = "Dynamic filter/search conditions (array of SearchCriteria)",

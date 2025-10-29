@@ -25,6 +25,7 @@
     <module>remote</module>
     <module>idgen</module>
     <module>core</module>
+    <module>plugin</module>
     <module>datasource</module>
     <module>lettucex</module>
     <module>l2cache</module>

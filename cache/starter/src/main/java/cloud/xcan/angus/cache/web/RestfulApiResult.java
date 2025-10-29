@@ -1,4 +1,4 @@
-package cloud.xcan.angus.cache.management;
+package cloud.xcan.angus.cache.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;

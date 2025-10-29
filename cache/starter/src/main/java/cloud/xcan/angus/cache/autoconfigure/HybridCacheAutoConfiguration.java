@@ -4,7 +4,7 @@ import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.HybridCacheManager;
 import cloud.xcan.angus.cache.IDistributedCache;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
-import cloud.xcan.angus.cache.management.CacheManagementController;
+import cloud.xcan.angus.cache.web.CacheManagementController;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

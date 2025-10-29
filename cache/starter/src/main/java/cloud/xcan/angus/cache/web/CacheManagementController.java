@@ -1,4 +1,4 @@
-package cloud.xcan.angus.cache.management;
+package cloud.xcan.angus.cache.web;
 
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;

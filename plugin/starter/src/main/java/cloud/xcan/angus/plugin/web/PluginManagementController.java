@@ -1,9 +1,11 @@
-package cloud.xcan.angus.plugin.management;
+package cloud.xcan.angus.plugin.web;
 
 import static cloud.xcan.angus.plugin.api.RestfulApiResult.SYSTEM_ERROR_CODE;
 
 import cloud.xcan.angus.plugin.api.RestfulApiResult;
 import cloud.xcan.angus.plugin.exception.PluginException;
+import cloud.xcan.angus.plugin.management.PluginManagementService;
+import cloud.xcan.angus.plugin.management.PluginStats;
 import cloud.xcan.angus.plugin.model.PluginInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

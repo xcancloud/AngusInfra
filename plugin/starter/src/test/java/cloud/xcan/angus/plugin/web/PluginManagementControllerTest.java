@@ -1,4 +1,4 @@
-package cloud.xcan.angus.plugin.management;
+package cloud.xcan.angus.plugin.web;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -6,7 +6,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import cloud.xcan.angus.plugin.management.PluginManagementService;
+import cloud.xcan.angus.plugin.management.PluginStats;
 import cloud.xcan.angus.plugin.model.PluginInfo;
+import cloud.xcan.angus.plugin.web.PluginManagementController;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

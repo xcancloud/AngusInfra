@@ -23,49 +23,53 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @ConditionalOnProperty(prefix = "angus.plugin", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class PluginAutoConfiguration {
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnBean(RequestMappingHandlerMapping.class)
-    public DynamicRestEndpointManager dynamicRestEndpointManager(
-            RequestMappingHandlerMapping requestMappingHandlerMapping, ApplicationContext applicationContext) {
-        return new DynamicRestEndpointManager(requestMappingHandlerMapping, applicationContext);
+  @Bean
+  @ConditionalOnMissingBean
+  @ConditionalOnBean(RequestMappingHandlerMapping.class)
+  public DynamicRestEndpointManager dynamicRestEndpointManager(
+      RequestMappingHandlerMapping requestMappingHandlerMapping,
+      ApplicationContext applicationContext) {
+    return new DynamicRestEndpointManager(requestMappingHandlerMapping, applicationContext);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public PluginStore pluginStore(ApplicationContext applicationContext,
+      StarterPluginProperties properties) {
+    if (PluginProperties.StorageType.JPA.equals(properties.getStorageType())) {
+      try {
+        PluginRepository repo = applicationContext.getBean(PluginRepository.class);
+        return new JpaPluginStore(repo);
+      } catch (Exception ignored) {
+      }
+    }
+    return new DiskPluginStore(properties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public DefaultPluginManager defaultPluginManager(ApplicationContext applicationContext,
+      PluginStore pluginStore, StarterPluginProperties properties) {
+    DynamicRestEndpointManager restEndpointManager = null;
+    try {
+      restEndpointManager = applicationContext.getBean(DynamicRestEndpointManager.class);
+    } catch (Exception ignored) {
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public PluginStore pluginStore(ApplicationContext applicationContext, StarterPluginProperties properties) {
-        if (PluginProperties.StorageType.JPA.equals(properties.getStorageType())) {
-            try {
-                PluginRepository repo = applicationContext.getBean(PluginRepository.class);
-                return new JpaPluginStore(repo);
-            } catch (Exception ignored) {
-            }
-        }
-        return new DiskPluginStore(properties);
-    }
+    DefaultPluginManager mgr = new DefaultPluginManager(applicationContext, properties,
+        restEndpointManager);
+    mgr.setPluginStore(pluginStore);
+    return mgr;
+  }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public DefaultPluginManager defaultPluginManager(ApplicationContext applicationContext, PluginStore pluginStore, StarterPluginProperties properties) {
-        DynamicRestEndpointManager restEndpointManager = null;
-        try {
-            restEndpointManager = applicationContext.getBean(DynamicRestEndpointManager.class);
-        } catch (Exception ignored) {
-        }
-
-        DefaultPluginManager mgr = new DefaultPluginManager(applicationContext, properties, restEndpointManager);
-        mgr.setPluginStore(pluginStore);
-        return mgr;
+  @Bean
+  @ConditionalOnMissingBean
+  public PluginManagementService pluginManagementService(ApplicationContext applicationContext) {
+    try {
+      PluginManager pm = applicationContext.getBean(PluginManager.class);
+      return new PluginManagementServiceImpl(pm);
+    } catch (Exception e) {
+      return null;
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public PluginManagementService pluginManagementService(ApplicationContext applicationContext) {
-        try {
-            PluginManager pm = applicationContext.getBean(PluginManager.class);
-            return new PluginManagementServiceImpl(pm);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+  }
 }

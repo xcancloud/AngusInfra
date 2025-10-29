@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PluginStats {
-    private int totalPlugins;
-    private int activePlugins;
-    private int restEndpoints;
+
+  private int totalPlugins;
+  private int activePlugins;
+  private int restEndpoints;
 }
 

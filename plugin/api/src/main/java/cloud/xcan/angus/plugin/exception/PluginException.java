@@ -7,15 +7,16 @@ package cloud.xcan.angus.plugin.exception;
  * initialize/start/stop/install/remove fail for a plugin.
  */
 public class PluginException extends Exception {
-    public PluginException() {
-        super();
-    }
 
-    public PluginException(String message) {
-        super(message);
-    }
+  public PluginException() {
+    super();
+  }
 
-    public PluginException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public PluginException(String message) {
+    super(message);
+  }
+
+  public PluginException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

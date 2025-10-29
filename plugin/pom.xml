@@ -23,6 +23,7 @@
         <module>api</module>
         <module>core</module>
         <module>starter</module>
+        <module>examples</module>
         <module>bom</module>
     </modules>
 

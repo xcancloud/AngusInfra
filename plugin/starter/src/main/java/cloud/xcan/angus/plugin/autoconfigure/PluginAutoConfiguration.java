@@ -19,8 +19,8 @@ public class PluginAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnBean(RequestMappingHandlerMapping.class)
-    public DynamicRestEndpointManager dynamicRestEndpointManager(RequestMappingHandlerMapping requestMappingHandlerMapping,
-                                                                 ApplicationContext applicationContext) {
+    public DynamicRestEndpointManager dynamicRestEndpointManager(
+            RequestMappingHandlerMapping requestMappingHandlerMapping, ApplicationContext applicationContext) {
         return new DynamicRestEndpointManager(requestMappingHandlerMapping, applicationContext);
     }
 

@@ -15,6 +15,11 @@
   <packaging>jar</packaging>
   <description>Core implementation and runtime logic for cache.</description>
 
+  <properties>
+    <junit.jupiter.version>5.9.3</junit.jupiter.version>
+    <mockito.version>4.8.1</mockito.version>
+  </properties>
+
   <!-- Import JUnit BOM to align platform/jupiter versions and avoid mixed junit-platform-commons on classpath -->
   <dependencyManagement>
     <dependencies>
@@ -27,12 +32,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <properties>
-    <junit.jupiter.version>5.9.3</junit.jupiter.version>
-    <mockito.version>4.8.1</mockito.version>
-    <swagger3.version>2.2.29</swagger3.version>
-  </properties>
 
   <dependencies>
     <!-- Depend on OpenAPI Spec -->
@@ -65,13 +64,11 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

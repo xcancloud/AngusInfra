@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Cache Management", description = "APIs to manage and monitor the hybrid cache")
 @RestController
-@RequestMapping(path = "/api/cache", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/api/v1/cache", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CacheManagementController {
 
   private final IDistributedCache cache;

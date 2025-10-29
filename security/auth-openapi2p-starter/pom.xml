@@ -7,7 +7,7 @@
   <parent>
     <groupId>cloud.xcan.angus</groupId>
     <artifactId>xcan-infra.security</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
   </parent>
 
   <artifactId>xcan-infra.auth-openapi2p-starter</artifactId>

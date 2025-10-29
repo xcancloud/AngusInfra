@@ -33,7 +33,7 @@ UidGenerator是Java实现的, 基于[Snowflake](https://github.com/twitter/snowf
 <dependency>
    <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-infra.idgen-starter</artifactId>
-   <version>1.0.0</version>
+   <version>2.0.0</version>
 </dependency>
 ```
 
@@ -103,7 +103,7 @@ BidGenerator 为了满足业务编码有可读性、全局唯一性、有序递�
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-infra.idgen-starter</artifactId>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 

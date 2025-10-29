@@ -7,13 +7,13 @@
   <parent>
     <groupId>cloud.xcan.angus</groupId>
     <artifactId>xcan-infra.parent</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
   <artifactId>xcan-infra.l2cache</artifactId>
   <name>AngusInfra :: L2Cache :: Parent</name>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
   <packaging>pom</packaging>
   <description>A two-level Cache library for angus projects.</description>
 

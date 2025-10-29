@@ -7,14 +7,14 @@
   <parent>
     <groupId>cloud.xcan.angus</groupId>
     <artifactId>xcan-infra.parent</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
   <artifactId>xcan-infra.bom</artifactId>
   <name>AngusInfra :: BOM</name>
   <packaging>pom</packaging>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
   <description>The Bill of Materials of angus infra</description>
 
   <properties>

@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
-    <relativePath>../parent</relativePath>
-  </parent>
+    <parent>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.parent</artifactId>
+        <version>2.0.0</version>
+        <relativePath>../parent</relativePath>
+    </parent>
 
-  <artifactId>xcan-infra.plugin</artifactId>
-  <name>AngusInfra :: Plugin</name>
-  <version>1.0.0</version>
-  <packaging>pom</packaging>
-  <description>Parent aggregator module for building extensible plugins; manages child modules, versions and dependencies.</description>
+    <artifactId>xcan-infra.plugin</artifactId>
+    <name>AngusInfra :: Plugin</name>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <description>Parent aggregator module for building extensible plugins; manages child modules, versions and
+        dependencies.
+    </description>
 
-  <modules>
-    <module>api</module>
-    <module>core</module>
-    <module>starter</module>
-    <module>bom</module>
-  </modules>
+    <modules>
+        <module>api</module>
+        <module>core</module>
+        <module>starter</module>
+        <module>bom</module>
+    </modules>
 
-  <dependencies>
+    <dependencies>
 
-  </dependencies>
+    </dependencies>
 </project>

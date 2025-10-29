@@ -1,21 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.plugin</artifactId>
-    <version>1.0.0</version>
-  </parent>
+    <parent>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-infra.plugin</artifactId>
+        <version>1.0.0</version>
+    </parent>
 
-  <artifactId>xcan-infra.plugin-core</artifactId>
-  <name>AngusInfra :: Plugin :: Core</name>
-  <packaging>jar</packaging>
-  <description>Core implementation and runtime logic for plugins, providing default implementations, services and foundational libraries.</description>
+    <artifactId>xcan-infra.plugin-core</artifactId>
+    <name>AngusInfra :: Plugin :: Core</name>
+    <packaging>jar</packaging>
+    <description>Core implementation and runtime logic for plugins, providing default implementations, services and
+        foundational libraries.
+    </description>
 
-  <dependencies>
+    <dependencies>
+        <!-- Depend on plugin API -->
+        <dependency>
+            <groupId>cloud.xcan.angus</groupId>
+            <artifactId>xcan-infra.plugin-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
-  </dependencies>
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <!-- Spring Web (for RequestMapping types) -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <!-- >Spring Web MVC -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>6.2.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Core Spring context -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <!-- Support utilities for Spring cache and context -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+
+        <!-- SLF4J API -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>

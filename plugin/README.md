@@ -122,12 +122,13 @@ Run unit tests for the core module:
 
 ```bash
 mvn -pl plugin/core test
+mvn -pl plugin/starter test
 ```
 
 ## Contributing
 
 Contributions via issues and pull requests are welcome. Suggested guidelines:
 
-- Add unit tests that cover key logic
-- Follow existing coding style and Lombok usage patterns
+- Add unit tests covering behavior changes
+- Keep APIs backward compatible where possible
 

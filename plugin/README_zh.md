@@ -122,11 +122,12 @@ curl -v \
 
 ```bash
 mvn -pl plugin/core test
+mvn -pl plugin/starter test
 ```
 
 ## 贡献
 
 欢迎提交 issue 与 PR。建议遵循：
 
-- 保持单元测试覆盖关键逻辑
-- 遵循现有代码风格与 Lombok 使用约定
+- 为变更添加单元测试
+- 在可能的情况下保持 API 向后兼容

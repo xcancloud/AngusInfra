@@ -14,7 +14,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +27,7 @@ import lombok.experimental.Accessors;
  * Standard API response wrapper that provides a consistent structure for all API responses.
  * This class encapsulates response status, message, data payload, timestamp, and extensible metadata.
  * </p>
- * 
+ *
  * <p>
  * Key features:
  * - Standardized response format across all APIs
@@ -38,22 +37,22 @@ import lombok.experimental.Accessors;
  * - Fluent API for easy construction
  * - JSON serialization optimizations
  * </p>
- * 
+ *
  * <p>
  * Usage examples:
  * <pre>
  * // Success response with data
  * ApiResult&lt;User&gt; result = ApiResult.success(user);
- * 
+ *
  * // Error response
  * ApiResult&lt;?&gt; error = ApiResult.error("User not found");
- * 
+ *
  * // Custom response with metadata
  * ApiResult&lt;List&lt;User&gt;&gt; response = ApiResult.success("Query completed", users)
  *     .setExt(Map.of("totalCount", 100, "pageSize", 20));
  * </pre>
  * </p>
- * 
+ *
  * <p>
  * Thread Safety: This class is not thread-safe. Create separate instances for concurrent use.
  * </p>
@@ -94,17 +93,17 @@ public class ApiResult<T> implements Serializable {
   private String code;
 
   @Schema(description = "Message providing additional context, such as success or error details.")
-  private String msg;
+  private String messages;
 
   @Schema(description = "Actual response data or error details.")
   private T data;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   @Schema(description = "Server processing timestamp (date-time string).")
-  private LocalDateTime datetime;
+  private Long timestamp;
 
   @Schema(description = "Extensible map for extra response information.")
-  private Map<String, Object> ext;
+  private Map<String, Object> extensions;
 
   /**
    * <p>
@@ -133,10 +132,10 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the response status code
-   * @param msg the response message
+   * @param messages the response message
    */
-  public ApiResult(String code, String msg) {
-    this(code, msg, null, null);
+  public ApiResult(String code, String messages) {
+    this(code, messages, null, null);
   }
 
   /**
@@ -145,11 +144,11 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the response status code
-   * @param msg the response message
+   * @param messages the response message
    * @param data the response data payload
    */
-  public ApiResult(String code, String msg, T data) {
-    this(code, msg, data, null);
+  public ApiResult(String code, String messages, T data) {
+    this(code, messages, data, null);
   }
 
   /**
@@ -158,16 +157,16 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the response status code
-   * @param msg the response message
+   * @param messages the response message
    * @param data the response data payload
-   * @param ext additional metadata map
+   * @param extensions additional metadata map
    */
-  public ApiResult(String code, String msg, T data, Map<String, Object> ext) {
+  public ApiResult(String code, String messages, T data, Map<String, Object> extensions) {
     this.code = Objects.requireNonNull(code, "Response code cannot be null");
-    this.msg = msg; // Allow null messages
+    this.messages = messages; // Allow null messages
     this.data = data; // Allow null data
-    this.datetime = LocalDateTime.now();
-    this.ext = ext != null ? new HashMap<>(ext) : new HashMap<>();
+    this.timestamp = System.currentTimeMillis();
+    this.extensions = extensions != null ? new HashMap<>(extensions) : new HashMap<>();
   }
 
   // Static factory methods for success responses
@@ -322,7 +321,7 @@ public class ApiResult<T> implements Serializable {
     if (isSuccess()) {
       return this;
     }
-    throw BizException.of(this.code, this.getMsg());
+    throw BizException.of(this.code, this.getMessages());
   }
 
   /**
@@ -354,7 +353,7 @@ public class ApiResult<T> implements Serializable {
     if (isSuccess()) {
       return this.data;
     }
-    throw BizException.of(this.code, this.getMsg());
+    throw BizException.of(this.code, this.getMessages());
   }
 
   /**
@@ -383,10 +382,10 @@ public class ApiResult<T> implements Serializable {
    */
   @JsonIgnore
   public String getEKey() {
-    if (this.ext == null) {
+    if (this.extensions == null) {
       return null;
     }
-    Object eKey = this.ext.get(EXT_EKEY_NAME);
+    Object eKey = this.extensions.get(EXT_EKEY_NAME);
     return eKey != null ? String.valueOf(eKey) : null;
   }
 
@@ -402,10 +401,10 @@ public class ApiResult<T> implements Serializable {
    */
   public ApiResult<T> addExt(String key, Object value) {
     if (key != null) {
-      if (this.ext == null) {
-        this.ext = new HashMap<>();
+      if (this.extensions == null) {
+        this.extensions = new HashMap<>();
       }
-      this.ext.put(key, value);
+      this.extensions.put(key, value);
     }
     return this;
   }
@@ -420,10 +419,10 @@ public class ApiResult<T> implements Serializable {
    */
   public ApiResult<T> addExtAll(Map<String, Object> extMap) {
     if (extMap != null && !extMap.isEmpty()) {
-      if (this.ext == null) {
-        this.ext = new HashMap<>();
+      if (this.extensions == null) {
+        this.extensions = new HashMap<>();
       }
-      this.ext.putAll(extMap);
+      this.extensions.putAll(extMap);
     }
     return this;
   }
@@ -437,8 +436,8 @@ public class ApiResult<T> implements Serializable {
    * @return this ApiResult instance for method chaining
    */
   public ApiResult<T> removeExt(String key) {
-    if (this.ext != null && key != null) {
-      this.ext.remove(key);
+    if (this.extensions != null && key != null) {
+      this.extensions.remove(key);
     }
     return this;
   }
@@ -452,7 +451,7 @@ public class ApiResult<T> implements Serializable {
    * @return true if the key exists in the extension metadata, false otherwise
    */
   public boolean hasExt(String key) {
-    return this.ext != null && this.ext.containsKey(key);
+    return this.extensions != null && this.extensions.containsKey(key);
   }
 
   /**
@@ -466,11 +465,11 @@ public class ApiResult<T> implements Serializable {
    * @return the value cast to the specified type, or null if not found or type mismatch
    */
   @SuppressWarnings("unchecked")
-  public <V> V getExt(String key, Class<V> type) {
-    if (this.ext == null || key == null) {
+  public <V> V getExtensions(String key, Class<V> type) {
+    if (this.extensions == null || key == null) {
       return null;
     }
-    Object value = this.ext.get(key);
+    Object value = this.extensions.get(key);
     if (value != null && type.isInstance(value)) {
       return (V) value;
     }
@@ -488,7 +487,7 @@ public class ApiResult<T> implements Serializable {
    * @return a new ApiResult instance with the new data
    */
   public <U> ApiResult<U> withData(U newData) {
-    return new ApiResult<>(this.code, this.msg, newData, this.ext);
+    return new ApiResult<>(this.code, this.messages, newData, this.extensions);
   }
 
   /**
@@ -500,7 +499,7 @@ public class ApiResult<T> implements Serializable {
    * @return a new ApiResult instance with the new message
    */
   public ApiResult<T> withMessage(String newMsg) {
-    return new ApiResult<>(this.code, newMsg, this.data, this.ext);
+    return new ApiResult<>(this.code, newMsg, this.data, this.extensions);
   }
 
   /**
@@ -514,7 +513,7 @@ public class ApiResult<T> implements Serializable {
     if (this.code == null || this.code.trim().isEmpty()) {
       throw new IllegalStateException("Response code cannot be null or empty");
     }
-    if (this.datetime == null) {
+    if (this.timestamp == null) {
       throw new IllegalStateException("Response datetime cannot be null");
     }
   }
@@ -524,11 +523,11 @@ public class ApiResult<T> implements Serializable {
    * Custom setter for the ext field that ensures the map is never null.
    * </p>
    *
-   * @param ext the extension metadata map
+   * @param extensions the extension metadata map
    * @return this ApiResult instance for method chaining
    */
-  public ApiResult<T> setExt(Map<String, Object> ext) {
-    this.ext = ext != null ? new HashMap<>(ext) : new HashMap<>();
+  public ApiResult<T> setExtensions(Map<String, Object> extensions) {
+    this.extensions = extensions != null ? new HashMap<>(extensions) : new HashMap<>();
     return this;
   }
 
@@ -539,10 +538,10 @@ public class ApiResult<T> implements Serializable {
    *
    * @return the extension metadata map, never null
    */
-  public Map<String, Object> getExt() {
-    if (this.ext == null) {
-      this.ext = new HashMap<>();
+  public Map<String, Object> getExtensions() {
+    if (this.extensions == null) {
+      this.extensions = new HashMap<>();
     }
-    return this.ext;
+    return this.extensions;
   }
 }

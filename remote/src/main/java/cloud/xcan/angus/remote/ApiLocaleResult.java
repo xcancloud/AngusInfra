@@ -32,16 +32,16 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     this(OK_CODE, MessageHolder.message(OK_MSG), data, null);
   }
 
-  public ApiLocaleResult(String code, String msg) {
-    this(code, MessageHolder.message(msg), null, null);
+  public ApiLocaleResult(String code, String message) {
+    this(code, MessageHolder.message(message), null, null);
   }
 
-  public ApiLocaleResult(String code, String msg, T data) {
-    this(code, msg, data, null);
+  public ApiLocaleResult(String code, String message, T data) {
+    this(code, message, data, null);
   }
 
-  public ApiLocaleResult(String code, String msg, T data, Map<String, Object> ext) {
-    super(code, msg, data, ext);
+  public ApiLocaleResult(String code, String message, T data, Map<String, Object> ext) {
+    super(code, message, data, ext);
   }
 
   public static ApiLocaleResult<?> success() {
@@ -52,12 +52,12 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     return new ApiLocaleResult<>(data);
   }
 
-  public static ApiLocaleResult<?> success(String msg) {
-    return new ApiLocaleResult<>(OK_CODE, msg, null);
+  public static ApiLocaleResult<?> success(String message) {
+    return new ApiLocaleResult<>(OK_CODE, message, null);
   }
 
-  public static <T> ApiLocaleResult<T> success(String msg, T data) {
-    return new ApiLocaleResult<>(OK_CODE, msg, data);
+  public static <T> ApiLocaleResult<T> success(String message, T data) {
+    return new ApiLocaleResult<>(OK_CODE, message, data);
   }
 
   public static <T> ApiLocaleResult<T> successData(T data) {
@@ -72,21 +72,21 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     return new ApiLocaleResult<>(BUSINESS_ERROR_CODE, BIZ_ERROR, data);
   }
 
-  public static <T> ApiLocaleResult<T> error(String msg) {
-    return new ApiLocaleResult<>(BUSINESS_ERROR_CODE, msg);
+  public static <T> ApiLocaleResult<T> error(String message) {
+    return new ApiLocaleResult<>(BUSINESS_ERROR_CODE, message);
   }
 
-  public static <T> ApiLocaleResult<T> error(String code, String msg) {
-    return new ApiLocaleResult<>(code, msg);
+  public static <T> ApiLocaleResult<T> error(String code, String message) {
+    return new ApiLocaleResult<>(code, message);
   }
 
-  public static <T> ApiLocaleResult<T> error(String code, String msg, T data) {
-    return new ApiLocaleResult<>(code, msg, data);
+  public static <T> ApiLocaleResult<T> error(String code, String message, T data) {
+    return new ApiLocaleResult<>(code, message, data);
   }
 
-  public static <T> ApiResult<T> error(String code, String msg, T data,
+  public static <T> ApiResult<T> error(String code, String message, T data,
       Map<String, Object> ext) {
-    return new ApiLocaleResult<>(code, msg, data, ext);
+    return new ApiLocaleResult<>(code, message, data, ext);
   }
 
   @Override
@@ -100,7 +100,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     if (isSuccess()) {
       return this;
     }
-    throw BizException.of(this.getCode(), this.getMsg());
+    throw BizException.of(this.getCode(), this.getMessages());
   }
 
   @Override
@@ -116,7 +116,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     if (isSuccess()) {
       return this.getData();
     }
-    throw BizException.of(this.getCode(), this.getMsg());
+    throw BizException.of(this.getCode(), this.getMessages());
   }
 
   @Override

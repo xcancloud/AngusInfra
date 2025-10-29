@@ -129,8 +129,8 @@ public class ServletUtils {
       String eKey, Object[] messageArgs) throws ServletException {
     response.setHeader(Header.E_KEY, eKey);
     ApiResult<?> result = new ApiResult<>().setCode(PROTOCOL_ERROR_CODE)
-        .setMsg(MessageHolder.message(message, messageArgs))
-        .setExt(Map.of(EXT_EKEY_NAME, eKey));
+        .setMessages(MessageHolder.message(message, messageArgs))
+        .setExtensions(Map.of(EXT_EKEY_NAME, eKey));
     writeJsonUtf8Result(response, status, result);
   }
 

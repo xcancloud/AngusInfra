@@ -167,7 +167,7 @@ public class OperationLogAspect {
     if (apiResult.isSuccess()) {
       operationTemplate.setSuccess(true);
     } else {
-      operationTemplate.setSuccess(false).setFailureReason(apiResult.getMsg());
+      operationTemplate.setSuccess(false).setFailureReason(apiResult.getMessages());
     }
   }
 

@@ -18,8 +18,8 @@
   <description>A foundational library for generating unique IDs.</description>
 
   <modules>
-    <module>idgen-core</module>
-    <module>idgen-starter</module>
+    <module>core</module>
+    <module>starter</module>
   </modules>
 
 </project>

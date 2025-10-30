@@ -7,7 +7,7 @@ CREATE TABLE instance
     port               varchar(40)  NOT NULL DEFAULT '',
     instance_type      varchar(40)  NOT NULL DEFAULT '',
     create_date        timestamp    NOT NULL,
-    last_modified_date timestamp    NOT NULL,
+    modified_date timestamp    NOT NULL,
     PRIMARY KEY (pk),
     CONSTRAINT uidx_host_port UNIQUE (host, port)
 );
@@ -27,7 +27,7 @@ CREATE TABLE id_config
     max_id             bigint      NOT NULL DEFAULT 0,
     step               bigint      NOT NULL,
     create_date        timestamp   NOT NULL,
-    last_modified_date timestamp   NOT NULL,
+    modified_date timestamp   NOT NULL,
     PRIMARY KEY (pk),
     CONSTRAINT uidx_biz_key_tenant_id UNIQUE (biz_key, tenant_id)
 );

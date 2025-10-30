@@ -99,12 +99,6 @@
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.validator-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-infra.auth-resource-model</artifactId>
         <version>${xcan-infra.security.version}</version>
       </dependency>

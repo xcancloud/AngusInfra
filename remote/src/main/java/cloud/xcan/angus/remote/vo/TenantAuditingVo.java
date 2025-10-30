@@ -16,18 +16,18 @@ public class TenantAuditingVo {
 
   @Schema(description = "创建者姓名")
   @NameJoinField(id = "createdBy", repository = "commonUserBaseRepo")
-  private String createdByName;
+  private String creator;
 
   @Schema(description = "创建时间")
   private LocalDateTime createdDate;
 
   @Schema(description = "最后修改人ID")
-  protected Long lastModifiedBy;
+  protected Long modifiedBy;
 
-  @NameJoinField(id = "lastModifiedBy", repository = "commonUserBaseRepo")
-  private String lastModifiedByName;
+  @NameJoinField(id = "modifiedBy", repository = "commonUserBaseRepo")
+  private String modifier;
 
   @Schema(description = "最后修改时间")
-  private LocalDateTime lastModifiedDate;
+  private LocalDateTime modifiedDate;
 
 }

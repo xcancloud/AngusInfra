@@ -242,7 +242,7 @@ public class CoreUtils {
 
   public static <T> T copyPropertiesIgnoreAuditing(Object src, T target) {
     BeanUtils.copyProperties(src, target,
-        "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+        "createdBy", "createdDate", "modifiedBy", "modifiedDate");
     return target;
   }
 
@@ -253,10 +253,10 @@ public class CoreUtils {
     }
     if (isEmpty(ignoreProperties)) {
       BeanUtils.copyProperties(src, target,
-          "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+          "createdBy", "createdDate", "modifiedBy", "modifiedDate");
     } else {
       BeanUtils.copyProperties(src, target, ArrayUtils.addAll(ignoreProperties,
-          "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate"));
+          "createdBy", "createdDate", "modifiedBy", "modifiedDate"));
     }
     return target;
   }
@@ -266,7 +266,7 @@ public class CoreUtils {
       return target;
     }
     BeanUtils.copyProperties(src, target, "tenantId",
-        "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+        "createdBy", "createdDate", "modifiedBy", "modifiedDate");
     return target;
   }
 
@@ -277,7 +277,7 @@ public class CoreUtils {
     List<T> copyTargets = new ArrayList<>();
     for (int i = 0; i < src.size(); i++) {
       BeanUtils.copyProperties(src.get(i), target.get(i), "tenantId",
-          "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+          "createdBy", "createdDate", "modifiedBy", "modifiedDate");
       copyTargets.add(target.get(i));
     }
     return copyTargets;
@@ -290,10 +290,10 @@ public class CoreUtils {
     }
     if (isEmpty(ignoreProperties)) {
       BeanUtils.copyProperties(src, target, "tenantId",
-          "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+          "createdBy", "createdDate", "modifiedBy", "modifiedDate");
     } else {
       BeanUtils.copyProperties(src, target, ArrayUtils.addAll(ignoreProperties,
-          "tenantId", "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate"));
+          "tenantId", "createdBy", "createdDate", "modifiedBy", "modifiedDate"));
     }
     return target;
   }
@@ -307,10 +307,10 @@ public class CoreUtils {
     for (int i = 0; i < src.size(); i++) {
       if (isEmpty(ignoreProperties)) {
         BeanUtils.copyProperties(src.get(i), target.get(i), "tenantId",
-            "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate");
+            "createdBy", "createdDate", "modifiedBy", "modifiedDate");
       } else {
         BeanUtils.copyProperties(src.get(i), target.get(i), ArrayUtils.addAll(ignoreProperties,
-            "tenantId", "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate"));
+            "tenantId", "createdBy", "createdDate", "modifiedBy", "modifiedDate"));
       }
       copyTargets.add(target.get(i));
     }

@@ -7,7 +7,7 @@ CREATE TABLE `instance`
     `port`               varchar(40)  NOT NULL DEFAULT '',
     `instance_type`      varchar(40)  NOT NULL DEFAULT '',
     `create_date`        datetime     NOT NULL,
-    `last_modified_date` datetime     NOT NULL,
+    `modified_date` datetime     NOT NULL,
     PRIMARY KEY (`pk`),
     UNIQUE KEY `uidx_host_port` (`host`, `port`) USING BTREE
 ) ENGINE = InnoDB;
@@ -28,7 +28,7 @@ CREATE TABLE `id_config`
     `max_id`             bigint(20) NOT NULL DEFAULT '0',
     `step`               bigint(20) NOT NULL,
     `create_date`        datetime    NOT NULL,
-    `last_modified_date` datetime    NOT NULL,
+    `modified_date` datetime    NOT NULL,
     PRIMARY KEY (`pk`) USING BTREE,
     UNIQUE INDEX `uidx_biz_key_tenant_id` (`biz_key`, `tenant_id`) USING BTREE,
     INDEX                `uidx_tenant_id` (`tenant_id`) USING BTREE

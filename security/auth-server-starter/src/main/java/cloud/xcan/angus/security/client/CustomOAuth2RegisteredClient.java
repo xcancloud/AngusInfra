@@ -268,8 +268,9 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient implements Re
   }
 
   /**
-   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the provided registration
-   * identifier.
+   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the provided
+   * registration identifier.
+   *
    * @param id the identifier for the registration
    * @return the {@link CustomOAuth2RegisteredClient.Builder}
    */
@@ -279,13 +280,15 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient implements Re
   }
 
   /**
-   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the values from the provided
-   * {@link CustomOAuth2RegisteredClient}.
+   * Returns a new {@link CustomOAuth2RegisteredClient.Builder}, initialized with the values from
+   * the provided {@link CustomOAuth2RegisteredClient}.
+   *
    * @param registeredClient the {@link CustomOAuth2RegisteredClient} used for initializing the
-   * {@link CustomOAuth2RegisteredClient.Builder}
+   *                         {@link CustomOAuth2RegisteredClient.Builder}
    * @return the {@link CustomOAuth2RegisteredClient.Builder}
    */
-  public static CustomOAuth2RegisteredClient.Builder of(CustomOAuth2RegisteredClient registeredClient) {
+  public static CustomOAuth2RegisteredClient.Builder of(
+      CustomOAuth2RegisteredClient registeredClient) {
     Assert.notNull(registeredClient, "registeredClient cannot be null");
     return new CustomOAuth2RegisteredClient.Builder(registeredClient);
   }

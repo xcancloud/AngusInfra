@@ -7,12 +7,12 @@ import java.sql.SQLException;
 public class ConnectionFactory {
 
   public static Connection getConnection(String dbType, String host, int port, String database,
-      String username, String passd) throws SQLException, ClassNotFoundException {
+      String username, String password) throws SQLException, ClassNotFoundException {
     if ("Postgres".equalsIgnoreCase(dbType)) {
-      return postgres(host, port, database, username, passd);
+      return postgres(host, port, database, username, password);
     }
     if ("MySQL".equalsIgnoreCase(dbType)) {
-      return mysql(host, port, database, username, passd);
+      return mysql(host, port, database, username, password);
     }
     throw new SQLException("Unsupported database " + dbType);
   }
@@ -37,10 +37,7 @@ public class ConnectionFactory {
   public static Connection postgres(String url, String username, String passd)
       throws ClassNotFoundException, SQLException {
     Class.forName("org.postgresql.Driver");
-    Connection connection = DriverManager.getConnection(url, username, passd);
-    //connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-    //connection.close();
-    return connection;
+    return DriverManager.getConnection(url, username, passd);
   }
 
   public static Connection mysql(String host, int port, String database, String username,
@@ -53,9 +50,6 @@ public class ConnectionFactory {
   public static Connection mysql(String url, String username, String passd)
       throws ClassNotFoundException, SQLException {
     Class.forName("com.mysql.cj.jdbc.Driver");
-    Connection connection = DriverManager.getConnection(url, username, passd);
-    //connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
-    //connection.close();
-    return connection;
+    return DriverManager.getConnection(url, username, passd);
   }
 }

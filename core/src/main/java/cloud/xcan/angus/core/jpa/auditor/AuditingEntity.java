@@ -35,12 +35,12 @@ public abstract class AuditingEntity<T extends Entity<T, ID>, ID> extends Entity
   @LastModifiedDate
   @DateTimeFormat(pattern = DATE_FMT)
   //@Temporal(TemporalType.TIMESTAMP)
-  @Column(name = "last_modified_date", columnDefinition = "TIMESTAMP")
-  protected LocalDateTime lastModifiedDate;
+  @Column(name = "modified_date", columnDefinition = "TIMESTAMP")
+  protected LocalDateTime modifiedDate;
 
   @LastModifiedBy
-  @Column(name = "last_modified_by")
-  protected Long lastModifiedBy;
+  @Column(name = "modified_by")
+  protected Long modifiedBy;
 
   public LocalDateTime getCreatedDate() {
     return createdDate;
@@ -60,21 +60,21 @@ public abstract class AuditingEntity<T extends Entity<T, ID>, ID> extends Entity
     return (T) this;
   }
 
-  public LocalDateTime getLastModifiedDate() {
-    return lastModifiedDate;
+  public LocalDateTime getModifiedDate() {
+    return modifiedDate;
   }
 
-  public T setLastModifiedDate(LocalDateTime lastModifiedDate) {
-    this.lastModifiedDate = lastModifiedDate;
+  public T setModifiedDate(LocalDateTime modifiedDate) {
+    this.modifiedDate = modifiedDate;
     return (T) this;
   }
 
-  public Long getLastModifiedBy() {
-    return lastModifiedBy;
+  public Long getModifiedBy() {
+    return modifiedBy;
   }
 
-  public T setLastModifiedBy(Long lastModifiedBy) {
-    this.lastModifiedBy = lastModifiedBy;
+  public T setModifiedBy(Long modifiedBy) {
+    this.modifiedBy = modifiedBy;
     return (T) this;
   }
 }

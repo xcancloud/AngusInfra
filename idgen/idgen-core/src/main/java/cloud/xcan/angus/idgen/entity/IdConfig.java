@@ -111,7 +111,7 @@ public class IdConfig implements Serializable {
    * Last modifiedTime
    */
   @LastModifiedDate
-  @Column(name = "last_modified_date")
-  private LocalDateTime lastModifiedDate;
+  @Column(name = "modified_date")
+  private LocalDateTime modifiedDate;
 
 }

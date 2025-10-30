@@ -73,8 +73,8 @@ public class Instance implements InstanceInfo {
    * Last modifiedTime
    */
   @LastModifiedDate
-  @Column(name = "last_modified_date")
-  private LocalDateTime lastModifiedDate;
+  @Column(name = "modified_date")
+  private LocalDateTime modifiedDate;
 
   @Override
   public String toString() {

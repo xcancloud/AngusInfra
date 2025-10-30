@@ -41,8 +41,8 @@ CREATE TABLE oauth2_registered_client
     tenant_name                   varchar(100)           DEFAULT NULL,
     created_by                    varchar(32)            DEFAULT '-1',
     created_date                  timestamp NULL DEFAULT NULL,
-    last_modified_by              varchar(32)            DEFAULT '-1',
-    last_modified_date            timestamp NULL DEFAULT NULL,
+    modified_by              varchar(32)            DEFAULT '-1',
+    modified_date            timestamp NULL DEFAULT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX idx_client_id ON oauth2_registered_client (client_id);

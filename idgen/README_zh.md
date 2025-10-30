@@ -59,7 +59,7 @@ CREATE TABLE `instance` (
   `port` varchar(40)  NOT NULL DEFAULT '',
   `instance_type` varchar(40)  NOT NULL DEFAULT '',
   `create_date` datetime NOT NULL ,
-  `last_modified_date` datetime NOT NULL ,
+  `modified_date` datetime NOT NULL ,
   PRIMARY KEY (`pk`),
   UNIQUE KEY `uidx_host_port` (`host`,`port`)  USING BTREE,
 ) ENGINE=InnoDB;
@@ -150,7 +150,7 @@ xcan:
 
 ```sql
 -- SEQ格式+Redis模式+平台下唯一
-INSERT INTO `id_config`(`pk`, `biz_key`, `format`, `prefix`, `date_format`, `seq_length`, `mode`, `scope`, `tenant_id`, `max_id`, `step`, `create_date`, `last_modified_date`)
+INSERT INTO `id_config`(`pk`, `biz_key`, `format`, `prefix`, `date_format`, `seq_length`, `mode`, `scope`, `tenant_id`, `max_id`, `step`, `create_date`, `modified_date`)
 VALUES ('620d069a-c074-4b0e-9576-da2ed48092b2', 'biKey1002', 'SEQ', '', '', 8, 'REDIS', 'PLATFORM', -1, 0, 10000, '2021-09-03 19:01:40', '2021-09-03 19:01:40');
 ```
 

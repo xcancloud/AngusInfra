@@ -60,7 +60,7 @@ public abstract class AbstractQuery implements Serializable {
   @Schema(description = "Creation date", example = "2024-10-12 00:00:00")
   private LocalDateTime createdDate;
   @Schema(description = "ID of the last modifier", example = "1")
-  private Long lastModifiedBy;
+  private Long modifiedBy;
   @Schema(description = "Last modification date", example = "2024-10-12 00:00:00")
   private LocalDateTime lastModifiedDate;
 

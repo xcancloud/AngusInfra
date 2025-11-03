@@ -61,16 +61,16 @@ public class CustomErrorDecoder implements ErrorDecoder {
             throw new IllegalStateException("Global unhandled exception");
           }
           return switch (response.status()) {
-            case 400 -> ProtocolException.of(result.getMessages(), result.getEKey());
-            case 401 -> Unauthorized.of(result.getMessages(), result.getEKey());
-            case 403 -> Forbidden.of(result.getMessages(), result.getEKey());
-            case 404 -> ResourceNotFound.of(result.getMessages(), emptyArgs, result.getEKey());
-            case 405 -> MethodNotSupported.of(result.getMessages(), emptyArgs, result.getEKey());
-            case 409 -> ResourceExisted.of(result.getMessages(), emptyArgs);
-            case 415 -> MediaTypeNotSupported.of(result.getMessages(), result.getEKey());
+            case 400 -> ProtocolException.of(result.getMessage(), result.getEKey());
+            case 401 -> Unauthorized.of(result.getMessage(), result.getEKey());
+            case 403 -> Forbidden.of(result.getMessage(), result.getEKey());
+            case 404 -> ResourceNotFound.of(result.getMessage(), emptyArgs, result.getEKey());
+            case 405 -> MethodNotSupported.of(result.getMessage(), emptyArgs, result.getEKey());
+            case 409 -> ResourceExisted.of(result.getMessage(), emptyArgs);
+            case 415 -> MediaTypeNotSupported.of(result.getMessage(), result.getEKey());
             //      case 429: TODO
             //        return new TooManyRequests(message, request, body);
-            case 500 -> SysException.of(result.getCode(), result.getMessages(), result.getEKey());
+            case 500 -> SysException.of(result.getCode(), result.getMessage(), result.getEKey());
             default -> SysException.of(RPC_API_EXCEPTION, isEmpty(result.getEKey())
                 ? exceptionBody : result.getEKey());
           };

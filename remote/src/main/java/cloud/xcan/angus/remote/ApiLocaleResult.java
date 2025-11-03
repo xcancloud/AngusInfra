@@ -100,7 +100,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     if (isSuccess()) {
       return this;
     }
-    throw BizException.of(this.getCode(), this.getMessages());
+    throw BizException.of(this.getCode(), this.getMessage());
   }
 
   @Override
@@ -116,7 +116,7 @@ public class ApiLocaleResult<T> extends ApiResult<T> {
     if (isSuccess()) {
       return this.getData();
     }
-    throw BizException.of(this.getCode(), this.getMessages());
+    throw BizException.of(this.getCode(), this.getMessage());
   }
 
   @Override

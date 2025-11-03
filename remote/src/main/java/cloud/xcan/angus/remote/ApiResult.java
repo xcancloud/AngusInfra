@@ -93,7 +93,7 @@ public class ApiResult<T> implements Serializable {
   private String code;
 
   @Schema(description = "Message providing additional context, such as success or error details.")
-  private String messages;
+  private String message;
 
   @Schema(description = "Actual response data or error details.")
   private T data;
@@ -132,10 +132,10 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the response status code
-   * @param messages the response message
+   * @param message the response message
    */
-  public ApiResult(String code, String messages) {
-    this(code, messages, null, null);
+  public ApiResult(String code, String message) {
+    this(code, message, null, null);
   }
 
   /**
@@ -144,11 +144,11 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the response status code
-   * @param messages the response message
+   * @param message the response message
    * @param data the response data payload
    */
-  public ApiResult(String code, String messages, T data) {
-    this(code, messages, data, null);
+  public ApiResult(String code, String message, T data) {
+    this(code, message, data, null);
   }
 
   /**
@@ -157,13 +157,13 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the response status code
-   * @param messages the response message
+   * @param message the response message
    * @param data the response data payload
    * @param extensions additional metadata map
    */
-  public ApiResult(String code, String messages, T data, Map<String, Object> extensions) {
+  public ApiResult(String code, String message, T data, Map<String, Object> extensions) {
     this.code = Objects.requireNonNull(code, "Response code cannot be null");
-    this.messages = messages; // Allow null messages
+    this.message = message; // Allow null messages
     this.data = data; // Allow null data
     this.timestamp = System.currentTimeMillis();
     this.extensions = extensions != null ? new HashMap<>(extensions) : new HashMap<>();
@@ -321,7 +321,7 @@ public class ApiResult<T> implements Serializable {
     if (isSuccess()) {
       return this;
     }
-    throw BizException.of(this.code, this.getMessages());
+    throw BizException.of(this.code, this.getMessage());
   }
 
   /**
@@ -353,7 +353,7 @@ public class ApiResult<T> implements Serializable {
     if (isSuccess()) {
       return this.data;
     }
-    throw BizException.of(this.code, this.getMessages());
+    throw BizException.of(this.code, this.getMessage());
   }
 
   /**
@@ -487,7 +487,7 @@ public class ApiResult<T> implements Serializable {
    * @return a new ApiResult instance with the new data
    */
   public <U> ApiResult<U> withData(U newData) {
-    return new ApiResult<>(this.code, this.messages, newData, this.extensions);
+    return new ApiResult<>(this.code, this.message, newData, this.extensions);
   }
 
   /**

@@ -8,16 +8,20 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "plugins")
+@Table(name = "plugin_files")
 public class PluginEntity {
 
   @Id
   private String id;
+
   private String name;
+
   private String version;
+
   @Lob
   @Column(name = "data", columnDefinition = "BLOB")
   private byte[] data;
+
   private LocalDateTime uploadedAt;
 
   public PluginEntity() {

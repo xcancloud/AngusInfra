@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -11,15 +11,14 @@
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.idgen</artifactId>
-  <name>AngusInfra :: ID Generator :: Parent</name>
-  <version>2.0.0</version>
+  <artifactId>xcan-infra.job</artifactId>
+  <name>AngusInfra :: Job</name>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
-  <description>A foundational library for generating unique IDs.</description>
+  <description>Implementation based on database-driven distributed task scheduling.</description>
 
   <modules>
     <module>core</module>
     <module>starter</module>
   </modules>
-
 </project>

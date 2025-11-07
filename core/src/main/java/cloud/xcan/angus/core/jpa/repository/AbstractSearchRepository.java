@@ -136,7 +136,8 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
           continue;
         }
         String columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
-        if (!"keyword".equalsIgnoreCase(criteria0.getKey()) && isEmpty(columnName)) {
+        if (("keyword".equalsIgnoreCase(criteria0.getKey()) && !criteria0.isMatchSearch())
+            && isEmpty(columnName)) {
           continue;
         }
         String namingKey = criteria0.getOp().getValue() + criteria0.getKey();

@@ -56,15 +56,15 @@ public abstract class AbstractQuery implements Serializable {
   @Schema(description = "Search keyword")
   private String keyword;
 
-  @Schema(description = "Tenant ID to which this belongs", example = "1")
+  @Schema(description = "Tenant ID to which this belongs")
   private Long tenantId;
-  @Schema(description = "ID of the creator", example = "1")
+  @Schema(description = "ID of the creator")
   private Long createdBy;
-  @Schema(description = "Creation date", example = "2024-10-12 00:00:00")
+  @Schema(description = "Creation date, the format is `2024-10-12 00:00:00`")
   private LocalDateTime createdDate;
-  @Schema(description = "ID of the last modifier", example = "1")
+  @Schema(description = "ID of the last modifier")
   private Long modifiedBy;
-  @Schema(description = "Last modification date", example = "2024-10-12 00:00:00")
+  @Schema(description = "Last modification date, the format is `2024-10-12 00:00:00`")
   private LocalDateTime modifiedDate;
 
   @Size(max = MAX_FILTER_SIZE)

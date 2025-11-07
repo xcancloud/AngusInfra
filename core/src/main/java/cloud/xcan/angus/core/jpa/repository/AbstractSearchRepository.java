@@ -130,13 +130,13 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       String alias, SearchMode mode, Boolean notDeleted, String... match) {
     StringBuilder sql = new StringBuilder();
     boolean hasSearch = false;
-    if (!CollectionUtils.isEmpty(criteria)) {
+    if (isNotEmpty(criteria)) {
       for (SearchCriteria criteria0 : criteria) {
         if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
           continue;
         }
         String columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
-        if (isEmpty(columnName)) {
+        if (!"keyword".equalsIgnoreCase(criteria0.getKey()) && isEmpty(columnName)) {
           continue;
         }
         String namingKey = criteria0.getOp().getValue() + criteria0.getKey();

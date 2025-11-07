@@ -10,6 +10,8 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringValue;
 
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,7 +48,8 @@ public abstract class AbstractQuery implements Serializable {
       + "Interface performance optimization parameters, only valid for some interfaces")
   public InfoScope infoScope;
 
-  @Schema(description = "Whether to use full-text search (default: false, uses DB index search if false)")
+  @JsonIgnore
+  @Schema(description = "Whether to use full-text search (default: false, uses DB index search if false)", hidden = true)
   public boolean fullTextSearch = false;
 
   @Length(max = MAX_NAME_LENGTH)
@@ -68,6 +71,12 @@ public abstract class AbstractQuery implements Serializable {
   @Parameter(description = "Dynamic filter/search conditions (array of SearchCriteria)",
       array = @ArraySchema(schema = @Schema(type = "object", implementation = SearchCriteria.class)))
   protected List<SearchCriteria> filters = new ArrayList<>();
+
+  @JsonProperty
+  public void setKeyword(String keyword) {
+    this.keyword = keyword;
+    this.fullTextSearch = isNotEmpty(keyword);
+  }
 
   protected abstract String getDefaultOrderBy();
 

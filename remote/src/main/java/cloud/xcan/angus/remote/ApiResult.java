@@ -399,7 +399,7 @@ public class ApiResult<T> implements Serializable {
    * @param value the metadata value
    * @return this ApiResult instance for method chaining
    */
-  public ApiResult<T> addExt(String key, Object value) {
+  public ApiResult<T> addExtension(String key, Object value) {
     if (key != null) {
       if (this.extensions == null) {
         this.extensions = new HashMap<>();
@@ -417,7 +417,7 @@ public class ApiResult<T> implements Serializable {
    * @param extMap the map of metadata to add
    * @return this ApiResult instance for method chaining
    */
-  public ApiResult<T> addExtAll(Map<String, Object> extMap) {
+  public ApiResult<T> addExtensions(Map<String, Object> extMap) {
     if (extMap != null && !extMap.isEmpty()) {
       if (this.extensions == null) {
         this.extensions = new HashMap<>();

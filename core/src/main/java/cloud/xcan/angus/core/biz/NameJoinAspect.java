@@ -10,6 +10,7 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
+import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
 import static org.apache.commons.lang3.reflect.FieldUtils.getField;
 
 import cloud.xcan.angus.core.jpa.repository.NameJoinRepository;
@@ -71,23 +72,25 @@ public class NameJoinAspect extends AbstractJoinAspect {
 
   @Override
   public void joinArrayVoName(Object[] voArray) throws IllegalAccessException {
-    Map<String, Map<String, Set>> repoAndFieldNameAndIdValues
+    Map<String, Map<String, Set<Object>>> repoAndFieldNameAndIdValues
         = findRepoAndFieldNameAndIdValues(voArray);
     Class<?> firstClass = voArray[0].getClass();
     for (String repo : repoAndFieldNameAndIdValues.keySet()) {
-      Map<String, Set> fieldNameAndIdValues = repoAndFieldNameAndIdValues.get(repo);
+      Map<String, Set<Object>> fieldNameAndIdValues = repoAndFieldNameAndIdValues.get(repo);
       if (isEmpty(fieldNameAndIdValues)) {
         continue;
       }
 
       // Merge same repo corresponding ids
-      Set allIds = new HashSet();
-      for (Entry<String, Set> fieldNameAndIdValue : fieldNameAndIdValues.entrySet()) {
+      Set<Object> allIds = new HashSet<>();
+      for (Entry<String, Set<Object>> fieldNameAndIdValue : fieldNameAndIdValues.entrySet()) {
         allIds.addAll(fieldNameAndIdValue.getValue());
       }
 
       // Query all resource data based on ids
-      Collection<?> entities = classRepositoryMap.get(firstClass + "#" + repo).findByIdIn(allIds);
+      @SuppressWarnings("unchecked")
+      Collection<?> entities = ((NameJoinRepository<Object, Object>) classRepositoryMap.get(
+          firstClass + "#" + repo)).findByIdIn(allIds);
       if (isEmpty(entities)) {
         log.warn("Class {} join repository#{} is empty by all ids in {}",
             firstClass.getSimpleName(), repo, allIds);
@@ -99,7 +102,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
       Object firstEntity = entities.stream().findFirst().get();
       Map<Object, String> idNames = getIdNamesMap(firstEntity, entities);
 
-      for (Entry<String, Set> fieldNameAndIdValues0 : fieldNameAndIdValues.entrySet()) {
+      for (Entry<String, Set<Object>> fieldNameAndIdValues0 : fieldNameAndIdValues.entrySet()) {
         // Join vo and entity by id
         Map<String, NameJoinField> nameJoinFieldMap = classFieldJoinNameMap.get(firstClass);
         for (Entry<String, NameJoinField> entry : nameJoinFieldMap.entrySet()) {
@@ -120,11 +123,11 @@ public class NameJoinAspect extends AbstractJoinAspect {
     }
   }
 
-  private Map<String, Map<String, Set>> findRepoAndFieldNameAndIdValues(Object[] voArray)
+  private Map<String, Map<String, Set<Object>>> findRepoAndFieldNameAndIdValues(Object[] voArray)
       throws IllegalAccessException {
     Object first = voArray[0];
-    Map<String, Map<String, Set>> repoAndFieldNameAndIdValues = new HashMap<>();
-    Set idValues;
+    Map<String, Map<String, Set<Object>>> repoAndFieldNameAndIdValues = new HashMap<>();
+    Set<Object> idValues;
     Field idField;
     Map<String, NameJoinField> nameJoinFieldMap = findAndCacheJoinInfo(first);
     for (NameJoinField joinField : nameJoinFieldMap.values()) {
@@ -141,7 +144,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
         if (repoAndFieldNameAndIdValues.containsKey(joinField.repository())) {
           repoAndFieldNameAndIdValues.get(joinField.repository()).put(idField.getName(), idValues);
         } else {
-          Map<String, Set> fieldNameAndIdValues = new HashMap<>();
+          Map<String, Set<Object>> fieldNameAndIdValues = new HashMap<>();
           fieldNameAndIdValues.put(idField.getName(), idValues);
           repoAndFieldNameAndIdValues.put(joinField.repository(), fieldNameAndIdValues);
         }
@@ -157,7 +160,8 @@ public class NameJoinAspect extends AbstractJoinAspect {
     }
 
     nameJoinFieldMap = new HashMap<>();
-    Field[] fields = first.getClass().getDeclaredFields();
+    // Use getAllFields to include fields from parent classes
+    Field[] fields = getAllFields(first.getClass());
     for (Field field : fields) {
       NameJoinField nameJoin = field.getAnnotation(NameJoinField.class);
       if (nonNull(nameJoin)) {

@@ -22,7 +22,7 @@ public class TenantAuditingVo {
   private LocalDateTime createdDate;
 
   @Schema(description = "最后修改人ID")
-  protected Long modifiedBy;
+  private Long modifiedBy;
 
   @NameJoinField(id = "modifiedBy", repository = "commonUserBaseRepo")
   private String modifier;

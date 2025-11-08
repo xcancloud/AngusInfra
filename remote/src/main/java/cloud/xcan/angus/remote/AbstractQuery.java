@@ -10,6 +10,8 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.safeStringValue;
 
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,28 +48,35 @@ public abstract class AbstractQuery implements Serializable {
       + "Interface performance optimization parameters, only valid for some interfaces")
   public InfoScope infoScope;
 
-  @Schema(description = "Whether to use full-text search (default: false, uses DB index search if false)")
+  @JsonIgnore
+  @Schema(description = "Whether to use full-text search (default: false, uses DB index search if false)", hidden = true)
   public boolean fullTextSearch = false;
 
   @Length(max = MAX_NAME_LENGTH)
   @Schema(description = "Search keyword")
   private String keyword;
 
-  @Schema(description = "Tenant ID to which this belongs", example = "1")
+  @Schema(description = "Tenant ID to which this belongs")
   private Long tenantId;
-  @Schema(description = "ID of the creator", example = "1")
+  @Schema(description = "ID of the creator")
   private Long createdBy;
-  @Schema(description = "Creation date", example = "2024-10-12 00:00:00")
+  @Schema(description = "Creation date, the format is `2024-10-12 00:00:00`")
   private LocalDateTime createdDate;
-  @Schema(description = "ID of the last modifier", example = "1")
+  @Schema(description = "ID of the last modifier")
   private Long modifiedBy;
-  @Schema(description = "Last modification date", example = "2024-10-12 00:00:00")
+  @Schema(description = "Last modification date, the format is `2024-10-12 00:00:00`")
   private LocalDateTime modifiedDate;
 
   @Size(max = MAX_FILTER_SIZE)
   @Parameter(description = "Dynamic filter/search conditions (array of SearchCriteria)",
       array = @ArraySchema(schema = @Schema(type = "object", implementation = SearchCriteria.class)))
   protected List<SearchCriteria> filters = new ArrayList<>();
+
+  @JsonProperty
+  public void setKeyword(String keyword) {
+    this.keyword = keyword;
+    this.fullTextSearch = isNotEmpty(keyword);
+  }
 
   protected abstract String getDefaultOrderBy();
 

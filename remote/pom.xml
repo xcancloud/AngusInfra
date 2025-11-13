@@ -60,6 +60,12 @@
     <dependency>
       <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-openfeign-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-common</artifactId>
+      <version>${springdoc-openapi.version}</version>
       <!-- Use the spec module instead -->
       <exclusions>
         <exclusion>
@@ -67,12 +73,6 @@
           <artifactId>swagger-models-jakarta</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-common</artifactId>
-      <version>${springdoc-openapi.version}</version>
     </dependency>
 
     <dependency>

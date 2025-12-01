@@ -180,7 +180,9 @@ public interface BizConstant {
   /**
    * @see SupportedLanguage#getValue() -> length
    */
-  int MAX_LANGUAGE_LENGTH = 8;
+  int MAX_LANGUAGE_LENGTH = 20;
+
+  int MAX_TIMEZONE_LENGTH = 40;
 
   int MAX_FILE_NAME = 400;
   int MAX_FILE_PATH = 800;

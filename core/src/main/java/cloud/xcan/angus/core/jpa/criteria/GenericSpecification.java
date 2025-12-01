@@ -115,9 +115,10 @@ public class GenericSpecification<T> implements Specification<T> {
           predicates.add(builder.lessThanOrEqualTo(root.get(criteria0.getKey()), Long.parseLong(stringValue)));
         } else if (criteria0.getOp().equals(SearchOperation.EQUAL)) {
           if (keyType.isEnum()) {
-            Value<?>[] values = (Value<?>[]) keyType.getEnumConstants();
-            for (Value<?> value : values) {
-              if (stringValue.equalsIgnoreCase((String) value.getValue())) {
+            Object[] values = keyType.getEnumConstants();
+            for (Object value : values) {
+              String enumValue  = value instanceof Value ? ((Value<String>) value).getValue() : value.toString();
+              if (stringValue.equalsIgnoreCase(enumValue)) {
                 predicates.add(builder.equal(root.get(criteria0.getKey()), value));
               }
             }
@@ -132,9 +133,10 @@ public class GenericSpecification<T> implements Specification<T> {
           }
         } else if (criteria0.getOp().equals(SearchOperation.NOT_EQUAL)) {
           if (keyType.isEnum()) {
-            Value<?>[] values = (Value<?>[]) keyType.getEnumConstants();
-            for (Value<?> value : values) {
-              if (stringValue.equalsIgnoreCase((String) value.getValue())) {
+            Object[] values = keyType.getEnumConstants();
+            for (Object value : values) {
+              String enumValue  = value instanceof Value ? ((Value<String>) value).getValue() : value.toString();
+              if (stringValue.equalsIgnoreCase(enumValue)) {
                 predicates.add(builder.notEqual(root.get(criteria0.getKey()), value));
               }
             }
@@ -223,9 +225,11 @@ public class GenericSpecification<T> implements Specification<T> {
     }
     if (keyType.isEnum()) {
       for (String v : values) {
-        Value<?>[] vs = (Value<?>[]) keyType.getEnumConstants();
-        for (Value<?> value : vs) {
-          if (v.equalsIgnoreCase((String) value.getValue())) {
+        Object[] vs = keyType.getEnumConstants();
+        for (Object value : vs) {
+          String enumValue =
+              value instanceof Value ? ((Value<String>) value).getValue() : value.toString();
+          if (v.equalsIgnoreCase(enumValue)) {
             inClause.value(value);
           }
         }

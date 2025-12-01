@@ -66,6 +66,13 @@
       <groupId>org.springdoc</groupId>
       <artifactId>springdoc-openapi-starter-common</artifactId>
       <version>${springdoc-openapi.version}</version>
+      <!-- Use the spec module instead -->
+      <exclusions>
+        <exclusion>
+          <groupId>io.swagger.core.v3</groupId>
+          <artifactId>swagger-models-jakarta</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

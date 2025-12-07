@@ -589,6 +589,11 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
     while (entry != null) {
       String filePath = output + File.separator + entry.getName();
       if (!entry.isDirectory()) {
+        // The extracted file names might contain paths
+        File file = new File(filePath);
+        if (!file.getParentFile().exists()){
+          file.getParentFile().mkdir();
+        }
         writeFile(zipIn, filePath);
       } else {
         File dir = new File(filePath);

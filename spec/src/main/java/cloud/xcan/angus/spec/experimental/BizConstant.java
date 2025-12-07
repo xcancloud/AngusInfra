@@ -21,7 +21,6 @@ import java.util.List;
 public interface BizConstant {
 
   // @formatter:off
-
   String PRODUCT_PROVIDE = "CN=XCan Cloud @_@ https://www.xcan.cloud";
   String PRODUCT_ISSUER = "CN=XCan Cloud";
 

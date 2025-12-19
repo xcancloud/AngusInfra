@@ -69,7 +69,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
 	private static final String ALL_COLUMN_NAMES =
       "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
 			+ "client_authentication_methods, authorization_grant_types, redirect_uris, post_logout_redirect_uris, scopes, client_settings, token_settings, "
-      + "description, enabled, platform, source, biz_tag, tenant_id, tenant_name, created_by, created_date, last_modified_by, last_modified_date";
+      + "description, enabled, platform, source, biz_tag, tenant_id, tenant_name, created_by, created_date, modified_by, modified_date";
 
   private static final String ADD_COLUMN_NAMES =
       "id, client_id, client_id_issued_at, client_secret, client_secret_expires_at, client_name, "
@@ -98,7 +98,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
       + " SET client_secret = ?, client_secret_expires_at = ?, client_name = ?, client_authentication_methods = ?,"
       + " authorization_grant_types = ?, redirect_uris = ?, post_logout_redirect_uris = ?, scopes = ?, client_settings = ?, token_settings = ? "
       + " ,description = ?, enabled = ?, platform = ?, source = ?, biz_tag = ?, tenant_id = ?,"
-      + " tenant_name = ?, created_by = ?, created_date = ?, last_modified_by = ?, last_modified_date = ? "
+      + " tenant_name = ?, created_by = ?, created_date = ?, modified_by = ?, modified_date = ? "
       + " WHERE " + PK_FILTER;
 
   private static final String DELETE_REGISTERED_CLIENT_SQL = "DELETE FROM " + TABLE_NAME + " WHERE ";
@@ -347,7 +347,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
 
       // AngusGM Client Info.
       Timestamp createdDate = rs.getTimestamp("created_date");
-      Timestamp lastModifiedDate = rs.getTimestamp("last_modified_date");
+      Timestamp lastModifiedDate = rs.getTimestamp("modified_date");
       builder.description(rs.getString("description"))
           .enabled(rs.getBoolean("enabled"))
           .platform(rs.getString("platform"))
@@ -357,7 +357,7 @@ public class JdbcRegisteredClientRepository implements CustomOAuth2ClientReposit
           .tenantName(rs.getString("tenant_name"))
           .createdBy(rs.getString("created_by"))
           .createdDate(createdDate != null ? createdDate.toInstant() : null)
-          .lastModifiedBy(rs.getString("last_modified_by"))
+          .lastModifiedBy(rs.getString("modified_by"))
           .lastModifiedDate(lastModifiedDate != null ? lastModifiedDate.toInstant() : null);
       return builder.build();
     }

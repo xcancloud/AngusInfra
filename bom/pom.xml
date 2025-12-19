@@ -18,9 +18,9 @@
   <description>The Bill of Materials of angus infra</description>
 
   <properties>
-    <xcan-infra.idgen.version>1.0.0</xcan-infra.idgen.version>
-    <xcan-infra.l2cache.version>1.0.0</xcan-infra.l2cache.version>
-    <xcan-infra.security.version>1.0.0</xcan-infra.security.version>
+    <xcan-infra.idgen.version>2.0.0</xcan-infra.idgen.version>
+    <xcan-infra.l2cache.version>2.0.0</xcan-infra.l2cache.version>
+    <xcan-infra.security.version>2.0.0</xcan-infra.security.version>
   </properties>
 
   <dependencyManagement>

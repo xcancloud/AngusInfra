@@ -10,6 +10,7 @@ import cloud.xcan.angus.spec.locale.EnumMessage;
 public enum UserSource implements EnumMessage<String> {
   PLATFORM_SIGNUP,
   INVITATION_CODE_SIGNUP,
+  INVITATION_JOIN,
   BACKGROUND_SIGNUP,
   BACKGROUND_ADDED,
   /**

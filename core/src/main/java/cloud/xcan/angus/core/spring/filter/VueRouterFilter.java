@@ -30,6 +30,8 @@ public class VueRouterFilter implements Filter {
         // For swagger forward
         || uri.startsWith("/swagger") || uri.startsWith("/eureka") || uri.startsWith("/webjars")
         || uri.startsWith("/v3/api-docs") || uri.startsWith("/v2/api-docs")
+        // For git forward
+        || uri.endsWith(".git") || uri.contains(".git/")
     ) {
       chain.doFilter(req, res);
     } else {

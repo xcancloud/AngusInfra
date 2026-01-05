@@ -96,6 +96,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Global exception handling.
@@ -279,6 +280,18 @@ public class DefaultGlobalExceptionAdvice {
       HttpServletResponse response) {
     return buildApiResult(PROTOCOL_ERROR_CODE, message(HANDLER_NOT_FOUND_T,
             new Object[]{e.getHttpMethod(), e.getRequestURL()}),
+        EventType.PROTOCOL, ExceptionLevel.WARNING, e, HANDLER_NOT_FOUND_KEY, response);
+  }
+
+  /**
+   * 404 - Handler not found
+   */
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ApiResult<?> handleHandlerNotFoundException(NoResourceFoundException e,
+      HttpServletResponse response) {
+    return buildApiResult(PROTOCOL_ERROR_CODE, message(HANDLER_NOT_FOUND_T,
+            new Object[]{e.getHttpMethod(), e.getResourcePath()}),
         EventType.PROTOCOL, ExceptionLevel.WARNING, e, HANDLER_NOT_FOUND_KEY, response);
   }
 

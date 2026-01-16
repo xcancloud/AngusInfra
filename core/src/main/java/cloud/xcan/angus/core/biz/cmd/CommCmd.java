@@ -111,9 +111,8 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
    * corresponding to the data sequence of the client. In this case, the client must ensure that the
    * batched data sequence is unchanged.
    */
-  public List<IdKey<ID, Object>> batchInsert(Collection<T> entities) {
+  public Collection<T> batchInsert(Collection<T> entities) {
     assertNotEmpty(entities, "Batch insert entities is empty");
-    List<IdKey<ID, Object>> ids = new ArrayList<>(entities.size());
     Class<?> entityClass = entities.stream().findFirst().get().getClass();
     Field id = CoreUtils.getResourceIdFiled(entityClass, DEFAULT_RESOURCE_ID);
     Assert.assertNotNull(id, "ID column is required");
@@ -133,14 +132,13 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
         if (nonNull(extSearchMerge)) {
           extSearchMerge.set(entity, String.valueOf(id.get(entity)));
         }
-        ids.add(new IdKey<ID, Object>().setId((ID) entity.identity()));
       } catch (Exception e) {
         throw new IllegalArgumentException(
             "Please check specifications, the id not found", e.getCause());
       }
     }
     getRepository().batchInsert(entities);
-    return ids;
+    return entities;
   }
 
   /**
@@ -150,9 +148,8 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
    * @param keyName  Business identification field name
    * @return IdKey Return IdKey contains ID and business identification (keyName field) value
    */
-  public List<IdKey<ID, Object>> batchInsert(Collection<T> entities, String keyName) {
+  public Collection<T> batchInsert(Collection<T> entities, String keyName) {
     assertNotEmpty(entities, "Batch insert entities is empty");
-    List<IdKey<ID, Object>> ids = new ArrayList<>(entities.size());
     Class<?> entityClass = entities.stream().findFirst().get().getClass();
     Field id = CoreUtils.getResourceIdFiled(entityClass, DEFAULT_RESOURCE_ID);
     Assert.assertNotNull(id, "ID column is required");
@@ -176,14 +173,13 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
         if (nonNull(extSearchMerge)) {
           extSearchMerge.set(entity, String.valueOf(id.get(entity)));
         }
-        ids.add(new IdKey<ID, Object>().setId((ID) entity.identity()).setKey(key.get(entity)));
       } catch (Exception e) {
         throw new IllegalArgumentException(
             "Please check specifications, the id and " + keyName + " not found", e.getCause());
       }
     }
     getRepository().batchInsert(entities);
-    return ids;
+    return entities;
   }
 
   /**
@@ -193,7 +189,7 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
    * @param keyName Business identification field name
    * @return IdKey Return IdKey contains ID and business identification (keyName field) value
    */
-  public IdKey<ID, Object> insert(T entity, String keyName) {
+  public T insert(T entity, String keyName) {
     assertNotNull(entity, "Insert entity is empty");
     Field id = CoreUtils.getResourceIdFiled(entity.getClass(), DEFAULT_RESOURCE_ID);
     Assert.assertNotNull(id, "ID column is required");
@@ -222,13 +218,7 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
 
     // Fix:: getRepository().save(entity); -> Will trigger a query statement!!
     getRepository().batchInsert(Collections.singleton(entity));
-
-    try {
-      return new IdKey<ID, Object>().setId((ID) entity.identity()).setKey(key.get(entity));
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException(
-          "Please check specifications, the id and " + keyName + " not found", e.getCause());
-    }
+    return entity;
   }
 
   /**
@@ -269,7 +259,7 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
    * @param entity Persistent entity
    * @return IdKey Return IdKey contains ID
    */
-  public IdKey<ID, Object> insert(T entity) {
+  public T insert(T entity) {
     assertNotNull(entity, "Insert entity is empty");
     if (Objects.isNull(entity.identity())) {
       Field id = CoreUtils.getResourceIdFiled(entity.getClass(), DEFAULT_RESOURCE_ID);
@@ -294,7 +284,7 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
     }
     // Fix:: getRepository().save(entity); -> Will trigger a query statement!!
     getRepository().batchInsert(Collections.singleton(entity));
-    return new IdKey<ID, Object>().setId((ID) entity.identity());
+    return entity;
   }
 
   public List<T> batchUpdate0(Collection<T> entities) {

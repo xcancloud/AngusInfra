@@ -27,6 +27,8 @@ public class ApiLog extends SimpleSource {
   private String tenantName;
   private Long userId;
   private String fullName;
+  private String apiKey;
+  private String apiKeyId;
   private String serviceCode;
   private String serviceName;
   private String instanceId;
@@ -64,6 +66,8 @@ public class ApiLog extends SimpleSource {
     setTenantName(builder.tenantName);
     setUserId(builder.userId);
     setFullName(builder.fullName);
+    setApiKey(builder.apiKey);
+    setApiKeyId(builder.apiKeyId);
     setServiceCode(builder.serviceCode);
     setServiceName(builder.serviceName);
     setInstanceId(builder.instanceId);
@@ -103,6 +107,8 @@ public class ApiLog extends SimpleSource {
     private String tenantName;
     private Long userId;
     private String fullName;
+    private String apiKey;
+    private String apiKeyId;
     private String serviceCode;
     private String serviceName;
     private String instanceId;
@@ -181,6 +187,16 @@ public class ApiLog extends SimpleSource {
 
     public Builder serviceCode(String serviceCode) {
       this.serviceCode = serviceCode;
+      return this;
+    }
+
+    public Builder apiKey(String apiKey) {
+      this.apiKey = apiKey;
+      return this;
+    }
+
+    public Builder apiKeyId(String apiKeyId) {
+      this.apiKeyId = apiKeyId;
       return this;
     }
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface ApiLogEventRemote extends EventRemote<ApiLog> {
 
   @Override
-  @PostMapping(value = "/innerapi/v1/log/api")
+  @PostMapping(value = "/innerapi/v1/interface/logs/batch")
   void sendEvents(@RequestBody List<ApiLog> apiLogs);
 
 }

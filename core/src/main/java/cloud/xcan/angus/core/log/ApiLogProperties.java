@@ -14,6 +14,7 @@ import cloud.xcan.angus.core.app.AppPropertiesRegister;
 import cloud.xcan.angus.remote.ApiConstant.ApiLog;
 import cloud.xcan.angus.remote.ApiConstant.Service;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -45,6 +46,7 @@ public class ApiLogProperties implements AppPropertiesRegister {
 
   private Integer clearBeforeDay;
 
+  @Getter
   private SystemRequest systemRequest = new SystemRequest();
 
   public Boolean getEnabled() {
@@ -85,10 +87,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
         ? CLEAR_BEFORE_DAY : Integer.parseInt(commonConfig);
   }
 
-  public SystemRequest getSystemRequest() {
-    return systemRequest;
-  }
-
   @JsonIgnore
   @Override
   public ApiLogProperties getDefault() {
@@ -126,6 +124,7 @@ public class ApiLogProperties implements AppPropertiesRegister {
 
     private int maxPayloadLength;
 
+    @Getter
     private String defaultIgnorePattern = DEFAULT_IGNORE_PATTERN;
 
     private String customIgnorePattern;
@@ -145,10 +144,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
     public int getMaxPayloadLength() {
       String commonConfig = System.getProperty(SR_MAX_PAYLOAD_LENGTH);
       return maxPayloadLength > 0 ? maxPayloadLength : isEmpty(commonConfig) ? ApiLog.DEFAULT_MAX_PAYLOAD_LENGTH : Integer.parseInt(commonConfig);
-    }
-
-    public String getDefaultIgnorePattern() {
-      return defaultIgnorePattern;
     }
 
     public String getCustomIgnorePattern() {

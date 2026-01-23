@@ -41,11 +41,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-dcache.core</artifactId>
-    </dependency>
-
     <!-- Web -->
     <dependency>
       <groupId>jakarta.servlet</groupId>

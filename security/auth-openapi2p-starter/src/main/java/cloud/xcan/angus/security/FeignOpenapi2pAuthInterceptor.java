@@ -8,7 +8,6 @@ import static cloud.xcan.angus.spec.principal.PrincipalContext.getAuthorization;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.obf.Str0;
-import cloud.xcan.angus.core.app.verify.ver.Guard;
 import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
@@ -47,18 +46,10 @@ public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
     }
 
     try {
-      Guard guard = new Guard(System.getProperty(
-          new Str0(new long[]{0x54790D0FA7B76F38L, 0xB9E46AF8A78E78BAL, 0xD12C1E2252DFD93BL})
-              .toString() /* => "LICENSE_PASS_KEY" */) + new Str0(
-          new long[]{0xA9BC583DF4856B4L, 0x7BB5D94B7DB1A12CL, 0x96B1F6DBA646B3E0L,
-              0xE4C61A9E7EFF86EEL}).toString() /* SALT => ".435E9A3AB63ED118" */,
-          System.getProperty(new Str0(
-              new long[]{0x5CC49F98C5B79423L, 0x9E229ED62365552BL, 0x6CB5ECDA361155EFL,
-                  0x5EC1A30F4C2E0F61L}).toString() /* => "MAIN_LICENSE_PATH" */));
       try {
         ClientSignInVo result = clientSign2pOpenRemote.signin(
-            new ClientSignInDto().setClientId(guard.var126())
-                .setClientSecret(guard.var127())
+            new ClientSignInDto().setClientId(/*guard.var126()*/null)
+                .setClientSecret(/*guard.var127()*/null) // TODO
                 .setScope(SIGN2P_TOKEN_CLIENT_SCOPE)).orElseContentThrow();
         this.openapi2pToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
         return this.openapi2pToken;

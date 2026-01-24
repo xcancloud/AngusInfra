@@ -138,28 +138,10 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
    */
   @JsonIgnore
   @Transient
-  protected String signupType;
-  @JsonIgnore
-  @Transient
-  protected String signupDeviceId;
-  @JsonIgnore
-  @Transient
-  protected String verificationCode;
-  @JsonIgnore
-  @Transient
-  protected String smsBizKey;
-  @JsonIgnore
-  @Transient
-  protected String emailBizKey;
-  @JsonIgnore
-  @Transient
   protected String linkSecret;
   @JsonIgnore
   @Transient
   protected boolean setPassword;
-  @JsonIgnore
-  @Transient
-  protected String invitationCode;
 
   public CustomOAuth2User() {
   }

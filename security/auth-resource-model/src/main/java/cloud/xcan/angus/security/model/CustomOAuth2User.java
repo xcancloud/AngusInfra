@@ -105,8 +105,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   protected Instant expiredDate;
 
-  protected boolean deleted;
-
   protected String tenantId;
 
   protected String tenantName;
@@ -183,7 +181,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       Collection<? extends GrantedAuthority> authorities) {
     this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
         authorities, "-1", null, null, null, null, false, false, null, null, null, null,
-        null, null, false, "-1", null, null, null, null, null);
+        null, null, "-1", null, null, null, null, null);
   }
 
   public CustomOAuth2User(String username, String password, boolean enabled,
@@ -192,7 +190,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       String lastName, String fullName, String passwordStrength, boolean sysAdmin, boolean toUser,
       String mobile, String email, String mainDeptId, Instant passwordExpiredDate,
       Instant lastModifiedPasswordDate, Instant expiredDate,
-      boolean deleted, String tenantId, String tenantName, String tenantRealNameStatus,
+      String tenantId, String tenantName, String tenantRealNameStatus,
       String directoryId, String defaultLanguage, String defaultTimeZone) {
     Assert.isTrue(username != null && !username.isEmpty() /*&& password != null*/,
         "Cannot username null or empty values to constructor");
@@ -218,7 +216,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.passwordExpiredDate = passwordExpiredDate;
     this.lastModifiedPasswordDate = lastModifiedPasswordDate;
     this.expiredDate = expiredDate;
-    this.deleted = deleted;
     this.tenantId = tenantId;
     this.tenantName = tenantName;
     this.tenantRealNameStatus = tenantRealNameStatus;
@@ -344,7 +341,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     sb.append(", tenantName='").append(tenantName).append('\'');
     sb.append(", tenantId=").append(tenantId);
     sb.append(", expiredDate=").append(expiredDate);
-    sb.append(", deleted=").append(deleted);
     sb.append(", defaultTimeZone='").append(defaultTimeZone).append('\'');
     sb.append(", defaultLanguage='").append(defaultLanguage).append('\'');
     sb.append(", lastModifiedPasswordDate=").append(lastModifiedPasswordDate);
@@ -382,7 +378,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
         .toUser(user.toUser).mobile(user.mobile).email(user.email).mainDeptId(user.mainDeptId)
         .passwordExpiredDate(user.passwordExpiredDate)
         .lastModifiedPasswordDate(user.lastModifiedPasswordDate).expiredDate(user.expiredDate)
-        .deleted(user.deleted).tenantId(user.tenantId).tenantName(user.tenantName)
+        .tenantId(user.tenantId).tenantName(user.tenantName)
         .tenantRealNameStatus(user.tenantRealNameStatus)
         .build();
   }
@@ -533,7 +529,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     private Instant passwordExpiredDate;
     private Instant lastModifiedPasswordDate;
     private Instant expiredDate;
-    private boolean deleted = false;
     private String tenantId;
     private String tenantName;
     private String tenantRealNameStatus;
@@ -776,11 +771,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder deleted(boolean deleted) {
-      this.deleted = deleted;
-      return this;
-    }
-
     public CustomOAuth2User.UserBuilder tenantId(String tenantId) {
       this.tenantId = tenantId;
       return this;
@@ -818,7 +808,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
           this.id, this.firstName, this.lastName, this.fullName, this.passwordStrength,
           this.sysAdmin, this.toUser, this.mobile, this.email, this.mainDeptId,
           this.passwordExpiredDate, this.lastModifiedPasswordDate, this.expiredDate,
-          this.deleted, this.tenantId, this.tenantName, this.tenantRealNameStatus,
+          this.tenantId, this.tenantName, this.tenantRealNameStatus,
           this.directoryId, this.defaultLanguage, this.defaultTimeZone);
     }
   }

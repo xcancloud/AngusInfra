@@ -45,6 +45,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.MDC;
@@ -71,6 +73,8 @@ public class GlobalHoldFilter implements Filter {
   private final LocaleResolver localeResolver;
 
   private static final int OPTION_MAX_AGE = 3 * 24 * 60 * 60;
+
+  public static Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
 
   public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties,
       LocaleResolver localeResolver) {
@@ -120,6 +124,8 @@ public class GlobalHoldFilter implements Filter {
       relayOptTenantId(request, principal);
 
       setResponseHeader(response, principal);
+
+      USER_REQUEST_TIME.put(principal.getUserId(), LocalDateTime.now());
 
       MDC.put(AuthKey.REQUEST_ID, principal.getRequestId());
 

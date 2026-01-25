@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -59,6 +60,7 @@ public class CustomOAuth2RegisteredClient extends RegisteredClient implements Re
 
   private ClientSettings clientSettings;
 
+  @Setter
   private TokenSettings tokenSettings;
 
   /**

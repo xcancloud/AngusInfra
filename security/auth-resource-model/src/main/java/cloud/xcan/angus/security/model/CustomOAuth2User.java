@@ -107,8 +107,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   protected String tenantName;
 
-  protected String tenantRealNameStatus;
-
   protected String directoryId;
 
   protected String defaultLanguage;
@@ -179,7 +177,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       Collection<? extends GrantedAuthority> authorities) {
     this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
         authorities, "-1", null, null, null, null, false, null, null, null, null,
-        null, null, "-1", null, null, null, null, null);
+        null, null, "-1", null, null, null, null);
   }
 
   public CustomOAuth2User(String username, String password, boolean enabled,
@@ -188,8 +186,8 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       String lastName, String fullName, String passwordStrength, boolean sysAdmin,
       String mobile, String email, String mainDeptId, Instant passwordExpiredDate,
       Instant lastModifiedPasswordDate, Instant expiredDate,
-      String tenantId, String tenantName, String tenantRealNameStatus,
-      String directoryId, String defaultLanguage, String defaultTimeZone) {
+      String tenantId, String tenantName, String directoryId, String defaultLanguage,
+      String defaultTimeZone) {
     Assert.isTrue(username != null && !username.isEmpty() /*&& password != null*/,
         "Cannot username null or empty values to constructor");
 
@@ -215,7 +213,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.expiredDate = expiredDate;
     this.tenantId = tenantId;
     this.tenantName = tenantName;
-    this.tenantRealNameStatus = tenantRealNameStatus;
     this.directoryId = directoryId;
     this.defaultLanguage = defaultLanguage;
     this.defaultTimeZone = defaultTimeZone;
@@ -334,8 +331,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("CustomOAuth2User{");
-    sb.append("tenantRealNameStatus='").append(tenantRealNameStatus).append('\'');
-    sb.append(", tenantName='").append(tenantName).append('\'');
+    sb.append("tenantName='").append(tenantName).append('\'');
     sb.append(", tenantId=").append(tenantId);
     sb.append(", expiredDate=").append(expiredDate);
     sb.append(", defaultTimeZone='").append(defaultTimeZone).append('\'');
@@ -375,7 +371,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
         .passwordExpiredDate(user.passwordExpiredDate)
         .lastModifiedPasswordDate(user.lastModifiedPasswordDate).expiredDate(user.expiredDate)
         .tenantId(user.tenantId).tenantName(user.tenantName)
-        .tenantRealNameStatus(user.tenantRealNameStatus)
         .build();
   }
 
@@ -526,7 +521,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     private Instant expiredDate;
     private String tenantId;
     private String tenantName;
-    private String tenantRealNameStatus;
 
     private String directoryId;
     private String defaultLanguage;
@@ -771,11 +765,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder tenantRealNameStatus(String tenantRealNameStatus) {
-      this.tenantRealNameStatus = tenantRealNameStatus;
-      return this;
-    }
-
     public CustomOAuth2User.UserBuilder directoryId(String directoryId) {
       this.directoryId = directoryId;
       return this;
@@ -798,8 +787,8 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
           this.id, this.firstName, this.lastName, this.fullName, this.passwordStrength,
           this.sysAdmin, this.mobile, this.email, this.mainDeptId,
           this.passwordExpiredDate, this.lastModifiedPasswordDate, this.expiredDate,
-          this.tenantId, this.tenantName, this.tenantRealNameStatus,
-          this.directoryId, this.defaultLanguage, this.defaultTimeZone);
+          this.tenantId, this.tenantName, this.directoryId, this.defaultLanguage,
+          this.defaultTimeZone);
     }
   }
 

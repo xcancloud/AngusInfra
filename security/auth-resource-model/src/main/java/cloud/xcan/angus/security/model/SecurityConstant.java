@@ -28,7 +28,7 @@ public interface SecurityConstant {
   String INTROSPECTION_CLAIM_NAMES_EXPIRED_DATE = "expired_date";
   String INTROSPECTION_CLAIM_NAMES_TENANT_ID = "tenant_id";
   String INTROSPECTION_CLAIM_NAMES_TENANT_NAME = "tenant_name";
-  String INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS = "tenant_real_name_status";
+  //String INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS = "tenant_real_name_status";
   //String INTROSPECTION_CLAIM_NAMES_COUNTRY = "country";
   String INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE = "client_source";
   String INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID = "directory_id";

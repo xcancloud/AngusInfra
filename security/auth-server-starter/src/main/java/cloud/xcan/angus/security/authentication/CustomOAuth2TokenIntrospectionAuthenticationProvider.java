@@ -36,7 +36,6 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SYS_ADMIN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_IN_QUERY;
@@ -83,8 +82,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Slf4j
-public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implements
-    AuthenticationProvider {
+public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
+    implements AuthenticationProvider {
 
   private static final TypeDescriptor OBJECT_TYPE_DESCRIPTOR = TypeDescriptor.valueOf(Object.class);
 
@@ -240,7 +239,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_EXPIRED_DATE, user.getExpiredDate());
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, user.getTenantId());
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_NAME, user.getTenantName());
-    claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS, user.getTenantRealNameStatus());
+    //claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS, user.getTenantRealNameStatus());
     //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, user.getClientId());
     //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE, user.getClientSource());
     claims.put(INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID, user.getDirectoryId());

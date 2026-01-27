@@ -52,7 +52,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
 
   // @formatter:off
   public static final String DEF_CREATE_USER_SQL =
-      "insert into oauth2_user ("
+      "INSERT INTO oauth2_user ("
           + "username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
           + "id, first_name, last_name, full_name, password_strength, sys_admin, email, mobile, main_dept_id,"
           + "password_expired_date, last_modified_password_date, expired_date, "
@@ -63,11 +63,13 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       = "DELETE FROM oauth2_user where username = ?";
 
   public static final String DEF_UPDATE_USER_SQL =
-      "UPDATE oauth2_user set password = ?, enabled = ?, account_non_expired = ?, account_non_locked = ?, credentials_non_expired = ?, "
-          + "first_name = ?, last_name = ?, full_name = ?, password_strength = ?, sys_admin = ?, email = ?, mobile = ?, main_dept_id = ?,"
+      "UPDATE oauth2_user SET password = ?, enabled = ?, account_non_expired = ?, "
+          + "account_non_locked = ?, credentials_non_expired = ?, "
+          + "first_name = ?, last_name = ?, full_name = ?, password_strength = ?, "
+          + "sys_admin = ?, email = ?, mobile = ?, main_dept_id = ?,"
           + "password_expired_date = ?, last_modified_password_date = ?, expired_date = ?, "
           + "tenant_id = ?, tenant_name = ?, directory_id = ?, default_language = ?, default_time_zone = ? "
-          + "where username = ?";
+          + "WHERE username = ?";
 
   public static final String DEF_INSERT_AUTHORITY_SQL
       = "INSERT INTO Oauth2_authorities (username, authority) VALUES (?,?)";
@@ -98,8 +100,8 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
 
   protected final Log logger = LogFactory.getLog(getClass());
 
-  private SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder
-      .getContextHolderStrategy();
+  private SecurityContextHolderStrategy securityContextHolderStrategy
+      = SecurityContextHolder.getContextHolderStrategy();
 
   private String createUserSql = DEF_CREATE_USER_SQL;
 
@@ -183,11 +185,10 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
           ? Timestamp.from(user.getExpiredDate()) : null);
       ps.setString(18, user.getTenantId());
       ps.setString(19, user.getTenantName());
-      ps.setString(20, user.getTenantRealNameStatus());
-      ps.setString(21, user.getUsername());
-      ps.setString(22, user.getDirectoryId());
-      ps.setString(23, user.getDefaultLanguage());
-      ps.setString(24, user.getDefaultTimeZone());
+      ps.setString(20, user.getUsername());
+      ps.setString(21, user.getDirectoryId());
+      ps.setString(22, user.getDefaultLanguage());
+      ps.setString(23, user.getDefaultTimeZone());
     });
     if (getEnableAuthorities()) {
       insertUserAuthorities(user);
@@ -221,11 +222,10 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
           ? Timestamp.from(user.getExpiredDate()) : null);
       ps.setString(17, user.getTenantId());
       ps.setString(18, user.getTenantName());
-      ps.setString(19, user.getTenantRealNameStatus());
-      ps.setString(20, user.getDirectoryId());
-      ps.setString(21, user.getDefaultLanguage());
-      ps.setString(22, user.getDefaultTimeZone());
-      ps.setString(23, user.getUsername());
+      ps.setString(19, user.getDirectoryId());
+      ps.setString(20, user.getDefaultLanguage());
+      ps.setString(21, user.getDefaultTimeZone());
+      ps.setString(22, user.getUsername());
     });
     if (getEnableAuthorities()) {
       deleteUserAuthorities(user.getUsername());

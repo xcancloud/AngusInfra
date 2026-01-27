@@ -37,19 +37,19 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   public static final String DEF_USERS_BY_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
       + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
-      + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-      + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
-      + "FROM oauth2_user WHERE (username = ? OR mobile = ? OR email = ?) AND deleted = false";
+      + "password_expired_date, last_modified_password_date, expired_date, "
+      + "tenant_id, tenant_name, directory_id, default_language, default_time_zone "
+      + "FROM oauth2_user WHERE username = ? OR mobile = ? OR email = ?";
 
   public static final String DEF_USERS_BY_COMPOSITE_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
           + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
-          + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-          + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
-          + "FROM oauth2_user WHERE id = ? AND (username = ? OR mobile = ? OR email = ?) AND deleted = false";
+          + "password_expired_date, last_modified_password_date, expired_date, "
+          + "tenant_id, tenant_name, directory_id, default_language, default_time_zone "
+          + "FROM oauth2_user WHERE id = ? AND (username = ? OR mobile = ? OR email = ?)";
 
 	public static final String DEF_AUTHORITIES_BY_USERNAME_QUERY =
-      "select username, authority from oauth2_authorities where username = ?";
+      "SELECT username, authority FROM oauth2_authorities WHERE username = ?";
 	// @formatter:on
 
   protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
@@ -170,15 +170,14 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     Instant expiredDate = ts3 != null ? ts3.toInstant() : null;
     String tenantId = rs.getString(19);
     String tenantName = rs.getString(20);
-    String tenantRealNameStatus = rs.getString(21);
-    String directoryId = rs.getString(22);
-    String defaultLanguage = rs.getString(23);
-    String defaultTimeZone = rs.getString(24);
+    String directoryId = rs.getString(21);
+    String defaultLanguage = rs.getString(22);
+    String defaultTimeZone = rs.getString(23);
     return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
         credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
         passwordStrength, sysAdmin, mobile, email, mainDeptId, passwordExpiredDate,
-        lastModifiedPasswordDate, expiredDate, tenantId, tenantName, tenantRealNameStatus,
-        directoryId, defaultLanguage, defaultTimeZone);
+        lastModifiedPasswordDate, expiredDate, tenantId, tenantName, directoryId,
+        defaultLanguage, defaultTimeZone);
   }
 
   /**

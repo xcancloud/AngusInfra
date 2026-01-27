@@ -169,17 +169,16 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     Instant lastModifiedPasswordDate = ts2 != null ? ts2.toInstant() : null;
     Timestamp ts3 = rs.getTimestamp(19);
     Instant expiredDate = ts3 != null ? ts3.toInstant() : null;
-    boolean deleted = rs.getBoolean(20);
-    String tenantId = rs.getString(21);
-    String tenantName = rs.getString(22);
-    String tenantRealNameStatus = rs.getString(23);
-    String directoryId = rs.getString(24);
-    String defaultLanguage = rs.getString(25);
-    String defaultTimeZone = rs.getString(26);
+    String tenantId = rs.getString(20);
+    String tenantName = rs.getString(21);
+    String tenantRealNameStatus = rs.getString(22);
+    String directoryId = rs.getString(23);
+    String defaultLanguage = rs.getString(24);
+    String defaultTimeZone = rs.getString(25);
     return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
         credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
         passwordStrength, sysAdmin, toUser, mobile, email, mainDeptId, passwordExpiredDate,
-        lastModifiedPasswordDate, expiredDate, deleted, tenantId, tenantName, tenantRealNameStatus,
+        lastModifiedPasswordDate, expiredDate, tenantId, tenantName, tenantRealNameStatus,
         directoryId, defaultLanguage, defaultTimeZone);
   }
 

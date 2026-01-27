@@ -182,14 +182,13 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
           ? Timestamp.from(user.getLastModifiedPasswordDate()) : null);
       ps.setTimestamp(18, user.getExpiredDate() != null
           ? Timestamp.from(user.getExpiredDate()) : null);
-      ps.setBoolean(19, user.isDeleted());
-      ps.setString(20, user.getTenantId());
-      ps.setString(21, user.getTenantName());
-      ps.setString(22, user.getTenantRealNameStatus());
-      ps.setString(23, user.getUsername());
-      ps.setString(24, user.getDirectoryId());
-      ps.setString(25, user.getDefaultLanguage());
-      ps.setString(26, user.getDefaultTimeZone());
+      ps.setString(19, user.getTenantId());
+      ps.setString(20, user.getTenantName());
+      ps.setString(21, user.getTenantRealNameStatus());
+      ps.setString(22, user.getUsername());
+      ps.setString(23, user.getDirectoryId());
+      ps.setString(24, user.getDefaultLanguage());
+      ps.setString(25, user.getDefaultTimeZone());
     });
     if (getEnableAuthorities()) {
       insertUserAuthorities(user);
@@ -222,14 +221,13 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
           ? Timestamp.from(user.getLastModifiedPasswordDate()) : null);
       ps.setTimestamp(17, user.getExpiredDate() != null
           ? Timestamp.from(user.getExpiredDate()) : null);
-      ps.setBoolean(18, user.isDeleted());
-      ps.setString(19, user.getTenantId());
-      ps.setString(20, user.getTenantName());
-      ps.setString(21, user.getTenantRealNameStatus());
-      ps.setString(22, user.getDirectoryId());
-      ps.setString(23, user.getDefaultLanguage());
-      ps.setString(24, user.getDefaultTimeZone());
-      ps.setString(25, user.getUsername());
+      ps.setString(18, user.getTenantId());
+      ps.setString(19, user.getTenantName());
+      ps.setString(20, user.getTenantRealNameStatus());
+      ps.setString(21, user.getDirectoryId());
+      ps.setString(22, user.getDefaultLanguage());
+      ps.setString(23, user.getDefaultTimeZone());
+      ps.setString(24, user.getUsername());
     });
     if (getEnableAuthorities()) {
       deleteUserAuthorities(user.getUsername());

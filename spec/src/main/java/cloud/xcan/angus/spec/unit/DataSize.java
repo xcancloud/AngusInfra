@@ -289,7 +289,7 @@ public final class DataSize implements Comparable<DataSize>,
   private String getFormatString(double size, DataUnit unit) {
     BigDecimal value = new BigDecimal(size);
     double result = value.setScale(2, RoundingMode.HALF_UP).doubleValue();
-    return result + unit.getMessage();
+    return result + unit.getSuffix();
   }
 
   @Override
@@ -309,7 +309,7 @@ public final class DataSize implements Comparable<DataSize>,
 
   @Override
   public String toString() {
-    return value + unit.getMessage();
+    return value + unit.getSuffix();
   }
 
   @Override

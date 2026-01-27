@@ -394,10 +394,6 @@ public class PrincipalContextUtils {
     PermissionCheck.checkSysAdmin(principal);
   }
 
-  public static void checkToUserRequired() {
-    PermissionCheck.checkToUserRequired();
-  }
-
   /**
    * Check whether the operation system admin policy
    */
@@ -489,24 +485,6 @@ public class PrincipalContextUtils {
    */
   public static void checkHasAnyOpPolicy(String... policyCodes) {
     PermissionCheck.checkHasAnyOpPolicy(policyCodes);
-  }
-
-  public static void checkToPolicyUser() {
-    PermissionCheck.checkToPolicyUser();
-  }
-
-  /**
-   * Check whether the TOP policy
-   */
-  public static void checkHasToPolicy(String policyCode) {
-    PermissionCheck.checkHasToPolicy(policyCode);
-  }
-
-  /**
-   * Check whether the any TOP policy
-   */
-  public static void checkHasAnyToPolicy(String... policyCodes) {
-    PermissionCheck.checkHasAnyToPolicy(policyCodes);
   }
 
   public static void checkOpClient() {

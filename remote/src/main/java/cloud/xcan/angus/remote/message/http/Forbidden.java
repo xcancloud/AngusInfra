@@ -131,7 +131,6 @@ public class Forbidden extends AbstractResultMessageException {
 
     String NO_POLICY_PERMISSION_T = "xcm.no.policy.permission.t";
     String NO_OP_POLICY_PERMISSION_T = "xcm.no.op.policy.permission.t";
-    String NO_TO_POLICY_PERMISSION_T = "xcm.no.to.policy.permission.t";
 
     String NO_OP_CLIENT_PERMISSION = "xcm.no.op.client.permission";
     String NO_TENANT_CLIENT_PERMISSION = "xcm.no.tenant.client.permission";

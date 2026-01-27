@@ -10,10 +10,12 @@ import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.Setter;
 
 /**
  * @see `org.openjdk.jmh.runner.options.TimeValue`
  */
+@Setter
 public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
 
   /**
@@ -117,29 +119,13 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
     };
   }
 
-  public String formatDays() {
-    return toDays() + ShortTimeUnit.Day.getMessage();
-  }
-
-  public String formatHours() {
-    return toHours() + ShortTimeUnit.Hour.getMessage();
-  }
-
-  public String formatMinutes() {
-    return toMinutes() + ShortTimeUnit.Minute.getMessage();
-  }
-
-  public String formatSecond() {
-    return toSecond() + ShortTimeUnit.Second.getMessage();
-  }
-
   public String formatMilliSecond() {
     return toMilliSecond() + ShortTimeUnit.Millisecond.getValue();
   }
 
   @Override
   public String toString() {
-    return value + unit.getMessage();
+    return value + unit.getValue();
   }
 
   @Override
@@ -164,25 +150,19 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
   }
 
   public String toHumanString(ShortTimeUnit unit) {
-    switch (unit) {
-      case Millisecond:
-        return toMilliSecond() + unit.getMessage();
-      case Second:
-        return toSecond() + unit.getMessage();
-      case Minute:
-        return toMinutes() + unit.getMessage();
-      case Hour:
-        return toHours() + unit.getMessage();
-      case Day:
-        return toDays() + unit.getMessage();
-    }
-    return getFormatString(value, ShortTimeUnit.Day);
+    return switch (unit) {
+      case Millisecond -> toMilliSecond() + unit.getSuffix();
+      case Second -> toSecond() + unit.getSuffix();
+      case Minute -> toMinutes() + unit.getSuffix();
+      case Hour -> toHours() + unit.getSuffix();
+      case Day -> toDays() + unit.getSuffix();
+    };
   }
 
   private String getFormatString(double size, ShortTimeUnit unit) {
     BigDecimal value = new BigDecimal(size);
     double result = value.setScale(2, RoundingMode.HALF_UP).doubleValue();
-    return result + unit.getMessage();
+    return result + unit.getSuffix();
   }
 
   public static TimeValue parse(CharSequence text) {
@@ -213,17 +193,9 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
     return value;
   }
 
-  public void setValue(long value) {
-    this.value = value;
-  }
-
   @Override
   public ShortTimeUnit getUnit() {
     return unit;
-  }
-
-  public void setUnit(ShortTimeUnit unit) {
-    this.unit = unit;
   }
 
   @Override
@@ -231,10 +203,9 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof TimeValue)) {
+    if (!(o instanceof TimeValue timeValue)) {
       return false;
     }
-    TimeValue timeValue = (TimeValue) o;
     return (value == timeValue.value && unit == timeValue.unit)
         || timeValue.toMilliSecond() == toMilliSecond();
   }

@@ -2,7 +2,6 @@ package cloud.xcan.angus.core.biz;
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getApplicationInfo;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getRequiredToPolicy;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasAnyPolicy;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasPolicy;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isCloudServiceEdition;
@@ -12,7 +11,6 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpSysAdmin;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isSysAdmin;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isTenantClient;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isTenantSysAdmin;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isToUser;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_ADMIN_PERMISSION_KEY;
@@ -28,9 +26,6 @@ import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_SYS_ADMIN_PERM
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_TENANT_CLIENT_PERMISSION;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_TENANT_SYS_ADMIN_PERMISSION;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_TO_POLICY_PERMISSION_KEY;
-import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_TO_POLICY_PERMISSION_T;
-import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_TO_USER_PERMISSION;
-import static cloud.xcan.angus.remote.message.http.Forbidden.M.NO_TO_USER_PERMISSION_KEY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 import static org.apache.commons.lang3.StringUtils.join;
 
@@ -83,14 +78,14 @@ public class PermissionCheck {
 
   public static void checkMultiTenantPermission0(Principal principal) {
     ProtocolAssert.assertForbidden(!isOpMultiTenant(principal)
-            || (isOpClient(principal) && isToUser()), DENIED_OP_TENANT_ACCESS_T,
+            || (isOpClient(principal)), DENIED_OP_TENANT_ACCESS_T,
         new Object[]{String.valueOf(principal.getOptTenantId()), FATAL_EXIT_KEY});
   }
 
   public static void checkMultiTenantPermission0() {
     Principal principal = PrincipalContext.get();
     ProtocolAssert.assertForbidden(!isOpMultiTenant(principal)
-            || (isOpClient(principal) && isToUser()), DENIED_OP_TENANT_ACCESS_T,
+            || (isOpClient(principal)), DENIED_OP_TENANT_ACCESS_T,
         new Object[]{String.valueOf(principal.getOptTenantId()), FATAL_EXIT_KEY});
   }
 
@@ -179,39 +174,6 @@ public class PermissionCheck {
     }
   }
 
-  public static void checkToPolicyUser() {
-    if (!isToUser()) {
-      throw Forbidden.of(NO_TO_POLICY_PERMISSION_T,
-          new Object[]{getRequiredToPolicy()}, NO_TO_POLICY_PERMISSION_KEY);
-    }
-  }
-
-  public static void checkToUserRequired() {
-    if (!isToUser()) {
-      throw Forbidden.of(NO_TO_USER_PERMISSION, NO_TO_USER_PERMISSION_KEY);
-    }
-  }
-
-  /**
-   * Check whether the TOP policy
-   */
-  public static void checkHasToPolicy(String policyCode) {
-    if (!hasPolicy(policyCode)) {
-      throw Forbidden.of(NO_TO_POLICY_PERMISSION_T, new Object[]{policyCode},
-          NO_TO_POLICY_PERMISSION_KEY);
-    }
-  }
-
-  /**
-   * Check whether the any TOP policy
-   */
-  public static void checkHasAnyToPolicy(String... policyCodes) {
-    if (!hasAnyPolicy(policyCodes)) {
-      throw Forbidden.of(NO_TO_POLICY_PERMISSION_T, new Object[]{join(policyCodes, ",")},
-          NO_TO_POLICY_PERMISSION_KEY);
-    }
-  }
-
   public static void checkOpClient() {
     ProtocolAssert.assertForbidden(isOpClient(), NO_OP_CLIENT_PERMISSION);
   }
@@ -228,10 +190,7 @@ public class PermissionCheck {
    * Not multi-tenant operation, ensuring cloud service security. Only us.
    */
   public static void checkCloudTenantSecurity() {
-    ApplicationInfo app = getApplicationInfo();
-    ProtocolAssert.assertForbidden(app.isPrivateEdition()
-            || (app.isCloudServiceEdition() && getOptTenantId().equals(OWNER_TENANT_ID)),
-        "User illegally access cloud edition data", FATAL_EXIT_KEY);
+    checkCloudTenantOperationSecurity(OWNER_TENANT_ID);
   }
 
   /**
@@ -241,7 +200,7 @@ public class PermissionCheck {
   public static void checkCloudTenantOperationSecurity(Long ownerTenantId) {
     ApplicationInfo app = getApplicationInfo();
     ProtocolAssert.assertForbidden(app.isPrivateEdition() || (app.isCloudServiceEdition()
-            && (getOptTenantId().equals(ownerTenantId) || isToUser())),
+            && getOptTenantId().equals(ownerTenantId)),
         "User illegally access cloud edition data", FATAL_EXIT_KEY);
   }
 }

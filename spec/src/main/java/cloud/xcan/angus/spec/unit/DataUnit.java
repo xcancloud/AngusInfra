@@ -2,6 +2,7 @@ package cloud.xcan.angus.spec.unit;
 
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Value;
+import lombok.Getter;
 
 /**
  * A standard set of {@link DataSize} units.
@@ -23,6 +24,7 @@ import cloud.xcan.angus.spec.experimental.Value;
  *
  * @see DataSize
  */
+@Getter
 public enum DataUnit implements Value<String> {
 
   /**

@@ -10,13 +10,13 @@ public class DataSizeTest {
     DataSize dataSize = DataSize.parse("2GB");
     Assert.assertNotNull(dataSize);
 
-    Assert.assertEquals(dataSize.getUnit().getMessage(), "GB");
+    Assert.assertEquals(dataSize.getUnit().getSuffix(), "GB");
     Assert.assertEquals(dataSize.getValue().intValue(), 2);
 
     dataSize = DataSize.parse("25.5 GB");
     Assert.assertNotNull(dataSize);
 
-    Assert.assertEquals(dataSize.getUnit().getMessage(), "GB");
+    Assert.assertEquals(dataSize.getUnit().getSuffix(), "GB");
     Assert.assertEquals(dataSize.getValue(), 25.5D, 1);
 
   }

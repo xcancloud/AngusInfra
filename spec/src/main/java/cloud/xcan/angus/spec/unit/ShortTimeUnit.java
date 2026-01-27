@@ -2,7 +2,9 @@ package cloud.xcan.angus.spec.unit;
 
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Value;
+import lombok.Getter;
 
+@Getter
 public enum ShortTimeUnit implements Value<String> {
   Millisecond("ms"),
   Second("s"),

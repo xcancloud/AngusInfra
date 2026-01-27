@@ -54,19 +54,19 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   public static final String DEF_CREATE_USER_SQL =
       "insert into oauth2_user ("
           + "username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
-          + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
-          + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-          + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone"
-          + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+          + "id, first_name, last_name, full_name, password_strength, sys_admin, email, mobile, main_dept_id,"
+          + "password_expired_date, last_modified_password_date, expired_date, "
+          + "tenant_id, tenant_name, directory_id, default_language, default_time_zone"
+          + ") values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
   public static final String DEF_DELETE_USER_SQL
       = "DELETE FROM oauth2_user where username = ?";
 
   public static final String DEF_UPDATE_USER_SQL =
       "UPDATE oauth2_user set password = ?, enabled = ?, account_non_expired = ?, account_non_locked = ?, credentials_non_expired = ?, "
-          + "first_name = ?, last_name = ?, full_name = ?, password_strength = ?, sys_admin = ?, to_user = ?, email = ?, mobile = ?, main_dept_id = ?,"
-          + "password_expired_date = ?, last_modified_password_date = ?, expired_date = ?, deleted = ?, "
-          + "tenant_id = ?, tenant_name = ?, tenant_real_name_status = ?, directory_id = ?, default_language = ?, default_time_zone = ? "
+          + "first_name = ?, last_name = ?, full_name = ?, password_strength = ?, sys_admin = ?, email = ?, mobile = ?, main_dept_id = ?,"
+          + "password_expired_date = ?, last_modified_password_date = ?, expired_date = ?, "
+          + "tenant_id = ?, tenant_name = ?, directory_id = ?, default_language = ?, default_time_zone = ? "
           + "where username = ?";
 
   public static final String DEF_INSERT_AUTHORITY_SQL
@@ -83,16 +83,16 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
 
   public static final String DEF_USERS_BY_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
-          + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
-          + "password_expired_date, last_modified_password_date, expired_date, deleted, "
-          + "tenant_id, tenant_name, tenant_real_name_status, directory_id, default_language, default_time_zone "
-          + "FROM oauth2_user WHERE (username = ? OR email = ? OR mobile = ?) AND deleted = 0";
+          + "id, first_name, last_name, full_name, password_strength, sys_admin, email, mobile, main_dept_id,"
+          + "password_expired_date, last_modified_password_date, expired_date, "
+          + "tenant_id, tenant_name, directory_id, default_language, default_time_zone "
+          + "FROM oauth2_user WHERE username = ? OR email = ? OR mobile = ? ";
 
   public static final String DEF_USER_ACCOUNT_EXISTS_SQL
       = "SELECT username FROM oauth2_user WHERE username = ? OR email = ? OR mobile = ?";
 
   public static final String DEF_USER_DELETED_STATUS_SQL
-      = "UPDATE oauth2_user SET deleted = 1 WHERE username = ?";
+      = "DELETE FROM oauth2_user WHERE username = ?";
 
   // @formatter:on
 
@@ -172,23 +172,22 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setString(9, user.getFullName());
       ps.setString(10, user.getPasswordStrength());
       ps.setBoolean(11, user.isSysAdmin());
-      ps.setBoolean(12, user.isToUser());
-      ps.setString(13, user.getEmail());
-      ps.setString(14, user.getMobile());
-      ps.setString(15, user.getMainDeptId());
-      ps.setTimestamp(16, user.getPasswordExpiredDate() != null
+      ps.setString(12, user.getEmail());
+      ps.setString(13, user.getMobile());
+      ps.setString(14, user.getMainDeptId());
+      ps.setTimestamp(15, user.getPasswordExpiredDate() != null
           ? Timestamp.from(user.getPasswordExpiredDate()) : null);
-      ps.setTimestamp(17, user.getLastModifiedPasswordDate() != null
+      ps.setTimestamp(16, user.getLastModifiedPasswordDate() != null
           ? Timestamp.from(user.getLastModifiedPasswordDate()) : null);
-      ps.setTimestamp(18, user.getExpiredDate() != null
+      ps.setTimestamp(17, user.getExpiredDate() != null
           ? Timestamp.from(user.getExpiredDate()) : null);
-      ps.setString(19, user.getTenantId());
-      ps.setString(20, user.getTenantName());
-      ps.setString(21, user.getTenantRealNameStatus());
-      ps.setString(22, user.getUsername());
-      ps.setString(23, user.getDirectoryId());
-      ps.setString(24, user.getDefaultLanguage());
-      ps.setString(25, user.getDefaultTimeZone());
+      ps.setString(18, user.getTenantId());
+      ps.setString(19, user.getTenantName());
+      ps.setString(20, user.getTenantRealNameStatus());
+      ps.setString(21, user.getUsername());
+      ps.setString(22, user.getDirectoryId());
+      ps.setString(23, user.getDefaultLanguage());
+      ps.setString(24, user.getDefaultTimeZone());
     });
     if (getEnableAuthorities()) {
       insertUserAuthorities(user);
@@ -211,23 +210,22 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setString(8, user.getFullName());
       ps.setString(9, user.getPasswordStrength());
       ps.setBoolean(10, user.isSysAdmin());
-      ps.setBoolean(11, user.isToUser());
-      ps.setString(12, user.getEmail());
-      ps.setString(13, user.getMobile());
-      ps.setString(14, user.getMainDeptId());
-      ps.setTimestamp(15, user.getPasswordExpiredDate() != null
+      ps.setString(11, user.getEmail());
+      ps.setString(12, user.getMobile());
+      ps.setString(13, user.getMainDeptId());
+      ps.setTimestamp(14, user.getPasswordExpiredDate() != null
           ? Timestamp.from(user.getPasswordExpiredDate()) : null);
-      ps.setTimestamp(16, user.getLastModifiedPasswordDate() != null
+      ps.setTimestamp(15, user.getLastModifiedPasswordDate() != null
           ? Timestamp.from(user.getLastModifiedPasswordDate()) : null);
-      ps.setTimestamp(17, user.getExpiredDate() != null
+      ps.setTimestamp(16, user.getExpiredDate() != null
           ? Timestamp.from(user.getExpiredDate()) : null);
-      ps.setString(18, user.getTenantId());
-      ps.setString(19, user.getTenantName());
-      ps.setString(20, user.getTenantRealNameStatus());
-      ps.setString(21, user.getDirectoryId());
-      ps.setString(22, user.getDefaultLanguage());
-      ps.setString(23, user.getDefaultTimeZone());
-      ps.setString(24, user.getUsername());
+      ps.setString(17, user.getTenantId());
+      ps.setString(18, user.getTenantName());
+      ps.setString(19, user.getTenantRealNameStatus());
+      ps.setString(20, user.getDirectoryId());
+      ps.setString(21, user.getDefaultLanguage());
+      ps.setString(22, user.getDefaultTimeZone());
+      ps.setString(23, user.getUsername());
     });
     if (getEnableAuthorities()) {
       deleteUserAuthorities(user.getUsername());

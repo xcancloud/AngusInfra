@@ -5,7 +5,6 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasRealOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasToRole;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpSysAdmin;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isToUser;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
@@ -174,7 +173,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
    * Query all when the operation client and optTenantId is null
    */
   private String judgeAutoCtrlTenantIdCondition(SummaryQueryRegister register) {
-    if (!register.multiTenantAutoCtrlWhenOpClient() || !isToUser() || hasRealOptTenantId()) {
+    if (!register.multiTenantAutoCtrlWhenOpClient() || hasRealOptTenantId()) {
       return " AND tenant_id = " + getOptTenantId();
     }
     // Close TenantInterceptor tenantId condition

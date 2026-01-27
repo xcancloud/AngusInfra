@@ -159,25 +159,24 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     String fullName = rs.getString(10);
     String passwordStrength = rs.getString(11);
     boolean sysAdmin = rs.getBoolean(12);
-    boolean toUser = rs.getBoolean(13);
-    String mobile = rs.getString(14);
-    String email = rs.getString(15);
-    String mainDeptId = rs.getString(16);
-    Timestamp ts1 = rs.getTimestamp(17);
+    String mobile = rs.getString(13);
+    String email = rs.getString(14);
+    String mainDeptId = rs.getString(15);
+    Timestamp ts1 = rs.getTimestamp(16);
     Instant passwordExpiredDate = ts1 != null ? ts1.toInstant() : null;
-    Timestamp ts2 = rs.getTimestamp(18);
+    Timestamp ts2 = rs.getTimestamp(17);
     Instant lastModifiedPasswordDate = ts2 != null ? ts2.toInstant() : null;
-    Timestamp ts3 = rs.getTimestamp(19);
+    Timestamp ts3 = rs.getTimestamp(18);
     Instant expiredDate = ts3 != null ? ts3.toInstant() : null;
-    String tenantId = rs.getString(20);
-    String tenantName = rs.getString(21);
-    String tenantRealNameStatus = rs.getString(22);
-    String directoryId = rs.getString(23);
-    String defaultLanguage = rs.getString(24);
-    String defaultTimeZone = rs.getString(25);
+    String tenantId = rs.getString(19);
+    String tenantName = rs.getString(20);
+    String tenantRealNameStatus = rs.getString(21);
+    String directoryId = rs.getString(22);
+    String defaultLanguage = rs.getString(23);
+    String defaultTimeZone = rs.getString(24);
     return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
         credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
-        passwordStrength, sysAdmin, toUser, mobile, email, mainDeptId, passwordExpiredDate,
+        passwordStrength, sysAdmin, mobile, email, mainDeptId, passwordExpiredDate,
         lastModifiedPasswordDate, expiredDate, tenantId, tenantName, tenantRealNameStatus,
         directoryId, defaultLanguage, defaultTimeZone);
   }

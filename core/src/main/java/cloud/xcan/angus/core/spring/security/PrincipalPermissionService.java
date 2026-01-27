@@ -88,6 +88,6 @@ public class PrincipalPermissionService {
   public boolean checkCloudTenantOperationSecurity(Long ownerTenantId) {
     ApplicationInfo app = getApplicationInfo();
     return app.isPrivateEdition() || (app.isCloudServiceEdition()
-        && (getOptTenantId().equals(ownerTenantId) || PrincipalContextUtils.isToUser()));
+        && getOptTenantId().equals(ownerTenantId));
   }
 }

@@ -201,7 +201,7 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
     System.out.println("Disabling SSL verification");
     boolean disableSslVerification = EnvHelper.getBoolean(DISABLE_SSL_VERIFICATION,
         DEFAULT_DISABLE_SSL_VERIFICATION);
-    if (disableSslVerification){
+    if (disableSslVerification) {
       TrustAllSSLSocketFactory.disableSSLVerification();
     }
   }

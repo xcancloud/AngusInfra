@@ -1,20 +1,13 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.locale.EnumMessage;
-import lombok.Getter;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * @author XiaoLong Liu
- */
-@Getter
-public enum ExportFileType implements EnumMessage<String> {
+
+public enum ExportFileType implements Value<String> {
 
   JSON(".json"), CSV(".csv"), EXCEL(".xlsx");
 
-  private final String fileSuffix;
-
   ExportFileType(String fileSuffix) {
-    this.fileSuffix = fileSuffix;
   }
 
   @Override
@@ -22,8 +15,4 @@ public enum ExportFileType implements EnumMessage<String> {
     return this.name();
   }
 
-  @Override
-  public String getMessage() {
-    return this.name().toLowerCase();
-  }
 }

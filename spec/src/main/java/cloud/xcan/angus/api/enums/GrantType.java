@@ -1,16 +1,11 @@
 package cloud.xcan.angus.api.enums;
 
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import java.util.Objects;
 
-/**
- * Authorization types supported by XCan.
- */
-@EndpointRegister
-public enum GrantType implements EnumMessage<String> {
+public enum GrantType implements Value<String> {
 
   IMPLICIT, REFRESH_TOKEN, CLIENT_CREDENTIALS, PASSWORD, SMS_CODE, THIRD_SOCIAL;
 

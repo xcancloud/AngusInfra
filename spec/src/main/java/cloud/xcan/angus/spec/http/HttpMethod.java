@@ -1,10 +1,8 @@
 package cloud.xcan.angus.spec.http;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum HttpMethod implements EnumValueMessage<String> {
+public enum HttpMethod implements Value<String> {
   GET,
   HEAD,
   POST,
@@ -19,8 +17,4 @@ public enum HttpMethod implements EnumValueMessage<String> {
     return this.name();
   }
 
-  @Override
-  public String getMessage() {
-    return this.name();
-  }
 }

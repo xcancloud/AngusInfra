@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import cloud.xcan.angus.plugin.management.PluginManagementService;
 import cloud.xcan.angus.plugin.management.PluginStats;
 import cloud.xcan.angus.plugin.model.PluginInfo;
-import cloud.xcan.angus.plugin.web.PluginManagementController;
 import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

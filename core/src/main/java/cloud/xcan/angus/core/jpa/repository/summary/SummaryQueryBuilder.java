@@ -178,7 +178,7 @@ public class SummaryQueryBuilder {
       if (isNotEmpty(aggregates)) {
         for (Aggregate aggregate : aggregates) {
           assertTrue(ArrayUtils.contains(register.aggregateColumns(), aggregate.getColumn()),
-                  String.format("Unregistered aggregate column: %s", aggregate.getColumn()));
+              String.format("Unregistered aggregate column: %s", aggregate.getColumn()));
         }
       }
     }

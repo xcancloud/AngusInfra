@@ -9,8 +9,8 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.util.Assert;
 
 /**
- * An {@link OAuth2AuthenticationContext} that holds an {@link EmailCodeAuthenticationToken}
- * and additional information and is used when validating the OAuth 2.0 Password Grant Request.
+ * An {@link OAuth2AuthenticationContext} that holds an {@link EmailCodeAuthenticationToken} and
+ * additional information and is used when validating the OAuth 2.0 Password Grant Request.
  */
 public final class EmailCodeAuthenticationContext implements OAuth2AuthenticationContext {
 

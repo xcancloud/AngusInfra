@@ -1,14 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.ValueObject;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * @author XiaoLong Liu
- */
-@EndpointRegister
-public enum SchemaType implements ValueObject<SchemaType>, EnumValueMessage<String> {
+
+public enum SchemaType implements Value<String> {
   ARRAY, STRING, BOOLEAN, INTEGER, OBJECT, NUMBER;
 
   @Override
@@ -16,8 +11,4 @@ public enum SchemaType implements ValueObject<SchemaType>, EnumValueMessage<Stri
     return this.name();
   }
 
-  @Override
-  public String getMessage() {
-    return this.name().toLowerCase();
-  }
 }

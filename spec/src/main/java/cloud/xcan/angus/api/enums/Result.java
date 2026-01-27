@@ -1,10 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum Result implements EnumMessage<String> {
+public enum Result implements Value<String> {
   SUCCESS, FAIL;
 
   @Override

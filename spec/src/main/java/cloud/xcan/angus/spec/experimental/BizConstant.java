@@ -509,14 +509,15 @@ public interface BizConstant {
     /**
      * XCan custom header
      */
-    String HEADER_PREFIX = "XC-";
+    String HEADER_PREFIX = "X";
 
     String NGINX_PROXY_CORS = HEADER_PREFIX + "Nginx-Proxy-Cors";
 
-    String AUTH_CLIENT_ID = HEADER_PREFIX + "Auth-Client-Id";
-    String AUTH_TENANT_ID = HEADER_PREFIX + "Auth-Tenant-Id";
-    String AUTH_USER_ID = HEADER_PREFIX + "Auth-User-Id";
-    String AUTH_DEVICE_ID = HEADER_PREFIX + "Auth-Device-Id";
+    String AUTH_CLIENT_ID = HEADER_PREFIX + "Client-Id";
+    String AUTH_TENANT_ID = HEADER_PREFIX + "Tenant-Id";
+    String AUTH_USER_ID = HEADER_PREFIX + "User-Id";
+    String AUTH_DEVICE_ID = HEADER_PREFIX + "Device-Id";
+    String AUTH_APP_VERSION = HEADER_PREFIX + "App-Version";
 
     String SIGNUP_TYPE = HEADER_PREFIX + "Signup-Type";
     String SERVICE_ID = HEADER_PREFIX + "Service-Id";

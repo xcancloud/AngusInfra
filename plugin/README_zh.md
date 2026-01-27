@@ -56,7 +56,8 @@ mvn -pl plugin -am clean install
 
 ### 3. 配置（`application.yml` 示例）
 
-Starter 会将配置绑定到 `StarterPluginProperties`（继承自 `PluginProperties`），配置前缀为 `angus.plugin`。
+Starter 会将配置绑定到 `StarterPluginProperties`（继承自 `PluginProperties`
+），配置前缀为 `angus.plugin`。
 
 ```yaml
 angus:
@@ -84,7 +85,8 @@ spring:
       ddl-auto: update
 ```
 
-> 注：属性名采用 Spring Boot 的 kebab-case（如 `storage-type`、`data-directory` 等），对应 `PluginProperties` 中的字段。
+> 注：属性名采用 Spring Boot 的 kebab-case（如 `storage-type`、`data-directory`
+> 等），对应 `PluginProperties` 中的字段。
 
 ## 管理 API
 
@@ -94,8 +96,10 @@ spring:
 
 主要 REST 接口：
 
-- `POST /api/v1/plugin-management/install` — 上传并安装插件（multipart/form-data，参数：`pluginId`、`file`）
-- `DELETE /api/v1/plugin-management/{pluginId}` — 卸载插件；可选查询参数 `removeFromStore`（默认 `true`）
+- `POST /api/v1/plugin-management/install` —
+  上传并安装插件（multipart/form-data，参数：`pluginId`、`file`）
+- `DELETE /api/v1/plugin-management/{pluginId}` — 卸载插件；可选查询参数 `removeFromStore`
+  （默认 `true`）
 - `GET /api/v1/plugin-management/{pluginId}` — 查询插件详情
 - `GET /api/v1/plugin-management/list` — 列出所有插件
 - `GET /api/v1/plugin-management/stats` — 获取插件系统统计信息

@@ -59,8 +59,8 @@ public class CaffeineCacheBasedUserCache {
   }
 
   public static String getCompositeAccountCacheKey(String userId, String account) {
-   return isNotEmpty(userId)
-       ? format("%s%s%s", userId, COMPOSITE_ACCOUNT_SEPARATOR, account) : account;
+    return isNotEmpty(userId)
+        ? format("%s%s%s", userId, COMPOSITE_ACCOUNT_SEPARATOR, account) : account;
   }
 
 }

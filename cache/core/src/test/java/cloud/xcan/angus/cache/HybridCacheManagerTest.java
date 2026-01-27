@@ -26,7 +26,8 @@ public class HybridCacheManagerTest {
     CachePersistence persistence = Mockito.mock(CachePersistence.class);
 
     // findByKey
-    when(persistence.findByKey(anyString())).thenAnswer(inv -> Optional.ofNullable(store.get(inv.getArgument(0))));
+    when(persistence.findByKey(anyString())).thenAnswer(
+        inv -> Optional.ofNullable(store.get(inv.getArgument(0))));
 
     // save
     when(persistence.save(any())).thenAnswer(inv -> {
@@ -52,7 +53,8 @@ public class HybridCacheManagerTest {
     when(persistence.count()).thenAnswer(inv -> (long) store.size());
 
     // countExpiredEntries
-    when(persistence.countExpiredEntries()).thenAnswer(inv -> store.values().stream().filter(CacheEntry::hasExpired).count());
+    when(persistence.countExpiredEntries()).thenAnswer(
+        inv -> store.values().stream().filter(CacheEntry::hasExpired).count());
 
     // deleteExpiredEntries
     when(persistence.deleteExpiredEntries()).thenAnswer(inv -> {

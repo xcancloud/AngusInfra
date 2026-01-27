@@ -9,9 +9,7 @@ import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_COUNTRY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_FULL_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_GRANT_TYPE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ID;
@@ -20,12 +18,10 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PERMISSION;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PRINCIPAL;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SYS_ADMIN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
@@ -59,6 +55,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -92,8 +89,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request,
-      HttpServletResponse response, FilterChain chain)
+  protected void doFilterInternal(@NotNull HttpServletRequest request,
+      @NotNull HttpServletResponse response, @NotNull FilterChain chain)
       throws ServletException, IOException {
     try {
       // Important: Set thread context for all requests
@@ -178,20 +175,17 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object clientSource = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
       Object clientName = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
       Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
-      Object deviceId = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID);
       Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
       principal.setAuthorization(getAuthorization(request))
           .setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
           .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Tenant level settings should be used
-          .setDefaultTimeZone(null) // TODO Tenant level settings should be used
           .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setClientId(clientId.toString())
           .setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setUserId(-1L).setFullName(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
           .setUsername(clientId.toString()/*default*/).setSysAdmin(false)
-          .setToUser(false).setMainDeptId(-1L).setCountry(null)
-          .setDeviceId(nonNull(deviceId) ? deviceId.toString() : null)
+          .setMainDeptId(-1L)
           .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
           .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null);
       if (log.isDebugEnabled()) {
@@ -217,33 +211,28 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object id = user.get(INTROSPECTION_CLAIM_NAMES_ID);
       Object fullName = user.get(INTROSPECTION_CLAIM_NAMES_FULL_NAME);
       Object sysAdmin = user.get(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN);
-      Object toUser = user.get(INTROSPECTION_CLAIM_NAMES_TO_USER);
+      //Object toUser = user.get(INTROSPECTION_CLAIM_NAMES_TO_USER);
       Object mainDeptId = user.get(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID);
       Object tenantName = user.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
-      Object country = user.get(INTROSPECTION_CLAIM_NAMES_COUNTRY);
+      //Object country = user.get(INTROSPECTION_CLAIM_NAMES_COUNTRY);
       Object clientSource = user.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
       Object defaultLanguage = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE);
-      Object defaultTimeZone = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
+      //Object defaultTimeZone = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
       Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
       Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
-      Object deviceId = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID);
       Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
       Object isUserToken = attributes.get(INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN);
 
       principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
           .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
-          .setDefaultTimeZone(nonNull(defaultTimeZone) ? defaultTimeZone.toString() : null)
           .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setUserId(nonNull(id) ? Long.valueOf(id.toString()) : null)
           .setFullName(nonNull(fullName) ? fullName.toString() : null)
           .setUsername(nonNull(username) ? username.toString() : null)
           .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
-          .setToUser(nonNull(toUser) && Boolean.parseBoolean(toUser.toString()))
           .setMainDeptId(nonNull(mainDeptId) ? Long.valueOf(mainDeptId.toString()) : null)
-          .setCountry(nonNull(country) ? country.toString() : null)
-          .setDeviceId(nonNull(deviceId) ? deviceId.toString() : null)
           .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
           .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
           .setPermissions(isNull(permissions) ? Collections.emptyList()
@@ -258,10 +247,6 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
     }
     // @formatter:on
     return false;
-  }
-
-  public String getAccessDeviceId(HttpServletRequest req) {
-    return req.getHeader(Header.AUTH_DEVICE_ID);
   }
 
   public static String getAuthorization(HttpServletRequest request) {

@@ -33,7 +33,7 @@ public class EmailCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthen
    * @param id                   the user id, identify the unique user. Allow phone numbers and
    *                             email the addresses under multiple tenants, there may be multiple
    *                             values
-   * @param email               the user email
+   * @param email                the user email
    * @param password             the linkSecret of SMS verification code
    * @param clientPrincipal      the authenticated client principal
    * @param scopes               the requested scope(s)

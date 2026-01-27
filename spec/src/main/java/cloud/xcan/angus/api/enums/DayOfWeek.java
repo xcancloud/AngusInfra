@@ -64,8 +64,7 @@ package cloud.xcan.angus.api.enums;
 import static java.time.temporal.ChronoField.DAY_OF_WEEK;
 import static java.time.temporal.ChronoUnit.DAYS;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 import java.time.DateTimeException;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.TextStyle;
@@ -105,8 +104,7 @@ import java.util.Locale;
  * @implSpec This is an immutable and thread-safe enum.
  * @since 1.8
  */
-@EndpointRegister
-public enum DayOfWeek implements TemporalAccessor, TemporalAdjuster, EnumMessage<String> {
+public enum DayOfWeek implements TemporalAccessor, TemporalAdjuster, Value<String> {
 
   /**
    * The singleton instance for the day-of-week of Monday. This has the numeric value of {@code 1}.

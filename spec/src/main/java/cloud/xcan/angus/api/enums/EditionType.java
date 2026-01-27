@@ -1,7 +1,6 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
 /**
  * Product version type:
@@ -14,8 +13,7 @@ import cloud.xcan.angus.spec.locale.EnumMessage;
  * - GENERIC(Generic Edition) - Not Supported
  * </pre>
  */
-@EndpointRegister
-public enum EditionType implements EnumMessage<String> {
+public enum EditionType implements Value<String> {
 
   CLOUD_SERVICE,
   COMMUNITY,

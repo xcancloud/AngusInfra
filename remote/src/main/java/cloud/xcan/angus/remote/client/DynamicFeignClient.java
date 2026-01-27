@@ -30,7 +30,7 @@ public interface DynamicFeignClient {
    * @param body Request payload
    */
   @PostMapping
-  ApiLocaleResult<?> post( @RequestBody Object body);
+  ApiLocaleResult<?> post(@RequestBody Object body);
 
   /**
    * Sends a PUT request to a dynamically specified URL.
@@ -38,7 +38,7 @@ public interface DynamicFeignClient {
    * @param body Request payload
    */
   @PutMapping
-  ApiLocaleResult<?> put( @RequestBody Object body);
+  ApiLocaleResult<?> put(@RequestBody Object body);
 
   /**
    * Sends a PATCH request to a dynamically specified URL.
@@ -54,6 +54,6 @@ public interface DynamicFeignClient {
    * @param queryParams Request query parameters
    */
   @DeleteMapping
-  void delete( @SpringQueryMap Object queryParams);
+  void delete(@SpringQueryMap Object queryParams);
 
 }

@@ -29,8 +29,9 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
   /**
    * Constructs an {@code OAuth2PasswordAuthenticationToken} using the provided parameters.
    *
-   * @param id                   the user id, identify the unique user. Allow phone numbers and email
-   *                             the addresses under multiple tenants, there may be multiple values
+   * @param id                   the user id, identify the unique user. Allow phone numbers and
+   *                             email the addresses under multiple tenants, there may be multiple
+   *                             values
    * @param account              the user username, mobile or email
    * @param password             the user password
    * @param clientPrincipal      the authenticated client principal

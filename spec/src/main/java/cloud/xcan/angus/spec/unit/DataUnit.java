@@ -1,8 +1,7 @@
 package cloud.xcan.angus.spec.unit;
 
 import cloud.xcan.angus.spec.experimental.Assert;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
 /**
  * A standard set of {@link DataSize} units.
@@ -24,8 +23,7 @@ import cloud.xcan.angus.spec.locale.EnumValueMessage;
  *
  * @see DataSize
  */
-@EndpointRegister
-public enum DataUnit implements EnumValueMessage<String> {
+public enum DataUnit implements Value<String> {
 
   /**
    * Bytes, represented by suffix {@code B}.
@@ -81,8 +79,4 @@ public enum DataUnit implements EnumValueMessage<String> {
     return this.name();
   }
 
-  @Override
-  public String getMessage() {
-    return this.suffix;
-  }
 }

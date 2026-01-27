@@ -19,7 +19,7 @@ public interface SecurityConstant {
   String INTROSPECTION_CLAIM_NAMES_FULL_NAME = "full_name";
   //String INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH = "password_strength";
   String INTROSPECTION_CLAIM_NAMES_SYS_ADMIN = "sys_admin";
-  String INTROSPECTION_CLAIM_NAMES_TO_USER = "to_user";
+  //String INTROSPECTION_CLAIM_NAMES_TO_USER = "to_user";
   String INTROSPECTION_CLAIM_NAMES_MOBILE = "mobile";
   String INTROSPECTION_CLAIM_NAMES_EMAIL = "email";
   String INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID = "main_dept_id";
@@ -29,11 +29,11 @@ public interface SecurityConstant {
   String INTROSPECTION_CLAIM_NAMES_TENANT_ID = "tenant_id";
   String INTROSPECTION_CLAIM_NAMES_TENANT_NAME = "tenant_name";
   String INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS = "tenant_real_name_status";
-  String INTROSPECTION_CLAIM_NAMES_COUNTRY = "country";
+  //String INTROSPECTION_CLAIM_NAMES_COUNTRY = "country";
   String INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE = "client_source";
   String INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID = "directory_id";
   String INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE = "default_language";
-  String INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE = "default_time_zone";
+  //String INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE = "default_time_zone";
   String INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN = "user_token";
 
   String INTROSPECTION_CLAIM_NAMES_CLIENT_ID_ISSUED_AT = "client_id_issued_at";
@@ -51,7 +51,8 @@ public interface SecurityConstant {
 
   String INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id = "request_id";
   String INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT = "user_agent";
-  String INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID = "device_id";
+  //String INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_INFO = "device_info";
   String INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR = "remote_addr";
+  //String INTROSPECTION_CLAIM_NAMES_REQUEST_LOCATION_INFO = "location_info";
 
 }

@@ -1,11 +1,6 @@
 package cloud.xcan.angus.spec.http;
 
-import cloud.xcan.angus.spec.SpecConstant;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
-import cloud.xcan.angus.spec.locale.MessageHolder;
-import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
-import org.apache.commons.lang3.StringUtils;
+import cloud.xcan.angus.spec.experimental.Value;
 
 /**
  * Standard Http response fields.
@@ -13,8 +8,7 @@ import org.apache.commons.lang3.StringUtils;
  * @see <a href="https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#Response_fields">List of
  * HTTP header fields</a>
  */
-@EndpointRegister
-public enum HttpResponseHeader implements EnumMessage<String> {
+public enum HttpResponseHeader implements Value<String> {
 
   // @formatter:off
   /**
@@ -240,18 +234,4 @@ public enum HttpResponseHeader implements EnumMessage<String> {
     return reasonPhrase;
   }
 
-  @Override
-  public String getMessage() {
-    if (SpecConstant.DEFAULT_LOCALE.equals(SdfLocaleHolder.getLocale())) {
-      String message = MessageHolder.message(getMessageKey());
-      return StringUtils.isBlank(message) ? this.getValue() : message;
-    } else {
-      return getReasonPhrase();
-    }
-  }
-
-  @Override
-  public String getMessageKey() {
-    return getKeyPrefix() + this.getClass().getSimpleName() + "." + this.name();
-  }
 }

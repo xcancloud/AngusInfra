@@ -13,7 +13,8 @@
   <artifactId>xcan-infra.auth-innerapi-starter</artifactId>
   <name>AngusInfra :: Security :: InnerAPI Authorization</name>
   <packaging>jar</packaging>
-  <description>An auto-configured library for internal api authorization (OAuth2-client_credentials Scheme).
+  <description>An auto-configured library for internal api authorization (OAuth2-client_credentials
+    Scheme).
   </description>
 
   <dependencies>

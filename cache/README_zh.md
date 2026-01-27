@@ -49,7 +49,8 @@ mvn -pl cache -am clean install
 
 ### 3. 持久化（可选）
 
-如果类路径中存在 `SpringDataCacheEntryRepository`（即启用 Spring Data JPA 并扫描实体），starter 会自动配置 `CachePersistence` 适配器。否则缓存仅以内存行为为主。
+如果类路径中存在 `SpringDataCacheEntryRepository`（即启用 Spring Data JPA 并扫描实体），starter
+会自动配置 `CachePersistence` 适配器。否则缓存仅以内存行为为主。
 
 若启用 JPA，请在 `application.yml` 中配置数据源。
 

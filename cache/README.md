@@ -2,7 +2,8 @@
 
 ## Overview
 
-The `cache` module implements a hybrid two-level cache for AngusInfra combining in-memory caching and a persistent backing store. It is designed to provide:
+The `cache` module implements a hybrid two-level cache for AngusInfra combining in-memory caching
+and a persistent backing store. It is designed to provide:
 
 - Fast in-memory operations for hot data
 - Persistent storage for durability and sharing across instances (via JPA)
@@ -11,19 +12,25 @@ The `cache` module implements a hybrid two-level cache for AngusInfra combining 
 
 ## Module Layout
 
-- `core` — Core cache interfaces and implementations (e.g. `HybridCacheManager`, `MemoryCache`, `CachePersistence` interfaces).
-- `starter` — Spring Boot starter providing auto-configuration, optional Spring Data JPA persistence adapter and management REST controllers.
+- `core` — Core cache interfaces and implementations (
+  e.g. `HybridCacheManager`, `MemoryCache`, `CachePersistence` interfaces).
+- `starter` — Spring Boot starter providing auto-configuration, optional Spring Data JPA persistence
+  adapter and management REST controllers.
 
 ## Key Interfaces / Classes
 
 - `cloud.xcan.angus.cache.IDistributedCache` — Public cache API used by applications.
-- `cloud.xcan.angus.cache.HybridCacheManager` — Core implementation combining memory cache and persistence.
+- `cloud.xcan.angus.cache.HybridCacheManager` — Core implementation combining memory cache and
+  persistence.
 - `cloud.xcan.angus.cache.MemoryCache` — In-memory cache implementation.
 - `cloud.xcan.angus.cache.CachePersistence` — Persistence abstraction for storing cache entries.
-- `cloud.xcan.angus.cache.entry.CacheEntry` / `CacheEntryRepository` — JPA entity and repository for persisted entries.
+- `cloud.xcan.angus.cache.entry.CacheEntry` / `CacheEntryRepository` — JPA entity and repository for
+  persisted entries.
 - `cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository` — Spring Data repository (starter).
-- `cloud.xcan.angus.cache.autoconfigure.HybridCacheAutoConfiguration` — Auto-configuration that wires persistence and management controller when appropriate.
-- `cloud.xcan.angus.cache.management.CacheManagementController` — Management REST controller exposing monitoring and admin endpoints.
+- `cloud.xcan.angus.cache.autoconfigure.HybridCacheAutoConfiguration` — Auto-configuration that
+  wires persistence and management controller when appropriate.
+- `cloud.xcan.angus.cache.management.CacheManagementController` — Management REST controller
+  exposing monitoring and admin endpoints.
 
 ## Quick Start
 
@@ -49,7 +56,9 @@ Example Maven dependency:
 
 ### 3. Persistence (optional)
 
-The starter will auto-configure a `CachePersistence` adapter if a Spring Data `SpringDataCacheEntryRepository` bean is present (i.e. you include the JPA starter and repository). Otherwise the cache will run with in-memory persistence stub behavior.
+The starter will auto-configure a `CachePersistence` adapter if a Spring
+Data `SpringDataCacheEntryRepository` bean is present (i.e. you include the JPA starter and
+repository). Otherwise the cache will run with in-memory persistence stub behavior.
 
 If you enable JPA persistence, configure a datasource in `application.yml`.
 
@@ -57,8 +66,10 @@ If you enable JPA persistence, configure a datasource in `application.yml`.
 
 The management controller is available under `/api/v1/cache` and provides the following endpoints:
 
-- `GET /api/v1/cache/stats` — Get aggregated cache statistics (entries, hits, misses, memory size, etc.)
-- `GET /api/v1/cache/{key}` — Get cache value for a key (returns business error wrapper if key not found)
+- `GET /api/v1/cache/stats` — Get aggregated cache statistics (entries, hits, misses, memory size,
+  etc.)
+- `GET /api/v1/cache/{key}` — Get cache value for a key (returns business error wrapper if key not
+  found)
 - `PUT /api/v1/cache/{key}` — Set value for a key (JSON body: value, optional `ttlSeconds`)
 - `DELETE /api/v1/cache/{key}` — Delete a cache entry
 - `GET /api/v1/cache/{key}/exists` — Check if key exists
@@ -75,8 +86,10 @@ curl -X PUT -H "Content-Type: application/json" -d '{"value":"hello","ttlSeconds
 
 ## Building and Deploying
 
-- Include the starter in your Spring Boot service to enable management endpoints and optional JPA persistence support.
-- If using persistent store, ensure the `entry` JPA entity is scanned and the repository bean is available.
+- Include the starter in your Spring Boot service to enable management endpoints and optional JPA
+  persistence support.
+- If using persistent store, ensure the `entry` JPA entity is scanned and the repository bean is
+  available.
 
 ## Testing
 

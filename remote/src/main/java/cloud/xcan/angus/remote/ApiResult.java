@@ -24,18 +24,14 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * Standard API response wrapper that provides a consistent structure for all API responses.
- * This class encapsulates response status, message, data payload, timestamp, and extensible metadata.
+ * Standard API response wrapper that provides a consistent structure for all API responses. This
+ * class encapsulates response status, message, data payload, timestamp, and extensible metadata.
  * </p>
  *
  * <p>
- * Key features:
- * - Standardized response format across all APIs
- * - Type-safe data payload with generic support
- * - Extensible metadata through the ext field
- * - Built-in error handling and validation
- * - Fluent API for easy construction
- * - JSON serialization optimizations
+ * Key features: - Standardized response format across all APIs - Type-safe data payload with
+ * generic support - Extensible metadata through the ext field - Built-in error handling and
+ * validation - Fluent API for easy construction - JSON serialization optimizations
  * </p>
  *
  * <p>
@@ -107,8 +103,8 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Default constructor creating a successful response with no data.
-   * Initializes with success code, default message, and current timestamp.
+   * Default constructor creating a successful response with no data. Initializes with success code,
+   * default message, and current timestamp.
    * </p>
    */
   public ApiResult() {
@@ -131,7 +127,7 @@ public class ApiResult<T> implements Serializable {
    * Constructor for creating a response with specific code and message.
    * </p>
    *
-   * @param code the response status code
+   * @param code    the response status code
    * @param message the response message
    */
   public ApiResult(String code, String message) {
@@ -143,9 +139,9 @@ public class ApiResult<T> implements Serializable {
    * Constructor for creating a response with code, message, and data.
    * </p>
    *
-   * @param code the response status code
+   * @param code    the response status code
    * @param message the response message
-   * @param data the response data payload
+   * @param data    the response data payload
    */
   public ApiResult(String code, String message, T data) {
     this(code, message, data, null);
@@ -156,9 +152,9 @@ public class ApiResult<T> implements Serializable {
    * Full constructor for creating a response with all parameters.
    * </p>
    *
-   * @param code the response status code
-   * @param message the response message
-   * @param data the response data payload
+   * @param code       the response status code
+   * @param message    the response message
+   * @param data       the response data payload
    * @param extensions additional metadata map
    */
   public ApiResult(String code, String message, T data, Map<String, Object> extensions) {
@@ -188,7 +184,7 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param data the response data payload
-   * @param <T> the type of the data
+   * @param <T>  the type of the data
    * @return a new successful ApiResult instance with data
    */
   public static <T> ApiResult<T> success(T data) {
@@ -212,9 +208,9 @@ public class ApiResult<T> implements Serializable {
    * Creates a successful response with a custom message and data.
    * </p>
    *
-   * @param msg the success message
+   * @param msg  the success message
    * @param data the response data payload
-   * @param <T> the type of the data
+   * @param <T>  the type of the data
    * @return a new successful ApiResult instance with message and data
    */
   public static <T> ApiResult<T> success(String msg, T data) {
@@ -254,8 +250,8 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the error code
-   * @param msg the error message
-   * @param <T> the type of the data
+   * @param msg  the error message
+   * @param <T>  the type of the data
    * @return a new error ApiResult instance with custom code and message
    */
   public static <T> ApiResult<T> error(String code, String msg) {
@@ -268,9 +264,9 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the error code
-   * @param msg the error message
+   * @param msg  the error message
    * @param data the error data payload
-   * @param <T> the type of the data
+   * @param <T>  the type of the data
    * @return a new error ApiResult instance with code, message, and data
    */
   public static <T> ApiResult<T> error(String code, String msg, T data) {
@@ -283,10 +279,10 @@ public class ApiResult<T> implements Serializable {
    * </p>
    *
    * @param code the error code
-   * @param msg the error message
+   * @param msg  the error message
    * @param data the error data payload
-   * @param ext additional metadata map
-   * @param <T> the type of the data
+   * @param ext  additional metadata map
+   * @param <T>  the type of the data
    * @return a new error ApiResult instance with all parameters
    */
   public static <T> ApiResult<T> error(String code, String msg, T data,
@@ -310,8 +306,8 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Throws a BizException if this response is not successful.
-   * This method allows for fluent error handling in method chains.
+   * Throws a BizException if this response is not successful. This method allows for fluent error
+   * handling in method chains.
    * </p>
    *
    * @return this ApiResult instance if successful
@@ -342,8 +338,8 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Returns the data content if successful, otherwise throws a BizException.
-   * This method is useful for extracting data from successful responses.
+   * Returns the data content if successful, otherwise throws a BizException. This method is useful
+   * for extracting data from successful responses.
    * </p>
    *
    * @return the response data if successful
@@ -374,8 +370,8 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Retrieves the error key from the extension metadata.
-   * This is a convenience method for accessing standardized error keys.
+   * Retrieves the error key from the extension metadata. This is a convenience method for accessing
+   * standardized error keys.
    * </p>
    *
    * @return the error key string, or null if not present
@@ -391,11 +387,11 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Adds a key-value pair to the extension metadata.
-   * This method provides a fluent API for adding metadata.
+   * Adds a key-value pair to the extension metadata. This method provides a fluent API for adding
+   * metadata.
    * </p>
    *
-   * @param key the metadata key
+   * @param key   the metadata key
    * @param value the metadata value
    * @return this ApiResult instance for method chaining
    */
@@ -459,9 +455,9 @@ public class ApiResult<T> implements Serializable {
    * Gets a value from the extension metadata with the specified type.
    * </p>
    *
-   * @param key the metadata key
+   * @param key  the metadata key
    * @param type the expected type of the value
-   * @param <V> the type parameter
+   * @param <V>  the type parameter
    * @return the value cast to the specified type, or null if not found or type mismatch
    */
   @SuppressWarnings("unchecked")
@@ -478,12 +474,12 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Creates a copy of this ApiResult with a different data type.
-   * This is useful for transforming the data payload while preserving other fields.
+   * Creates a copy of this ApiResult with a different data type. This is useful for transforming
+   * the data payload while preserving other fields.
    * </p>
    *
    * @param newData the new data payload
-   * @param <U> the type of the new data
+   * @param <U>     the type of the new data
    * @return a new ApiResult instance with the new data
    */
   public <U> ApiResult<U> withData(U newData) {

@@ -82,7 +82,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
 
   private static void initApplicationCache() {
     try {
-      if (openedAppCache()){
+      if (openedAppCache()) {
         // Note: Register the main application cache manager, must be initialized at the beginning.
         // Used by application initialization verification
         registerBean(VerxRegister.class, new Str0(
@@ -96,7 +96,8 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
         try {
           initSneakyLogDir();
         } catch (Exception e) {
-          System.out.println("\n***********" + AM + "*************\n" + "\t cause: " + e.getMessage());
+          System.out.println(
+              "\n***********" + AM + "*************\n" + "\t cause: " + e.getMessage());
           if (runAtJar()) {
             SpringApplication.exit(getCtx(), () -> -1);
             exit(-1);

@@ -6,7 +6,6 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpClient;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
 import cloud.xcan.angus.remote.message.http.ResourceExisted;
@@ -54,11 +53,6 @@ public abstract class BizTemplate<T> {
     this.autoCtrlWhenOpClient = autoCtrlWhenOpClient && isOpClient();
     this.requiredToPolicy = requiredTOPolicy;
     Principal principal = PrincipalContext.get();
-
-    if (isNotEmpty(requiredTOPolicy)) {
-      // Used by TenantInterceptor
-      principal.setRequiredToPolicy(requiredTOPolicy);
-    }
 
     if (!multiTenantCtrl) {
       // Disable multi-tenancy control: Users must manually manage multi-tenant data isolation, including adding tenant ID conditions in SQL statements.

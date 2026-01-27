@@ -1,10 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum ReceiverType implements EnumMessage<String> {
+public enum ReceiverType implements Value<String> {
   TESTER, EXECUTOR, OWNER, FOLLOWER, APP_ADMIN, OTHER;
 
   @Override

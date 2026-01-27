@@ -99,7 +99,7 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
     return new TrustAllSSLSocketFactory();
   }
 
-  public static synchronized void disableSSLVerification(){
+  public static synchronized void disableSSLVerification() {
     new TrustAllSSLSocketFactory();
   }
 

@@ -49,15 +49,15 @@ public class EnvHelper {
     return isBlank(value) ? defaultValue : value;
   }
 
-    /**
-     * Resolve the value of this system setting, loading it from the System by checking:
-     * <ol>
-     *     <li>The system properties.</li>
-     *     <li>The environment variables.</li>
-     *     <li>The app env properties.</li>
-     *     <li>The default value.</li>
-     * </ol>
-     */
+  /**
+   * Resolve the value of this system setting, loading it from the System by checking:
+   * <ol>
+   *     <li>The system properties.</li>
+   *     <li>The environment variables.</li>
+   *     <li>The app env properties.</li>
+   *     <li>The default value.</li>
+   * </ol>
+   */
   public static String getString(String key) {
     String value = SystemSettingUtils.resolveSetting(new SystemSetting() {
       @Override

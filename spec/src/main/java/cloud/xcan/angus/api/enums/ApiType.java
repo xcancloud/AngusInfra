@@ -1,17 +1,15 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.ValueObject;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 import java.util.Map;
 
-@EndpointRegister
-public enum ApiType implements ValueObject<ApiType>, EnumValueMessage<String> {
+public enum ApiType implements Value<String> {
 
   API, OPEN_API, OPEN_API_2P, DOOR_API, PUB_API, VIEW, PUB_VIEW;
 
   public static final Map<ApiType, String> API_TYPE_MAP =
-      Map.of(API, "/api/", OPEN_API, "/openapi/", OPEN_API_2P, "/openapi2p/", DOOR_API, "/innerapi/",
+      Map.of(API, "/api/", OPEN_API, "/openapi/", OPEN_API_2P, "/openapi2p/", DOOR_API,
+          "/innerapi/",
           PUB_API, "/pubapi/", VIEW, "/view/", PUB_VIEW, "/pubview/");
 
   public static ApiType findByUri(String uri) {
@@ -52,11 +50,6 @@ public enum ApiType implements ValueObject<ApiType>, EnumValueMessage<String> {
   @Override
   public String getValue() {
     return this.name();
-  }
-
-  @Override
-  public String getMessage() {
-    return API_TYPE_MAP.get(this).substring(0, API_TYPE_MAP.get(this).length() - 1);
   }
 
 }

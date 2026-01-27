@@ -1,10 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum EvalWorkloadMethod implements EnumMessage<String> {
+public enum EvalWorkloadMethod implements Value<String> {
   WORKING_HOURS, STORY_POINT;
 
   @Override

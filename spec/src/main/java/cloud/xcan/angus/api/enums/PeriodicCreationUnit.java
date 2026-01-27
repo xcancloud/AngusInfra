@@ -1,10 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum PeriodicCreationUnit implements EnumMessage<String> {
+public enum PeriodicCreationUnit implements Value<String> {
   DAILY, WEEKLY, MONTHLY;
 
   @Override

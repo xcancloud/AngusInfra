@@ -13,7 +13,6 @@ import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import cloud.xcan.angus.remote.message.http.ResourceNotFound;
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Entity;
-import cloud.xcan.angus.spec.experimental.IdKey;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.annotation.Resource;
 import jakarta.persistence.EntityManager;
@@ -323,7 +322,7 @@ public abstract class CommCmd<T extends Entity, ID extends Serializable> {
    * Update entity
    *
    * @param updateEntity Update entity
-   * @param dbEntity Persistent entity
+   * @param dbEntity     Persistent entity
    */
   public void update(T updateEntity, T dbEntity) {
     assertNotNull(updateEntity, "Update entity is empty");

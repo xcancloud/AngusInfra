@@ -29,7 +29,7 @@ public class JobTemplateAutoConfigurer {
 
   @ConditionalOnMissingBean
   @Bean(name = "jobTemplate")
-  public SyncJobTemplate jobTemplate(DistributedLock distributedLock){
+  public SyncJobTemplate jobTemplate(DistributedLock distributedLock) {
     return new SyncJobTemplate(distributedLock);
   }
 

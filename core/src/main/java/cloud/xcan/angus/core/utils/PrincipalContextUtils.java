@@ -36,8 +36,7 @@ public class PrincipalContextUtils {
     if (isNull(principal.getOptTenantId())) {
       return principal.getTenantId();
     }
-    if (!principal.isMultiTenantCtrl() || isJobOrInnerApi()
-        || (isOpClient(principal) && isToUser())) {
+    if (!principal.isMultiTenantCtrl() || isJobOrInnerApi() || (isOpClient(principal))) {
       return principal.getOptTenantId();
     }
     return principal.getTenantId();
@@ -55,7 +54,7 @@ public class PrincipalContextUtils {
    * Return null when optTenantId is not set
    */
   public static Long getRealOptTenantId(Principal principal) {
-    if (isOpClient(principal) && isToUser()) {
+    if (isOpClient(principal)) {
       return principal.getOptTenantId();
     }
     return principal.getTenantId();
@@ -110,18 +109,6 @@ public class PrincipalContextUtils {
     PrincipalContext.get().setMultiTenantCtrl(multiTenantCtrl);
   }
 
-  public static String[] getRequiredToPolicy() {
-    return PrincipalContext.get().getRequiredToPolicy();
-  }
-
-  public static String[] getRequiredToPolicy(Principal principal) {
-    return principal.getRequiredToPolicy();
-  }
-
-  public static void setRequiredToPolicy(String... toPolicy) {
-    PrincipalContext.get().setRequiredToPolicy(toPolicy);
-  }
-
   /**
    * Check if the operation client is visiting
    */
@@ -172,28 +159,13 @@ public class PrincipalContextUtils {
     return isPlatformSysAdmin(XCAN_OPERATION_PLATFORM_CODE);
   }
 
-  public static boolean isToUser() {
-    Principal principal = PrincipalContext.get();
-    return isOpSysAdmin(principal) || (isToUser0(principal) && (
-        isEmpty(principal.getRequiredToPolicy()) || hasAnyToRole(principal.getRequiredToPolicy())
-    ));
-  }
-
-  public static boolean isToUser0() {
-    return isToUser0(PrincipalContext.get());
-  }
-
-  public static boolean isToUser0(Principal principal) {
-    return principal.isAuthenticated() && principal.isToUser() && isOpClient(principal);
-  }
-
   public static boolean hasMultiTenantPermission() {
     Principal principal = PrincipalContext.get();
-    return !isOpMultiTenant(principal) || (isOpClient(principal) && isToUser());
+    return !isOpMultiTenant(principal) || isOpClient(principal);
   }
 
   public static boolean hasMultiTenantPermission(Principal principal) {
-    return !isOpMultiTenant(principal) || (isOpClient(principal) && isToUser());
+    return !isOpMultiTenant(principal) || isOpClient(principal);
   }
 
   public static boolean isTenantClientOpMultiTenant(Principal principal) {

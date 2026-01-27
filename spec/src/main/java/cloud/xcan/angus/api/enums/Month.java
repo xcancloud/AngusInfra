@@ -64,8 +64,7 @@ package cloud.xcan.angus.api.enums;
 import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
 import static java.time.temporal.ChronoUnit.MONTHS;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.chrono.Chronology;
@@ -104,8 +103,7 @@ import java.util.Locale;
  * @implSpec This is an immutable and thread-safe enum.
  * @since 1.8
  */
-@EndpointRegister
-public enum Month implements TemporalAccessor, TemporalAdjuster, EnumMessage<String> {
+public enum Month implements TemporalAccessor, TemporalAdjuster, Value<String> {
 
   /**
    * The singleton instance for the month of January with 31 days. This has the numeric value of

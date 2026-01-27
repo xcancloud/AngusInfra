@@ -16,20 +16,17 @@ import org.springframework.cache.CacheManager;
 
 /**
  * <p>
- * A cache manager implementation that manages two-level caches combining Redis and Caffeine.
- * This manager creates and maintains RedisCaffeineCache instances with configurable behavior
- * for both local (L1) and distributed (L2) caching layers.
+ * A cache manager implementation that manages two-level caches combining Redis and Caffeine. This
+ * manager creates and maintains RedisCaffeineCache instances with configurable behavior for both
+ * local (L1) and distributed (L2) caching layers.
  * </p>
- * 
+ *
  * <p>
- * Key features:
- * - Dynamic cache creation based on configuration
- * - Centralized Caffeine cache configuration
- * - Support for cache-specific configurations
- * - Thread-safe cache instance management
+ * Key features: - Dynamic cache creation based on configuration - Centralized Caffeine cache
+ * configuration - Support for cache-specific configurations - Thread-safe cache instance management
  * - Integration with Spring Cache abstraction
  * </p>
- * 
+ *
  * <p>
  * Thread Safety: This class is thread-safe and designed for concurrent access.
  * </p>
@@ -38,8 +35,8 @@ import org.springframework.cache.CacheManager;
 public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClear {
 
   /**
-   * Thread-safe map storing cache instances by name.
-   * Uses ConcurrentHashMap to ensure thread safety during cache creation and retrieval.
+   * Thread-safe map storing cache instances by name. Uses ConcurrentHashMap to ensure thread safety
+   * during cache creation and retrieval.
    */
   private final ConcurrentMap<String, Cache> cacheMap = new ConcurrentHashMap<>();
 
@@ -49,20 +46,20 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
   private final L2CacheProperties l2CacheProperties;
 
   /**
-   * Redis service instance for L2 cache operations.
-   * Shared across all cache instances managed by this manager.
+   * Redis service instance for L2 cache operations. Shared across all cache instances managed by
+   * this manager.
    */
   private final RedisService<Object> l2cacheRedisService;
 
   /**
-   * Predefined cache names that are allowed when dynamic creation is disabled.
-   * Used for security and resource management in production environments.
+   * Predefined cache names that are allowed when dynamic creation is disabled. Used for security
+   * and resource management in production environments.
    */
   private final Set<String> cacheNames;
 
   /**
-   * Flag indicating whether dynamic cache creation is enabled.
-   * When false, only predefined cache names are allowed.
+   * Flag indicating whether dynamic cache creation is enabled. When false, only predefined cache
+   * names are allowed.
    */
   private final boolean dynamic;
 
@@ -71,27 +68,27 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
    * Constructor for creating a cache manager with the specified configuration.
    * </p>
    *
-   * @param l2CacheProperties configuration properties for cache behavior
+   * @param l2CacheProperties   configuration properties for cache behavior
    * @param l2cacheRedisService Redis service for distributed cache operations
    */
   public RedisCaffeineCacheManager(L2CacheProperties l2CacheProperties,
       RedisService<Object> l2cacheRedisService) {
     super();
-    this.l2CacheProperties = Objects.requireNonNull(l2CacheProperties, 
+    this.l2CacheProperties = Objects.requireNonNull(l2CacheProperties,
         "L2CacheProperties cannot be null");
-    this.l2cacheRedisService = Objects.requireNonNull(l2cacheRedisService, 
+    this.l2cacheRedisService = Objects.requireNonNull(l2cacheRedisService,
         "RedisService cannot be null");
     this.dynamic = l2CacheProperties.isDynamic();
     this.cacheNames = l2CacheProperties.getCacheNames();
-    
-    log.info("Initialized RedisCaffeineCacheManager with dynamic={}, predefined caches={}", 
+
+    log.info("Initialized RedisCaffeineCacheManager with dynamic={}, predefined caches={}",
         dynamic, cacheNames != null ? cacheNames.size() : 0);
   }
 
   /**
    * <p>
-   * Retrieves or creates a cache instance with the specified name.
-   * Implements double-checked locking pattern to ensure thread safety during cache creation.
+   * Retrieves or creates a cache instance with the specified name. Implements double-checked
+   * locking pattern to ensure thread safety during cache creation.
    * </p>
    *
    * @param name the name of the cache to retrieve or create
@@ -112,7 +109,9 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
 
     // Security check: if dynamic creation is disabled, only allow predefined names
     if (!dynamic && (cacheNames == null || !cacheNames.contains(name))) {
-      log.warn("Cache creation denied for name '{}' - not in predefined cache names and dynamic creation is disabled", name);
+      log.warn(
+          "Cache creation denied for name '{}' - not in predefined cache names and dynamic creation is disabled",
+          name);
       return null;
     }
 
@@ -120,7 +119,7 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
     try {
       cache = createCache(name);
       Cache existingCache = cacheMap.putIfAbsent(name, cache);
-      
+
       if (existingCache == null) {
         log.debug("Created new cache instance: {}", name);
         return cache;
@@ -136,67 +135,71 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
 
   /**
    * <p>
-   * Creates a new cache instance with the specified name.
-   * Configures both L1 (Caffeine) and L2 (Redis) cache layers.
+   * Creates a new cache instance with the specified name. Configures both L1 (Caffeine) and L2
+   * (Redis) cache layers.
    * </p>
    *
    * @param name the name of the cache to create
    * @return a new RedisCaffeineCache instance
    */
   private Cache createCache(String name) {
-    return new RedisCaffeineCache(name, l2cacheRedisService, createCaffeineCache(), l2CacheProperties);
+    return new RedisCaffeineCache(name, l2cacheRedisService, createCaffeineCache(),
+        l2CacheProperties);
   }
 
   /**
    * <p>
-   * Creates and configures a Caffeine cache instance based on the provided configuration.
-   * Applies various cache policies including expiration, size limits, and refresh settings.
+   * Creates and configures a Caffeine cache instance based on the provided configuration. Applies
+   * various cache policies including expiration, size limits, and refresh settings.
    * </p>
    *
    * @return a configured Caffeine cache instance
    */
   public com.github.benmanes.caffeine.cache.Cache<Object, Object> createCaffeineCache() {
     Caffeine<Object, Object> cacheBuilder = Caffeine.newBuilder();
-    
+
     L2CacheProperties.Caffeine caffeineConfig = l2CacheProperties.getCaffeine();
-    
+
     // Configure expiration after access (sliding expiration)
     if (caffeineConfig.getExpireAfterAccess() > 0) {
       cacheBuilder.expireAfterAccess(caffeineConfig.getExpireAfterAccess(), TimeUnit.SECONDS);
-      log.debug("Configured Caffeine expireAfterAccess: {} seconds", caffeineConfig.getExpireAfterAccess());
+      log.debug("Configured Caffeine expireAfterAccess: {} seconds",
+          caffeineConfig.getExpireAfterAccess());
     }
-    
+
     // Configure expiration after write (absolute expiration)
     if (caffeineConfig.getExpireAfterWrite() > 0) {
       cacheBuilder.expireAfterWrite(caffeineConfig.getExpireAfterWrite(), TimeUnit.SECONDS);
-      log.debug("Configured Caffeine expireAfterWrite: {} seconds", caffeineConfig.getExpireAfterWrite());
+      log.debug("Configured Caffeine expireAfterWrite: {} seconds",
+          caffeineConfig.getExpireAfterWrite());
     }
-    
+
     // Configure initial capacity for performance optimization
     if (caffeineConfig.getInitialCapacity() > 0) {
       cacheBuilder.initialCapacity(caffeineConfig.getInitialCapacity());
       log.debug("Configured Caffeine initialCapacity: {}", caffeineConfig.getInitialCapacity());
     }
-    
+
     // Configure maximum size to prevent memory issues
     if (caffeineConfig.getMaximumSize() > 0) {
       cacheBuilder.maximumSize(caffeineConfig.getMaximumSize());
       log.debug("Configured Caffeine maximumSize: {}", caffeineConfig.getMaximumSize());
     }
-    
+
     // Configure refresh after write for background refresh
     if (caffeineConfig.getRefreshAfterWrite() > 0) {
       cacheBuilder.refreshAfterWrite(caffeineConfig.getRefreshAfterWrite(), TimeUnit.SECONDS);
-      log.debug("Configured Caffeine refreshAfterWrite: {} seconds", caffeineConfig.getRefreshAfterWrite());
+      log.debug("Configured Caffeine refreshAfterWrite: {} seconds",
+          caffeineConfig.getRefreshAfterWrite());
     }
-    
+
     return cacheBuilder.build();
   }
 
   /**
    * <p>
-   * Returns the collection of predefined cache names.
-   * This represents the caches that are configured and managed by this manager.
+   * Returns the collection of predefined cache names. This represents the caches that are
+   * configured and managed by this manager.
    * </p>
    *
    * @return collection of cache names, may be empty but never null
@@ -208,13 +211,12 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
 
   /**
    * <p>
-   * Clears local L1 cache for a specific cache and key.
-   * This method is typically called in response to cache invalidation messages
-   * from other application instances.
+   * Clears local L1 cache for a specific cache and key. This method is typically called in response
+   * to cache invalidation messages from other application instances.
    * </p>
    *
    * @param name the name of the cache
-   * @param key the specific key to clear, or null to clear all keys
+   * @param key  the specific key to clear, or null to clear all keys
    */
   @Override
   public void clearLocal(String name, Object key) {
@@ -240,8 +242,8 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
 
   /**
    * <p>
-   * Evicts multiple keys from both L1 and L2 caches for the specified cache name.
-   * Provides batch eviction for improved performance when clearing multiple related keys.
+   * Evicts multiple keys from both L1 and L2 caches for the specified cache name. Provides batch
+   * eviction for improved performance when clearing multiple related keys.
    * </p>
    *
    * @param name the name of the cache
@@ -268,7 +270,8 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
         log.error("Error evicting keys from cache: {}", name, e);
       }
     } else if (cache != null) {
-      log.warn("Cache '{}' is not a RedisCaffeineCache instance, cannot perform batch eviction", name);
+      log.warn("Cache '{}' is not a RedisCaffeineCache instance, cannot perform batch eviction",
+          name);
     } else {
       log.debug("Cache '{}' not found, cannot evict keys", name);
     }
@@ -276,8 +279,8 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
 
   /**
    * <p>
-   * Returns the number of currently managed cache instances.
-   * Useful for monitoring and debugging purposes.
+   * Returns the number of currently managed cache instances. Useful for monitoring and debugging
+   * purposes.
    * </p>
    *
    * @return the number of active cache instances
@@ -300,9 +303,8 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
 
   /**
    * <p>
-   * Removes a cache instance from management.
-   * This method should be used carefully as it can lead to resource leaks
-   * if the cache is still being used elsewhere.
+   * Removes a cache instance from management. This method should be used carefully as it can lead
+   * to resource leaks if the cache is still being used elsewhere.
    * </p>
    *
    * @param name the name of the cache to remove
@@ -322,8 +324,8 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
   }
 
   /**
-   * @deprecated Use {@link #createCaffeineCache()} instead.
-   * This method name was not following proper naming conventions.
+   * @deprecated Use {@link #createCaffeineCache()} instead. This method name was not following
+   * proper naming conventions.
    */
   @Deprecated(since = "1.0.0", forRemoval = true)
   public com.github.benmanes.caffeine.cache.Cache<Object, Object> caffeineCache() {

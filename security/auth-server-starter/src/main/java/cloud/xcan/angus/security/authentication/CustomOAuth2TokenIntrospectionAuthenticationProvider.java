@@ -9,10 +9,8 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SECRET_EXPIRES_AT;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_COUNTRY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CREDENTIALS_NON_EXPIRED;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DESCRIPTION;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_EMAIL;
@@ -32,7 +30,6 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PLATFORM;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PRINCIPAL;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SCOPES;
@@ -40,11 +37,8 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TO_USER;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.CUSTOM_ACCESS_TOKEN_NAME;
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTH_DEVICE_ID;
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.DEVICE_ID_IN_QUERY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_IN_QUERY;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.http.HttpRequestHeader.User_Agent;
@@ -237,7 +231,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, nullSafe(userTokenName, user.getFullName()));
     //claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
     claims.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, user.isSysAdmin());
-    claims.put(INTROSPECTION_CLAIM_NAMES_TO_USER, user.isToUser());
     claims.put(INTROSPECTION_CLAIM_NAMES_MOBILE, user.getMobile());
     claims.put(INTROSPECTION_CLAIM_NAMES_EMAIL, user.getEmail());
     claims.put(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID, user.getMainDeptId());
@@ -248,12 +241,10 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, user.getTenantId());
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_NAME, user.getTenantName());
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS, user.getTenantRealNameStatus());
-    claims.put(INTROSPECTION_CLAIM_NAMES_COUNTRY, user.getCountry());
     //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, user.getClientId());
     //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE, user.getClientSource());
     claims.put(INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID, user.getDirectoryId());
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE, user.getDefaultLanguage());
-    claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE, user.getDefaultTimeZone());
     claims.put(INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN, nonNull(userTokenName));
 
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
@@ -262,8 +253,8 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
       claims.put(INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id, requestId);
       claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT,
           stringSafe(getRequestStringAttribute(requestId, USER_AGENT)));
-      claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID,
-          stringSafe(getRequestStringAttribute(requestId, DEVICE_ID_IN_QUERY)));
+      //claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_INFO,
+      //  stringSafe(getRequestStringAttribute(requestId, DEVICE_ID_IN_QUERY)));
       claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR,
           stringSafe(getRequestStringAttribute(requestId, REMOTE_ADDR_IN_QUERY)));
     }
@@ -288,7 +279,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider implemen
 
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT, request.getHeader(User_Agent.getValue()));
-    claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_ID, request.getHeader(AUTH_DEVICE_ID));
+    //claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_INFO, request.getHeader(AUTH_DEVICE_ID));
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR, request.getRemoteAddr());
     return claims;
   }

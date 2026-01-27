@@ -58,7 +58,6 @@ import org.springframework.util.CollectionUtils;
 public class JpaAutoConfigurer {
 
 
-
   @Bean
   @ConditionalOnMissingBean
   public PhysicalNamingStrategy physicalNamingStrategy() {

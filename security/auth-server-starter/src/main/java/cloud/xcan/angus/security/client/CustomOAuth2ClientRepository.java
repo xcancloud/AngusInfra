@@ -5,9 +5,9 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 
 public interface CustomOAuth2ClientRepository extends RegisteredClientRepository {
 
-   List<CustomOAuth2RegisteredClient> findAllBy(String filter, String... args);
+  List<CustomOAuth2RegisteredClient> findAllBy(String filter, String... args);
 
-   void deleteByClientId(String clientId);
+  void deleteByClientId(String clientId);
 
-   void deleteById(String id);
+  void deleteById(String id);
 }

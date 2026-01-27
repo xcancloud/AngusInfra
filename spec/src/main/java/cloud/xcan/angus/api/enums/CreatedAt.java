@@ -1,11 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
 
-@EndpointRegister
-public enum CreatedAt implements EnumMessage<String> {
+public enum CreatedAt implements Value<String> {
   NOW, AT_SOME_DATE, PERIODICALLY;
 
   @Override

@@ -1,11 +1,9 @@
 package cloud.xcan.angus.spec.unit;
 
 import cloud.xcan.angus.spec.experimental.Assert;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum ShortTimeUnit implements EnumValueMessage<String> {
+public enum ShortTimeUnit implements Value<String> {
   Millisecond("ms"),
   Second("s"),
   Minute("min"),
@@ -41,8 +39,4 @@ public enum ShortTimeUnit implements EnumValueMessage<String> {
     return this.name();
   }
 
-  @Override
-  public String getMessage() {
-    return this.suffix;
-  }
 }

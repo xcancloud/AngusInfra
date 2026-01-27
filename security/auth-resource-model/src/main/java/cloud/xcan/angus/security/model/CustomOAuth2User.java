@@ -91,8 +91,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   protected boolean sysAdmin;
 
-  protected boolean toUser;
-
   protected String mobile;
 
   protected String email;
@@ -180,14 +178,14 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities) {
     this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
-        authorities, "-1", null, null, null, null, false, false, null, null, null, null,
+        authorities, "-1", null, null, null, null, false, null, null, null, null,
         null, null, "-1", null, null, null, null, null);
   }
 
   public CustomOAuth2User(String username, String password, boolean enabled,
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities, String id, String firstName,
-      String lastName, String fullName, String passwordStrength, boolean sysAdmin, boolean toUser,
+      String lastName, String fullName, String passwordStrength, boolean sysAdmin,
       String mobile, String email, String mainDeptId, Instant passwordExpiredDate,
       Instant lastModifiedPasswordDate, Instant expiredDate,
       String tenantId, String tenantName, String tenantRealNameStatus,
@@ -209,7 +207,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.fullName = fullName;
     this.passwordStrength = stringSafe(passwordStrength, PasswordStrength.UNKNOWN.getValue());
     this.sysAdmin = sysAdmin;
-    this.toUser = toUser;
     this.mobile = mobile;
     this.email = email;
     this.mainDeptId = mainDeptId;
@@ -351,7 +348,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     sb.append(", fullName='").append(fullName).append('\'');
     sb.append(", lastName='").append(lastName).append('\'');
     sb.append(", firstName='").append(firstName).append('\'');
-    sb.append(", toUser=").append(toUser);
     sb.append(", sysAdmin=").append(sysAdmin);
     sb.append(", passwordStrength='").append(passwordStrength).append('\'');
     sb.append(", id=").append(id);
@@ -375,7 +371,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
         .accountLocked(!user.accountNonLocked).credentialsExpired(!user.credentialsNonExpired)
         .authorities(authorities).id(user.id).firstName(user.firstName).lastName(user.lastName)
         .fullName(user.fullName).passwordStrength(user.passwordStrength).sysAdmin(user.sysAdmin)
-        .toUser(user.toUser).mobile(user.mobile).email(user.email).mainDeptId(user.mainDeptId)
+        .mobile(user.mobile).email(user.email).mainDeptId(user.mainDeptId)
         .passwordExpiredDate(user.passwordExpiredDate)
         .lastModifiedPasswordDate(user.lastModifiedPasswordDate).expiredDate(user.expiredDate)
         .tenantId(user.tenantId).tenantName(user.tenantName)
@@ -522,7 +518,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     private String fullName;
     private String passwordStrength;
     private boolean sysAdmin = false;
-    private boolean toUser = false;
     private String mobile;
     private String email;
     private String mainDeptId;
@@ -736,11 +731,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder toUser(boolean toUser) {
-      this.toUser = toUser;
-      return this;
-    }
-
     public CustomOAuth2User.UserBuilder mobile(String mobile) {
       this.mobile = mobile;
       return this;
@@ -806,7 +796,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       return new CustomOAuth2User(this.username, encodedPassword, !this.disabled,
           !this.accountExpired, !this.credentialsExpired, !this.accountLocked, this.authorities,
           this.id, this.firstName, this.lastName, this.fullName, this.passwordStrength,
-          this.sysAdmin, this.toUser, this.mobile, this.email, this.mainDeptId,
+          this.sysAdmin, this.mobile, this.email, this.mainDeptId,
           this.passwordExpiredDate, this.lastModifiedPasswordDate, this.expiredDate,
           this.tenantId, this.tenantName, this.tenantRealNameStatus,
           this.directoryId, this.defaultLanguage, this.defaultTimeZone);

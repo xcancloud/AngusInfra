@@ -11,7 +11,8 @@ import cloud.xcan.angus.api.enums.DataScope;
 import cloud.xcan.angus.api.enums.GrantType;
 import cloud.xcan.angus.api.enums.Platform;
 import cloud.xcan.angus.api.enums.ResourceAclType;
-import cloud.xcan.angus.spec.annotations.DoInFuture;
+import cloud.xcan.angus.api.pojo.DeviceInfo;
+import cloud.xcan.angus.api.pojo.LocationInfo;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -73,14 +74,6 @@ public class PrincipalContext {
     return Objects.isNull(defaultLanguage) ? SupportedLanguage.defaultLanguage() : defaultLanguage;
   }
 
-  /**
-   * Platform level setting
-   */
-  @DoInFuture("Support tenant level setting")
-  public static String getDefaultTimeZone() {
-    return get().getDefaultTimeZone();
-  }
-
   public static String getClientId() {
     return get().getClientId();
   }
@@ -129,8 +122,8 @@ public class PrincipalContext {
     return get().getGrantType();
   }
 
-  public static Platform getAccessType() {
-    return get().getPlatformScope();
+  public static Platform getPlatform() {
+    return get().getPlatform();
   }
 
   public static ApiType getApiType() {
@@ -186,12 +179,12 @@ public class PrincipalContext {
     return get().getUsername();
   }
 
-  public static String getCountry() {
-    return get().getCountry();
+  public static DeviceInfo getDeviceInfo() {
+    return get().getDeviceIno();
   }
 
-  public static String getDeviceId() {
-    return get().getDeviceId();
+  public static LocationInfo getLocationInfo() {
+    return get().getLocationInfo();
   }
 
   public static Long getDeptId() {

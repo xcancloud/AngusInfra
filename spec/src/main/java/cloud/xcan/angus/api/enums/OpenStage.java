@@ -1,13 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
-import lombok.Getter;
+import cloud.xcan.angus.spec.experimental.Value;
 
 
-@EndpointRegister
-@Getter
-public enum OpenStage implements EnumMessage<String> {
+public enum OpenStage implements Value<String> {
 
   SIGNUP,
   AUTH_PASSED,

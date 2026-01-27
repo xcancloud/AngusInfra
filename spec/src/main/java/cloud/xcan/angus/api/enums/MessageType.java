@@ -1,8 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-public enum MessageType implements EnumValueMessage<String> {
+public enum MessageType implements Value<String> {
   CHAT, REPLY, JOIN, LEAVE, NOTICE, CLOSE;
 
   @Override

@@ -59,7 +59,7 @@ public final class CustomBearerTokenAuthenticationEntryPoint implements Authenti
    */
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response,
-      AuthenticationException authException) throws ServletException{
+      AuthenticationException authException) throws ServletException {
     HttpStatus status = HttpStatus.UNAUTHORIZED;
     Map<String, String> parameters = new LinkedHashMap<>();
     Map<String, String> body = new LinkedHashMap<>();

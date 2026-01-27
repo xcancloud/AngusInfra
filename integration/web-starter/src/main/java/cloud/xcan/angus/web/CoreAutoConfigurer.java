@@ -185,7 +185,8 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
       LocaleResolver localeResolver) {
     FilterRegistrationBean<GlobalHoldFilter> registrationBean = new FilterRegistrationBean<>();
     registrationBean.setName("globalHoldFilter");
-    registrationBean.setFilter(new GlobalHoldFilter(applicationInfo, globalProperties, localeResolver));
+    registrationBean.setFilter(
+        new GlobalHoldFilter(applicationInfo, globalProperties, localeResolver));
     registrationBean.setDispatcherTypes(DispatcherType.REQUEST);
     registrationBean.addUrlPatterns("/*");
     // Must be executed after RequestContextFilter(OrderedRequestContextFilter) to prevent being overwritten
@@ -244,7 +245,8 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   }
 
   /**
-   * Fix: Browser auto write `Priority: u=0` in header, and conflicts with execution, use cases, and task list queries.
+   * Fix: Browser auto write `Priority: u=0` in header, and conflicts with execution, use cases, and
+   * task list queries.
    */
   @Override
   public void addFormatters(FormatterRegistry registry) {

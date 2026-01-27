@@ -1,13 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * @author XiaoLong Liu
- */
-@EndpointRegister
-public enum ProcessStatus implements EnumMessage<String> {
+public enum ProcessStatus implements Value<String> {
   PENDING, SUCCESS, FAILURE;
 
   @Override

@@ -1,12 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-
-@EndpointRegister
-public enum SignInType implements EnumMessage<String> {
+public enum SignInType implements Value<String> {
 
   ACCOUNT_PASSWORD,
   SMS_CODE,

@@ -25,8 +25,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JacksonProperties {
 
   /**
-   * Date format string or a fully-qualified date format class name. For instance,
-   * 'yyyy-MM-dd HH:mm:ss'.
+   * Date format string or a fully-qualified date format class name. For instance, 'yyyy-MM-dd
+   * HH:mm:ss'.
    */
   private String dateFormat;
 
@@ -43,26 +43,29 @@ public class JacksonProperties {
   private String localeTimeFormat;
 
   /**
-   * One of the constants on Jackson's PropertyNamingStrategies. Can also be a
-   * fully-qualified class name of a PropertyNamingStrategy implementation.
+   * One of the constants on Jackson's PropertyNamingStrategies. Can also be a fully-qualified class
+   * name of a PropertyNamingStrategy implementation.
    */
   private String propertyNamingStrategy;
 
   /**
-   * Jackson visibility thresholds that can be used to limit which methods (and fields)
-   * are auto-detected.
+   * Jackson visibility thresholds that can be used to limit which methods (and fields) are
+   * auto-detected.
    */
-  private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(PropertyAccessor.class);
+  private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
+      PropertyAccessor.class);
 
   /**
    * Jackson on/off features that affect the way Java objects are serialized.
    */
-  private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(SerializationFeature.class);
+  private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
+      SerializationFeature.class);
 
   /**
    * Jackson on/off features that affect the way Java objects are deserialized.
    */
-  private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(DeserializationFeature.class);
+  private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
+      DeserializationFeature.class);
 
   /**
    * Jackson general purpose on/off features.
@@ -77,11 +80,12 @@ public class JacksonProperties {
   /**
    * Jackson on/off features for generators.
    */
-  private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(JsonGenerator.Feature.class);
+  private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
+      JsonGenerator.Feature.class);
 
   /**
-   * Controls the inclusion of properties during serialization. Configured with one of
-   * the values in Jackson's JsonInclude.Include enumeration.
+   * Controls the inclusion of properties during serialization. Configured with one of the values in
+   * Jackson's JsonInclude.Include enumeration.
    */
   private JsonInclude.Include defaultPropertyInclusion;
 
@@ -91,14 +95,13 @@ public class JacksonProperties {
   private Boolean defaultLeniency;
 
   /**
-   * Strategy to use to auto-detect constructor, and in particular behavior with
-   * single-argument constructors.
+   * Strategy to use to auto-detect constructor, and in particular behavior with single-argument
+   * constructors.
    */
   private ConstructorDetectorStrategy constructorDetector;
 
   /**
-   * Time zone used when formatting dates. For instance, "America/Los_Angeles" or
-   * "GMT+10".
+   * Time zone used when formatting dates. For instance, "America/Los_Angeles" or "GMT+10".
    */
   private TimeZone timeZone = null;
 
@@ -227,8 +230,8 @@ public class JacksonProperties {
     USE_DELEGATING,
 
     /**
-     * Refuse to decide implicit mode and instead throw an InvalidDefinitionException
-     * for ambiguous cases.
+     * Refuse to decide implicit mode and instead throw an InvalidDefinitionException for ambiguous
+     * cases.
      */
     EXPLICIT_ONLY
 

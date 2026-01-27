@@ -395,7 +395,8 @@ public class JacksonAutoConfigurer {
         return modules;
       }
 
-      private static void addCustomModule(JacksonProperties jacksonProperties, List<Module> modules) {
+      private static void addCustomModule(JacksonProperties jacksonProperties,
+          List<Module> modules) {
         JavaTimeModule javaTimeModule = new JavaTimeModule("customJavaTimeModule",
             jacksonProperties.getDateFormat(), jacksonProperties.getLocaleDateFormat(),
             jacksonProperties.getLocaleTimeFormat());

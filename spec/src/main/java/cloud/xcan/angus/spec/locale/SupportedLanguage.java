@@ -3,14 +3,13 @@ package cloud.xcan.angus.spec.locale;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_LANGUAGE;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
+import cloud.xcan.angus.spec.experimental.Value;
 import java.util.Locale;
 
 /**
  * @author XiaoLong Liu
  */
-@EndpointRegister
-public enum SupportedLanguage implements EnumMessage<String> {
+public enum SupportedLanguage implements Value<String> {
   en,
   zh_CN;
 

@@ -1,11 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.locale.EnumMessage;
-import lombok.Getter;
+import cloud.xcan.angus.spec.experimental.Value;
 
 
-@Getter
-public enum FileType implements EnumMessage<String> {
+public enum FileType implements Value<String> {
   FILE, DIRECTORY;
 
   @Override

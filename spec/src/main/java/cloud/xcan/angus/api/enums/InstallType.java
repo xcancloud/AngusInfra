@@ -1,6 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-public enum InstallType {
+import cloud.xcan.angus.spec.experimental.Value;
+
+public enum InstallType implements Value<String> {
 
   SHARED, STANDALONE;
 
@@ -12,4 +14,8 @@ public enum InstallType {
     return this.equals(STANDALONE);
   }
 
+  @Override
+  public String getValue() {
+    return this.name();
+  }
 }

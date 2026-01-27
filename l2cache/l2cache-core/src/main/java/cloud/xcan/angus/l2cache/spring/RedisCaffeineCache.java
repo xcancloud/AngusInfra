@@ -26,20 +26,17 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * <p>
- * A two-level cache implementation that combines Redis (L2) and Caffeine (L1) caches.
- * This cache provides high performance by utilizing local cache for frequent access
- * and distributed cache for data consistency across multiple instances.
+ * A two-level cache implementation that combines Redis (L2) and Caffeine (L1) caches. This cache
+ * provides high performance by utilizing local cache for frequent access and distributed cache for
+ * data consistency across multiple instances.
  * </p>
- * 
+ *
  * <p>
- * Key features:
- * - L1 Cache: Local Caffeine cache for ultra-fast access
- * - L2 Cache: Distributed Redis cache for data persistence and sharing
- * - Cache synchronization via Redis pub/sub mechanism
- * - Configurable cache penetration protection
- * - Multi-tenant support with tenant-aware cache keys
+ * Key features: - L1 Cache: Local Caffeine cache for ultra-fast access - L2 Cache: Distributed
+ * Redis cache for data persistence and sharing - Cache synchronization via Redis pub/sub mechanism
+ * - Configurable cache penetration protection - Multi-tenant support with tenant-aware cache keys
  * </p>
- * 
+ *
  * <p>
  * Thread Safety: This class is thread-safe and can be used in concurrent environments.
  * </p>
@@ -50,26 +47,25 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
   private final String cacheName;
 
   /**
-   * Level 1 cache: Local Caffeine cache for high-speed access.
-   * Provides sub-millisecond response times for frequently accessed data.
+   * Level 1 cache: Local Caffeine cache for high-speed access. Provides sub-millisecond response
+   * times for frequently accessed data.
    */
   private final Cache<Object, Object> level1Cache;
 
   /**
-   * Level 2 cache service: Distributed Redis cache for data persistence and sharing.
-   * Ensures data consistency across multiple application instances.
+   * Level 2 cache service: Distributed Redis cache for data persistence and sharing. Ensures data
+   * consistency across multiple application instances.
    */
   private final RedisService<Object> redisService;
 
   /**
-   * Default expiration time for cache entries in milliseconds.
-   * Value of 0 means no expiration.
+   * Default expiration time for cache entries in milliseconds. Value of 0 means no expiration.
    */
   private final long defaultExpiration;
 
   /**
-   * Default expiration time for cache penetration protection in milliseconds.
-   * Used to cache null/empty values to prevent repeated database queries.
+   * Default expiration time for cache penetration protection in milliseconds. Used to cache
+   * null/empty values to prevent repeated database queries.
    */
   private final long defaultPenetrationExpiration;
 
@@ -100,21 +96,21 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Tracks whether Level 1 cache has been enabled to handle configuration inconsistencies.
-   * Once enabled, it remains true to prevent cache inconsistency issues.
+   * Tracks whether Level 1 cache has been enabled to handle configuration inconsistencies. Once
+   * enabled, it remains true to prevent cache inconsistency issues.
    * </p>
-   * 
+   *
    * <p>
-   * Scenario: Enable local cache → update data → disable local cache → 
-   * update Redis data → re-enable local cache. This could cause stale data issues.
-   * Solution: Clear L1 cache when configuration changes are detected.
+   * Scenario: Enable local cache → update data → disable local cache → update Redis data →
+   * re-enable local cache. This could cause stale data issues. Solution: Clear L1 cache when
+   * configuration changes are detected.
    * </p>
    */
   private final AtomicBoolean openedL1Cache = new AtomicBoolean(false);
 
   /**
-   * Per-key lock map to prevent cache stampede and ensure thread safety for cache loading.
-   * Uses ConcurrentHashMap for thread-safe access to individual key locks.
+   * Per-key lock map to prevent cache stampede and ensure thread safety for cache loading. Uses
+   * ConcurrentHashMap for thread-safe access to individual key locks.
    */
   private final Map<String, ReentrantLock> keyLockMap = new ConcurrentHashMap<>();
 
@@ -142,9 +138,9 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
    * Main constructor for creating a two-level cache instance.
    * </p>
    *
-   * @param cacheName the name of the cache
-   * @param redisService Redis service for L2 cache operations
-   * @param level1Cache Caffeine cache instance for L1 cache
+   * @param cacheName         the name of the cache
+   * @param redisService      Redis service for L2 cache operations
+   * @param level1Cache       Caffeine cache instance for L1 cache
    * @param l2CacheProperties cache configuration properties
    */
   public RedisCaffeineCache(String cacheName, RedisService<Object> redisService,
@@ -174,13 +170,13 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Retrieves a cache value, loading it if necessary using the provided callable.
-   * Implements cache-aside pattern with double-checked locking to prevent cache stampede.
+   * Retrieves a cache value, loading it if necessary using the provided callable. Implements
+   * cache-aside pattern with double-checked locking to prevent cache stampede.
    * </p>
    *
    * @param key0 the cache key
    * @param call the callable to load the value if not present in cache
-   * @param <T> the type of the cached value
+   * @param <T>  the type of the cached value
    * @return the cached or loaded value
    */
   @Override
@@ -231,7 +227,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
    * Handles cache penetration protection for empty values.
    * </p>
    *
-   * @param key0 the cache key
+   * @param key0  the cache key
    * @param value the value to store
    */
   @Override
@@ -246,7 +242,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
     }
 
     String cacheKey = getKey(key);
-    
+
     // Skip storing if the processed value is empty (after null handling)
     if (isEmptyValue(value)) {
       return;
@@ -272,11 +268,11 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Implements cache penetration protection by storing empty values with shorter TTL.
-   * This prevents repeated database queries for non-existent data.
+   * Implements cache penetration protection by storing empty values with shorter TTL. This prevents
+   * repeated database queries for non-existent data.
    * </p>
    *
-   * @param key the cache key
+   * @param key        the cache key
    * @param storeValue the empty value to store (must be empty)
    */
   public void emptyPenetrationSafe(String key, Object storeValue) {
@@ -293,13 +289,13 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
     }
 
     String cacheKey = getKey(key);
-    
+
     // Only apply penetration protection if configured for this cache
     if (penetrationExpires.containsKey(cacheKey)) {
       long expire = getPenetrationExpire();
       // Store empty value with shorter TTL to prevent cache penetration
       redisService.set(cacheKey, storeValue, expire, TimeUnit.MILLISECONDS);
-      
+
       if (log.isDebugEnabled()) {
         log.debug("Applied penetration protection for key: {}, expire: {}ms", key, expire);
       }
@@ -315,8 +311,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
    * @return true if the value is empty, false otherwise
    */
   private boolean isEmptyValue(Object value) {
-    return value == null 
-        || "null".equals(value) 
+    return value == null
+        || "null".equals(value)
         || "".equals(value)
         || NullValue.INSTANCE.equals(value)
         || (value instanceof Collection && ((Collection<?>) value).isEmpty())
@@ -325,11 +321,11 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Atomically sets a key-value pair only if the key does not exist.
-   * Uses distributed locking to ensure atomicity across multiple instances.
+   * Atomically sets a key-value pair only if the key does not exist. Uses distributed locking to
+   * ensure atomicity across multiple instances.
    * </p>
    *
-   * @param key0 the cache key
+   * @param key0  the cache key
    * @param value the value to set
    * @return a ValueWrapper containing the previous value, or null if key was absent
    */
@@ -347,7 +343,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
         // Key doesn't exist, set the value
         long expire = getExpire();
         Object storeValue = toStoreValue(value);
-        
+
         if (expire > 0) {
           redisService.set(cacheKey, storeValue, expire, TimeUnit.MILLISECONDS);
         } else {
@@ -359,14 +355,14 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
         level1Cache.put(key, storeValue);
       }
     }
-    
+
     return toValueWrapper(prevValue);
   }
 
   /**
    * <p>
-   * Evicts a single cache entry from both L1 and L2 caches.
-   * Ensures proper order: Redis first, then local cache to prevent race conditions.
+   * Evicts a single cache entry from both L1 and L2 caches. Ensures proper order: Redis first, then
+   * local cache to prevent race conditions.
    * </p>
    *
    * @param key0 the cache key to evict
@@ -374,7 +370,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
   @Override
   public void evict(Object key0) {
     String key = key0.toString();
-    
+
     // Clear Redis cache first to prevent other instances from reloading stale data
     redisService.delete(getKey(key));
 
@@ -383,7 +379,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
     // Clear local L1 cache
     level1Cache.invalidate(key);
-    
+
     if (log.isDebugEnabled()) {
       log.debug("Evicted cache entry for key: {}", key);
     }
@@ -406,8 +402,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Clears all cache entries for this cache instance.
-   * Uses pattern matching to find all keys belonging to this cache.
+   * Clears all cache entries for this cache instance. Uses pattern matching to find all keys
+   * belonging to this cache.
    * </p>
    */
   @Override
@@ -419,13 +415,13 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
         redisService.delete(keys);
         log.info("Cleared {} Redis cache entries for cache: {}", keys.size(), this.cacheName);
       }
-      
+
       // Notify all instances to clear their local caches
       clearAllLocalCache(CacheMessage.of(this.cacheName, null));
-      
+
       // Clear local L1 cache
       level1Cache.invalidateAll();
-      
+
     } catch (Exception e) {
       log.error("Error clearing cache: {}", this.cacheName, e);
       throw new RuntimeException("Failed to clear cache: " + this.cacheName, e);
@@ -434,8 +430,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Looks up a value in the cache hierarchy: L1 first, then L2.
-   * Implements cache warming by promoting L2 hits to L1 cache.
+   * Looks up a value in the cache hierarchy: L1 first, then L2. Implements cache warming by
+   * promoting L2 hits to L1 cache.
    * </p>
    *
    * @param key0 the cache key to lookup
@@ -466,7 +462,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
       if (log.isDebugEnabled()) {
         log.debug("L2 cache hit for cache: {}, key: {}", this.getName(), key);
       }
-      
+
       // Promote to L1 cache if enabled (cache warming)
       if (isL1Open) {
         level1Cache.put(key, value);
@@ -481,8 +477,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Generates a tenant-aware cache key with proper namespacing.
-   * Format: {prefix}{cacheName}:{tenantId}:{key}
+   * Generates a tenant-aware cache key with proper namespacing. Format:
+   * {prefix}{cacheName}:{tenantId}:{key}
    * </p>
    *
    * @param key the original cache key
@@ -499,8 +495,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Retrieves the expiration time for this cache instance.
-   * Uses cache-specific configuration if available, otherwise falls back to default.
+   * Retrieves the expiration time for this cache instance. Uses cache-specific configuration if
+   * available, otherwise falls back to default.
    * </p>
    *
    * @return expiration time in milliseconds
@@ -524,8 +520,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Notifies all application instances to clear their local caches via Redis pub/sub.
-   * This ensures cache consistency across distributed deployments.
+   * Notifies all application instances to clear their local caches via Redis pub/sub. This ensures
+   * cache consistency across distributed deployments.
    * </p>
    *
    * @param message the cache invalidation message
@@ -545,8 +541,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Clears the local L1 cache for a specific key or all keys.
-   * This method is typically called in response to cache invalidation messages.
+   * Clears the local L1 cache for a specific key or all keys. This method is typically called in
+   * response to cache invalidation messages.
    * </p>
    *
    * @param key0 the key to clear, or null to clear all entries
@@ -564,8 +560,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Determines if L1 cache is enabled for a specific cache key.
-   * Checks both global and key-specific configuration.
+   * Determines if L1 cache is enabled for a specific cache key. Checks both global and key-specific
+   * configuration.
    * </p>
    *
    * @param key the cache key to check
@@ -577,8 +573,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Checks if L1 cache is globally enabled for this cache instance.
-   * Updates the opened flag for consistency tracking.
+   * Checks if L1 cache is globally enabled for this cache instance. Updates the opened flag for
+   * consistency tracking.
    * </p>
    *
    * @return true if L1 cache is globally enabled
@@ -597,7 +593,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
     // Check manual cache name matching
     if (composite.isL1Manual()) {
       Set<String> l1ManualCacheNameSet = composite.getL1ManualCacheNameSet();
-      return !isEmpty(l1ManualCacheNameSet) 
+      return !isEmpty(l1ManualCacheNameSet)
           && l1ManualCacheNameSet.contains(this.getName());
     }
 
@@ -606,8 +602,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Checks if L1 cache is enabled for a specific cache key.
-   * This allows fine-grained control over which keys use L1 cache.
+   * Checks if L1 cache is enabled for a specific cache key. This allows fine-grained control over
+   * which keys use L1 cache.
    * </p>
    *
    * @param key the cache key to check
@@ -616,7 +612,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
   private boolean isL1OpenByKey(String key) {
     if (composite.isL1Manual()) {
       Set<String> l1ManualKeySet = composite.getL1ManualKeySet();
-      return !CollectionUtils.isEmpty(l1ManualKeySet) 
+      return !CollectionUtils.isEmpty(l1ManualKeySet)
           && l1ManualKeySet.contains(getKey(key));
     }
     return false;
@@ -638,7 +634,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
     if (userValue == null || NullValue.INSTANCE.equals(userValue)
         || (userValue instanceof Collection && ((Collection<?>) userValue).isEmpty())
         || (userValue instanceof Map && ((Map<?, ?>) userValue).isEmpty())) {
-      
+
       if (isAllowNullValues()) {
         if (userValue == null) {
           return NullValue.INSTANCE;
@@ -653,10 +649,10 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
       }
 
       throw new IllegalArgumentException(
-          String.format("Cache '%s' is configured to not allow null values but null was provided", 
+          String.format("Cache '%s' is configured to not allow null values but null was provided",
               getName()));
     }
-    
+
     return userValue;
   }
 }

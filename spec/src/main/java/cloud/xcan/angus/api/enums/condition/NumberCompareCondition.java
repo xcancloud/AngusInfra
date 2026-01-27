@@ -1,13 +1,9 @@
 package cloud.xcan.angus.api.enums.condition;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * Condition applies to matches that may be numbers.
- */
-@EndpointRegister
-public enum NumberCompareCondition implements EnumMessage<String> {
+
+public enum NumberCompareCondition implements Value<String> {
   EQUAL,
   GREATER_THAN,
   GREATER_THAN_EQUAL,

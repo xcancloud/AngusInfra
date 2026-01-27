@@ -15,7 +15,7 @@ public class TenantAwareProcessor {
     long realTenantId = getOptTenantId();
     if (isMultiTenantCtrl) {
       PrincipalContext.get().setMultiTenantCtrl(false);
-      if (nonNull(currentTenantId)){
+      if (nonNull(currentTenantId)) {
         PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
       }
     }
@@ -24,7 +24,7 @@ public class TenantAwareProcessor {
 
     if (isMultiTenantCtrl) {
       PrincipalContext.get().setMultiTenantCtrl(true);
-      if (nonNull(currentTenantId)){
+      if (nonNull(currentTenantId)) {
         PrincipalContext.get().setOptTenantId(realTenantId);
       }
     }
@@ -35,7 +35,7 @@ public class TenantAwareProcessor {
     long realTenantId = getOptTenantId();
     if (isMultiTenantCtrl) {
       PrincipalContext.get().setMultiTenantCtrl(false);
-      if (nonNull(currentTenantId)){
+      if (nonNull(currentTenantId)) {
         PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
       }
     }
@@ -44,7 +44,7 @@ public class TenantAwareProcessor {
 
     if (isMultiTenantCtrl) {
       PrincipalContext.get().setMultiTenantCtrl(true);
-      if (nonNull(currentTenantId)){
+      if (nonNull(currentTenantId)) {
         PrincipalContext.get().setOptTenantId(realTenantId);
       }
     }

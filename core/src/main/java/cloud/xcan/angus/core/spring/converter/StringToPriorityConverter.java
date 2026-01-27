@@ -7,7 +7,8 @@ import org.springframework.core.convert.converter.Converter;
  * Fix: Failed to convert property value of type 'java.lang.String' to required type
  * 'cloud.xcan.angus.api.enums.Priority' for property 'Priority'.
  * <p>
- * Browser auto write `Priority: u=0` in header, and conflicts with execution, use cases, and task list queries.
+ * Browser auto write `Priority: u=0` in header, and conflicts with execution, use cases, and task
+ * list queries.
  */
 public class StringToPriorityConverter implements Converter<String, Priority> {
 

@@ -1,11 +1,6 @@
 package cloud.xcan.angus.spec.http;
 
-import cloud.xcan.angus.spec.SpecConstant;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
-import cloud.xcan.angus.spec.locale.MessageHolder;
-import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
-import org.apache.commons.lang3.StringUtils;
+import cloud.xcan.angus.spec.experimental.Value;
 
 /**
  * Enumeration of HTTP status codes.
@@ -17,8 +12,7 @@ import org.apache.commons.lang3.StringUtils;
  * @see <a href="https://en.wikipedia.org/wiki/List_of_HTTP_status_codes">List of HTTP status codes
  * - Wikipedia</a>
  */
-@EndpointRegister
-public enum HttpStatus implements EnumMessage<String> {
+public enum HttpStatus implements Value<String> {
 
   UNKNOWN(0, HttpStatusSeries.UNKNOWN, "Unknown"),
 
@@ -342,16 +336,14 @@ public enum HttpStatus implements EnumMessage<String> {
    */
   I_AM_A_TEAPOT(418, HttpStatusSeries.CLIENT_ERROR, "I'm a teapot"),
   /**
-   * Deprecated See
-   * <a
+   * Deprecated See <a
    * href="https://tools.ietf.org/rfcdiff?difftype=--hwdiff&url2=draft-ietf-webdav-protocol-06.txt">
    * WebDAV Draft Changes</a>
    */
   INSUFFICIENT_SPACE_ON_RESOURCE(419, HttpStatusSeries.CLIENT_ERROR,
       "Insufficient Space On Resource"),
   /**
-   * Deprecated See
-   * <a
+   * Deprecated See <a
    * href="https://tools.ietf.org/rfcdiff?difftype=--hwdiff&url2=draft-ietf-webdav-protocol-06.txt">
    * WebDAV Draft Changes</a>
    */
@@ -606,21 +598,6 @@ public enum HttpStatus implements EnumMessage<String> {
   @Override
   public String getValue() {
     return String.valueOf(value());
-  }
-
-  @Override
-  public String getMessage() {
-    if (SpecConstant.DEFAULT_LOCALE.equals(SdfLocaleHolder.getLocale())) {
-      String message = MessageHolder.message(getMessageKey());
-      return StringUtils.isBlank(message) ? this.getValue() : message;
-    } else {
-      return getReasonPhrase();
-    }
-  }
-
-  @Override
-  public String getMessageKey() {
-    return getKeyPrefix() + this.getClass().getSimpleName() + "." + this.name();
   }
 
   /**

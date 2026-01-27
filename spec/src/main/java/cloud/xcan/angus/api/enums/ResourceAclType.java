@@ -1,14 +1,10 @@
 package cloud.xcan.angus.api.enums;
 
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * Resource ACL type.
- */
-@EndpointRegister
-public enum ResourceAclType implements EnumMessage<String> {
+
+public enum ResourceAclType implements Value<String> {
   ALL, ONLY_READ, ONLY_WRITE, READ_WRITE, DELETE;
 
   @Override

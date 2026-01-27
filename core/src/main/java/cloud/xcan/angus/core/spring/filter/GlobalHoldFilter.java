@@ -1,10 +1,12 @@
 package cloud.xcan.angus.core.spring.filter;
 
 import static cloud.xcan.angus.core.spring.boot.ApplicationInfo.APP_READY;
+import static cloud.xcan.angus.core.spring.service.LocationService.getLocationFromApi;
+import static cloud.xcan.angus.core.utils.DeviceInfoExtractorUtils.extractDeviceInfo;
+import static cloud.xcan.angus.core.utils.IpAddressUtil.getClientIpAddress;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isInnerApi;
 import static cloud.xcan.angus.core.utils.ServletUtils.getAndSetRequestId;
 import static cloud.xcan.angus.core.utils.ServletUtils.getAuthServiceCode;
-import static cloud.xcan.angus.core.utils.ServletUtils.getDeviceId;
 import static cloud.xcan.angus.core.utils.ServletUtils.getUserAgent;
 import static cloud.xcan.angus.core.utils.ServletUtils.writeApiResult;
 import static cloud.xcan.angus.remote.message.http.ServiceUnavailable.M.SERVICE_UNAVAILABLE_KEY;
@@ -23,6 +25,8 @@ import static java.lang.String.valueOf;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.enums.ApiType;
+import cloud.xcan.angus.api.pojo.DeviceInfo;
+import cloud.xcan.angus.api.pojo.LocationInfo;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.spec.experimental.BizConstant.AuthKey;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -35,6 +39,8 @@ import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
 import cloud.xcan.angus.spec.thread.ThreadContext;
+import cloud.xcan.angus.spec.utils.CaffeineCacheUtils;
+import com.github.benmanes.caffeine.cache.Cache;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,7 +54,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.MDC;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.LocaleResolver;
@@ -74,7 +79,10 @@ public class GlobalHoldFilter implements Filter {
 
   private static final int OPTION_MAX_AGE = 3 * 24 * 60 * 60;
 
+  public static final Cache<String, LocationInfo> LOCATION_INFO_CACHE
+      = CaffeineCacheUtils.createCache("LOCATION_INFO_CACHE");
   public static Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
+
 
   public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties,
       LocaleResolver localeResolver) {
@@ -108,7 +116,7 @@ public class GlobalHoldFilter implements Filter {
     boolean rootRequest = isEmpty(request.getHeader(Header.REQUEST_ID));
 
     MutableHttpServletRequest mutableRequest = new MutableHttpServletRequest(request);
-    Principal principal = assemblePrincipalRemote(mutableRequest, request, rootRequest);
+    Principal principal = assembleAccessPrincipal(mutableRequest, request, rootRequest);
 
     try {
       if (path.startsWith("/oauth2") || path.startsWith("/swagger")
@@ -119,7 +127,7 @@ public class GlobalHoldFilter implements Filter {
 
       initLocaleContext(request);
 
-      assemblePrincipal(request, path, principal);
+      assembleCorePrincipal(request, path, principal);
 
       relayOptTenantId(request, principal);
 
@@ -186,27 +194,32 @@ public class GlobalHoldFilter implements Filter {
     SdfLocaleHolder.setLocale(locale);
   }
 
-  private static @NotNull Principal assemblePrincipalRemote(
-      MutableHttpServletRequest mutableRequest, HttpServletRequest request, boolean rootRequest) {
+  private static Principal assembleAccessPrincipal(MutableHttpServletRequest mutableRequest,
+      HttpServletRequest request, boolean rootRequest) {
     // Request id is required for oauth2 generate user token
     String requestId = getAndSetRequestId(mutableRequest);
-    String remoteAddr = request.getRemoteAddr();
+    String ipAddress = getClientIpAddress(request);
     String userAgent = getUserAgent(request);
-    String deviceId = getDeviceId(request);
+    // 获取设备信息
+    DeviceInfo deviceInfo = extractDeviceInfo(request);
     Principal principal = PrincipalContext.createIfAbsent();
-    principal.setRequestId(requestId).setRemoteAddress(remoteAddr)
-        .setUserAgent(userAgent).setDeviceId(deviceId);
+    principal.setRequestId(requestId)
+        .setRemoteAddress(ipAddress)
+        .setUserAgent(userAgent)
+        .setDeviceIno(deviceInfo);
     if (rootRequest) {
-      PrincipalContext.setRequestAttribute(REMOTE_ADDR_IN_QUERY, remoteAddr);
+      PrincipalContext.setRequestAttribute(REMOTE_ADDR_IN_QUERY, ipAddress);
       PrincipalContext.setRequestAttribute(USER_AGENT, userAgent);
-      PrincipalContext.setRequestAttribute(DEVICE_ID_IN_QUERY, deviceId);
+      PrincipalContext.setRequestAttribute(DEVICE_ID_IN_QUERY, deviceInfo.getDeviceId());
     }
     return principal;
   }
 
-  private void assemblePrincipal(HttpServletRequest request, String path,
-      Principal principal) {
-    principal.setRequestAcceptTime(LocalDateTime.now())
+  private void assembleCorePrincipal(HttpServletRequest request, String path, Principal principal) {
+    SupportedLanguage language = SupportedLanguage.safeLanguage(SdfLocaleHolder.getLocale());
+    LocationInfo locationInfo = getLocationInfo(principal, language);
+    principal.setDefaultLanguage(language)
+        .setRequestAcceptTime(LocalDateTime.now())
         .setServiceCode(applicationInfo.getArtifactId())
         .setServiceName(applicationInfo.getName())
         .setAuthServiceCode(getAuthServiceCode(request))
@@ -214,8 +227,20 @@ public class GlobalHoldFilter implements Filter {
         .setMethod(request.getMethod())
         .setUri(path)
         .setApiType(ApiType.findByUri(path))
-        .setDefaultLanguage(SupportedLanguage.safeLanguage(SdfLocaleHolder.getLocale()))
-        .setDefaultTimeZone(SdfLocaleHolder.getTimeZone().getID());
+        .setLocationInfo(locationInfo);
+  }
+
+  private static LocationInfo getLocationInfo(Principal principal, SupportedLanguage language) {
+    // 获取位置信息（可根据IP查询）
+    LocationInfo locationInfo = new LocationInfo();
+    if (LOCATION_INFO_CACHE.get(principal.getRemoteAddress(), k -> null) != null) {
+      locationInfo = LOCATION_INFO_CACHE.get(principal.getRemoteAddress(),
+          k -> getLocationFromApi(principal.getRemoteAddress(), language));
+    } else {
+      locationInfo = getLocationFromApi(principal.getRemoteAddress(), language);
+      LOCATION_INFO_CACHE.put(principal.getRemoteAddress(), locationInfo);
+    }
+    return locationInfo;
   }
 
   public Long getOptTenantId(HttpServletRequest req) {

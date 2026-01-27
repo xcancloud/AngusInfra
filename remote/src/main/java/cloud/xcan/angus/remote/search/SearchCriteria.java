@@ -27,8 +27,9 @@ import org.hibernate.validator.constraints.Length;
 @Accessors(chain = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "SearchCriteria is used to define a single filter condition for querying data. "
-    + "Each instance represents a filter on a specific field, with a value and an operator.")
+@Schema(description =
+    "SearchCriteria is used to define a single filter condition for querying data. "
+        + "Each instance represents a filter on a specific field, with a value and an operator.")
 public class SearchCriteria implements Serializable {
 
   public static final String FILERS_KEY = "filters";

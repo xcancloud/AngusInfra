@@ -29,8 +29,7 @@ import org.springframework.beans.factory.DisposableBean;
  * as{@link RingBuffer#DEFAULT_PADDING_PERCENT} Sample: paddingFactor=20, bufferSize=1000 ->
  * threshold=1000 * 20 /100, padding buffer will be triggered when tail-cursor<threshold
  * <li><b>scheduleInterval:</b> Padding buffer in a schedule, specify padding buffer interval,
- * ValueUnit
- * as second
+ * ValueUnit as second
  * <li><b>rejectedPutBufferHandler:</b> Policy for rejected put buffer. Default as discard put
  * request, just do logging
  * <li><b>rejectedTakeBufferHandler:</b> Policy for rejected take buffer. Default as throwing up an

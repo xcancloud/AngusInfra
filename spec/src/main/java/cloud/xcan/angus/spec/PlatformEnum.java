@@ -1,14 +1,12 @@
 package cloud.xcan.angus.spec;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
 /**
  * An enumeration of supported operating systems. The order of declaration matches the osType
  * constants in the JNA Platform class.
  */
-@EndpointRegister
-public enum PlatformEnum implements EnumValueMessage<String> {
+public enum PlatformEnum implements Value<String> {
   /**
    * macOS
    */

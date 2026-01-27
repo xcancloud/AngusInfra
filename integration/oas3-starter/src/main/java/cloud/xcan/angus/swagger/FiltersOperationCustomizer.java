@@ -39,7 +39,8 @@ public class FiltersOperationCustomizer implements OperationCustomizer {
       params.add(new Parameter()
           .in("query")
           .name("filters[" + i + "].key")
-          .description("Customize the filter parameter name. Note: The parameter name must be a whitelist parameter")
+          .description(
+              "Customize the filter parameter name. Note: The parameter name must be a whitelist parameter")
           .schema(new StringSchema()));
 
       params.add(new Parameter()

@@ -1,14 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * Resource access scope.
- */
-@EndpointRegister
-public enum ResourceAuthType implements EnumMessage<String> {
+public enum ResourceAuthType implements Value<String> {
   API, ACL;
 
   @Override

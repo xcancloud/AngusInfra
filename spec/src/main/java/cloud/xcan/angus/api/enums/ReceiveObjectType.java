@@ -1,10 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum ReceiveObjectType implements EnumMessage<String> {
+public enum ReceiveObjectType implements Value<String> {
   TENANT, DEPT, GROUP, USER, POLICY, TO_POLICY, ALL;
 
   @Override

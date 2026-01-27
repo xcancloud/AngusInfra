@@ -1,10 +1,8 @@
 package cloud.xcan.angus.api.enums.condition;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-@EndpointRegister
-public enum FullMatchCondition implements EnumMessage<String> {
+public enum FullMatchCondition implements Value<String> {
   EQUAL,
   NOT_EQUAL,
   IS_EMPTY,

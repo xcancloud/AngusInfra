@@ -1,13 +1,9 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * @author XiaoLong Liu
- */
-@EndpointRegister
-public enum NodeRole implements EnumMessage<String> {
+
+public enum NodeRole implements Value<String> {
   MANAGEMENT,
   CONTROLLER,
   EXECUTION,

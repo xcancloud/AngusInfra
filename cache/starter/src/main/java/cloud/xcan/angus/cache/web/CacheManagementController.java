@@ -51,7 +51,8 @@ public class CacheManagementController {
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key) {
     return cache.get(key)
         .map(v -> RestfulApiResult.success(new CacheValueResponse(key, v)))
-        .orElseGet(() -> RestfulApiResult.error(RestfulApiResult.BUSINESS_ERROR_CODE, "Key not found"));
+        .orElseGet(
+            () -> RestfulApiResult.error(RestfulApiResult.BUSINESS_ERROR_CODE, "Key not found"));
   }
 
   @Operation(operationId = "setCacheValue", summary = "Set cache value for a key", description = "Set or update the value for a cache key. Provide optional ttlSeconds for expiration.",
@@ -66,7 +67,8 @@ public class CacheManagementController {
   }
 
   @Operation(operationId = "deleteCacheKey", summary = "Delete cache key", description = "Delete a cache entry by key. If the key does not exist, the operation is idempotent and returns success in wrapper.",
-      responses = {@ApiResponse(responseCode = "200", description = "Deleted or not present (wrapped)")})
+      responses = {
+          @ApiResponse(responseCode = "200", description = "Deleted or not present (wrapped)")})
   @DeleteMapping("/{key}")
   public RestfulApiResult<?> delete(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key) {

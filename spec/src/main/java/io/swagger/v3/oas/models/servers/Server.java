@@ -93,11 +93,11 @@ public class Server {
           String variableName = "{" + name + "}";
           String variableValue = variables.get(name).getDefault();
           // Use the first enum value as the default when no default value is specified
-          if (isNull(variableValue) && isNotEmpty(variables.get(name).getEnum())){
+          if (isNull(variableValue) && isNotEmpty(variables.get(name).getEnum())) {
             variableValue = variables.get(name).getEnum().get(0);
           }
           // Ignore substitution when variable value is not found
-          if (nonNull(variableValue)){
+          if (nonNull(variableValue)) {
             url = url.replace(variableName, variableValue);
           }
         }

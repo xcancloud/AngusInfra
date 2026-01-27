@@ -118,7 +118,7 @@ public class TimeFormatter {
         // 强制显示毫秒，将所有单位转换为毫秒
         showDays = showHours = showMinutes = showSeconds = false;
         showMillis = true;
-        remaining = days * MILLIS_PER_DAY + hours * MILLIS_PER_HOUR 
+        remaining = days * MILLIS_PER_DAY + hours * MILLIS_PER_HOUR
             + minutes * MILLIS_PER_MINUTE + seconds * MILLIS_PER_SECOND + remaining;
         break;
       case AUTO:
@@ -248,7 +248,7 @@ public class TimeFormatter {
         // 如果只有分钟和秒，显示 MM:SS
         // 如果只有秒，显示 MM:SS（00:SS）
         // 如果只有毫秒，显示 00:00.000
-        
+
         if (showDays || showHours) {
           // 显示小时格式：HH:MM:SS（将天数转换为小时）
           long totalHours = days * 24 + hours;

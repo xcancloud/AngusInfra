@@ -1,14 +1,8 @@
 package cloud.xcan.angus.api.enums;
 
-import cloud.xcan.angus.spec.ValueObject;
-import cloud.xcan.angus.spec.experimental.EndpointRegister;
-import cloud.xcan.angus.spec.locale.EnumValueMessage;
+import cloud.xcan.angus.spec.experimental.Value;
 
-/**
- * Controls the print level of logging.
- */
-@EndpointRegister
-public enum PrintLevel implements ValueObject<PrintLevel>, EnumValueMessage<String> {
+public enum PrintLevel implements Value<String> {
   /**
    * No logging.
    */

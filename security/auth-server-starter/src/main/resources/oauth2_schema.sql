@@ -41,8 +41,8 @@ CREATE TABLE oauth2_registered_client
     tenant_name                   varchar(100)           DEFAULT NULL,
     created_by                    varchar(32)            DEFAULT '-1',
     created_date                  timestamp NULL DEFAULT NULL,
-    modified_by              varchar(32)            DEFAULT '-1',
-    modified_date            timestamp NULL DEFAULT NULL,
+    modified_by                   varchar(32)            DEFAULT '-1',
+    modified_date                 timestamp NULL DEFAULT NULL,
     PRIMARY KEY (id)
 );
 CREATE INDEX idx_client_id ON oauth2_registered_client (client_id);
@@ -62,7 +62,7 @@ create table oauth2_user
 (
     id                          varchar(32)  NOT NULL primary key,
     username                    varchar(100) NOT NULL,
-    password                    varchar(500) DEFAULT NULL,
+    password                    varchar(500)          DEFAULT NULL,
     enabled                     boolean      NOT NULL DEFAULT '1',
     account_non_expired         boolean      NOT NULL DEFAULT '1',
     account_non_locked          boolean      NOT NULL DEFAULT '1',
@@ -75,7 +75,7 @@ create table oauth2_user
     email                       varchar(100) NOT NULL DEFAULT '',
     mobile                      varchar(16)  NOT NULL DEFAULT '',
     main_dept_id                varchar(32)  NOT NULL DEFAULT '-1',
-    password_strength           varchar(20)  DEFAULT NULL,
+    password_strength           varchar(20)           DEFAULT NULL,
     password_expired_date       timestamp NULL DEFAULT NULL,
     last_modified_password_date timestamp NULL DEFAULT NULL,
     expired_date                timestamp NULL DEFAULT NULL,

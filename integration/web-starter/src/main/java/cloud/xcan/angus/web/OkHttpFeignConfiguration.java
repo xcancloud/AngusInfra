@@ -32,6 +32,7 @@ import okhttp3.Protocol;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cloud.openfeign.support.FeignHttpClientProperties;
 import org.springframework.context.annotation.Bean;
@@ -107,6 +108,7 @@ public class OkHttpFeignConfiguration {
 
   static class BizExceptionInterceptor implements Interceptor {
 
+    @NotNull
     @Override
     public Response intercept(Chain chain) throws IOException {
       Request request = chain.request();
@@ -121,7 +123,7 @@ public class OkHttpFeignConfiguration {
           byte[] bodyBytes = body.bytes();
           ApiResult<?> apiResult = GsonUtils.fromJson(new String(bodyBytes, UTF8),
               ApiResult.class);
-          throw BizException.of(apiResult.getCode(), apiResult.getMsg());
+          throw BizException.of(apiResult.getCode(), apiResult.getMessage());
         }
       }
       return response;

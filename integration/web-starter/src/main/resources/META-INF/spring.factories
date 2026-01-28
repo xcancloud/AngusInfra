@@ -7,7 +7,6 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   cloud.xcan.angus.web.JobTemplateAutoConfigurer,\
   cloud.xcan.angus.web.JacksonAutoConfigurer,\
   cloud.xcan.angus.web.EnumRegisterAutoConfigurer,\
-  cloud.xcan.angus.web.AuditLogAutoConfigurer,\
   cloud.xcan.angus.web.SystemLogAutoConfigurer,\
   cloud.xcan.angus.web.JpaAutoConfigurer,\
   cloud.xcan.angus.web.CommonLinkJpaAutoConfigurer,\

@@ -11,7 +11,6 @@ import cloud.xcan.angus.core.app.AppWorkspace;
 import cloud.xcan.angus.core.app.AppWorkspaceInit;
 import cloud.xcan.angus.core.app.ApplicationInit;
 import cloud.xcan.angus.core.app.check.CheckAppExpirationAspect;
-import cloud.xcan.angus.core.app.verx.VerxProperties;
 import cloud.xcan.angus.core.biz.I18nMessageAspect;
 import cloud.xcan.angus.core.biz.JoinSupplier;
 import cloud.xcan.angus.core.biz.NameJoinAspect;
@@ -69,8 +68,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration(proxyBeanMethods = true)
 @AutoConfigureAfter(CommonAutoConfigurer.class)
 @ConditionalOnClass(WebMvcConfigurer.class)
-@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class,
-    VerxProperties.class, MultipartProperties.class})
+@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class, MultipartProperties.class})
 @ConditionalOnProperty(name = "xcan.core.enabled", havingValue = "true", matchIfMissing = false)
 public class CoreAutoConfigurer implements WebMvcConfigurer {
 

@@ -22,7 +22,7 @@
   </modules>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-infra.version>2.0.0</xcan-infra.version>
     <xcan-plugin.version>1.0.0</xcan-plugin.version>
   </properties>
 

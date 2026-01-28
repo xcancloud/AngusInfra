@@ -15,7 +15,7 @@
   <description>A core library for angus project two-level Cache.</description>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-infra.version>2.0.0</xcan-infra.version>
   </properties>
 
   <dependencies>

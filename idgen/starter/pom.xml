@@ -16,7 +16,7 @@
   <description>An auto-configured library for generating unique IDs.</description>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-infra.version>2.0.0</xcan-infra.version>
   </properties>
 
   <dependencies>

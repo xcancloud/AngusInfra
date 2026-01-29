@@ -32,7 +32,7 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
    * @param id                   the user id, identify the unique user. Allow phone numbers and
    *                             email the addresses under multiple tenants, there may be multiple
    *                             values
-   * @param account              the user username, mobile or email
+   * @param account              the user username, phone or email
    * @param password             the user password
    * @param clientPrincipal      the authenticated client principal
    * @param scopes               the requested scope(s)
@@ -62,7 +62,7 @@ public class OAuth2PasswordAuthenticationToken extends OAuth2AuthorizationGrantA
   /**
    * Returns the requested account.
    *
-   * @return the requested user username, mobile or email
+   * @return the requested user username, phone or email
    */
   public String getAccount() {
     return account;

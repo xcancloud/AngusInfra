@@ -100,8 +100,6 @@ public class Principal implements Serializable {
   private String fullName = "";
   private String username = "";
 
-  private Long mainDeptId;
-
   private boolean sysAdmin;
 
   private LocationInfo locationInfo = new LocationInfo();

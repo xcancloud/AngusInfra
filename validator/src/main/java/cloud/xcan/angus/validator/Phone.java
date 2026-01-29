@@ -1,6 +1,6 @@
 package cloud.xcan.angus.validator;
 
-import cloud.xcan.angus.validator.impl.MobileValidator;
+import cloud.xcan.angus.validator.impl.PhoneValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.Documented;
@@ -10,12 +10,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Documented
-@Constraint(validatedBy = {MobileValidator.class})
+@Constraint(validatedBy = {PhoneValidator.class})
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Mobile {
+public @interface Phone {
 
-  String message() default "{xcan.validator.constraints.Mobile.message}";
+  String message() default "{xcan.validator.constraints.Phone.message}";
 
   Class<?>[] groups() default {};
 

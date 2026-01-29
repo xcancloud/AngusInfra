@@ -332,7 +332,7 @@ public interface BizConstant {
     String AUTHORIZATION = "Authorization";
     String USERNAME = "username";
     String EMAIL = "email";
-    String MOBILE = "mobile";
+    String PHONE = "phone";
     String PASSWORD = new Str0(new long[]{0x44ED27B90DF8C74AL, 0x26693839EEDEAA2BL}).toString() /* => "password" */;
     String CLIENT_ID = "client_id";
     String CLIENT_NAME = "client_name";

@@ -187,10 +187,6 @@ public class PrincipalContext {
     return get().getLocationInfo();
   }
 
-  public static Long getDeptId() {
-    return get().getMainDeptId();
-  }
-
   public static List<String> getAuthorities() {
     return get().getPermissions();
   }

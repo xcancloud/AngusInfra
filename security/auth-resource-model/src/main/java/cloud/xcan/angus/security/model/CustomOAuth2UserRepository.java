@@ -8,7 +8,7 @@ public interface CustomOAuth2UserRepository {
    * In this case, the <code>UserDetails</code> object that comes back may have a username that is
    * of a different case than what was actually requested.
    *
-   * @param account the username, email or mobile identifying the user whose data is required.
+   * @param account the username, email or phone identifying the user whose data is required.
    * @return a fully populated user record (never <code>null</code>)
    * @throws AccountNotFoundException if the user could not be found or the user has no
    *                                  GrantedAuthority
@@ -18,7 +18,7 @@ public interface CustomOAuth2UserRepository {
   /**
    * Check if a user with the supplied login account exists in the system.
    *
-   * @param account the username, email or mobile identifying the user whose data is required.
+   * @param account the username, email or phone identifying the user whose data is required.
    */
   boolean accountExists(String account);
 

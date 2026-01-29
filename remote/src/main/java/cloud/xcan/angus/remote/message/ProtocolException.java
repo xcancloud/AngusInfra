@@ -287,13 +287,13 @@ public class ProtocolException extends AbstractResultMessageException {
     String CREDENTIALS_EXPIRED = "xcm.credentials.expired";
     String CREDENTIALS_EXPIRED_KEY = "credentials_expired";
 
-    String MOBILE_FORMAT_ERROR = "xcm.mobile.format.error.t";
+    String MOBILE_FORMAT_ERROR = "xcm.phone.format.error.t";
     String MOBILE_FORMAT_ERROR_KEY = "mobile_format_error";
 
-    String MOBILE_NOT_EXIST = "xcm.mobile.not.exist";
-    String MOBILE_NOT_EXIST_T = "xcm.mobile.not.exist.t";
+    String MOBILE_NOT_EXIST = "xcm.phone.not.exist";
+    String MOBILE_NOT_EXIST_T = "xcm.phone.not.exist.t";
     String MOBILE_NOT_EXIST_KEY = "mobile_not_exist";
-    String MOBILE_EXIST_T = "xcm.mobile.exist.t";
+    String MOBILE_EXIST_T = "xcm.phone.exist.t";
 
     String EMAIL_NOT_EXIST = "xcm.email.not.exist";
     String EMAIL_NOT_EXIST_T = "xcm.email.not.exist.t";

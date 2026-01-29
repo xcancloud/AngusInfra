@@ -2,12 +2,12 @@ package cloud.xcan.angus.validator.impl;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
-import cloud.xcan.angus.validator.Mobile;
+import cloud.xcan.angus.validator.Phone;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.regex.Pattern;
 
-public class MobileValidator implements ConstraintValidator<Mobile, String> {
+public class PhoneValidator implements ConstraintValidator<Phone, String> {
 
   /**
    * @see cloud.xcan.angus.core.utils.ValidatorUtil#REGEX_MOBILE

@@ -136,6 +136,9 @@ public interface BizConstant {
   int MAX_DESC_LENGTH_X2 = 400;
   int MAX_DESC_LENGTH_X4 = 800;
   int MAX_DESC_LENGTH_X10 = 2000;
+  int MAX_DESC_LENGTH_X25 = 5000;
+  int MAX_DESC_LENGTH_X50 = 10000;
+  int MAX_DESC_LENGTH_X100 = 20000;
 
   int MAX_OUT_ID_LENGTH = 80;
 

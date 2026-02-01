@@ -150,7 +150,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
             tokenAttributes.get(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE).toString());
         if (GrantType.CLIENT_CREDENTIALS.equals(grantType)) {
           holdSuccess = holdClientPrincipal(request, principal, tokenAttributes, grantType);
-        } else if (GrantType.PASSWORD.equals(grantType)) {
+        } else if (GrantType.PASSWORD.equals(grantType) || GrantType.EMAIL_CODE.equals(grantType)
+            || GrantType.SMS_CODE.equals(grantType)) {
           holdSuccess = holdUserPrincipal(request, principal, tokenAttributes, grantType);
         } else {
           throw SysException.of("Unsupported grant type: " + grantType);

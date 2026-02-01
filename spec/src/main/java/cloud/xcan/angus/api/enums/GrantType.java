@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public enum GrantType implements Value<String> {
 
-  IMPLICIT, REFRESH_TOKEN, CLIENT_CREDENTIALS, PASSWORD, SMS_CODE, THIRD_SOCIAL;
+  IMPLICIT, REFRESH_TOKEN, CLIENT_CREDENTIALS, PASSWORD, EMAIL_CODE, SMS_CODE, THIRD_SOCIAL;
 
   @Override
   public String getValue() {

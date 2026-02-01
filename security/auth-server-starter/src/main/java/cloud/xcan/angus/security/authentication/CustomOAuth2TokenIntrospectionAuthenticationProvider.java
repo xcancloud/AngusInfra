@@ -1,6 +1,8 @@
 package cloud.xcan.angus.security.authentication;
 
+import static cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken.EMAIL_CODE_GRANT_TYPE;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationProviderUtils.getAuthenticatedClientElseThrowInvalidClient;
+import static cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken.SMS_CODE_GRANT_TYPE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ACCOUNT_NON_EXPIRED;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ACCOUNT_NON_LOCKED;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_BIZ_TAG;
@@ -46,6 +48,8 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
 import static java.util.Objects.nonNull;
 import static org.springframework.web.context.request.RequestContextHolder.getRequestAttributes;
 
+import cloud.xcan.angus.security.authentication.email.EmailCodeAuthenticationToken;
+import cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken;
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
@@ -190,12 +194,31 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     AuthorizationGrantType grantType = authorization.getAuthorizationGrantType();
     tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE, grantType.getValue());
 
-    if (grantType.equals(AuthorizationGrantType.PASSWORD)) {
+    if (grantType.equals(AuthorizationGrantType.PASSWORD)
+        || grantType.equals(EMAIL_CODE_GRANT_TYPE) || grantType.equals(SMS_CODE_GRANT_TYPE)) {
       Object principal = authorization.getAttribute(Principal.class.getName());
       if (principal != null) {
         if (principal instanceof UsernamePasswordAuthenticationToken) {
           CustomOAuth2User user = (CustomOAuth2User)
               ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
+          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
+              toUserPrincipalClaim(user, authorization.getAttributes()));
+          if (isNotEmpty(user.getAuthorities())) {
+            tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, user.getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
+          }
+        } else if (principal instanceof EmailCodeAuthenticationToken) {
+          CustomOAuth2User user = (CustomOAuth2User)
+              ((EmailCodeAuthenticationToken) principal).getPrincipal();
+          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
+              toUserPrincipalClaim(user, authorization.getAttributes()));
+          if (isNotEmpty(user.getAuthorities())) {
+            tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, user.getAuthorities()
+                .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
+          }
+        } else if (principal instanceof SmsCodeAuthenticationToken) {
+          CustomOAuth2User user = (CustomOAuth2User)
+              ((SmsCodeAuthenticationToken) principal).getPrincipal();
           tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
               toUserPrincipalClaim(user, authorization.getAttributes()));
           if (isNotEmpty(user.getAuthorities())) {

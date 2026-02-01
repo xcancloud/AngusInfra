@@ -199,8 +199,9 @@ public class PermissionCheck {
    */
   public static void checkCloudTenantOperationSecurity(Long ownerTenantId) {
     ApplicationInfo app = getApplicationInfo();
+    Long opTenantId = getOptTenantId();
     ProtocolAssert.assertForbidden(app.isPrivateEdition() || (app.isCloudServiceEdition()
-            && getOptTenantId().equals(ownerTenantId)),
+            && (opTenantId == null || opTenantId.equals(ownerTenantId))),
         "User illegally access cloud edition data", FATAL_EXIT_KEY);
   }
 }

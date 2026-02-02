@@ -49,9 +49,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -75,6 +77,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class HoldPrincipalFilter extends OncePerRequestFilter {
 
   private static ObjectMapper objectMapper;
+
+  public static Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
 
   private final static AntPathRequestMatcher[] AUTH_API_MATCHERS = new AntPathRequestMatcher[]{
       new AntPathRequestMatcher("/api/**"),
@@ -128,6 +132,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
       setResponseHeader(response, principal);
       setPrincipalTenantId(principal, request);
+
+      USER_REQUEST_TIME.put(principal.getUserId(), LocalDateTime.now());
 
       chain.doFilter(request, response);
     } finally {

@@ -82,8 +82,6 @@ public class GlobalHoldFilter implements Filter {
   public static final Cache<String, LocationInfo> LOCATION_INFO_CACHE
       = CaffeineCacheUtils.createCache("LOCATION_INFO_CACHE");
 
-  public static Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
-
   public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties,
       LocaleResolver localeResolver) {
     this.applicationInfo = applicationInfo;
@@ -132,8 +130,6 @@ public class GlobalHoldFilter implements Filter {
       relayOptTenantId(request, principal);
 
       setResponseHeader(response, principal);
-
-      USER_REQUEST_TIME.put(principal.getUserId(), LocalDateTime.now());
 
       MDC.put(AuthKey.REQUEST_ID, principal.getRequestId());
 

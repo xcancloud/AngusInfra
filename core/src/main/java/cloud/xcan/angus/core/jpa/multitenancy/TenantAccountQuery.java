@@ -29,12 +29,4 @@ public interface TenantAccountQuery {
    */
   boolean isMainTenant(Long tenantId);
 
-  /**
-   * 根据当前租户ID查询所属的账号ID
-   *
-   * @param currentTenantId 当前租户ID
-   * @return 账号ID
-   */
-  Optional<Long> getMainTenantByTenantId(Long currentTenantId);
-
 }

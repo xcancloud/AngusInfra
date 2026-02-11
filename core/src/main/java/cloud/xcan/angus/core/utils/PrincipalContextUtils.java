@@ -35,8 +35,8 @@ public class PrincipalContextUtils {
   }
 
   public static Long getOptTenantId(Principal principal) {
-    Long currentTenantId = PrincipalContext.getTenantId();
-    Long optTenantId = PrincipalContextUtils.getOptTenantId();
+    Long currentTenantId = principal.getTenantId();
+    Long optTenantId = principal.getOptTenantId();
     if (optTenantId == null || Objects.equals(currentTenantId, optTenantId)) {
       return currentTenantId;
     }

@@ -54,7 +54,7 @@ public class PrincipalContextUtils {
       throw Forbidden.of("Operation on tenant {0} from a different account is prohibited."
           + " Current tenant: {1}", new Object[]{optTenantId, currentTenantId});
     }
-    return principal.getTenantId();
+    return optTenantId;
   }
 
   public static boolean hasOptTenantId() {

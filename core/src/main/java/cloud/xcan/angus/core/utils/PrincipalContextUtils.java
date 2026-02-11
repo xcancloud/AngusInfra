@@ -10,13 +10,15 @@ import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_CLIENT_ID;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getApiType;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getClientId;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
 import cloud.xcan.angus.api.enums.ApiType;
 import cloud.xcan.angus.api.enums.EditionType;
 import cloud.xcan.angus.core.biz.PermissionCheck;
+import cloud.xcan.angus.core.jpa.multitenancy.TenantAccountQuery;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.remote.message.SysException;
+import cloud.xcan.angus.remote.message.http.Forbidden;
 import cloud.xcan.angus.spec.experimental.BizConstant;
 import cloud.xcan.angus.spec.http.HttpMethod;
 import cloud.xcan.angus.spec.principal.Principal;
@@ -33,11 +35,24 @@ public class PrincipalContextUtils {
   }
 
   public static Long getOptTenantId(Principal principal) {
-    if (isNull(principal.getOptTenantId())) {
-      return principal.getTenantId();
+    Long currentTenantId = PrincipalContext.getTenantId();
+    Long optTenantId = PrincipalContextUtils.getOptTenantId();
+    if (optTenantId == null || Objects.equals(currentTenantId, optTenantId)) {
+      return currentTenantId;
     }
-    if (!principal.isMultiTenantCtrl() || isJobOrInnerApi() || (isOpClient(principal))) {
-      return principal.getOptTenantId();
+
+    if (!principal.isMultiTenantCtrl() || isJobOrInnerApi() || isOpClient(principal)) {
+      return optTenantId;
+    }
+
+    TenantAccountQuery accountQuery = SpringContextHolder.getBean(TenantAccountQuery.class);
+    if (accountQuery == null) {
+      throw SysException.of("TenantAccountQuery implement not found");
+    }
+
+    if (!accountQuery.getTenantIdsBySameAccount(currentTenantId).contains(optTenantId)) {
+      throw Forbidden.of("Operation on tenant {0} from a different account is prohibited."
+          + " Current tenant: {1}", new Object[]{optTenantId, currentTenantId});
     }
     return principal.getTenantId();
   }

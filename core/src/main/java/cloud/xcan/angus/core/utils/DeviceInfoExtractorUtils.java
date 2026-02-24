@@ -8,6 +8,8 @@ import cloud.xcan.angus.api.enums.DeviceType;
 import cloud.xcan.angus.api.pojo.DeviceInfo;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.springframework.util.DigestUtils;
 
 public class DeviceInfoExtractorUtils {
@@ -24,7 +26,9 @@ public class DeviceInfoExtractorUtils {
     deviceInfo.setDeviceId(deviceId);
     deviceInfo.setDeviceType(parseDeviceType(userAgent));
     deviceInfo.setPlatform(parsePlatform(userAgent));
+    deviceInfo.setOsVersion(parseOsVersion(userAgent));
     deviceInfo.setBrowser(parseBrowser(userAgent));
+    deviceInfo.setBrowserVersion(parseBrowserVersion(userAgent));
     deviceInfo.setAppVersion(request.getHeader(AUTH_APP_VERSION));
     return deviceInfo;
   }
@@ -136,6 +140,109 @@ public class DeviceInfoExtractorUtils {
       return "Opera";
     }
     return "Other";
+  }
+
+  /**
+   * 从 User-Agent 中提取浏览器版本号
+   *
+   * @param userAgent User-Agent 字符串
+   * @return 版本号，如 "91.0.4472.124"，未识别则返回 "Unknown"
+   */
+  public static String parseBrowserVersion(String userAgent) {
+    if (userAgent == null) return "Unknown";
+
+    // 优先级：Edge(Edg) > Chrome > Firefox > Safari > Opera > IE
+    String[] patterns = {
+        "(?:Edg|Edge)/([\\d.]+)",          // Edge (基于 Chromium)
+        "Chrome/([\\d.]+)(?!.*Edg)",        // Chrome (排除 Edge)
+        "Firefox/([\\d.]+)",
+        "Version/([\\d.]+).*Safari",        // Safari 版本通常位于 Version/ 中
+        "OPR/([\\d.]+)",                    // Opera
+        "MSIE (\\d+[.\\d]*)",                // IE ≤ 10
+        "rv:(\\d+[.\\d]*).*Trident"          // IE 11
+    };
+
+    for (String pattern : patterns) {
+      Matcher m = Pattern.compile(pattern).matcher(userAgent);
+      if (m.find()) {
+        return m.group(1);
+      }
+    }
+
+    // 后备：尝试提取常见浏览器的版本（如 Safari 直接标记）
+    Matcher m = Pattern.compile("Safari/([\\d.]+)").matcher(userAgent);
+    if (m.find() && !userAgent.contains("Chrome")) {
+      return m.group(1);  // 注意：Safari 的版本通常是 WebKit 版本，并非实际浏览器版本，但作为后备
+    }
+
+    return "Unknown";
+  }
+
+  /**
+   * 从 User-Agent 中提取操作系统版本号
+   *
+   * @param userAgent User-Agent 字符串
+   * @return 版本号，如 "10.0"、"10_15_7" 会转换为 "10.15.7"，未识别则返回 "Unknown"
+   */
+  public static String parseOsVersion(String userAgent) {
+    if (userAgent == null) return "Unknown";
+
+    String ua = userAgent.toLowerCase();
+
+    // Windows
+    Pattern winPattern = Pattern.compile("windows nt (\\d+\\.\\d+)");
+    Matcher winMatcher = winPattern.matcher(ua);
+    if (winMatcher.find()) {
+      return winMatcher.group(1);
+    }
+
+    // macOS (Mac OS X 10_15_7 -> 10.15.7)
+    Pattern macPattern = Pattern.compile("mac os x (\\d+[._]\\d+(?:[._]\\d+)*)");
+    Matcher macMatcher = macPattern.matcher(ua);
+    if (macMatcher.find()) {
+      return macMatcher.group(1).replace('_', '.');
+    }
+
+    // iOS (iPhone OS 14_4 like Mac OS X -> 14.4)
+    Pattern iosPattern = Pattern.compile("(?:iphone|ipad|ipod).*?os (\\d+[._]\\d+(?:[._]\\d+)*)");
+    Matcher iosMatcher = iosPattern.matcher(ua);
+    if (iosMatcher.find()) {
+      return iosMatcher.group(1).replace('_', '.');
+    }
+
+    // Android
+    Pattern androidPattern = Pattern.compile("android (\\d+(?:\\.\\d+)*)");
+    Matcher androidMatcher = androidPattern.matcher(ua);
+    if (androidMatcher.find()) {
+      return androidMatcher.group(1);
+    }
+
+    // Linux 通常不携带版本号
+    if (ua.contains("linux")) {
+      return "Unknown"; // 或返回 "Linux" 但无版本
+    }
+
+    return "Unknown";
+  }
+
+  // ========== 可选增强：获取完整名称（含版本）==========
+
+  /**
+   * 获取完整浏览器标识（名称 + 版本）
+   */
+  public static String getBrowserFull(String userAgent) {
+    String name = parseBrowser(userAgent);
+    String version = parseBrowserVersion(userAgent);
+    return "Unknown".equals(version) ? name : name + " " + version;
+  }
+
+  /**
+   * 获取完整操作系统标识（名称 + 版本）
+   */
+  public static String getPlatformFull(String userAgent) {
+    String platform = parsePlatform(userAgent);
+    String version = parseOsVersion(userAgent);
+    return "Unknown".equals(version) ? platform : platform + " " + version;
   }
 
   /**

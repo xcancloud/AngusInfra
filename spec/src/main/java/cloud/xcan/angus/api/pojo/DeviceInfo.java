@@ -13,7 +13,9 @@ public class DeviceInfo {
   private String deviceId;
   private DeviceType deviceType; // MOBILE, TABLET, DESKTOP, etc.
   private String platform;   // Android, iOS, Windows, etc.
+  private String osVersion;
   private String browser;    // Chrome, Firefox, Safari, etc.
+  private String browserVersion;
   private String userAgent;
   private String appVersion;
   private String brand;      // 设备品牌

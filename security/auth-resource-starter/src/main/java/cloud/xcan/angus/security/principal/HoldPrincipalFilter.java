@@ -261,10 +261,10 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
   }
 
   public void setResponseHeader(HttpServletResponse response, Principal principal) {
-    response.setHeader(Header.AUTH_CLIENT_ID, principal.getClientId());
-    response.setHeader(Header.AUTH_TENANT_ID, String.valueOf(principal.getTenantId()));
+    response.setHeader(Header.CLIENT_ID, principal.getClientId());
+    response.setHeader(Header.TENANT_ID, String.valueOf(principal.getTenantId()));
     if (!DEFAULT_USER_ID.equals(principal.getUserId())) {
-      response.setHeader(Header.AUTH_USER_ID, String.valueOf(principal.getUserId()));
+      response.setHeader(Header.USER_ID, String.valueOf(principal.getUserId()));
     }
   }
 

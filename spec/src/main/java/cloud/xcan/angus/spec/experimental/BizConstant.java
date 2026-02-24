@@ -516,11 +516,7 @@ public interface BizConstant {
 
     String NGINX_PROXY_CORS = HEADER_PREFIX + "Nginx-Proxy-Cors";
 
-    String AUTH_CLIENT_ID = HEADER_PREFIX + "Client-Id";
-    String AUTH_TENANT_ID = HEADER_PREFIX + "Tenant-Id";
-    String AUTH_USER_ID = HEADER_PREFIX + "User-Id";
-    String AUTH_DEVICE_ID = HEADER_PREFIX + "Device-Id";
-    String AUTH_APP_VERSION = HEADER_PREFIX + "App-Version";
+    String APP_VERSION = HEADER_PREFIX + "App-Version";
 
     String SIGNUP_TYPE = HEADER_PREFIX + "Signup-Type";
     String SERVICE_ID = HEADER_PREFIX + "Service-Id";
@@ -554,7 +550,7 @@ public interface BizConstant {
 
     String COUNTRY = HEADER_PREFIX + "Country";
 
-    String DEVICE_ID = HEADER_PREFIX + "DeviceId";
+    String DEVICE_ID = HEADER_PREFIX + "Device-Id";
 
     String SYS_ADMIN_FLAG = HEADER_PREFIX + "Sys-Admin";
 

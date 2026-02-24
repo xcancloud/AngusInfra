@@ -1,11 +1,10 @@
 package cloud.xcan.angus.core.utils;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTH_APP_VERSION;
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTH_DEVICE_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 
 import cloud.xcan.angus.api.enums.DeviceType;
 import cloud.xcan.angus.api.pojo.DeviceInfo;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
@@ -29,7 +28,7 @@ public class DeviceInfoExtractorUtils {
     deviceInfo.setOsVersion(parseOsVersion(userAgent));
     deviceInfo.setBrowser(parseBrowser(userAgent));
     deviceInfo.setBrowserVersion(parseBrowserVersion(userAgent));
-    deviceInfo.setAppVersion(request.getHeader(AUTH_APP_VERSION));
+    deviceInfo.setAppVersion(request.getHeader(Header.APP_VERSION));
     return deviceInfo;
   }
 
@@ -38,7 +37,7 @@ public class DeviceInfoExtractorUtils {
    */
   public static String extractDeviceId(HttpServletRequest request) {
     // 1. 从请求头获取
-    String deviceId = request.getHeader(AUTH_DEVICE_ID);
+    String deviceId = request.getHeader(Header.DEVICE_ID);
     if (StringUtils.hasText(deviceId)) {
       return deviceId;
     }

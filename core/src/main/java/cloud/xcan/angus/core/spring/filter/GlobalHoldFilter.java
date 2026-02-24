@@ -51,8 +51,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -202,7 +200,7 @@ public class GlobalHoldFilter implements Filter {
     principal.setRequestId(requestId)
         .setRemoteAddress(ipAddress)
         .setUserAgent(userAgent)
-        .setDeviceIno(deviceInfo);
+        .setDeviceInfo(deviceInfo);
     if (rootRequest) {
       PrincipalContext.setRequestAttribute(REMOTE_ADDR_IN_QUERY, ipAddress);
       PrincipalContext.setRequestAttribute(USER_AGENT, userAgent);

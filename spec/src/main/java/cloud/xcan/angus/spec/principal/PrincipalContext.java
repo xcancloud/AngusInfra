@@ -180,7 +180,7 @@ public class PrincipalContext {
   }
 
   public static DeviceInfo getDeviceInfo() {
-    return get().getDeviceIno();
+    return get().getDeviceInfo();
   }
 
   public static LocationInfo getLocationInfo() {

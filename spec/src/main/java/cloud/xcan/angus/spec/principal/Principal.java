@@ -104,7 +104,7 @@ public class Principal implements Serializable {
 
   private LocationInfo locationInfo = new LocationInfo();
 
-  private DeviceInfo deviceIno = new DeviceInfo();
+  private DeviceInfo deviceInfo = new DeviceInfo();
 
   @JsonIgnore
   private List<String> permissions;

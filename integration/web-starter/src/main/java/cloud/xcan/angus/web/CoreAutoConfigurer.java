@@ -14,8 +14,15 @@ import cloud.xcan.angus.core.app.check.CheckAppExpirationAspect;
 import cloud.xcan.angus.core.biz.I18nMessageAspect;
 import cloud.xcan.angus.core.biz.JoinSupplier;
 import cloud.xcan.angus.core.biz.NameJoinAspect;
+import cloud.xcan.angus.core.disruptor.DisruptorQueueFactory;
+import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
+import cloud.xcan.angus.core.event.ApiLogEvent;
+import cloud.xcan.angus.core.event.EventsListener;
+import cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventRepository;
 import cloud.xcan.angus.core.exception.DefaultGlobalExceptionAdvice;
 import cloud.xcan.angus.core.fegin.interceptor.FeignRequestInterceptor;
+import cloud.xcan.angus.core.log.ApiLogFilter;
+import cloud.xcan.angus.core.log.ApiLogProperties;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.converter.StringToPriorityConverter;
@@ -23,6 +30,7 @@ import cloud.xcan.angus.core.spring.filter.GlobalHoldFilter;
 import cloud.xcan.angus.core.spring.filter.GlobalProperties;
 import cloud.xcan.angus.core.spring.locale.MultiSourceLocaleResolver;
 import cloud.xcan.angus.core.spring.security.PrincipalPermissionService;
+import cloud.xcan.angus.spec.thread.DefaultThreadFactory;
 import cloud.xcan.angus.swagger.ByteArrayToStringConverter;
 import cloud.xcan.angus.web.endpoint.AppWorkspaceEndpoint;
 import cloud.xcan.angus.web.endpoint.MessageEndpoint;
@@ -30,7 +38,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -46,9 +53,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -56,7 +63,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.RequestContextFilter;
-import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -68,7 +74,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration(proxyBeanMethods = true)
 @AutoConfigureAfter(CommonAutoConfigurer.class)
 @ConditionalOnClass(WebMvcConfigurer.class)
-@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class, MultipartProperties.class})
+@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class,
+    ApiLogProperties.class, MultipartProperties.class})
 @ConditionalOnProperty(name = "xcan.core.enabled", havingValue = "true", matchIfMissing = false)
 public class CoreAutoConfigurer implements WebMvcConfigurer {
 
@@ -192,6 +199,17 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
     return registrationBean;
   }
 
+  @Bean
+  @Order(REQUEST_WRAPPER_FILTER_MAX_ORDER - 200) // 保证在GlobalHoldFilter之前执行
+  @ConditionalOnProperty(name = "xcan.api-log.enabled", havingValue = "true", matchIfMissing = false)
+  public ApiLogFilter apiLogFilter(ApiLogProperties apiLogProperties) {
+    EventsListener<ApiLogEvent> listener = new EventsListener<>(
+        new MemoryAndRemoteEventRepository<>());
+    DisruptorQueueManager<ApiLogEvent> manager = DisruptorQueueFactory.createHandleEventsQueue(
+        2048, true, new DefaultThreadFactory("ApiLogEvent-ThreadFactory"), listener);
+    return new ApiLogFilter(apiLogProperties, manager);
+  }
+
   /**
    * Depend on RequestContextHolder#getRequestAttributes(), else return null.
    */
@@ -208,9 +226,9 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   }
 
   /**
-   * @see DispatcherServlet#initStrategies(ApplicationContext content)
+   * @see `DispatcherServlet#initStrategies(ApplicationContext content)`
    * <p>
-   * @see DispatcherServlet#buildLocaleContext(HttpServletRequest request)
+   * @see `DispatcherServlet#buildLocaleContext(HttpServletRequest request)`
    */
   @Bean(LOCALE_RESOLVER_BEAN_NAME)
   public MultiSourceLocaleResolver localeResolver() {

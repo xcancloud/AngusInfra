@@ -2,11 +2,9 @@ package cloud.xcan.angus.web;
 
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.jpa.auditor.SecurityAuditorAware;
-import cloud.xcan.angus.core.log.ApiLogProperties;
 import cloud.xcan.angus.core.meter.DiskMetrics;
 import cloud.xcan.angus.core.spring.boot.ApplicationBanner;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
-import cloud.xcan.angus.core.spring.filter.GlobalProperties;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -20,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration(proxyBeanMethods = true)
-@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class, ApiLogProperties.class})
+@EnableConfigurationProperties({ApplicationInfo.class})
 @ConditionalOnProperty(name = "xcan.common.enabled", havingValue = "true", matchIfMissing = true)
 public class CommonAutoConfigurer implements ApplicationContextAware {
 

@@ -60,7 +60,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
         ? LOGGER_SERVICE_ARTIFACT_ID : commonConfig;
   }
 
-
   /**
    * Default {@link PrintLevel#FULL}
    */

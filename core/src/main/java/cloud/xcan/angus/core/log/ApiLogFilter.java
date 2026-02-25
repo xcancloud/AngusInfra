@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -47,6 +49,8 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
  * @see org.springframework.web.filter.AbstractRequestLoggingFilter
  */
 @Slf4j
+@ConditionalOnProperty(name = "xcan.api-log.enabled", havingValue = "true", matchIfMissing = false)
+@Order(1)
 public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
   private final ApiLogProperties apiLogProperties;

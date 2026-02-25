@@ -2,6 +2,7 @@ package cloud.xcan.angus.web;
 
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.jpa.auditor.SecurityAuditorAware;
+import cloud.xcan.angus.core.log.ApiLogProperties;
 import cloud.xcan.angus.core.meter.DiskMetrics;
 import cloud.xcan.angus.core.spring.boot.ApplicationBanner;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
@@ -19,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Slf4j
 @Configuration(proxyBeanMethods = true)
-@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class})
+@EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class, ApiLogProperties.class})
 @ConditionalOnProperty(name = "xcan.common.enabled", havingValue = "true", matchIfMissing = true)
 public class CommonAutoConfigurer implements ApplicationContextAware {
 

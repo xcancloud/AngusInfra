@@ -6,6 +6,7 @@ import static cloud.xcan.angus.spec.http.ContentTypes.isBinaryContent;
 import static cloud.xcan.angus.spec.http.ContentTypes.isFormData;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getApiType;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
@@ -70,7 +71,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     if (nonNull(apiLogProperties)) {
       ApiRequest systemRequest = apiLogProperties.getApiRequest();
       this.ignorePattern = Pattern.compile(systemRequest.getIgnorePattern());
-      if (nonNull(systemRequest.getPushLoggerServiceIgnorePattern())) {
+      if (isNotEmpty(systemRequest.getPushLoggerServiceIgnorePattern())) {
         this.pushLoggerIgnorePattern = Pattern
             .compile(systemRequest.getPushLoggerServiceIgnorePattern());
       }
@@ -285,8 +286,8 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
   private boolean needPushToLoggerService(String path) {
     return apiLogProperties.getApiRequest().getPushLoggerService()
-        && (isNull(pushLoggerIgnorePattern)
-        || pushLoggerIgnorePattern.matcher(path).matches());
+        && (isEmpty(pushLoggerIgnorePattern)
+        || !pushLoggerIgnorePattern.matcher(path).matches());
   }
 
   private LinkedMultiValueMap<String, String> getHeaders(HttpHeaders headers) {

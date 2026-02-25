@@ -200,7 +200,7 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   }
 
   @Bean
-  @Order(REQUEST_WRAPPER_FILTER_MAX_ORDER - 200) // 保证在GlobalHoldFilter之前执行
+  @Order(REQUEST_WRAPPER_FILTER_MAX_ORDER - 90)
   @ConditionalOnProperty(name = "xcan.api-log.enabled", havingValue = "true", matchIfMissing = false)
   public ApiLogFilter apiLogFilter(ApiLogProperties apiLogProperties) {
     EventsListener<ApiLogEvent> listener = new EventsListener<>(

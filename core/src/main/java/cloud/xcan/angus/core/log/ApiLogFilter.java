@@ -51,7 +51,6 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
   private final ApiLogProperties apiLogProperties;
-
   private final DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue;
 
   /**
@@ -95,8 +94,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     }
 
     String path = request.getRequestURI();
-    boolean isSystemAccess = PrincipalContext.isSystemAccess();
-    if (isSystemAccess && ignoreApiLog(path)) {
+    if (ignoreApiLog(path)) {
       filterChain.doFilter(request, response);
       return;
     }

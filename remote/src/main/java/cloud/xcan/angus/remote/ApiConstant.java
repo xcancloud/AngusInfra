@@ -67,7 +67,7 @@ public interface ApiConstant {
      */
     int DEFAULT_MAX_PAYLOAD_LENGTH = 200 * 1024;
     int CLEAR_BEFORE_DAY = 15;
-    String DEFAULT_IGNORE_PATTERN = ".*/webjars/.*$|.*/v2/.*$|.*/swagger.*$|.*/images/.*|.*/farvirate.ico|.*/actuator.*|.*/systemLog/.*|.*/auth/.*|.*/file/.*";
+    String DEFAULT_IGNORE_PATTERN = ".*/webjars/.*$|.*/swagger.*$|.*/images/.*|.*/farvirate.ico|.*/actuator.*|.*/logs/.*|.*/log/.*|.*/file/.*";
   }
 
   interface SystemLog {

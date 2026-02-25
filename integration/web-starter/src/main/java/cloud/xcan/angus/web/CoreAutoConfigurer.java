@@ -1,5 +1,7 @@
 package cloud.xcan.angus.web;
 
+import static cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventRepository.DEFAULT_MEMORY_CAPACITY;
+import static cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventRepository.DEFAULT_SEND_BUFFER_CAPACITY;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_LOCALE;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.emptySafe;
 import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
@@ -18,6 +20,7 @@ import cloud.xcan.angus.core.disruptor.DisruptorQueueFactory;
 import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
 import cloud.xcan.angus.core.event.ApiLogEvent;
 import cloud.xcan.angus.core.event.EventsListener;
+import cloud.xcan.angus.core.event.remote.ApiLogEventRemote;
 import cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventRepository;
 import cloud.xcan.angus.core.exception.DefaultGlobalExceptionAdvice;
 import cloud.xcan.angus.core.fegin.interceptor.FeignRequestInterceptor;
@@ -202,9 +205,11 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   @Bean
   @Order(REQUEST_WRAPPER_FILTER_MAX_ORDER - 90)
   @ConditionalOnProperty(name = "xcan.api-log.enabled", havingValue = "true", matchIfMissing = false)
-  public ApiLogFilter apiLogFilter(ApiLogProperties apiLogProperties) {
+  public ApiLogFilter apiLogFilter(ApiLogProperties apiLogProperties,
+      ApiLogEventRemote apiLogEventRemote, ObjectMapper objectMapper) {
     EventsListener<ApiLogEvent> listener = new EventsListener<>(
-        new MemoryAndRemoteEventRepository<>());
+        new MemoryAndRemoteEventRepository<>("ApiLogEventRepository", DEFAULT_MEMORY_CAPACITY,
+            DEFAULT_SEND_BUFFER_CAPACITY, apiLogEventRemote, objectMapper));
     DisruptorQueueManager<ApiLogEvent> manager = DisruptorQueueFactory.createHandleEventsQueue(
         2048, true, new DefaultThreadFactory("ApiLogEvent-ThreadFactory"), listener);
     return new ApiLogFilter(apiLogProperties, manager);

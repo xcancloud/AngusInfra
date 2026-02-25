@@ -185,7 +185,7 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       principal.setAuthorization(getAuthorization(request))
           .setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
-          .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Tenant level settings should be used
+          .setDefaultLanguage(SupportedLanguage.defaultLanguage())
           .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setClientId(clientId.toString())
           .setClientSource(nonNull(clientSource) ? clientSource.toString() : null)

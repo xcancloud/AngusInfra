@@ -80,7 +80,6 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-
     PrintLevel level = apiLogProperties.getPrintLevel();
     if (isAsyncDispatch(request) || !apiLogProperties.getEnabled() || level.isNone()) {
       filterChain.doFilter(request, response);
@@ -90,14 +89,15 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     String path = request.getRequestURI();
     // Note: Only API logs are recorded. Inner calls and static resource requests are not logged.
     if (path.startsWith("/api/v1/auth/user") || path.startsWith("/api/v1/auth/client")
-        || path.startsWith("/api/v1/systemlog") || path.startsWith("/api/v1/log")
+        // || path.startsWith("/pubapi/v1/auth/user") || path.startsWith("/pubapi/v1/auth/user/client")
+        || path.startsWith("/api/v1/logs/system")
         || (!path.startsWith("/api/") && !path.startsWith("/openapi/"))) {
       filterChain.doFilter(request, response);
       return;
     }
 
-    boolean isSystemAccess = PrincipalContext.isSystemAccess();
-    if (isSystemAccess && ignoreSystemLog(path)) {
+    // boolean isSystemAccess = PrincipalContext.isSystemAccess();
+    if (ignoreSystemLog(path)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -119,7 +119,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     } catch (IOException e) {
       throw logIoException(level, requestId, e, currentTimeMillis() - startMillis, apiLog);
     } finally {
-      if (nonNull(apiLog) && needPushToLoggerService(isSystemAccess, path)) {
+      if (nonNull(apiLog) && needPushToLoggerService(path)) {
         apiLogEventDisruptorQueue.add(new ApiLogEvent(apiLog));
       }
     }
@@ -285,10 +285,10 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
         || (nonNull(systemIgnorePattern) && systemIgnorePattern.matcher(path).matches());
   }
 
-  private boolean needPushToLoggerService(boolean systemLog, String path) {
+  private boolean needPushToLoggerService(String path) {
     // Important:: Ignore inner door or pub apis
     ApiType apiType = getApiType();
-    if (isNull(apiType) || !apiType.isAuthApi() || !systemLog) {
+    if (isNull(apiType)/* || !apiType.isAuthApi()*/) {
       return false;
     }
 

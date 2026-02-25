@@ -193,7 +193,8 @@ public class PrincipalContext {
 
   public static boolean isSystemAccess() {
     Principal principal = get();
-    return principal.isUserToken() || XCAN_SYS_TOKEN.equals(principal.getClientSource())
+    return principal.isUserToken()
+        || XCAN_SYS_TOKEN.equals(principal.getClientSource())
         || XCAN_2P_SIGNIN.equals(principal.getClientSource());
   }
 

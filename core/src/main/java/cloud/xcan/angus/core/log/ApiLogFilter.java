@@ -86,16 +86,14 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
       return;
     }
 
-    String path = request.getRequestURI();
-    // Note: Only API logs are recorded. Inner calls and static resource requests are not logged.
-    if (path.startsWith("/api/v1/auth/user") || path.startsWith("/api/v1/auth/client")
-        // || path.startsWith("/pubapi/v1/auth/user") || path.startsWith("/pubapi/v1/auth/user/client")
-        || path.startsWith("/api/v1/logs/system")
-        || (!path.startsWith("/api/") && !path.startsWith("/openapi/"))) {
+    // Important:: Ignore inner or view apis
+    ApiType apiType = getApiType();
+    if (isNull(apiType) || apiType.isInnerTypeApi() || apiType.isViewTypeApi()) {
       filterChain.doFilter(request, response);
       return;
     }
 
+    String path = request.getRequestURI();
     boolean isSystemAccess = PrincipalContext.isSystemAccess();
     if (isSystemAccess && ignoreApiLog(path)) {
       filterChain.doFilter(request, response);
@@ -286,12 +284,6 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
   }
 
   private boolean needPushToLoggerService(String path) {
-    // Important:: Ignore inner or view apis
-    ApiType apiType = getApiType();
-    if (isNull(apiType) || apiType.isInnerTypeApi() || apiType.isViewTypeApi()) {
-      return false;
-    }
-
     return apiLogProperties.getApiRequest().getPushLoggerService()
         && (isNull(pushLoggerIgnorePattern)
         || pushLoggerIgnorePattern.matcher(path).matches());

@@ -11,14 +11,14 @@ import java.util.List;
 public interface EventRepository<T extends AbstractEvent> {
 
   /**
-   * SystemRequest an event.
+   * ApiRequest an event.
    *
    * @param event the audit event to log
    */
   void add(T event);
 
   /**
-   * SystemRequest events.
+   * ApiRequest events.
    *
    * @param events the audit event to log
    */

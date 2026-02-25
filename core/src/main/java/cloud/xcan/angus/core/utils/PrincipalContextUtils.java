@@ -612,11 +612,11 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isInnerApi() {
-    return ApiType.DOOR_API.equals(getApiType());
+    return ApiType.INNER_API.equals(getApiType());
   }
 
   public static boolean isInnerApi(Principal principal) {
-    return ApiType.DOOR_API.equals(principal.getApiType());
+    return ApiType.INNER_API.equals(principal.getApiType());
   }
 
   public static boolean isPubApi() {

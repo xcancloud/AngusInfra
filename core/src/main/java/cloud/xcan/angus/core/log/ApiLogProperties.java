@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.log;
 
-import static cloud.xcan.angus.core.log.ApiLogProperties.SystemRequest.SR_PRINT_LEVEL;
+import static cloud.xcan.angus.core.log.ApiLogProperties.ApiRequest.SR_PRINT_LEVEL;
 import static cloud.xcan.angus.remote.ApiConstant.ApiLog.CLEAR_BEFORE_DAY;
 import static cloud.xcan.angus.remote.ApiConstant.ApiLog.DEFAULT_IGNORE_PATTERN;
 import static cloud.xcan.angus.remote.ApiConstant.Service.EVENT_SERVICE_ARTIFACT_ID;
@@ -47,7 +47,7 @@ public class ApiLogProperties implements AppPropertiesRegister {
   private Integer clearBeforeDay;
 
   @Getter
-  private SystemRequest systemRequest = new SystemRequest();
+  private ApiRequest apiRequest = new ApiRequest();
 
   public Boolean getEnabled() {
     String commonConfig = System.getProperty(ENABLED);
@@ -94,7 +94,7 @@ public class ApiLogProperties implements AppPropertiesRegister {
         .setLoggerService(LOGGER_SERVICE_ARTIFACT_ID)
         .setEventService(EVENT_SERVICE_ARTIFACT_ID)
         .setClearBeforeDay(CLEAR_BEFORE_DAY)
-        .setSystemRequest(new SystemRequest().getDefault());
+        .setApiRequest(new ApiRequest().getDefault());
   }
 
   @Override
@@ -104,23 +104,17 @@ public class ApiLogProperties implements AppPropertiesRegister {
     System.setProperty(EVENT_SERVICE, isNotEmpty(getEventService()) ? getEventService() : "");
     System.setProperty(CLEAR_BEFORE_DAY_IN_CONFIG, nonNull(getClearBeforeDay()) ? String.valueOf(getClearBeforeDay()) : "");
 
-    systemRequest.register();
+    apiRequest.register();
   }
 
   @Setter
-  public static class SystemRequest implements AppPropertiesRegister {
+  public static class ApiRequest implements AppPropertiesRegister {
 
-    public static final String SR_ENABLED = "xcan.apilog.systemRequest.enabled";
-    public static final String SR_PRINT_LEVEL = "xcan.apilog.systemRequest.printLevel";
-    public static final String SR_MAX_PAYLOAD_LENGTH = "xcan.apilog.systemRequest.maxPayloadLength";
-    public static final String SR_CUSTOM_IGNORE_PATTERN = "xcan.apilog.systemRequest.customIgnorePattern";
-    public static final String SR_PUSH_LOGGER_SERVICE = "xcan.apilog.systemRequest.pushLoggerService";
-    public static final String SR_PUSH_LOGGER_SERVICE_IGNORE_PATTERN = "xcan.apilog.systemRequest.pushLoggerServiceIgnorePattern";
-
-    /**
-     * Record the logs of system token from: {@link cloud.xcan.angus.spec.experimental.BizConstant.ClientSource#XCAN_SYS_TOKEN}
-     */
-    private Boolean enabled;
+    public static final String SR_PRINT_LEVEL = "xcan.apilog.apiRequest.printLevel";
+    public static final String SR_MAX_PAYLOAD_LENGTH = "xcan.apilog.apiRequest.maxPayloadLength";
+    public static final String SR_CUSTOM_IGNORE_PATTERN = "xcan.apilog.apiRequest.customIgnorePattern";
+    public static final String SR_PUSH_LOGGER_SERVICE = "xcan.apilog.apiRequest.pushLoggerService";
+    public static final String SR_PUSH_LOGGER_SERVICE_IGNORE_PATTERN = "xcan.apilog.apiRequest.pushLoggerServiceIgnorePattern";
 
     private int maxPayloadLength;
 
@@ -132,11 +126,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
     private Boolean pushLoggerService;
 
     private String pushLoggerServiceIgnorePattern;
-
-    public Boolean getEnabled() {
-      String commonConfig = System.getProperty(SR_ENABLED);
-      return isNotEmpty(enabled) ? enabled : isEmpty(commonConfig) || Boolean.parseBoolean(commonConfig);
-    }
 
     /**
      * Default {@link ApiLog#DEFAULT_MAX_PAYLOAD_LENGTH}
@@ -169,8 +158,8 @@ public class ApiLogProperties implements AppPropertiesRegister {
 
     @Override
     @JsonIgnore
-    public SystemRequest getDefault(){
-      return new SystemRequest().setEnabled(true)
+    public ApiRequest getDefault(){
+      return new ApiRequest()
           .setMaxPayloadLength(ApiLog.DEFAULT_MAX_PAYLOAD_LENGTH)
           .setCustomIgnorePattern("")
           .setPushLoggerService(true).setPushLoggerServiceIgnorePattern("");
@@ -178,7 +167,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
 
     @Override
     public void register() {
-      System.setProperty(SR_ENABLED, nonNull(getEnabled()) ? String.valueOf(getEnabled()) : "");
       System.setProperty(SR_MAX_PAYLOAD_LENGTH, getMaxPayloadLength() > 0 ? String.valueOf(getMaxPayloadLength()) : "0");
       System.setProperty(SR_CUSTOM_IGNORE_PATTERN, isNotEmpty(getCustomIgnorePattern()) ? getCustomIgnorePattern() : "");
       System.setProperty(SR_PUSH_LOGGER_SERVICE, nonNull(getPushLoggerService()) ? String.valueOf(getPushLoggerService()) : "");

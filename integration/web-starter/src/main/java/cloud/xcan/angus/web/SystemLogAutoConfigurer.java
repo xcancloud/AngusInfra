@@ -42,7 +42,7 @@ public class SystemLogAutoConfigurer {
     public ConditionOutcome getMatchOutcome(ConditionContext context,
         AnnotatedTypeMetadata metadata) {
       Environment environment = context.getEnvironment();
-      ConditionMessage.Builder message = ConditionMessage.forCondition("SystemRequest File");
+      ConditionMessage.Builder message = ConditionMessage.forCondition("ApiRequest File");
       path = getLogFileConfig(environment);
       if (StringUtils.hasText(path)) {
         return ConditionOutcome.match(message.found(FILE_PATH_PROPERTY).items(path));

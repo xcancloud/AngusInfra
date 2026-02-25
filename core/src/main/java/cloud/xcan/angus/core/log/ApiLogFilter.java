@@ -16,7 +16,7 @@ import cloud.xcan.angus.core.app.AppBeanReady;
 import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
 import cloud.xcan.angus.core.event.ApiLogEvent;
 import cloud.xcan.angus.core.event.source.ApiLog;
-import cloud.xcan.angus.core.log.ApiLogProperties.SystemRequest;
+import cloud.xcan.angus.core.log.ApiLogProperties.ApiRequest;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.http.HttpStatus;
 import cloud.xcan.angus.spec.principal.Principal;
@@ -56,8 +56,8 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
   /**
    * The change of value takes effect after restarting
    */
-  private Pattern systemIgnorePattern;
-  private Pattern systemPushLoggerIgnorePattern;
+  private Pattern ignorePattern;
+  private Pattern pushLoggerIgnorePattern;
 
   public ApiLogFilter(ApiLogProperties apiLogProperties,
       DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue) {
@@ -68,10 +68,10 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
   @Override
   public void ready() {
     if (nonNull(apiLogProperties)) {
-      SystemRequest systemRequest = apiLogProperties.getSystemRequest();
-      this.systemIgnorePattern = Pattern.compile(systemRequest.getIgnorePattern());
+      ApiRequest systemRequest = apiLogProperties.getApiRequest();
+      this.ignorePattern = Pattern.compile(systemRequest.getIgnorePattern());
       if (nonNull(systemRequest.getPushLoggerServiceIgnorePattern())) {
-        this.systemPushLoggerIgnorePattern = Pattern
+        this.pushLoggerIgnorePattern = Pattern
             .compile(systemRequest.getPushLoggerServiceIgnorePattern());
       }
     }
@@ -96,8 +96,8 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
       return;
     }
 
-    // boolean isSystemAccess = PrincipalContext.isSystemAccess();
-    if (ignoreSystemLog(path)) {
+    boolean isSystemAccess = PrincipalContext.isSystemAccess();
+    if (isSystemAccess && ignoreApiLog(path)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -166,7 +166,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
       } else if (wrapper.getContentType() != null && isFormData(wrapper.getContentType())) {
         payload = "[Multipart Form Data]";
       } else {
-        int length = Math.min(bodyLength, apiLogProperties.getSystemRequest()
+        int length = Math.min(bodyLength, apiLogProperties.getApiRequest()
             .getMaxPayloadLength());
         try {
           payload = new String(buf, 0, length, DEFAULT_ENCODING);
@@ -213,7 +213,7 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
           // Fix:: } else if (wrapper.getContentType() != null && isFormData(wrapper.getContentType())) {
           //  payload = "[Multipart Form Data]";
         } else {
-          int length = Math.min(bodyLength, apiLogProperties.getSystemRequest()
+          int length = Math.min(bodyLength, apiLogProperties.getApiRequest()
               .getMaxPayloadLength());
           try {
             payload = new String(buf, 0, length, DEFAULT_ENCODING);
@@ -280,21 +280,21 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     }
   }
 
-  private boolean ignoreSystemLog(String path) {
-    return !apiLogProperties.getSystemRequest().getEnabled()
-        || (nonNull(systemIgnorePattern) && systemIgnorePattern.matcher(path).matches());
+  private boolean ignoreApiLog(String path) {
+    return !apiLogProperties.getEnabled()
+        || (nonNull(ignorePattern) && ignorePattern.matcher(path).matches());
   }
 
   private boolean needPushToLoggerService(String path) {
-    // Important:: Ignore inner door or pub apis
+    // Important:: Ignore inner or view apis
     ApiType apiType = getApiType();
-    if (isNull(apiType)/* || !apiType.isAuthApi()*/) {
+    if (isNull(apiType) || apiType.isInnerTypeApi() || apiType.isViewTypeApi()) {
       return false;
     }
 
-    return apiLogProperties.getSystemRequest().getPushLoggerService()
-        && (isNull(systemPushLoggerIgnorePattern)
-        || systemPushLoggerIgnorePattern.matcher(path).matches());
+    return apiLogProperties.getApiRequest().getPushLoggerService()
+        && (isNull(pushLoggerIgnorePattern)
+        || pushLoggerIgnorePattern.matcher(path).matches());
   }
 
   private LinkedMultiValueMap<String, String> getHeaders(HttpHeaders headers) {

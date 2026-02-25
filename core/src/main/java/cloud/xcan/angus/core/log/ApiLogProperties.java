@@ -33,14 +33,11 @@ public class ApiLogProperties implements AppPropertiesRegister {
   // @formatter:off
   public static final String ENABLED = "xcan.api-log.enabled";
   public static final String LOGGER_SERVICE = "xcan.api-log.loggerService";
-  public static final String EVENT_SERVICE = "xcan.api-log.eventService";
   public static final String CLEAR_BEFORE_DAY_IN_CONFIG = "xcan.api-log.clearBeforeDay";
 
   private Boolean enabled = true;
 
   private String loggerService;
-
-  private String eventService;
 
   private PrintLevel printLevel = PrintLevel.FULL;
 
@@ -63,14 +60,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
         ? LOGGER_SERVICE_ARTIFACT_ID : commonConfig;
   }
 
-  /**
-   * Default {@link Service#EVENT_SERVICE_ARTIFACT_ID}
-   */
-  public String getEventService() {
-    String commonConfig = System.getProperty(EVENT_SERVICE);
-    return isNotEmpty(eventService) ? eventService : isEmpty(commonConfig)
-        ? EVENT_SERVICE_ARTIFACT_ID : commonConfig;
-  }
 
   /**
    * Default {@link PrintLevel#FULL}
@@ -92,7 +81,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
   public ApiLogProperties getDefault() {
     return new ApiLogProperties().setEnabled(true)
         .setLoggerService(LOGGER_SERVICE_ARTIFACT_ID)
-        .setEventService(EVENT_SERVICE_ARTIFACT_ID)
         .setClearBeforeDay(CLEAR_BEFORE_DAY)
         .setApiRequest(new ApiRequest().getDefault());
   }
@@ -101,7 +89,6 @@ public class ApiLogProperties implements AppPropertiesRegister {
   public void register() {
     System.setProperty(ENABLED, nonNull(getEnabled()) ? String.valueOf(getEnabled()) : "");
     System.setProperty(LOGGER_SERVICE, isNotEmpty(getLoggerService()) ? getLoggerService() : "");
-    System.setProperty(EVENT_SERVICE, isNotEmpty(getEventService()) ? getEventService() : "");
     System.setProperty(CLEAR_BEFORE_DAY_IN_CONFIG, nonNull(getClearBeforeDay()) ? String.valueOf(getClearBeforeDay()) : "");
 
     apiRequest.register();

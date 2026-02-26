@@ -180,8 +180,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object tenantName = client.get(INTROSPECTION_CLAIM_NAMES_TENANT_NAME);
       Object clientSource = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE);
       Object clientName = client.get(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME);
-      Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
-      Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
+      // Setting by GlobalHoldFilter
+      //Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
+      //Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
       principal.setAuthorization(getAuthorization(request))
           .setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
@@ -191,8 +192,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setUserId(-1L).setFullName(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
           .setUsername(clientId.toString()/*default*/).setSysAdmin(false)
-          .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
-          .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null);
+          //.setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
+          //.setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
+      ;
       if (log.isDebugEnabled()) {
         log.debug("Hold client principal info : {}", principal);
       }
@@ -223,8 +225,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       Object defaultLanguage = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE);
       //Object defaultTimeZone = user.get(INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE);
       Object permissions = attributes.get(INTROSPECTION_CLAIM_NAMES_PERMISSION);
-      Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
-      Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
+      // Setting by GlobalHoldFilter
+      //Object userAgent = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT);
+      //Object remoteAddr = attributes.get(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR);
       Object isUserToken = attributes.get(INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN);
 
       principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
@@ -236,8 +239,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setFullName(nonNull(fullName) ? fullName.toString() : null)
           .setUsername(nonNull(username) ? username.toString() : null)
           .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
-          .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
-          .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
+          //.setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
+          //.setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
           .setPermissions(isNull(permissions) ? Collections.emptyList()
               : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()))
           .setUserToken(nonNull(isUserToken) && Boolean.parseBoolean(isUserToken.toString()));

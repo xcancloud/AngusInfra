@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.fegin;
+package cloud.xcan.angus.remote.client;
 
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import feign.Param;

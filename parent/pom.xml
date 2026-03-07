@@ -80,6 +80,8 @@
 
     <docker.image.name>angus</docker.image.name>
 
+    <langchain4j.version>1.12.1</langchain4j.version>
+
     <spring-cloud.version>2024.0.0</spring-cloud.version>
     <spring-boot.version>3.4.0</spring-boot.version>
     <spring-framework.version>6.2.0</spring-framework.version>
@@ -101,6 +103,7 @@
     <jna.version>5.9.0</jna.version>
     <aspectj.version>1.9.6</aspectj.version>
     <jackson.version>2.18.3</jackson.version>
+    <json-schema-validator.version>3.0.0</json-schema-validator.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <asm.version>9.2</asm.version>
     <disruptor.version>3.4.4</disruptor.version>
@@ -195,6 +198,15 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- LangChain4j BOM -->
+      <dependency>
+        <groupId>dev.langchain4j</groupId>
+        <artifactId>langchain4j-bom</artifactId>
+        <version>${langchain4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
       <!-- Spring Cloud Dependencies -->
       <dependency>
         <groupId>org.springframework.cloud</groupId>
@@ -366,6 +378,13 @@
         <groupId>com.fasterxml.jackson.datatype</groupId>
         <artifactId>jackson-datatype-jsr310</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+
+      <!-- JSON Schema Validator -->
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${json-schema-validator.version}</version>
       </dependency>
 
       <!-- JavaBeans(TM) Activation Framework. -->
@@ -722,6 +741,13 @@
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
+        <version>${mockito.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <!-- Mockito JUnit Jupiter -->
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
         <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>

@@ -1,8 +1,8 @@
 package cloud.xcan.angus.web;
 
 import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
-import cloud.xcan.angus.remote.client.FilterQueryMapEncoder;
 import cloud.xcan.angus.remote.client.FeignRemoteFactory;
+import cloud.xcan.angus.remote.client.FilterQueryMapEncoder;
 import cloud.xcan.angus.remote.client.HttpBroadcastInvoker;
 import cloud.xcan.angus.remote.client.ServiceDiscoveryHelper;
 import cloud.xcan.angus.security.FeignInnerApiAuthInterceptor;
@@ -11,6 +11,7 @@ import feign.Client;
 import feign.Contract;
 import feign.Feign;
 import feign.Logger;
+import feign.QueryMapEncoder;
 import feign.Request;
 import feign.Response;
 import feign.Retryer;
@@ -40,6 +41,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * 注意：要想当前配置对Spring @FeignClient 生效，必须覆盖FeignClientsConfiguration中相应配置
+ */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Feign.class)
 @ImportAutoConfiguration(FeignClientsConfiguration.class)
@@ -68,17 +72,26 @@ public class FeignAutoConfigurer {
     return new LoadBalancerFeignClient(loadBalancer, new feign.okhttp.OkHttpClient(okHttpClient));
   }
 
+  /**
+   * 为了确保 FilterQueryMapEncoder 对所有 Spring @FeignClient 生效，直接定义一个 QueryMapEncoder 类型的 Bean，而不是把它藏在
+   * Feign.Builder 里。Spring Cloud OpenFeign 会自动检测上下文中是否存在 QueryMapEncoder Bean 并注入到它构建的 Builder 中。
+   */
+  @Bean
+  public QueryMapEncoder queryMapEncoder() {
+    return new FilterQueryMapEncoder();
+  }
+
   @Bean
   public Feign.Builder feignBuilder(Client client,
       Encoder feignEncoder, Decoder feignDecoder, ErrorDecoder errorDecoder,
-      Logger.Level feignLoggerLevel) {
+      Logger.Level feignLoggerLevel, QueryMapEncoder queryMapEncoder) {
     return Feign.builder()
         .client(client)
         .encoder(feignEncoder)
         .decoder(feignDecoder)
         .errorDecoder(errorDecoder)
         .logLevel(feignLoggerLevel)
-        .queryMapEncoder(new FilterQueryMapEncoder())
+        .queryMapEncoder(queryMapEncoder)
         /* new Retryer.Default(): The maximum number of retry requests is 5(maxAttempts),
          * the initial interval time is 100ms(period), the next interval time increases by 1.5 times,
          * and the maximum interval time between retries is 1s(maxPeriod) */

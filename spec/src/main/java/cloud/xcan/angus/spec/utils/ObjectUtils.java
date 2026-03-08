@@ -145,6 +145,14 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
     return isNull(actual) ? safe : actual;
   }
 
+  public static <T> List<T> nullSafe(List<T> list) {
+    return list != null ? list : Collections.emptyList();
+  }
+
+  public static <K, V> Map<K, V> nullSafe(Map<K, V> map) {
+    return map != null ? map : Collections.emptyMap();
+  }
+
   /**
    * @param actual actual value
    * @param safe   value

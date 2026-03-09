@@ -270,10 +270,19 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         if (criteria0.getValue() instanceof Value) {
           query.setParameter(namingKey, ((Value) criteria0.getValue()).getValue());
         } else if (f.getType().isEnum()) {
-          Value<?>[] values = (Value<?>[]) f.getType().getEnumConstants();
-          for (Value<?> value : values) {
-            if (strValue.equalsIgnoreCase((String) value.getValue())) {
-              query.setParameter(namingKey, value.getValue());
+          if (Value.class.isAssignableFrom(f.getType())) {
+            Value<?>[] values = (Value<?>[]) f.getType().getEnumConstants();
+            for (Value<?> value : values) {
+              if (strValue.equalsIgnoreCase(String.valueOf(value.getValue()))) {
+                query.setParameter(namingKey, value.getValue());
+              }
+            }
+          } else {
+            Enum<?>[] values = (Enum<?>[]) f.getType().getEnumConstants();
+            for (Enum<?> value : values) {
+              if (strValue.equalsIgnoreCase(value.name())) {
+                query.setParameter(namingKey, value.name());
+              }
             }
           }
         } else if (criteria0.getValue() instanceof Boolean) {

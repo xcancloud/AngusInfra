@@ -159,7 +159,6 @@ public class GlobalHoldFilter implements Filter {
     }
   }
 
-
   private void setCors(HttpServletRequest request, String path, HttpServletResponse response) {
     String proxy = request.getHeader(Header.NGINX_PROXY_CORS);
     if (log.isDebugEnabled()) {
@@ -237,7 +236,7 @@ public class GlobalHoldFilter implements Filter {
     return locationInfo;
   }
 
-  public Long getOptTenantId(HttpServletRequest req) {
+  public static Long getOptTenantId(HttpServletRequest req) {
     String optTenantId = req.getHeader(Header.OPT_TENANT_ID);
     return isEmpty(optTenantId) ? null : Long.valueOf(optTenantId);
   }

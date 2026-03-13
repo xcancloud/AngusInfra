@@ -68,11 +68,11 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
   @Override
   public void ready() {
     if (nonNull(apiLogProperties)) {
-      ApiRequest systemRequest = apiLogProperties.getApiRequest();
-      this.ignorePattern = Pattern.compile(systemRequest.getIgnorePattern());
-      if (isNotEmpty(systemRequest.getPushLoggerServiceIgnorePattern())) {
+      ApiRequest apiRequest = apiLogProperties.getApiRequest();
+      this.ignorePattern = Pattern.compile(apiRequest.getIgnorePattern());
+      if (isNotEmpty(apiRequest.getPushLoggerServiceIgnorePattern())) {
         this.pushLoggerIgnorePattern = Pattern
-            .compile(systemRequest.getPushLoggerServiceIgnorePattern());
+            .compile(apiRequest.getPushLoggerServiceIgnorePattern());
       }
     }
   }

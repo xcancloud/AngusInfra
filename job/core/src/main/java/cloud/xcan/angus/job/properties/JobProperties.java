@@ -55,4 +55,11 @@ public class JobProperties {
 
   /** Maximum minutes a job may run before being considered timed-out by the monitor. */
   private int timeoutThresholdMinutes = 30;
+
+  /**
+   * Maximum number of due jobs the scheduler will load per scan cycle.
+   * Prevents a sudden spike of overdue jobs from exhausting the executor pool or heap.
+   * Tune upward only when the job-executor pool has enough capacity.
+   */
+  private int maxJobsPerScan = 100;
 }

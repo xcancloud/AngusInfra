@@ -29,8 +29,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+
+// ScheduledJobRepository pageable overload needs PageRequest
+import org.springframework.data.domain.PageRequest;
 
 /**
  * Core scheduler that polls for due jobs and dispatches them for execution.
@@ -74,8 +78,11 @@ public class JobSchedulerService {
 
   @Scheduled(fixedDelayString = "${angus.job.scan-interval-ms:1000}")
   public void scanAndExecuteJobs() {
+    // Limit results per cycle to prevent OOM / executor-pool saturation when
+    // many jobs become overdue simultaneously (e.g. after a maintenance window).
+    PageRequest limit = PageRequest.of(0, properties.getMaxJobsPerScan());
     List<ScheduledJob> jobs = jobRepository.findByStatusAndNextExecuteTimeBefore(
-        JobStatus.READY, LocalDateTime.now());
+        JobStatus.READY, LocalDateTime.now(), limit);
     for (ScheduledJob job : jobs) {
       executeJobWithLock(job);
     }
@@ -197,8 +204,12 @@ public class JobSchedulerService {
     shardRepository.save(shard);
 
     try {
-      MapReduceJobExecutor executor = (MapReduceJobExecutor) executorRegistry.getExecutor(
-          job.getBeanName());
+      JobExecutor raw = executorRegistry.getExecutor(job.getBeanName());
+      if (!(raw instanceof MapReduceJobExecutor executor)) {
+        throw new IllegalArgumentException(
+            "Executor '" + job.getBeanName() + "' does not implement MapReduceJobExecutor "
+                + "(required for MAP_REDUCE job type). Actual type: " + raw.getClass().getName());
+      }
       List<String> mapResult = executor.map(
           buildContext(job, shard.getShardingItem()),
           shard.getShardingItem(),
@@ -224,8 +235,12 @@ public class JobSchedulerService {
     JobExecutionLog executionLog = initLog(job, -1);
 
     try {
-      MapReduceJobExecutor executor = (MapReduceJobExecutor) executorRegistry.getExecutor(
-          job.getBeanName());
+      JobExecutor raw = executorRegistry.getExecutor(job.getBeanName());
+      if (!(raw instanceof MapReduceJobExecutor executor)) {
+        throw new IllegalArgumentException(
+            "Executor '" + job.getBeanName() + "' does not implement MapReduceJobExecutor "
+                + "(required for MAP_REDUCE reduce phase). Actual type: " + raw.getClass().getName());
+      }
       String result = executor.reduce(buildContext(job, null), mapResults);
       executionLog.setStatus(ExecutionStatus.SUCCESS);
       executionLog.setResult(result);
@@ -280,8 +295,12 @@ public class JobSchedulerService {
     shardRepository.save(shard);
 
     try {
-      ShardingJobExecutor executor = (ShardingJobExecutor) executorRegistry.getExecutor(
-          job.getBeanName());
+      JobExecutor raw = executorRegistry.getExecutor(job.getBeanName());
+      if (!(raw instanceof ShardingJobExecutor executor)) {
+        throw new IllegalArgumentException(
+            "Executor '" + job.getBeanName() + "' does not implement ShardingJobExecutor "
+                + "(required for SHARDING job type). Actual type: " + raw.getClass().getName());
+      }
       JobExecutionResult result = executor.executeSharding(
           buildContext(job, shard.getShardingItem()),
           shard.getShardingItem(),
@@ -313,25 +332,36 @@ public class JobSchedulerService {
   /**
    * Creates a fresh set of shards for this execution, replacing any leftovers
    * from previous runs.
+   *
+   * <p><strong>Transaction isolation fix:</strong> this method runs in its own
+   * {@code REQUIRES_NEW} transaction so that the inserted shard rows are
+   * <em>committed</em> before the child-thread {@link TransactionTemplate}s
+   * start.  Without this, child threads (which use separate DB connections
+   * with READ_COMMITTED isolation) would not see the parent's uncommitted
+   * inserts and would fail with "entity not found" or issue duplicate inserts.
    */
   private List<JobShard> createShards(ScheduledJob job) {
-    shardRepository.deleteByJobId(job.getId());
+    TransactionTemplate requiresNew = new TransactionTemplate(transactionManager);
+    requiresNew.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    return requiresNew.execute(status -> {
+      shardRepository.deleteByJobId(job.getId());
 
-    String[] parameters = (job.getShardingParameter() != null)
-        ? job.getShardingParameter().split(",")
-        : new String[0];
+      String[] parameters = (job.getShardingParameter() != null)
+          ? job.getShardingParameter().split(",")
+          : new String[0];
 
-    int count = job.getShardingCount() != null ? job.getShardingCount() : 1;
-    List<JobShard> shards = new ArrayList<>(count);
-    for (int i = 0; i < count; i++) {
-      JobShard shard = new JobShard();
-      shard.setJobId(job.getId());
-      shard.setShardingItem(i);
-      shard.setShardingParameter(i < parameters.length ? parameters[i].trim() : "");
-      shard.setStatus(ShardStatus.PENDING);
-      shards.add(shard);
-    }
-    return shardRepository.saveAll(shards);
+      int count = job.getShardingCount() != null ? job.getShardingCount() : 1;
+      List<JobShard> shards = new ArrayList<>(count);
+      for (int i = 0; i < count; i++) {
+        JobShard shard = new JobShard();
+        shard.setJobId(job.getId());
+        shard.setShardingItem(i);
+        shard.setShardingParameter(i < parameters.length ? parameters[i].trim() : "");
+        shard.setStatus(ShardStatus.PENDING);
+        shards.add(shard);
+      }
+      return shardRepository.saveAll(shards);
+    });
   }
 
   private JobContext buildContext(ScheduledJob job, Integer shardingItem) {

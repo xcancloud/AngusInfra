@@ -34,6 +34,16 @@ public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog
       LocalDateTime threshold);
 
   /**
+   * Returns all execution records whose {@code startTime} falls within [start, end).
+   * Used by {@link cloud.xcan.angus.job.monitor.JobHealthMonitor} to compute
+   * health statistics across <em>all</em> statuses for a given time window.
+   *
+   * @param start window start (inclusive)
+   * @param end   window end (exclusive)
+   */
+  List<JobExecutionLog> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
+
+  /**
    * Deletes all execution records for the specified job.
    * Called when a job definition is permanently deleted.
    */

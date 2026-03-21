@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,23 +88,21 @@ public class JobHealthMonitor {
   /**
    * Logs an hourly health summary.
    *
-   * <p>Uses a time-ranged query (not {@code findAll()}) and fixes the SLF4J
-   * format-string syntax — {@code {:.2f}} is Python/C-style and silently rendered
-   * as a literal by SLF4J; {@code String.format} is used instead.
+   * <p>Queries <em>all</em> statuses in the last-hour window via
+   * {@code findByStartTimeBetween} — the previous implementation incorrectly
+   * queried only {@code RUNNING} logs and then counted {@code SUCCESS}/
+   * {@code FAILURE} within that set, which always returned zero.
    */
   @Scheduled(cron = "0 0 * * * *")
   public void generateHealthReport() {
     try {
-      LocalDateTime oneHourAgo = LocalDateTime.now().minusHours(1);
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime oneHourAgo = now.minusHours(1);
 
-      // Fetch with an upper bound to prevent unbounded memory consumption.
+      // Query ALL statuses (SUCCESS, FAILURE, RUNNING) within the last hour.
       List<JobExecutionLog> recentExecutions = executionLogRepository
-          .findByStatusAndStartTimeBefore(ExecutionStatus.RUNNING, LocalDateTime.now())
-          .stream()
-          .filter(l -> l.getStartTime().isAfter(oneHourAgo))
-          .toList();
+          .findByStartTimeBetween(oneHourAgo, now);
 
-      // Query each status separately so we don't pull the entire table.
       long totalExecutions = recentExecutions.size();
       long successCount = recentExecutions.stream()
           .filter(l -> l.getStatus() == ExecutionStatus.SUCCESS).count();

@@ -82,19 +82,19 @@ public class JobController {
   @PostMapping("/{jobId}/pause")
   public ResponseEntity<Void> pauseJob(@PathVariable Long jobId) {
     jobManagementService.pauseJob(jobId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/{jobId}/resume")
   public ResponseEntity<Void> resumeJob(@PathVariable Long jobId) {
     jobManagementService.resumeJob(jobId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/{jobId}/trigger")
   public ResponseEntity<Void> triggerJob(@PathVariable Long jobId) {
     jobManagementService.triggerJob(jobId);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
   }
 
   // ---------------------------------------------------------------------------

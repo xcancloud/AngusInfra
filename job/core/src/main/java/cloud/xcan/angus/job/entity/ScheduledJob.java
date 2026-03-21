@@ -9,6 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
@@ -28,6 +29,10 @@ import lombok.Setter;
     uniqueConstraints = @UniqueConstraint(
         name = "uk_job_name_group",
         columnNames = {"job_name", "job_group"}
+    ),
+    indexes = @Index(
+        name = "idx_sj_status_next_exec",
+        columnList = "status, next_execute_time"
     )
 )
 @Getter

@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS scheduled_job (
     update_time        DATETIME        NOT NULL,
     PRIMARY KEY (id),
     UNIQUE KEY uk_job_name_group (job_name, job_group),
-    INDEX idx_sj_status (status),
-    INDEX idx_sj_next_execute_time (next_execute_time)
+    -- Composite index covers the scheduler hot-path: WHERE status = ? AND next_execute_time < ?
+    INDEX idx_sj_status_next_exec (status, next_execute_time)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
 
 CREATE TABLE IF NOT EXISTS job_execution_log (

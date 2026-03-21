@@ -17,8 +17,11 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +68,13 @@ public class JobManagementService {
     job.setUpdateTime(now);
     job.setNextExecuteTime(calcNextExecuteTime(request.getCronExpression()));
 
-    return jobRepository.save(job);
+    try {
+      return jobRepository.save(job);
+    } catch (DataIntegrityViolationException e) {
+      throw new IllegalStateException(
+          "A job with name '" + request.getJobName()
+              + "' and group '" + request.getJobGroup() + "' already exists.", e);
+    }
   }
 
   /**
@@ -167,9 +176,11 @@ public class JobManagementService {
    * Computes summary statistics for a job's recent executions.
    */
   public Map<String, Object> getJobStatistics(Long jobId) {
-    // Fetch with pagination; cap at 1000 recent records to avoid unbounded heap.
+    // Fetch the 1000 most-recent records, sorted descending so that any cap
+    // of the result set always drops the oldest records (not the newest).
     List<JobExecutionLog> logs = executionLogRepository
-        .findByJobIdOrderByStartTimeDesc(jobId, Pageable.ofSize(1000))
+        .findByJobIdOrderByStartTimeDesc(jobId,
+            PageRequest.of(0, 1000, Sort.by("startTime").descending()))
         .getContent();
 
     long successCount = logs.stream()

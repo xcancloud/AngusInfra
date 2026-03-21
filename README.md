@@ -43,7 +43,18 @@ build scalable, secure, and maintainable server-side applications more efficient
 | Module     | Description                                                                                                                                                                                |  
 |------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
 | **`spec`** | Public specifications library defining global common models (DTOs/enums/error codes), interface contracts, and cross-module communication protocols.                                       |  
-| **`core`** | Core foundational library providing common utilities (Exception handling, Event collection, Multi-Tenancy handling, Spring extensions, etc.) as the underlying support for all components. |  
+| **`core`** | Core aggregator module — re-exports all sub-modules below for backward compatibility. New projects should depend on individual sub-modules for leaner dependencies.                        |  
+
+#### Core Sub-Modules
+
+| Module                            | Description                                                                                                    |  
+|-----------------------------------|----------------------------------------------------------------------------------------------------------------|  
+| **`core-base`**                   | Essential business logic, exception handling, event collection, multi-tenancy, Spring extensions, and utilities.|  
+| **`persistence-jdbc-starter`**    | Spring Data JDBC integration with multi-tenant support, batch operations, and converter utilities.              |  
+| **`persistence-jpa-starter`**     | Spring Data JPA integration including generic repositories, specification builders, and audit support.          |  
+| **`feign-integration-starter`**   | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.         |  
+| **`jackson-customizer`**          | Jackson JSON serialization customization with standard ObjectMapper configuration and custom serializers.       |  
+| **`observability-starter`**       | Logging, metrics, and data export utilities for application observability.                                      |  
 
 ### **Data Layer Modules**
 

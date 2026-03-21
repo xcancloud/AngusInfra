@@ -1,5 +1,6 @@
 package cloud.xcan.angus.cache;
 
+import cloud.xcan.angus.cache.config.CacheProperties;
 import cloud.xcan.angus.cache.entry.CacheEntry;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -12,13 +13,33 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HybridCacheManager implements IDistributedCache {
 
-  private final MemoryCache memoryCache;
+  private final CaffeineMemoryCache memoryCache;
   private final CachePersistence cachePersistence;
 
-  public HybridCacheManager(CachePersistence cachePersistence) {
+  public HybridCacheManager(CachePersistence cachePersistence, CacheProperties cacheProperties) {
     this.cachePersistence = cachePersistence;
-    // Initialize memory cache: maxSize=10000, cleanupInterval=300 seconds
-    this.memoryCache = new MemoryCache(10000, 300);
+    // Initialize memory cache with configured values using Caffeine
+    this.memoryCache = new CaffeineMemoryCache(
+        cacheProperties.getMemory().getMaxSize(),
+        cacheProperties.getMemory().getCleanupIntervalSeconds()
+    );
+  }
+
+  /**
+   * Constructor with default configuration for backward compatibility
+   *
+   * @deprecated Use {@link #HybridCacheManager(CachePersistence, CacheProperties)} instead
+   */
+  @Deprecated
+  public HybridCacheManager(CachePersistence cachePersistence) {
+    this(cachePersistence, createDefaultProperties());
+  }
+
+  private static CacheProperties createDefaultProperties() {
+    CacheProperties properties = new CacheProperties();
+    properties.getMemory().setMaxSize(10000);
+    properties.getMemory().setCleanupIntervalSeconds(300);
+    return properties;
   }
 
   /**
@@ -26,12 +47,15 @@ public class HybridCacheManager implements IDistributedCache {
    */
   @Override
   public void set(String key, String value, Long ttlSeconds) {
-    try {
-      LocalDateTime expireAt = ttlSeconds != null
-          ? LocalDateTime.now().plusSeconds(ttlSeconds)
-          : null;
+    LocalDateTime expireAt = ttlSeconds != null
+        ? LocalDateTime.now().plusSeconds(ttlSeconds)
+        : null;
 
-      // Save to database
+    // Always save to memory cache first (fast path)
+    memoryCache.put(key, value, expireAt);
+    
+    // Try to persist to database (best effort, with degradation strategy)
+    try {
       CacheEntry entry = cachePersistence.findByKey(key).orElse(null);
       if (entry == null) {
         entry = CacheEntry.builder()
@@ -51,13 +75,14 @@ public class HybridCacheManager implements IDistributedCache {
         entry.setIsExpired(false);
       }
       cachePersistence.save(entry);
-
-      // Save to memory cache
-      memoryCache.put(key, value, expireAt);
-      log.debug("Cache set: key={}, ttl={}", key, ttlSeconds);
+      log.debug("Cache set: key={}, ttl={}, persisted=true", key, ttlSeconds);
     } catch (Exception e) {
-      log.error("Error setting cache: key={}, error={}", key, e.getMessage(), e);
-      throw new RuntimeException("Failed to set cache", e);
+      // Degradation: DB persistence failed but memory cache still works
+      // Service continues with memory-only mode
+      log.error("[CACHE-DEGRADATION] Failed to persist cache to DB, falling back to memory-only mode. " +
+                "key={}, error={}", key, e.getMessage(), e);
+      // TODO: Emit metric for monitoring: cache_db_persistence_failures_total
+      //MemoryCache continues to work - no exception thrown
     }
   }
 
@@ -108,18 +133,25 @@ public class HybridCacheManager implements IDistributedCache {
    */
   @Override
   public boolean delete(String key) {
+    // Always delete from memory cache (fast path)
+    memoryCache.remove(key);
+    
+    // Try to delete from database (best effort)
     try {
-      memoryCache.remove(key);
       Optional<CacheEntry> entry = cachePersistence.findByKey(key);
       if (entry.isPresent()) {
         cachePersistence.deleteByKey(key);
-        log.debug("Cache deleted: key={}", key);
+        log.debug("Cache deleted: key={}, persisted=true", key);
         return true;
       }
       return false;
     } catch (Exception e) {
-      log.error("Error deleting cache: key={}, error={}", key, e.getMessage(), e);
-      return false;
+      // Degradation: DB deletion failed but memory cache already removed
+      log.error("[CACHE-DEGRADATION] Failed to delete cache from DB, memory already cleared. " +
+                "key={}, error={}", key, e.getMessage(), e);
+      // TODO: Emit metric for monitoring: cache_db_deletion_failures_total
+      // Return true because memory cache was successfully cleared
+      return true;
     }
   }
 

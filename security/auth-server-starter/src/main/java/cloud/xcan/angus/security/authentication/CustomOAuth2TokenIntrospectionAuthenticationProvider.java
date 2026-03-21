@@ -134,7 +134,14 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
 
     OAuth2Authorization.Token<OAuth2Token> authorizedToken = authorization
         .getToken(tokenIntrospectionAuthentication.getToken());
-    assert authorizedToken != null;
+    if (authorizedToken == null) {
+      if (log.isTraceEnabled()) {
+        log.trace("Did not introspect token since authorized token resolved to null");
+      }
+      return new OAuth2TokenIntrospectionAuthenticationToken(
+          tokenIntrospectionAuthentication.getToken(),
+          clientPrincipal, OAuth2TokenIntrospection.builder().build());
+    }
     if (!authorizedToken.isActive()) {
       if (log.isTraceEnabled()) {
         log.trace("Did not introspect token since not active");

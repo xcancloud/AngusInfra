@@ -5,7 +5,6 @@ import cloud.xcan.angus.security.config.InnerApiAuthProperties;
 import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import cloud.xcan.angus.security.remote.ClientSignInnerApiRemote;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Component;
@@ -237,12 +236,8 @@ public class TokenCacheManager {
 
       // Call OAuth2 token endpoint
       log.debug("Requesting new token from OAuth2 server...");
-      Optional<ClientSignInVo> response = clientSignInnerApiRemote.signin(signInRequest);
-
-      // Extract token from response using Optional::orElseThrow
-      // This pattern is safer than direct .get() as it throws meaningful exception
-      ClientSignInVo clientSignInVo = response.orElseThrow(() ->
-          new SysException("OAuth2 server returned empty response for token request"));
+      ClientSignInVo clientSignInVo = clientSignInnerApiRemote.signin(signInRequest)
+          .orElseContentThrow();
 
       // Cache the new token with current timestamp
       this.cachedToken = InnerApiAuthProperties.BEARER_TOKEN_TYPE

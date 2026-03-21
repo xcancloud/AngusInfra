@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import lombok.Getter;
@@ -13,7 +14,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "mq_dead_letter")
+@Table(name = "mq_dead_letter", indexes = {
+    // countByTopic / findByTopicLimit: WHERE topic=? AND deleted_at IS NULL
+    @Index(name = "idx_mq_dlq_topic", columnList = "topic"),
+    // purgeSoftDeletedBefore: WHERE deleted_at IS NOT NULL AND deleted_at < ?
+    @Index(name = "idx_mq_dlq_deleted_at", columnList = "deleted_at")
+})
 @Getter
 @Setter
 @ToString

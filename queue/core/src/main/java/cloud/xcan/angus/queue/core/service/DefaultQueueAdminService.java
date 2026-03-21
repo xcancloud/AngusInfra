@@ -1,6 +1,8 @@
 package cloud.xcan.angus.queue.core.service;
 
 import cloud.xcan.angus.queue.core.model.DeadLetterData;
+import cloud.xcan.angus.queue.core.model.PartitionCount;
+import cloud.xcan.angus.queue.core.model.StatusCount;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
 import cloud.xcan.angus.queue.core.spi.SoftDeleteDlqSupport;
 import java.time.Instant;
@@ -35,19 +37,15 @@ public class DefaultQueueAdminService implements QueueAdminService {
   public Map<String, Object> topicStats(String topic) {
     Map<String, Object> stats = new HashMap<>();
     Map<Integer, Long> statusCounts = new HashMap<>();
-    for (Object[] row : adapter.countByStatus(topic)) {
-      Integer status = ((Number) row[0]).intValue();
-      Long cnt = ((Number) row[1]).longValue();
-      statusCounts.put(status, cnt);
+    for (StatusCount sc : adapter.countByStatus(topic)) {
+      statusCounts.put(sc.status(), sc.count());
     }
     stats.put("statusCounts", statusCounts);
     stats.put("dlqCount", adapter.deadLetterCountByTopic(topic));
 
     Map<Integer, Long> perPartition = new HashMap<>();
-    for (Object[] row : adapter.readyCountPerPartition(topic)) {
-      Integer p = ((Number) row[0]).intValue();
-      Long cnt = ((Number) row[1]).longValue();
-      perPartition.put(p, cnt);
+    for (PartitionCount pc : adapter.readyCountPerPartition(topic)) {
+      perPartition.put(pc.partitionId(), pc.count());
     }
     stats.put("readyPerPartition", perPartition);
     log("stats", topic, 0, "");
@@ -84,13 +82,13 @@ public class DefaultQueueAdminService implements QueueAdminService {
   @Override
   public int replayFromDeadLetter(String topic, int limit) {
     List<DeadLetterData> list = adapter.findDeadLettersByTopicLimit(topic, limit);
-    int moved = 0;
-    for (DeadLetterData d : list) {
-      adapter.saveRecoveredMessage(d);
-      adapter.deleteDeadLetterById(d.getId());
-      moved++;
+    if (list.isEmpty()) {
+      log("replayDLQ", topic, 0, "limit=" + limit);
+      return 0;
     }
-    log("replayDLQ", topic, moved, "limit=" + limit);
-    return moved;
+    adapter.saveRecoveredMessages(list);
+    adapter.deleteDeadLettersByIds(list.stream().map(DeadLetterData::getId).toList());
+    log("replayDLQ", topic, list.size(), "limit=" + limit);
+    return list.size();
   }
 }

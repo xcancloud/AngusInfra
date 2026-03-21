@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.queue.core.model.MessageData;
+import cloud.xcan.angus.queue.core.model.SendMessage;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
 import java.time.Instant;
 import java.util.List;
@@ -29,13 +30,10 @@ class DefaultQueueServiceTest {
 
   @Test
   void sendDelegatesToAdapter() {
-    when(
-        adapter.saveMessage(any(), any(), any(), any(), anyInt(), any(), any(), anyInt(), anyInt()))
-        .thenReturn(123L);
+    when(adapter.saveMessage(any(SendMessage.class))).thenReturn(123L);
     Long id = service.send("topicA", "key1", "payload", "{}", 1, Instant.EPOCH, "idem1", 5, 3);
     assertEquals(123L, id);
-    verify(adapter).saveMessage(eq("topicA"), eq("key1"), eq("payload"), eq("{}"), eq(1),
-        eq(Instant.EPOCH), eq("idem1"), eq(5), eq(3));
+    verify(adapter).saveMessage(any(SendMessage.class));
   }
 
   @Test
@@ -47,11 +45,11 @@ class DefaultQueueServiceTest {
   }
 
   @Test
-  void listLeasedByOwnerUsesNowAndLimit() {
-    when(adapter.findLeasedByOwner(any(), any(), anyInt())).thenReturn(List.of(new MessageData()));
+  void listLeasedByOwnerUsesLimit() {
+    when(adapter.findLeasedByOwner(any(), anyInt())).thenReturn(List.of(new MessageData()));
     List<MessageData> result = service.listLeasedByOwner("ownerA", 5);
     assertEquals(1, result.size());
-    verify(adapter).findLeasedByOwner(eq("ownerA"), any(Instant.class), eq(5));
+    verify(adapter).findLeasedByOwner(eq("ownerA"), eq(5));
   }
 
   @Test

@@ -7,12 +7,13 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.startsWith;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
 import cloud.xcan.angus.queue.core.model.DeadLetterData;
+import cloud.xcan.angus.queue.core.model.PartitionCount;
+import cloud.xcan.angus.queue.core.model.StatusCount;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
 import cloud.xcan.angus.queue.core.spi.SoftDeleteDlqSupport;
 import java.time.Instant;
@@ -37,10 +38,11 @@ class DefaultQueueAdminServiceTest {
 
   @Test
   void topicStatsAggregatesCounts() {
-    when(adapter.countByStatus("t1")).thenReturn(List.of(new Object[]{0, 5L}, new Object[]{1, 2L}));
+    when(adapter.countByStatus("t1")).thenReturn(
+        List.of(new StatusCount(0, 5L), new StatusCount(1, 2L)));
     when(adapter.deadLetterCountByTopic("t1")).thenReturn(3L);
     when(adapter.readyCountPerPartition("t1")).thenReturn(
-        List.of(new Object[]{0, 4L}, new Object[]{1, 1L}));
+        List.of(new PartitionCount(0, 4L), new PartitionCount(1, 1L)));
     Map<String, Object> stats = service.topicStats("t1");
     assertEquals(2, ((Map<?, ?>) stats.get("statusCounts")).size());
     assertEquals(3L, stats.get("dlqCount"));
@@ -94,9 +96,8 @@ class DefaultQueueAdminServiceTest {
     when(adapter.findDeadLettersByTopicLimit("t1", 2)).thenReturn(List.of(d1, d2));
     int n = service.replayFromDeadLetter("t1", 2);
     assertEquals(2, n);
-    verify(adapter, times(2)).saveRecoveredMessage(any());
-    verify(adapter).deleteDeadLetterById(10L);
-    verify(adapter).deleteDeadLetterById(11L);
+    verify(adapter).saveRecoveredMessages(any());
+    verify(adapter).deleteDeadLettersByIds(any());
     verify(logger).adminAction(eq("replayDLQ"), eq("t1"), eq(2), startsWith("limit="));
   }
 }

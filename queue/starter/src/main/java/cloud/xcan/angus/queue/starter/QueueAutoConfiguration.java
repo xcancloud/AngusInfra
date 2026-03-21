@@ -16,7 +16,8 @@ import cloud.xcan.angus.queue.starter.repository.MessageRepository;
 import cloud.xcan.angus.queue.starter.scheduler.DeadLetterMoverScheduler;
 import cloud.xcan.angus.queue.starter.scheduler.DlqSoftDeletePurgerScheduler;
 import cloud.xcan.angus.queue.starter.scheduler.LeaseReaperScheduler;
-import cloud.xcan.angus.queue.starter.service.AdminService;
+import cloud.xcan.angus.queue.starter.web.AdminController;
+import cloud.xcan.angus.queue.starter.web.QueueController;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -76,9 +77,15 @@ public class QueueAutoConfiguration {
   }
 
   @Bean
-  public AdminService adminService(MessageRepository messageRepository,
-      DeadLetterRepository deadLetterRepository) {
-    return new AdminService(messageRepository, deadLetterRepository);
+  @ConditionalOnMissingBean(QueueController.class)
+  public QueueController queueController(QueueService queueService, QueueProperties properties) {
+    return new QueueController(queueService, properties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean(AdminController.class)
+  public AdminController adminController(QueueAdminService adminService) {
+    return new AdminController(adminService);
   }
 
   @Bean
@@ -95,6 +102,7 @@ public class QueueAutoConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean(QueueAdminService.class)
   @ConditionalOnProperty(prefix = "angus.queue.admin", name = "soft-delete-dlq", havingValue = "true")
   public QueueAdminService softDeleteQueueAdminService(RepositoryAdapter adapter,
       AuditLogger auditLogger) {
@@ -102,7 +110,7 @@ public class QueueAutoConfiguration {
   }
 
   @Bean
-  @ConditionalOnProperty(prefix = "angus.queue.scheduling", name = "enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(prefix = "angus.queue.admin", name = "soft-delete-dlq", havingValue = "true")
   public DlqSoftDeletePurgerScheduler dlqSoftDeletePurgerScheduler(
       DeadLetterRepository deadLetterRepository, QueueProperties properties) {
     return new DlqSoftDeletePurgerScheduler(deadLetterRepository, properties);

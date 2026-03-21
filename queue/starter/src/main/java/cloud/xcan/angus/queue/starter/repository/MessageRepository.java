@@ -71,12 +71,11 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
 
   @Query(value = """
       SELECT * FROM mq_message
-      WHERE lease_owner=:owner AND lease_until >= :now AND status=1
+      WHERE lease_owner=:owner AND lease_until >= NOW() AND status=1
       ORDER BY priority DESC, visible_at ASC, id ASC
       LIMIT :limit
       """, nativeQuery = true)
   List<MessageEntity> findLeasedByOwner(@Param("owner") String owner,
-      @Param("now") Instant now,
       @Param("limit") int limit);
 
   @Query(value = "SELECT status, COUNT(*) cnt FROM mq_message WHERE topic=:topic GROUP BY status", nativeQuery = true)
@@ -94,4 +93,16 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   @Modifying
   @Query(value = "DELETE FROM mq_message WHERE topic=:topic AND status=2 AND updated_at < :before", nativeQuery = true)
   int purgeDoneBefore(@Param("topic") String topic, @Param("before") Instant before);
+
+  @Query(value = """
+      SELECT * FROM mq_message
+      WHERE attempts >= max_attempts
+      ORDER BY id ASC
+      LIMIT :limit
+      """, nativeQuery = true)
+  List<MessageEntity> findExceededAttempts(@Param("limit") int limit);
+
+  @Modifying
+  @Query(value = "DELETE FROM mq_message WHERE id IN (:ids)", nativeQuery = true)
+  int deleteByIds(@Param("ids") Collection<Long> ids);
 }

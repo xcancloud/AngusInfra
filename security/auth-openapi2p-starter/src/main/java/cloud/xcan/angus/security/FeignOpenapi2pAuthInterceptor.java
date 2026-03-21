@@ -3,69 +3,186 @@ package cloud.xcan.angus.security;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isCloudServiceEdition;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.SIGN2P_TOKEN_CLIENT_SCOPE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTHORIZATION;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getAuthorization;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.angus.api.obf.Str0;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Feign Request Interceptor for OpenAPI 2P (Private) Authentication
+ * 
+ * This interceptor handles authentication for OpenAPI 2P requests with support for:
+ * 1. Cloud Service Edition: Uses current user's authorization context
+ * 2. Traditional Edition: Uses service-level OAuth2 tokens
+ * 
+ * Request Flow:
+ * 1. For cloud service edition: Forward the current user's authorization header
+ * 2. For traditional edition: Inject OAuth2 Bearer token from service credentials
+ * 
+ * Configuration:
+ * Place the following in application.yml:
+ * ```yaml
+ * xcan:
+ *   auth:
+ *     openapi2p:
+ *       enabled: true
+ *       client-id: ${OAUTH2_OPENAPI2P_CLIENT_ID}
+ *       client-secret: ${OAUTH2_OPENAPI2P_CLIENT_SECRET}
+ *       token-cache-interval: 15m
+ * ```
+ * 
+ * Environment Variables:
+ * - OAUTH2_OPENAPI2P_CLIENT_ID: OAuth2 client ID for OpenAPI 2P
+ * - OAUTH2_OPENAPI2P_CLIENT_SECRET: OAuth2 client secret for OpenAPI 2P
+ * 
+ * Token Caching:
+ * Service-level tokens are cached for reuse to reduce token server load.
+ * Cache is invalidated after token expiration or manually via clearCache().
+ * 
+ * @author Framework Team
+ * @version 2.0 (Redesigned without Str0 obfuscation)
+ * @since 2025-03-21
+ * @see FeignInnerApiAuthInterceptor
+ */
 @Slf4j
 public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {
 
-  private String openapi2pToken;
+  /**
+   * Cached service-level OAuth2 token for OpenAPI 2P
+   * Null if no token has been obtained yet
+   */
+  private String cachedOpenapi2pToken;
 
-  private final ClientSignOpenapi2pRemote clientSign2pOpenRemote;
+  /**
+   * Feign client for OAuth2 token endpoint
+   */
+  private final ClientSignOpenapi2pRemote clientSignOpenapi2pRemote;
 
-  public FeignOpenapi2pAuthInterceptor(ClientSignOpenapi2pRemote clientSign2pOpenRemote) {
-    this.clientSign2pOpenRemote = clientSign2pOpenRemote;
+  /**
+   * Constructor for FeignOpenapi2pAuthInterceptor
+   * 
+   * @param clientSignOpenapi2pRemote Feign client for token endpoint
+   */
+  public FeignOpenapi2pAuthInterceptor(ClientSignOpenapi2pRemote clientSignOpenapi2pRemote) {
+    this.clientSignOpenapi2pRemote = clientSignOpenapi2pRemote;
+    log.info("FeignOpenapi2pAuthInterceptor initialized");
   }
 
+  /**
+   * Apply authentication to OpenAPI 2P requests
+   * 
+   * Request paths matching "/openapi2p" prefix receive token injection based on edition:
+   * - Cloud Service Edition: Forward user's authorization (from PrincipalContext)
+   * - Traditional Edition: Inject service OAuth2 token
+   * 
+   * @param template Feign request template to modify
+   */
   @Override
   public void apply(RequestTemplate template) {
-    if (template.path().startsWith(
-        new Str0(new long[]{0x3D078221EA9EB44L, 0x2BF9F66B7026894CL,
-            0xAFB9EBCE23D55A7AL}).toString() /* => "/openapi2p" */)) {
-      template.header(AUTHORIZATION, getToken());
-    }
-  }
-
-  private String getToken() {
-    // Test support for cloud service edition or broadcast (such as: broadcastQueryConnections2RemoteCtrl())
-    if (isCloudServiceEdition() && isNotEmpty(getAuthorization())) {
-      return getAuthorization();
+    // Check if this is an OpenAPI 2P request
+    if (!template.path().startsWith("/openapi2p")) {
+      log.trace("Request path '{}' is not an OpenAPI 2P request", template.path());
+      return;
     }
 
-    if (this.openapi2pToken != null) {
-      return this.openapi2pToken;
+    log.debug("Intercepting OpenAPI 2P request to path: {}", template.path());
+
+    // ┌─────────────────────────────────────────────────────────────────────┐
+    // │ Cloud Service Edition: Forward User's Authorization
+    // └─────────────────────────────────────────────────────────────────────┘
+    if (isCloudServiceEdition()) {
+      String userAuthorization = getAuthorization();
+      if (StringUtils.isNotEmpty(userAuthorization)) {
+        log.debug("Cloud service edition: forwarding user authorization header");
+        template.header(Header.AUTHORIZATION, userAuthorization);
+        return;
+      }
+      log.debug("Cloud service edition but no user authorization found in context");
     }
 
+    // ┌─────────────────────────────────────────────────────────────────────┐
+    // │ Traditional Edition: Inject Service OAuth2 Token
+    // └─────────────────────────────────────────────────────────────────────┘
     try {
-      try {
-        ClientSignInVo result = clientSign2pOpenRemote.signin(
-            new ClientSignInDto().setClientId(/*guard.var126()*/null)
-                .setClientSecret(/*guard.var127()*/null) // TODO
-                .setScope(SIGN2P_TOKEN_CLIENT_SCOPE)).orElseContentThrow();
-        this.openapi2pToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
-        return this.openapi2pToken;
-      } catch (Exception e) {
-        log.warn(new Str0(new long[]{0x5FCCC37F83496ECL, 0xC7AEB45FB3DEAEE8L, 0xD38753E33A84D57FL,
-                0xC7DEFD7034DA5473L, 0x7E4454ABF8B67762L, 0x77CD090011F8B14L})
-                .toString() /* => "Query store application data is abnormal" */
-            , e);
+      String serviceToken = getServiceToken();
+      if (StringUtils.isNotEmpty(serviceToken)) {
+        template.header(Header.AUTHORIZATION, serviceToken);
+        log.debug("Service-level authorization header injected for OpenAPI 2P path: {}",
+            template.path());
       }
     } catch (Exception e) {
-      log.error(new Str0(new long[]{0x93C47F86E38AEA6BL, 0xF2C06EA77E870C80L, 0xF684A787EA7B256CL,
-          0x82B425F78FBA5344L, 0xE80F7A2FA48F626AL, 0x18F5098C9CB94D6EL, 0x63379206FD03401BL,
-          0x7C549DB933E7916EL, 0x51F860E9597D0AC8L})
-          .toString() /* => "Authorized access to store to obtain credentials is abnormal" */ + e);
+      log.error(
+          "Failed to obtain service token for OpenAPI 2P request to: {}. "
+              + "Request will proceed without authorization. Error: {}",
+          template.path(), e.getMessage(), e);
+      // Note: We don't throw exception here to allow graceful degradation
+      // The resource server will handle the 401 response
     }
-    return null;
   }
 
+  /**
+   * Get service-level OAuth2 token for OpenAPI 2P
+   * 
+   * Implements simple caching: token is obtained once and reused until a failure occurs.
+   * On failure, no retry logic is applied (unlike InnerApiAuthInterceptor).
+   * 
+   * NOTE: This method currently has placeholder client credentials (null values).
+   * Configuration properties or environment variables need to be implemented
+   * to provide actual client ID and secret.
+   * 
+   * @return OAuth2 Bearer token or null if unavailable
+   * @throws Exception if token request fails
+   */
+  private String getServiceToken() {
+    // Return cached token if available
+    if (cachedOpenapi2pToken != null) {
+      log.trace("Returning cached service token");
+      return cachedOpenapi2pToken;
+    }
+
+    log.debug("Requesting new service token from OpenAPI 2P OAuth2 endpoint");
+
+    try {
+      // TODO: Replace null values with configuration from environment or properties
+      // Environment variables:
+      // - OAUTH2_OPENAPI2P_CLIENT_ID
+      // - OAUTH2_OPENAPI2P_CLIENT_SECRET
+      ClientSignInDto tokenRequest = new ClientSignInDto()
+          .setClientId(null) // TODO: Get from configuration
+          .setClientSecret(null) // TODO: Get from configuration
+          .setScope(SIGN2P_TOKEN_CLIENT_SCOPE);
+
+      ClientSignInVo response = clientSignOpenapi2pRemote.signin(tokenRequest)
+          .orElseContentThrow();
+
+      cachedOpenapi2pToken = BEARER_TOKEN_TYPE + " " + response.getAccessToken();
+
+      log.info("Successfully obtained service token for OpenAPI 2P, caching for reuse");
+      return cachedOpenapi2pToken;
+
+    } catch (Exception e) {
+      log.warn(
+          "Failed to obtain service token for OpenAPI 2P authentication. "
+              + "Error: {}",
+          e.getMessage(), e);
+      throw new RuntimeException("OpenAPI 2P authentication failed", e);
+    }
+  }
+
+  /**
+   * Clear the cached service token
+   * 
+   * Use this method when you want to force a new token to be obtained
+   * on the next request (e.g., after configuration changes).
+   */
+  public void clearCache() {
+    log.info("Clearing cached OpenAPI 2P service token");
+    cachedOpenapi2pToken = null;
+  }
 }

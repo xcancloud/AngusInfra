@@ -23,7 +23,7 @@
 - `cloud.xcan.angus.cache.entry.CacheEntry` / `CacheEntryRepository` — 持久化实体与仓库。
 - `cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository` — Spring Data 仓库（starter 模块）。
 - `cloud.xcan.angus.cache.autoconfigure.HybridCacheAutoConfiguration` — 自动配置类，根据仓库是否存在装配持久化与管理控制器。
-- `cloud.xcan.angus.cache.management.CacheManagementController` — 管理 REST 控制器。
+- `cloud.xcan.angus.cache.web.CacheManagementController` — 管理 REST 控制器。
 
 ## 快速开始
 
@@ -50,13 +50,24 @@ mvn -pl cache -am clean install
 ### 3. 持久化（可选）
 
 如果类路径中存在 `SpringDataCacheEntryRepository`（即启用 Spring Data JPA 并扫描实体），starter
-会自动配置 `CachePersistence` 适配器。否则缓存仅以内存行为为主。
+会自动配置 JPA 适配器。否则缓存以 **纯内存模式（`NoOpCachePersistence`）** 运行——重启后数据不保留。
 
 若启用 JPA，请在 `application.yml` 中配置数据源。
 
+### 4. 启用管理 API
+
+管理 REST 接口默认 **关闭**（安全考虑），需在配置中显式启用，且务必在前端添加身份认证（如 Spring Security）后再对外暴露：
+
+```yaml
+angus:
+  cache:
+    management:
+      enabled: true
+```
+
 ## 管理 API
 
-管理控制器映射在 `/api/v1/cache`，提供以下接口：
+管理控制器映射在 `/api/v1/cache`，提供以下接口（需设置 `angus.cache.management.enabled=true`）：
 
 - `GET /api/v1/cache/stats` — 获取缓存统计信息（条目数、命中、未命中、内存大小等）
 - `GET /api/v1/cache/{key}` — 获取缓存值（找不到时会以业务错误的形式在包装器中返回）

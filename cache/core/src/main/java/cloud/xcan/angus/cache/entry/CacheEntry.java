@@ -51,6 +51,7 @@ public class CacheEntry {
   @Column(name = "ttl_seconds")
   private Long ttlSeconds;
 
+  @Builder.Default
   @Column(name = "is_expired", nullable = false)
   private Boolean isExpired = false;
 
@@ -58,9 +59,6 @@ public class CacheEntry {
    * Check if cache entry is expired either by flag or by expireAt timestamp
    */
   public boolean hasExpired() {
-    if (Boolean.TRUE.equals(isExpired)) {
-      return true;
-    }
     if (expireAt == null) {
       return false;
     }

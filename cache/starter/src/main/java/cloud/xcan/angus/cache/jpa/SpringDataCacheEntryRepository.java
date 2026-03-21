@@ -15,16 +15,18 @@ public interface SpringDataCacheEntryRepository extends JpaRepository<CacheEntry
 
   Optional<CacheEntry> findByKey(String key);
 
-  void deleteByKey(String key);
+  @Modifying
+  @Query("DELETE FROM CacheEntry c WHERE c.key = :key")
+  int deleteByKeyQuery(@Param("key") String key);
 
-  @Query("SELECT c FROM CacheEntry c WHERE c.isExpired = false AND c.expireAt IS NOT NULL AND c.expireAt < CURRENT_TIMESTAMP")
+  @Query("SELECT c FROM CacheEntry c WHERE c.expireAt IS NOT NULL AND c.expireAt < CURRENT_TIMESTAMP")
   List<CacheEntry> findExpiredEntries();
 
   @Query("SELECT c FROM CacheEntry c WHERE c.expireAt IS NOT NULL AND c.expireAt < :expireTime")
   List<CacheEntry> findEntriesExpireBefore(@Param("expireTime") LocalDateTime expireTime);
 
   @Modifying
-  @Query("DELETE FROM CacheEntry c WHERE c.isExpired = false AND c.expireAt IS NOT NULL AND c.expireAt < CURRENT_TIMESTAMP")
+  @Query("DELETE FROM CacheEntry c WHERE c.expireAt IS NOT NULL AND c.expireAt < CURRENT_TIMESTAMP")
   int deleteExpiredEntries();
 
   @Query("SELECT COUNT(c) FROM CacheEntry c WHERE c.expireAt IS NOT NULL AND c.expireAt < CURRENT_TIMESTAMP")

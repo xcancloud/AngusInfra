@@ -2,27 +2,26 @@ package cloud.xcan.angus.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.Expiry;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * Caffeine-based In-Memory Cache Implementation.
- * High-performance cache using Caffeine library with proper LRU eviction policy.
- * This replaces the manual ConcurrentHashMap implementation to fix eviction issues
- * and improve performance.
+ * Uses per-entry TTL via {@link Expiry} so each cache item expires at its own
+ * {@code expireAt} timestamp, independent of any global access-based eviction policy.
  */
 @Slf4j
 public class CaffeineMemoryCache {
 
   private static class CacheItem {
-    String value;
-    LocalDateTime expireAt;
+    final String value;
+    final LocalDateTime expireAt;
 
     CacheItem(String value, LocalDateTime expireAt) {
       this.value = value;
@@ -40,47 +39,61 @@ public class CaffeineMemoryCache {
   private final Cache<String, CacheItem> cache;
   private final long maxSize;
 
+  /**
+   * @param maxSize                maximum number of entries held in memory (LRU eviction)
+   * @param cleanupIntervalSeconds retained for API compatibility; Caffeine manages per-entry
+   *                               expiry automatically via the {@code expireAt} timestamp,
+   *                               so this parameter is no longer used in the Caffeine builder
+   */
   public CaffeineMemoryCache(long maxSize, long cleanupIntervalSeconds) {
     this.maxSize = maxSize;
     this.cache = Caffeine.newBuilder()
         .maximumSize(maxSize)
-        // Properly implement LRU based on access time, not hit count
-        .expireAfterAccess(Duration.ofSeconds(cleanupIntervalSeconds))
-        // Enable statistics for monitoring
+        .expireAfter(new Expiry<String, CacheItem>() {
+          @Override
+          public long expireAfterCreate(String key, CacheItem value, long currentTime) {
+            if (value.expireAt == null) {
+              return Long.MAX_VALUE; // no TTL — evicted by LRU only
+            }
+            Duration remaining = Duration.between(LocalDateTime.now(), value.expireAt);
+            return remaining.isNegative() ? 0L : remaining.toNanos();
+          }
+
+          @Override
+          public long expireAfterUpdate(String key, CacheItem value, long currentTime,
+              long currentDuration) {
+            return expireAfterCreate(key, value, currentTime);
+          }
+
+          @Override
+          public long expireAfterRead(String key, CacheItem value, long currentTime,
+              long currentDuration) {
+            return currentDuration; // reading does not reset per-entry TTL
+          }
+        })
         .recordStats()
         .build();
-    
-    log.info("CaffeineMemoryCache initialized with maxSize={}, cleanupInterval={}s", 
-             maxSize, cleanupIntervalSeconds);
+
+    log.info("CaffeineMemoryCache initialized with maxSize={}", maxSize);
   }
 
-  /**
-   * Put a value in memory cache
-   */
   public void put(String key, String value, LocalDateTime expireAt) {
     cache.put(key, new CacheItem(value, expireAt));
   }
 
-  /**
-   * Get a value from memory cache
-   */
   public Optional<String> get(String key) {
     CacheItem item = cache.getIfPresent(key);
     if (item == null) {
       return Optional.empty();
     }
-
+    // Defensive check: Caffeine also enforces TTL, but guard against clock skew
     if (item.isExpired()) {
       cache.invalidate(key);
       return Optional.empty();
     }
-
     return Optional.of(item.value);
   }
 
-  /**
-   * Check if key exists in memory cache
-   */
   public boolean containsKey(String key) {
     CacheItem item = cache.getIfPresent(key);
     if (item == null) {
@@ -93,38 +106,22 @@ public class CaffeineMemoryCache {
     return true;
   }
 
-  /**
-   * Remove a key from memory cache
-   */
   public void remove(String key) {
     cache.invalidate(key);
   }
 
-  /**
-   * Clear all cache
-   */
   public void clear() {
     cache.invalidateAll();
   }
 
-  /**
-   * Get cache size
-   */
   public long size() {
     return cache.estimatedSize();
   }
 
-  /**
-   * Get hit rate from Caffeine statistics
-   */
   public double getHitRate() {
-    CacheStats stats = cache.stats();
-    return stats.hitRate();
+    return cache.stats().hitRate();
   }
 
-  /**
-   * Get cache stats
-   */
   public Map<String, Object> getStats() {
     CacheStats stats = cache.stats();
     Map<String, Object> statsMap = new HashMap<>();

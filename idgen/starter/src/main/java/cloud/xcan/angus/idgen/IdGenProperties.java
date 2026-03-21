@@ -1,0 +1,156 @@
+package cloud.xcan.angus.idgen;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+/**
+ * Configuration properties for ID generation system.
+ * 
+ * This configuration class manages all tunable parameters for UID and BID generation,
+ * allowing zero-downtime configuration adjustments via Spring properties.
+ * 
+ * Usage in application.yml:
+ * <pre>
+ * xcan:
+ *   idgen:
+ *     enabled: true
+ *     uid:
+ *       timeBits: 28
+ *       workerBits: 22
+ *       seqBits: 13
+ *       epochStr: "2016-05-20"
+ *       retriesNum: 3
+ *     cached:
+ *       boostPower: 2
+ *       paddingFactor: 50
+ *       scheduleInterval: 300
+ *       rejectionPolicy: BLOCK
+ *     bid:
+ *       maxStep: 1000000
+ *       maxBatchNum: 10000
+ *       maxSeqLength: 40
+ *       initialMapCapacity: 512
+ * </pre>
+ */
+@Component
+@ConfigurationProperties(prefix = "xcan.idgen")
+@Getter
+@Setter
+public class IdGenProperties {
+
+  /**
+   * Enable/disable the idgen module
+   */
+  private boolean enabled = true;
+
+  /**
+   * UID Generator configuration
+   */
+  private UidGeneatorConfig uid = new UidGeneatorConfig();
+
+  /**
+   * Cached UID Generator configuration
+   */
+  private CachedUidConfig cached = new CachedUidConfig();
+
+  /**
+   * BID Generator configuration
+   */
+  private BidGeneratorConfig bid = new BidGeneratorConfig();
+
+  /**
+   * UID Generator specific configuration
+   */
+  @Getter
+  @Setter
+  public static class UidGeneatorConfig {
+
+    /**
+     * Number of bits for timestamp (default 28, supports ~8.7 years)
+     */
+    private int timeBits = 28;
+
+    /**
+     * Number of bits for worker/instance id (default 22, supports ~4.2M instances)
+     */
+    private int workerBits = 22;
+
+    /**
+     * Number of bits for sequence (default 13, supports ~8192 IDs/sec)
+     */
+    private int seqBits = 13;
+
+    /**
+     * Epoch date for timestamp calculation (format: yyyy-MM-dd)
+     */
+    private String epochStr = "2016-05-20";
+
+    /**
+     * Number of retries when obtaining instance ID fails
+     */
+    private int retriesNum = 3;
+  }
+
+  /**
+   * Cached UID Generator (RingBuffer) specific configuration
+   */
+  @Getter
+  @Setter
+  public static class CachedUidConfig {
+
+    /**
+     * Ring buffer size boost power.
+     * Final buffer size = (maxSequence + 1) << boostPower
+     * Default 2 means 1M size with 48MB memory cost
+     */
+    private int boostPower = 2;
+
+    /**
+     * Padding factor for ring buffer (0-100).
+     * When remaining IDs < (buffer_size * paddingFactor / 100), trigger padding
+     * Default 50 means trigger at 50% remaining
+     */
+    private int paddingFactor = 50;
+
+    /**
+     * Scheduled padding interval in seconds
+     */
+    private long scheduleInterval = 300; // 5 minutes
+
+    /**
+     * Rejected put buffer handler policy: DISCARD, EXCEPTION, BLOCK
+     * Default BLOCK ensures no UID loss but may increase latency
+     */
+    private String rejectionPolicy = "BLOCK";
+  }
+
+  /**
+   * BID Generator specific configuration
+   */
+  @Getter
+  @Setter
+  public static class BidGeneratorConfig {
+
+    /**
+     * Maximum step for ID allocation
+     */
+    private long maxStep = 1000000L;
+
+    /**
+     * Maximum batch number for ID generation
+     */
+    private int maxBatchNum = 10000;
+
+    /**
+     * Maximum sequence length
+     */
+    private int maxSeqLength = 40;
+
+    /**
+     * Initial capacity for ID config and atomic maps
+     */
+    private int initialMapCapacity = 512;
+  }
+}

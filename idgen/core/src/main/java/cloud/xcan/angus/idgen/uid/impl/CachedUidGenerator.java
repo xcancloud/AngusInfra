@@ -8,6 +8,7 @@ import cloud.xcan.angus.idgen.exception.IdGenerateException;
 import cloud.xcan.angus.idgen.uid.BitsAllocator;
 import cloud.xcan.angus.idgen.uid.buffer.BufferPaddingExecutor;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferHandler;
+import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedTakeBufferHandler;
 import cloud.xcan.angus.idgen.uid.buffer.RingBuffer;
 import java.util.ArrayList;
@@ -67,9 +68,16 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
   public long getUID() {
     try {
       return ringBuffer.take();
-    } catch (Exception e) {
-      LOGGER.error("Generate unique pk exception. ", e);
-      throw new IdGenerateException(e);
+    } catch (RuntimeException e) {
+      // Fallback to synchronous generation from parent DefaultUidGenerator
+      // This ensures service availability even if ring buffer exhaustion occurs
+      LOGGER.warn("RingBuffer exception occurred, falling back to synchronous UID generation", e);
+      try {
+        return super.nextId();
+      } catch (Exception fallbackError) {
+        LOGGER.error("Both cached and synchronous UID generation failed", fallbackError);
+        throw new IdGenerateException("Unable to generate UID in both cached and synchronous modes", fallbackError);
+      }
     }
   }
 
@@ -120,14 +128,19 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
       bufferPaddingExecutor.setScheduleInterval(scheduleInterval);
     }
 
-    LOGGER.info("Initialized BufferPaddingExecutor. Using schdule:{}, interval:{}", usingSchedule,
+    LOGGER.info("Initialized BufferPaddingExecutor. Using schedule:{}, interval:{}", usingSchedule,
         scheduleInterval);
 
     // set rejected put/take handle policy
     this.ringBuffer.setBufferPaddingExecutor(bufferPaddingExecutor);
-    if (rejectedPutBufferHandler != null) {
-      this.ringBuffer.setRejectedPutHandler(rejectedPutBufferHandler);
+    
+    // Use BlockPolicy by default to prevent UID loss; can be overridden via setter
+    if (rejectedPutBufferHandler == null) {
+      this.rejectedPutBufferHandler = new RejectedPutBufferPolicies.BlockPolicy();
+      LOGGER.info("Using default BlockPolicy for rejected put buffer requests");
     }
+    this.ringBuffer.setRejectedPutHandler(rejectedPutBufferHandler);
+    
     if (rejectedTakeBufferHandler != null) {
       this.ringBuffer.setRejectedTakeHandler(rejectedTakeBufferHandler);
     }

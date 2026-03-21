@@ -26,6 +26,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Conditional({IdGenAutoConfigurer.CoreCondition.class})
 public class IdGenAutoConfigurer {
 
+  private final IdGenProperties idGenProperties;
+
+  public IdGenAutoConfigurer(IdGenProperties idGenProperties) {
+    this.idGenProperties = idGenProperties;
+  }
+
   @Bean
   @ConditionalOnMissingBean
   public InstanceInfoConfig instanceInfoConfig() {
@@ -42,10 +48,38 @@ public class IdGenAutoConfigurer {
   @DependsOn("dataSourceInitializer")
   @ConditionalOnMissingBean
   public CachedUidGenerator cachedUidGenerator(InstanceRepo instanceRepo,
-      InstanceInfoConfig configurer/*, DisposableInstanceIdAssigner instanceIdAssigner*/)
+      InstanceInfoConfig configurer, DisposableInstanceIdAssigner instanceIdAssigner)
       throws Exception {
     CachedUidGenerator generator = new CachedUidGenerator();
-    generator.setInstanceIdAssigner(instanceIdAssigner(instanceRepo));
+    
+    // Apply UID configuration
+    IdGenProperties.UidGeneatorConfig uidConfig = idGenProperties.getUid();
+    generator.setTimeBits(uidConfig.getTimeBits());
+    generator.setWorkerBits(uidConfig.getWorkerBits());
+    generator.setSeqBits(uidConfig.getSeqBits());
+    generator.setEpochStr(uidConfig.getEpochStr());
+    generator.setRetriesNum(uidConfig.getRetriesNum());
+    
+    // Apply cached UID configuration
+    IdGenProperties.CachedUidConfig cachedConfig = idGenProperties.getCached();
+    generator.setBoostPower(cachedConfig.getBoostPower());
+    generator.setScheduleInterval(cachedConfig.getScheduleInterval());
+    
+    // Apply rejection policy
+    String rejectionPolicy = cachedConfig.getRejectionPolicy();
+    if ("EXCEPTION".equalsIgnoreCase(rejectionPolicy)) {
+      generator.setRejectedPutBufferHandler(
+          new cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies.ExceptionPolicy());
+    } else if ("DISCARD".equalsIgnoreCase(rejectionPolicy)) {
+      generator.setRejectedPutBufferHandler(
+          new cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies.DiscardPolicy());
+    } else {
+      // Default to BLOCK policy
+      generator.setRejectedPutBufferHandler(
+          new cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies.BlockPolicy());
+    }
+    
+    generator.setInstanceIdAssigner(instanceIdAssigner);
     generator.setInstanceInfo(new InstanceInfo() {
       @Override
       public InstanceType getInstanceType() {
@@ -85,7 +119,9 @@ public class IdGenAutoConfigurer {
   @ConditionalOnMissingBean
   public BidGenerator bidGenerator(ConfigIdAssigner configIdAssigner,
       @Autowired(required = false) DistributedIncrAssigner distributedIncrAssigner) {
-    return new DefaultBidGenerator(configIdAssigner, distributedIncrAssigner);
+    IdGenProperties.BidGeneratorConfig bidConfig = idGenProperties.getBid();
+    return new DefaultBidGenerator(configIdAssigner, distributedIncrAssigner,
+        bidConfig.getInitialMapCapacity());
   }
 
   static final class CoreCondition implements Condition {
@@ -95,7 +131,7 @@ public class IdGenAutoConfigurer {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata a) {
-      String enabled = context.getEnvironment().getProperty("xcan.id-gen.enabled");
+      String enabled = context.getEnvironment().getProperty("xcan.idgen.enabled");
       return isNotEmpty(enabled) && Boolean.parseBoolean(enabled);
     }
   }

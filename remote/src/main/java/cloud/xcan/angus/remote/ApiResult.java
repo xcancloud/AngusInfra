@@ -11,6 +11,7 @@ import cloud.xcan.angus.remote.message.BizException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.AccessMode;
 import java.io.Serializable;
@@ -98,7 +99,9 @@ public class ApiResult<T> implements Serializable {
   @Schema(description = "Server processing timestamp (date-time string).")
   private Long timestamp;
 
-  @Schema(description = "Extensible map for extra response information.")
+  @JsonDeserialize(using = SafeExtensionsDeserializer.class)
+  @Schema(description = "Extensible map for extra response information. "
+      + "Restricted to safe types only: String, Number, Boolean, null.")
   private Map<String, Object> extensions;
 
   /**

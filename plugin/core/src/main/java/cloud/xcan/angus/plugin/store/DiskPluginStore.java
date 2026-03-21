@@ -43,23 +43,33 @@ public class DiskPluginStore implements PluginStore {
     }
   }
 
+  private Path resolveAndValidate(String pluginId) throws IOException {
+    if (pluginId == null || !pluginId.matches("[a-zA-Z0-9._\\-]+")) {
+      throw new IOException("Invalid pluginId format: " + pluginId);
+    }
+    Path resolved = dir.resolve(pluginId + ".jar").normalize();
+    if (!resolved.startsWith(dir.normalize())) {
+      throw new IOException("Path traversal detected for pluginId: " + pluginId);
+    }
+    return resolved;
+  }
+
   @Override
-  @SuppressWarnings("RedundantThrows")
   public Path getPluginPath(String pluginId) throws IOException {
-    Path p = dir.resolve(pluginId + ".jar");
+    Path p = resolveAndValidate(pluginId);
     return Files.exists(p) ? p : null;
   }
 
   @Override
   public Path storePlugin(String pluginId, byte[] data) throws IOException {
-    Path p = dir.resolve(pluginId + ".jar");
+    Path p = resolveAndValidate(pluginId);
     Files.write(p, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     return p;
   }
 
   @Override
   public boolean deletePlugin(String pluginId) throws IOException {
-    Path p = dir.resolve(pluginId + ".jar");
+    Path p = resolveAndValidate(pluginId);
     if (Files.exists(p)) {
       Files.delete(p);
       return true;

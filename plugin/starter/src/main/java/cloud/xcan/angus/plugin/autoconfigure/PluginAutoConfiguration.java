@@ -64,12 +64,8 @@ public class PluginAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
-  public PluginManagementService pluginManagementService(ApplicationContext applicationContext) {
-    try {
-      PluginManager pm = applicationContext.getBean(PluginManager.class);
-      return new PluginManagementServiceImpl(pm);
-    } catch (Exception e) {
-      return null;
-    }
+  @ConditionalOnBean(PluginManager.class)
+  public PluginManagementService pluginManagementService(PluginManager pluginManager) {
+    return new PluginManagementServiceImpl(pluginManager);
   }
 }

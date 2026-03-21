@@ -36,6 +36,7 @@ public class JpaPluginStore implements PluginStore {
     }
     PluginEntity e = opt.get();
     Path tmp = Files.createTempFile("plugin-" + pluginId + "-", ".jar");
+    tmp.toFile().deleteOnExit();
     Files.write(tmp, e.getData());
     log.debug("Wrote plugin {} to temp path {}", pluginId, tmp);
     return tmp;
@@ -46,6 +47,7 @@ public class JpaPluginStore implements PluginStore {
     PluginEntity e = new PluginEntity(pluginId, pluginId, null, data, LocalDateTime.now());
     repository.save(e);
     Path tmp = Files.createTempFile("plugin-store-" + pluginId + "-", ".jar");
+    tmp.toFile().deleteOnExit();
     Files.write(tmp, data);
     return tmp;
   }

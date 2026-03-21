@@ -139,11 +139,11 @@ public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
 ```
 
 **修复清单** (预计4-6小时):
-- [ ] 移除所有Str0混淆，改用明确的String常量或@Value配置
-- [ ] 审计代码中的所有十六进制魔数，确保都被解锁
-- [ ] 将所有硬编码的路径、属性名改为@ConfigurationProperties
-- [ ] 添加ConfigProperties类用于管理这些值
-- [ ] 更新所有相关文档/README
+- [x] 移除所有Str0混淆，改用明确的String常量或@Value配置
+- [x] 审计代码中的所有十六进制魔数，确保都被解锁
+- [x] 将所有硬编码的路径、属性名改为@ConfigurationProperties
+- [x] 添加ConfigProperties类用于管理这些值
+- [x] 更新所有相关文档/README
 
 ---
 

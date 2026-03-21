@@ -3,6 +3,7 @@ package cloud.xcan.angus.plugin.web;
 import static cloud.xcan.angus.plugin.api.RestfulApiResult.SYSTEM_ERROR_CODE;
 
 import cloud.xcan.angus.plugin.api.RestfulApiResult;
+import cloud.xcan.angus.plugin.autoconfigure.PluginProperties;
 import cloud.xcan.angus.plugin.exception.PluginException;
 import cloud.xcan.angus.plugin.management.PluginManagementService;
 import cloud.xcan.angus.plugin.management.PluginStats;
@@ -28,10 +29,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class PluginManagementController {
 
   private final PluginManagementService managementService;
+  private final PluginProperties pluginProperties;
 
   @Autowired
-  public PluginManagementController(PluginManagementService managementService) {
+  public PluginManagementController(PluginManagementService managementService,
+      PluginProperties pluginProperties) {
     this.managementService = managementService;
+    this.pluginProperties = pluginProperties;
   }
 
   @Operation(operationId = "installPlugin", summary = "Install plugin",
@@ -42,6 +46,11 @@ public class PluginManagementController {
       @Parameter(description = "Plugin identifier", required = true) @RequestParam("pluginId") String pluginId,
       @Parameter(description = "Plugin jar file", required = true) @RequestParam("file") MultipartFile file) {
     try {
+      // Validate upload size
+      if (file.getSize() > pluginProperties.getMaxUploadSize()) {
+        return RestfulApiResult.error(SYSTEM_ERROR_CODE, "File size exceeds maximum allowed: " +
+            pluginProperties.getMaxUploadSize() + " bytes");
+      }
       PluginInfo pluginInfo = managementService.install(pluginId, file.getBytes());
       return RestfulApiResult.success(pluginInfo);
     } catch (Exception e) {

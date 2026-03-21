@@ -24,7 +24,18 @@
     <module>validator</module>
     <module>remote</module>
     <module>idgen</module>
+    
+    <!-- Core Module Refactoring: New Sub-modules -->
+    <module>core-base</module>
+    <module>persistence-jdbc-starter</module>
+    <module>persistence-jpa-starter</module>
+    <module>feign-integration-starter</module>
+    <module>jackson-customizer</module>
+    <module>observability-starter</module>
+    
+    <!-- Core Aggregator Module (depends on all sub-modules above) -->
     <module>core</module>
+    
     <module>cache</module>
     <module>job</module>
     <module>queue</module>

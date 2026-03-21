@@ -80,7 +80,10 @@ public class QueueController {
     if (leased == 0) {
       return RestfulApiResult.success(List.of());
     }
-    return RestfulApiResult.success(queueService.listLeasedByOwner(req.getOwner(), leased));
+    // Use pollBatch as the upper bound: the just-leased count may under-count if the owner had
+    // pre-existing leases, causing listLeasedByOwner to return old messages instead of new ones.
+    int listLimit = Optional.ofNullable(req.getLimit()).orElse(properties.getPollBatch());
+    return RestfulApiResult.success(queueService.listLeasedByOwner(req.getOwner(), listLimit));
   }
 
   @Operation(operationId = "ackMessages", summary = "Acknowledge messages", description = "Mark messages as DONE.",

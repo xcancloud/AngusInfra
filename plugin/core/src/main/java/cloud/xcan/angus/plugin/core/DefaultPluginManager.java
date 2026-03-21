@@ -5,11 +5,18 @@ import cloud.xcan.angus.plugin.api.PluginContext;
 import cloud.xcan.angus.plugin.api.PluginManager;
 import cloud.xcan.angus.plugin.api.RestfulPlugin;
 import cloud.xcan.angus.plugin.autoconfigure.PluginProperties;
+import cloud.xcan.angus.plugin.event.PluginEvent;
+import cloud.xcan.angus.plugin.event.PluginFailedEvent;
+import cloud.xcan.angus.plugin.event.PluginLoadedEvent;
+import cloud.xcan.angus.plugin.event.PluginStartedEvent;
+import cloud.xcan.angus.plugin.event.PluginStoppedEvent;
+import cloud.xcan.angus.plugin.event.PluginUnloadedEvent;
 import cloud.xcan.angus.plugin.exception.PluginException;
 import cloud.xcan.angus.plugin.model.PluginDescriptor;
 import cloud.xcan.angus.plugin.model.PluginInfo;
 import cloud.xcan.angus.plugin.model.PluginState;
 import cloud.xcan.angus.plugin.store.PluginStore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,7 +120,7 @@ public class DefaultPluginManager implements PluginManager {
         try {
           loadPlugin(pluginFile);
         } catch (Exception e) {
-          log.error("Failed to load plugin: " + pluginFile, e);
+          log.error("Failed to load plugin: {}", pluginFile, e);
         }
       }
     } catch (IOException e) {
@@ -173,10 +180,17 @@ public class DefaultPluginManager implements PluginManager {
         }
       }
 
-      log.info("Plugin {} (v{}) loaded successfully", descriptor.getId(), descriptor.getVersion());
+      // After plugin initialization, auto-start and publish events
+      log.info("Plugin {} (v{}) loaded and started", descriptor.getId(), descriptor.getVersion());
+      publishEvent(new PluginLoadedEvent(this, descriptor.getId(), descriptor.getName(),
+          descriptor.getVersion()));
       return true;
+    } catch (PluginException e) {
+      publishEvent(new PluginFailedEvent(this, descriptor.getId(), descriptor.getName(),
+          descriptor.getVersion(), "start failed", e));
+      return false;
     } catch (Exception e) {
-      log.error("Failed to load plugin from: " + pluginPath, e);
+      log.error("Failed to load plugin from: {}", pluginPath, e);
       return false;
     }
   }
@@ -186,6 +200,7 @@ public class DefaultPluginManager implements PluginManager {
    */
   @Override
   public boolean installPlugin(String pluginId, byte[] data) throws PluginException {
+    validatePluginId(pluginId);
     try {
       Path stored;
       if (pluginStore != null) {
@@ -210,6 +225,7 @@ public class DefaultPluginManager implements PluginManager {
    */
   @Override
   public boolean removePlugin(String pluginId, boolean removeFromStore) throws PluginException {
+    validatePluginId(pluginId);
     boolean unloaded = unloadPlugin(pluginId);
     if (!unloaded) {
       return false;
@@ -241,39 +257,19 @@ public class DefaultPluginManager implements PluginManager {
         entry = jarFile.getJarEntry("META-INF/plugin.json");
       }
       if (entry != null) {
-        String json = new String(jarFile.getInputStream(entry).readAllBytes());
-        // simple parse - naive; in full implementation use Jackson or Gson
-        PluginDescriptor d = new PluginDescriptor();
-        // very basic parsing to get id and pluginClass if present
-        if (json.contains("\"id\"")) {
-          d.setId(extract(json, "id"));
-        }
-        if (json.contains("\"pluginClass\"")) {
-          d.setPluginClass(extract(json, "pluginClass"));
-        }
-        if (json.contains("\"version\"")) {
-          d.setVersion(extract(json, "version"));
-        }
-        return d;
+        byte[] bytes = jarFile.getInputStream(entry).readAllBytes();
+        return new ObjectMapper().readValue(bytes, PluginDescriptor.class);
       }
     } catch (Exception e) {
-      log.error("Failed to read plugin descriptor", e);
+      log.error("Failed to read plugin descriptor from: {}", pluginPath, e);
     }
     return null;
   }
 
-  private String extract(String json, String key) {
-    String pattern = "\"" + key + "\"\\s*:\\s*\"";
-    int idx = json.indexOf(pattern);
-    if (idx < 0) {
-      return null;
+  private static void validatePluginId(String pluginId) throws PluginException {
+    if (pluginId == null || !pluginId.matches("[a-zA-Z0-9._\\-]+")) {
+      throw new PluginException("Invalid pluginId format: " + pluginId);
     }
-    int start = idx + pattern.length();
-    int end = json.indexOf('"', start);
-    if (end < 0) {
-      return null;
-    }
-    return json.substring(start, end);
   }
 
   private boolean validatePlugin(PluginDescriptor descriptor) {
@@ -285,10 +281,52 @@ public class DefaultPluginManager implements PluginManager {
       log.error("Plugin class is required");
       return false;
     }
+    
+    // P1-8: Validate dependencies if present
+    if (descriptor.getDependencies() != null && !descriptor.getDependencies().isEmpty()) {
+      for (String depId : descriptor.getDependencies()) {
+        if (!hasPlugin(depId)) {
+          log.warn("Plugin {} dependency not found: {}", descriptor.getId(), depId);
+        }
+      }
+    }
+    
+    // P1-8: Check minimum system version
+    if (descriptor.getMinSystemVersion() != null && !descriptor.getMinSystemVersion().isEmpty()) {
+      String systemVersion = properties.getDefaultConfiguration().getOrDefault("system.version", "1.0.0").toString();
+      if (isVersionLess(systemVersion, descriptor.getMinSystemVersion())) {
+        log.warn("Plugin {} requires system version {}, current is {}", descriptor.getId(),
+            descriptor.getMinSystemVersion(), systemVersion);
+      }
+    }
+    
+    // P1-8: Warn about required permissions
+    if (descriptor.getRequiredPermissions() != null && !descriptor.getRequiredPermissions().isEmpty()) {
+      if (properties.isEnableSecurityCheck()) {
+        log.info("Plugin {} requires permissions: {}", descriptor.getId(),
+            String.join(", ", descriptor.getRequiredPermissions()));
+      }
+    }
+    
     if (properties.isValidateOnStartup()) {
-      log.debug("Checking plugin metadata: {}", descriptor.getId());
+      log.debug("Validation passed for plugin: {}", descriptor.getId());
     }
     return true;
+  }
+
+  private boolean isVersionLess(String actual, String required) {
+    String[] actualParts = actual.split("\\.");
+    String[] requiredParts = required.split("\\.");
+    for (int i = 0; i < Math.max(actualParts.length, requiredParts.length); i++) {
+      int actualNum = i < actualParts.length ? Integer.parseInt(actualParts[i].replaceAll("\\D", "0")) : 0;
+      int requiredNum = i < requiredParts.length ? Integer.parseInt(requiredParts[i].replaceAll("\\D", "0")) : 0;
+      if (actualNum < requiredNum) {
+        return true;
+      } else if (actualNum > requiredNum) {
+        return false;
+      }
+    }
+    return false;
   }
 
   private PluginClassLoader createPluginClassLoader(Path pluginPath, PluginDescriptor descriptor)
@@ -326,13 +364,53 @@ public class DefaultPluginManager implements PluginManager {
   }
 
   @Override
-  public boolean startPlugin(String pluginId) {
-    return false;
+  public boolean startPlugin(String pluginId) throws PluginException {
+    PluginWrapper wrapper = plugins.get(pluginId);
+    if (wrapper == null) {
+      log.warn("Plugin not found for start: {}", pluginId);
+      return false;
+    }
+    if (wrapper.getState() == PluginState.STARTED) {
+      log.debug("Plugin {} already started", pluginId);
+      return true;
+    }
+    try {
+      wrapper.getPlugin().start();
+      wrapper.setState(PluginState.STARTED);
+      wrapper.setStartedAt(LocalDateTime.now());
+      log.info("Plugin {} started", pluginId);
+      publishEvent(new PluginStartedEvent(this, pluginId, wrapper.getDescriptor().getName(),
+          wrapper.getDescriptor().getVersion()));
+      return true;
+    } catch (PluginException e) {
+      wrapper.setState(PluginState.ERROR);
+      log.error("Failed to start plugin {}: {}", pluginId, e.getMessage(), e);
+      throw e;
+    }
   }
 
   @Override
-  public boolean stopPlugin(String pluginId) {
-    return false;
+  public boolean stopPlugin(String pluginId) throws PluginException {
+    PluginWrapper wrapper = plugins.get(pluginId);
+    if (wrapper == null) {
+      log.warn("Plugin not found for stop: {}", pluginId);
+      return false;
+    }
+    if (wrapper.getState() == PluginState.STOPPED) {
+      return true;
+    }
+    try {
+      wrapper.getPlugin().stop();
+      wrapper.setState(PluginState.STOPPED);
+      log.info("Plugin {} stopped", pluginId);
+      publishEvent(new PluginStoppedEvent(this, pluginId, wrapper.getDescriptor().getName(),
+          wrapper.getDescriptor().getVersion()));
+      return true;
+    } catch (PluginException e) {
+      wrapper.setState(PluginState.ERROR);
+      log.error("Failed to stop plugin {}: {}", pluginId, e.getMessage(), e);
+      throw e;
+    }
   }
 
   @Override
@@ -365,16 +443,29 @@ public class DefaultPluginManager implements PluginManager {
         log.warn("Error unregistering REST endpoints for plugin {}: {}", pluginId, e.getMessage());
       }
 
-      // Close and remove classloader
+      // Close and remove classloader, then clean up any temp jar extracted by JpaPluginStore
       PluginClassLoader classLoader = classLoaders.remove(pluginId);
       if (classLoader != null) {
         try {
           classLoader.close();
         } catch (Exception ignored) {
         }
+        Path pluginPath = wrapper.getPluginPath();
+        if (pluginPath != null) {
+          try {
+            Path tmpDir = Path.of(System.getProperty("java.io.tmpdir", ""));
+            if (!tmpDir.toString().isEmpty() && pluginPath.startsWith(tmpDir)) {
+              Files.deleteIfExists(pluginPath);
+            }
+          } catch (Exception e) {
+            log.debug("Could not delete temp plugin file {}: {}", pluginPath, e.getMessage());
+          }
+        }
       }
 
       log.info("Plugin {} unloaded", pluginId);
+      publishEvent(new PluginUnloadedEvent(this, pluginId, wrapper.getDescriptor().getName(),
+          wrapper.getDescriptor().getVersion()));
       return true;
     } catch (Exception e) {
       log.error("Failed to unload plugin {}", pluginId, e);
@@ -407,12 +498,30 @@ public class DefaultPluginManager implements PluginManager {
       PluginDescriptor d = w.getDescriptor();
       out.add(PluginInfo.builder()
           .id(d.getId())
+          .name(d.getName())
           .version(d.getVersion())
+          .description(d.getDescription())
+          .author(d.getAuthor())
+          .state(w.getState())
+          .loadedAt(w.getLoadedAt())
+          .startedAt(w.getStartedAt())
           .pluginClass(d.getPluginClass())
+          .dependencies(d.getDependencies())
+          .apiPrefix(d.getName() != null ? "/api/plugins/" + d.getId() : null)
           .endpointCount(restEndpointManager.getPluginEndpoints(d.getId()).size())
+          .filePath(w.getPluginPath() != null ? w.getPluginPath().toString() : null)
+          .fileSize(w.getPluginPath() != null ? getFileSize(w.getPluginPath()) : null)
           .build());
     }
     return out;
+  }
+
+  private Long getFileSize(Path path) {
+    try {
+      return Files.size(path);
+    } catch (IOException e) {
+      return null;
+    }
   }
 
   @Override
@@ -424,14 +533,32 @@ public class DefaultPluginManager implements PluginManager {
     PluginDescriptor d = w.getDescriptor();
     return PluginInfo.builder()
         .id(d.getId())
+        .name(d.getName())
         .version(d.getVersion())
+        .description(d.getDescription())
+        .author(d.getAuthor())
+        .state(w.getState())
+        .loadedAt(w.getLoadedAt())
+        .startedAt(w.getStartedAt())
         .pluginClass(d.getPluginClass())
+        .dependencies(d.getDependencies())
+        .apiPrefix(d.getName() != null ? "/api/plugins/" + d.getId() : null)
         .endpointCount(restEndpointManager.getPluginEndpoints(d.getId()).size())
+        .filePath(w.getPluginPath() != null ? w.getPluginPath().toString() : null)
+        .fileSize(w.getPluginPath() != null ? getFileSize(w.getPluginPath()) : null)
         .build();
   }
 
   @Override
   public boolean hasPlugin(String pluginId) {
     return plugins.containsKey(pluginId);
+  }
+
+  private void publishEvent(PluginEvent event) {
+    try {
+      applicationContext.publishEvent(event);
+    } catch (Exception e) {
+      log.debug("Failed to publish plugin event: {}", event.getClass().getSimpleName(), e);
+    }
   }
 }

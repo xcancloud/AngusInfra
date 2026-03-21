@@ -9,7 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import cloud.xcan.angus.queue.starter.service.AdminService;
+import cloud.xcan.angus.queue.core.service.QueueAdminService;
 import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,14 +21,14 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class AdminControllerTest {
 
   private MockMvc mvc;
-  private AdminService adminService;
+  private QueueAdminService adminService;
 
   @BeforeEach
   void setup() {
     // Disable Boot logging early just in case
     System.setProperty("org.springframework.boot.logging.LoggingSystem", "none");
     System.setProperty("logging.system", "none");
-    adminService = Mockito.mock(AdminService.class);
+    adminService = Mockito.mock(QueueAdminService.class);
     AdminController controller = new AdminController(adminService);
     mvc = MockMvcBuilders.standaloneSetup(controller).build();
   }

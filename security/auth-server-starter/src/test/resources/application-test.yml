@@ -1,0 +1,38 @@
+spring:
+  config:
+    import: classpath:application.yml
+  datasource:
+    url: jdbc:h2:mem:test;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+    initialization-mode: always
+  h2:
+    console:
+      enabled: false
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql
+      
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
+xcan:
+  auth:
+    innerapi:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    cloud.xcan.angus.security: DEBUG
+    org.springframework.security: INFO
+    org.springframework.security.oauth2: DEBUG

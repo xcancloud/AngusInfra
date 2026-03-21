@@ -1,6 +1,7 @@
 package cloud.xcan.angus.queue.core.service;
 
 import cloud.xcan.angus.queue.core.model.MessageData;
+import cloud.xcan.angus.queue.core.model.SendMessage;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
 import java.time.Instant;
 import java.util.Collection;
@@ -17,8 +18,17 @@ public class DefaultQueueService implements cloud.xcan.angus.queue.core.service.
   @Override
   public Long send(String topic, String partitionKey, String payload, String headers, int priority,
       Instant visibleAt, String idempotencyKey, int maxAttempts, int numPartitions) {
-    return adapter.saveMessage(topic, partitionKey, payload, headers, priority, visibleAt,
-        idempotencyKey, maxAttempts, numPartitions);
+    return adapter.saveMessage(SendMessage.builder()
+        .topic(topic)
+        .partitionKey(partitionKey)
+        .payload(payload)
+        .headers(headers)
+        .priority(priority)
+        .visibleAt(visibleAt)
+        .idempotencyKey(idempotencyKey)
+        .maxAttempts(maxAttempts)
+        .numPartitions(numPartitions)
+        .build());
   }
 
   @Override
@@ -29,7 +39,7 @@ public class DefaultQueueService implements cloud.xcan.angus.queue.core.service.
 
   @Override
   public List<MessageData> listLeasedByOwner(String owner, int limit) {
-    return adapter.findLeasedByOwner(owner, Instant.now(), limit);
+    return adapter.findLeasedByOwner(owner, limit);
   }
 
   @Override

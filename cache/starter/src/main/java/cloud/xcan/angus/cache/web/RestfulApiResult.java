@@ -31,7 +31,7 @@ public class RestfulApiResult<T> implements Serializable {
   public static final String OK_CODE = "S";
   public static final String OK_MSG = "Success";
 
-  public static final String PROTOCOL_ERROR_CODE = "'E0'";
+  public static final String PROTOCOL_ERROR_CODE = "E0";
   public static final String PROTOCOL_ERROR_MESSAGE = "Protocol error (bad request)";
 
   public static final String BUSINESS_ERROR_CODE = "E1";

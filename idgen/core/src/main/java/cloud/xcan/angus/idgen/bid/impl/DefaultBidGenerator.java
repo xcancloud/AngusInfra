@@ -24,6 +24,13 @@ import java.util.stream.Collectors;
 public class DefaultBidGenerator extends AbstractBidGenerator {
 
   /**
+   * Default initial capacity for id config and atomic maps
+   * Configurable to prevent frequent rehashing under high concurrency
+   */
+  private static final int DEFAULT_INITIAL_CAPACITY = 512;
+  private static final int DEFAULT_CONCURRENCY_LEVEL = 128;
+
+  /**
    * DistributedLock object
    */
   private final Object monitor = new Object();
@@ -38,14 +45,38 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
    */
   private final DistributedIncrAssigner distributedIncrAssigner;
 
-  private final Map<String, IdConfig> idConfigMap = new ConcurrentHashMap<>(1024, LOAD_FACTOR, 128);
-  private final Map<String, AtomicLong> idAtomicMap = new ConcurrentHashMap<>(1024, LOAD_FACTOR,
-      128);
+  /**
+   * Configurable initial capacity for better performance under high concurrency
+   */
+  private final int initialMapCapacity;
 
+  private final Map<String, IdConfig> idConfigMap;
+  private final Map<String, AtomicLong> idAtomicMap;
+
+  /**
+   * Constructor with default capacity
+   */
   public DefaultBidGenerator(ConfigIdAssigner configIdAssigner,
       DistributedIncrAssigner distributedIncrAssigner) {
+    this(configIdAssigner, distributedIncrAssigner, DEFAULT_INITIAL_CAPACITY);
+  }
+
+  /**
+   * Constructor with customizable capacity
+   * 
+   * @param configIdAssigner the config id assigner
+   * @param distributedIncrAssigner the distributed increment assigner
+   * @param initialMapCapacity initial capacity for id and atomic maps
+   */
+  public DefaultBidGenerator(ConfigIdAssigner configIdAssigner,
+      DistributedIncrAssigner distributedIncrAssigner, int initialMapCapacity) {
     this.configIdAssigner = configIdAssigner;
     this.distributedIncrAssigner = distributedIncrAssigner;
+    this.initialMapCapacity = initialMapCapacity;
+    
+    // Initialize maps with configurable capacity to prevent frequent rehashing
+    this.idConfigMap = new ConcurrentHashMap<>(initialMapCapacity, LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL);
+    this.idAtomicMap = new ConcurrentHashMap<>(initialMapCapacity, LOAD_FACTOR, DEFAULT_CONCURRENCY_LEVEL);
   }
 
   @Override

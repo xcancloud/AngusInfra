@@ -30,3 +30,19 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### Core Refactoring: Temporary Files ###
+migrate-to-core-base.sh
+migrate-remaining-modules.sh
+core/pom.xml.backup
+core/pom.xml.aggregator
+CORE_MODULE_REFACTORING_PLAN.md
+CORE_REFACTORING_SUMMARY.md
+CORE_AGGREGATION_GUIDE.md
+CORE_AGGREGATION_EXECUTION_GUIDE.md
+MIGRATION_GUIDE_PHASE1.md
+IMPLEMENTATION_REPORT.md
+FINAL_COMPLETION_REPORT.md
+P0_ISSUES_FIX_SUMMARY.md
+ARCHITECTURE_REVIEW_REPORT.md
+NEXT_STEPS.md

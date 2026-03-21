@@ -1,6 +1,6 @@
 package cloud.xcan.angus.queue.starter.web;
 
-import cloud.xcan.angus.queue.starter.service.AdminService;
+import cloud.xcan.angus.queue.core.service.QueueAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotBlank;
@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "/api/v1/queue/admin", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AdminController {
 
-  private final AdminService adminService;
+  private final QueueAdminService adminService;
 
-  public AdminController(AdminService adminService) {
+  public AdminController(QueueAdminService adminService) {
     this.adminService = adminService;
   }
 

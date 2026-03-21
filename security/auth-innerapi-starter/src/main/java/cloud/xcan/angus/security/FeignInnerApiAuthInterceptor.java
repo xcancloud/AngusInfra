@@ -1,92 +1,135 @@
 package cloud.xcan.angus.security;
 
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.INNER_API_TOKEN_CLIENT_SCOPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTHORIZATION;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
-import cloud.xcan.angus.api.obf.Str0;
-import cloud.xcan.angus.remote.message.SysException;
-import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
-import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
-import cloud.xcan.angus.security.remote.ClientSignInnerApiRemote;
+import cloud.xcan.angus.security.cache.TokenCacheManager;
+import cloud.xcan.angus.security.config.InnerApiAuthProperties;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.ConfigurableEnvironment;
 
+/**
+ * Feign Request Interceptor for Inner API Authentication
+ * 
+ * This interceptor automatically injects OAuth2 Bearer tokens into Feign requests
+ * that target inner API endpoints (service-to-service communication).
+ * 
+ * Features:
+ * - Automatic token injection for configured request paths
+ * - Thread-safe token caching and refresh
+ * - Exponential backoff retry on failures
+ * - Configuration-driven path and timeout management
+ * - Comprehensive logging for monitoring
+ * 
+ * Configuration:
+ * Place the following in application.yml:
+ * ```yaml
+ * xcan:
+ *   auth:
+ *     innerapi:
+ *       enabled: true
+ *       request-path-prefixes:
+ *         - /innerapi
+ *         - /system-api
+ *       token-cache-interval: 15m
+ *       token-refresh-threshold: 2m
+ *       max-retries: 3
+ *       retry-interval: 1s
+ *       connection-timeout: 5s
+ *       read-timeout: 10s
+ * ```
+ * 
+ * Environment Variables:
+ * - OAUTH2_INNER_API_CLIENT_ID: OAuth2 client ID for inner API
+ * - OAUTH2_INNER_API_CLIENT_SECRET: OAuth2 client secret for inner API
+ * 
+ * Usage:
+ * Spring automatically registers this interceptor with Feign clients
+ * if InnerApiAuthProperties is properly configured.
+ * 
+ * @author Framework Team
+ * @version 2.0 (Redesigned with TokenCacheManager)
+ * @since 2025-03-21
+ * @see TokenCacheManager
+ * @see InnerApiAuthProperties
+ */
 @Slf4j
 public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
 
-  private String innerApiToken;
-  private long lastedAuthTime = 0;
+  private final TokenCacheManager tokenCacheManager;
+  private final InnerApiAuthProperties properties;
+
   /**
-   * NOTE: The validity period of the registered client token cannot be less than 15 minutes.
+   * Constructor for FeignInnerApiAuthInterceptor
+   * 
+   * @param tokenCacheManager manages OAuth2 token caching and refresh
+   * @param properties configuration properties for path matching
    */
-  private static final long maxAuthTimeInterval = 15 * 60 * 1000;
+  public FeignInnerApiAuthInterceptor(
+      TokenCacheManager tokenCacheManager,
+      InnerApiAuthProperties properties) {
+    this.tokenCacheManager = tokenCacheManager;
+    this.properties = properties;
 
-  private final ClientSignInnerApiRemote clientSignInnerApiRemote;
-  private final ConfigurableEnvironment configurableEnvironment;
-
-  public FeignInnerApiAuthInterceptor(ClientSignInnerApiRemote clientSignInnerApiRemote,
-      ConfigurableEnvironment configurableEnvironment) {
-    this.clientSignInnerApiRemote = clientSignInnerApiRemote;
-    this.configurableEnvironment = configurableEnvironment;
+    log.info("FeignInnerApiAuthInterceptor initialized");
   }
 
+  /**
+   * Apply the interceptor to the Feign request template.
+   * 
+   * This method is called by Feign for every outgoing request.
+   * It decides whether to inject the Authorization header based on
+   * the request path and configured prefixes.
+   * 
+   * Process:
+   * 1. Check if inner API authentication is enabled
+   * 2. Check if request path matches configured prefixes
+   * 3. If matched, fetch token from cache manager (with retry logic)
+   * 4. Inject token as "Authorization: Bearer <token>" header
+   * 
+   * Error Handling:
+   * - If token retrieval fails, the exception is propagated
+   * - The calling code can handle this appropriately (e.g., circuit breaker)
+   * - No silent failures to ensure visibility of authentication issues
+   * 
+   * @param template Feign request template to modify
+   * @throws RuntimeException if token retrieval fails (from tokenCacheManager)
+   */
   @Override
   public void apply(RequestTemplate template) {
-    if (template.path().startsWith(
-        new Str0(new long[]{0x5AEF5BBB0A956300L, 0x10635E7DEFBB4F34L,
-            0x843A47A2DCB5427FL}).toString() /* => "/innerapi" */)) {
-      template.header(AUTHORIZATION, getToken());
+    // Quick check: Is feature enabled?
+    if (!properties.isEnabled()) {
+      log.trace("Inner API authentication is disabled");
+      return;
     }
-  }
 
-  private synchronized String getToken() {
-    if (this.innerApiToken != null
-        // Control to obtain once every 15 minutes
-        && System.currentTimeMillis() - this.lastedAuthTime <= maxAuthTimeInterval) {
-      return this.innerApiToken;
+    // Quick check: Should we intercept this request?
+    if (!properties.shouldIntercept(template.path())) {
+      log.trace("Request path '{}' does not match any configured prefixes", template.path());
+      return;
     }
+
+    // Path matches configured prefix, inject authorization header
+    log.debug("Intercepting request to path: {}", template.path());
 
     try {
-      String clientId = configurableEnvironment.getProperty(new Str0(
-              new long[]{0xA4A3DFFE63E793EDL, 0x42A229398298E137L, 0x89C39B017468BA6CL,
-                  0xEEBECE43F1DD8FECL,
-                  0xFD5889DFB33A78C6L}).toString() /* => "OAUTH2_INNER_API_CLIENT_ID" */,
-          configurableEnvironment.getProperty(new Str0(
-              new long[]{0x608746A7C72E6744L, 0xEE1865EE85F5402FL, 0x150C960220F4CDE7L,
-                  0xBCD2D68C7EC35ADEL,
-                  0x5AF747C4DD38CF8CL}).toString() /* => "OAUTH2_INTROSPECT_CLIENT_ID" */));
-      String clientSecret = configurableEnvironment.getProperty(new Str0(
-              new long[]{0x63AA8BE08F802DECL, 0xB34AD15C5DD57F6FL, 0xE668234D712462E1L,
-                  0x366530F64EED189BL,
-                  0x2E03BD2E29019BF8L}).toString() /* => "OAUTH2_INNER_API_CLIENT_SECRET" */,
-          configurableEnvironment.getProperty(new Str0(
-              new long[]{0xC34A5C33A818AAFAL, 0x7DFB824060C68CB0L, 0x34BEA2C11E7D0913L,
-                  0x14C5027BF1A09458L,
-                  0xF44CD289EEBF6322L}).toString() /* => "OAUTH2_INTROSPECT_CLIENT_SECRET" */));
+      // Get token with automatic refresh and retry logic
+      String token = tokenCacheManager.getTokenWithRetry();
 
-      if (isEmpty(clientId) || isEmpty(clientSecret)) {
-        throw new SysException(new Str0(
-            new long[]{0x59531F583F786268L, 0x624DEB1A94D38574L, 0x619A40DC42E7AF09L,
-                0x602D638522A61D1CL, 0xEB82552077A2AF0CL, 0x687721806D40E6E6L, 0x9387D19B815A2FC3L,
-                0xDECBF158CCF816FFL}).toString() /* => "The inner API authentication client is not configured" */);
-      }
+      // Inject Authorization header
+      template.header(AUTHORIZATION, token);
 
-      ClientSignInVo result = clientSignInnerApiRemote.signin(
-          new ClientSignInDto().setClientId(clientId).setClientSecret(clientSecret)
-              .setScope(INNER_API_TOKEN_CLIENT_SCOPE)).orElseContentThrow();
-      this.innerApiToken = BEARER_TOKEN_TYPE + " " + result.getAccessToken();
-      this.lastedAuthTime = System.currentTimeMillis();
-      return this.innerApiToken;
+      log.debug("Authorization header injected for path: {}", template.path());
+
     } catch (Exception e) {
-      log.error(new Str0(new long[]{0x92DEC6DBFDA72EB2L, 0x3EF58D3DA0284DF5L,
-          0x9302A2107A4C3AE2L, 0x7540DE3CF4E60FCAL,
-          0xD982E729C5D60A7DL}).toString() /* => "Inner API authentication failed" */, e);
+      // Token retrieval failed despite retries
+      // Propagate exception to fail fast and provide visibility
+      log.error(
+          "Failed to obtain authentication token for inner API request to: {}. "
+              + "Request will fail. Error: {}",
+          template.path(), e.getMessage(), e);
+      throw new RuntimeException(
+          "Inner API authentication failed for path: " + template.path(), e);
     }
-    return "";
   }
-
 }

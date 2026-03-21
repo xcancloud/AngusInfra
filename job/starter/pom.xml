@@ -56,11 +56,13 @@
       <artifactId>jakarta.persistence-api</artifactId>
     </dependency>
 
-    <!-- Embedded H2 for convenience in starter; consumers can override with their DB -->
+    <!-- Embedded H2 for convenience in starter; consumers can override with their DB.
+         Marked optional so it is not forced on downstream projects that bring their own DB. -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <scope>runtime</scope>
+      <optional>true</optional>
     </dependency>
 
     <!-- Lombok -->

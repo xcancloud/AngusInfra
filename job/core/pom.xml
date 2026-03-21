@@ -53,6 +53,19 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
 
+    <!-- Jakarta Validation API (for DTO constraint annotations) -->
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+    </dependency>
+
+    <!-- Spring Boot Autoconfigure (for @ConfigurationProperties) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <optional>true</optional>
+    </dependency>
+
     <!-- Lombok -->
     <dependency>
       <groupId>org.projectlombok</groupId>

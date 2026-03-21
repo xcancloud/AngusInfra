@@ -2,8 +2,12 @@ package cloud.xcan.angus.queue.starter.adapter;
 
 import cloud.xcan.angus.queue.core.entity.DeadLetterEntity;
 import cloud.xcan.angus.queue.core.entity.MessageEntity;
+import cloud.xcan.angus.queue.core.entity.MessageStatus;
 import cloud.xcan.angus.queue.core.model.DeadLetterData;
 import cloud.xcan.angus.queue.core.model.MessageData;
+import cloud.xcan.angus.queue.core.model.PartitionCount;
+import cloud.xcan.angus.queue.core.model.SendMessage;
+import cloud.xcan.angus.queue.core.model.StatusCount;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
 import cloud.xcan.angus.queue.core.spi.SoftDeleteDlqSupport;
 import cloud.xcan.angus.queue.core.util.Partitioner;
@@ -33,7 +37,7 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
     d.setPriority(e.getPriority());
     d.setPayload(e.getPayload());
     d.setHeaders(e.getHeaders());
-    d.setStatus(e.getStatus());
+    d.setStatus(e.getStatus() != null ? e.getStatus().getCode() : null);
     d.setVisibleAt(e.getVisibleAt());
     d.setLeaseUntil(e.getLeaseUntil());
     d.setLeaseOwner(e.getLeaseOwner());
@@ -45,26 +49,30 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
     return d;
   }
 
+  // P1-2: accept SendMessage DTO instead of 9 positional parameters
   @Override
   @Transactional
-  public Long saveMessage(String topic, String partitionKey, String payload, String headers,
-      int priority, Instant visibleAt, String idempotencyKey, int maxAttempts, int numPartitions) {
+  public Long saveMessage(SendMessage msg) {
     MessageEntity entity = new MessageEntity();
-    entity.setTopic(topic);
-    int partition = Partitioner.partition(topic, partitionKey, Math.max(1, numPartitions));
+    entity.setTopic(msg.getTopic());
+    int numPartitions = msg.getNumPartitions() == null ? 1 : msg.getNumPartitions();
+    int partition = Partitioner.partition(msg.getTopic(), msg.getPartitionKey(),
+        Math.max(1, numPartitions));
     entity.setPartitionId(partition);
-    entity.setPriority(priority);
-    entity.setPayload(payload);
-    entity.setHeaders(headers);
-    entity.setStatus(0);
-    entity.setVisibleAt(visibleAt != null ? visibleAt : Instant.now());
+    entity.setPriority(msg.getPriority() == null ? 0 : msg.getPriority());
+    entity.setPayload(msg.getPayload());
+    entity.setHeaders(msg.getHeaders());
+    entity.setStatus(MessageStatus.READY);   // P1-1: use enum constant
+    Instant now = Instant.now();
+    entity.setVisibleAt(msg.getVisibleAt() != null ? msg.getVisibleAt() : now);
     entity.setLeaseUntil(null);
     entity.setLeaseOwner(null);
     entity.setAttempts(0);
-    entity.setMaxAttempts(maxAttempts <= 0 ? 16 : maxAttempts);
-    entity.setIdempotencyKey(idempotencyKey);
-    entity.setCreatedAt(Instant.now());
-    entity.setUpdatedAt(Instant.now());
+    entity.setMaxAttempts(
+        msg.getMaxAttempts() == null || msg.getMaxAttempts() <= 0 ? 16 : msg.getMaxAttempts());
+    entity.setIdempotencyKey(msg.getIdempotencyKey());
+    entity.setCreatedAt(now);
+    entity.setUpdatedAt(now);
     return messageRepository.save(entity).getId();
   }
 
@@ -76,10 +84,11 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
     return messageRepository.leaseBatch(topic, partitions, owner, leaseUntil, limit);
   }
 
+  // P1-6: removed 'now' parameter — adapter calls NOW() in SQL directly
   @Override
   @Transactional(readOnly = true)
-  public List<MessageData> findLeasedByOwner(String owner, Instant now, int limit) {
-    return messageRepository.findLeasedByOwner(owner, now, limit).stream()
+  public List<MessageData> findLeasedByOwner(String owner, int limit) {
+    return messageRepository.findLeasedByOwner(owner, limit).stream()
         .map(JpaRepositoryAdapter::toMessageData).toList();
   }
 
@@ -99,13 +108,12 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
   @Override
   @Transactional
   public int moveExceededToDeadLetter(int limit) {
-    List<MessageEntity> candidates = messageRepository.findAll().stream()
-        .filter(m -> m.getAttempts() != null && m.getMaxAttempts() != null
-            && m.getAttempts() >= m.getMaxAttempts())
-        .limit(limit)
-        .toList();
-    int moved = 0;
-    for (MessageEntity m : candidates) {
+    List<MessageEntity> candidates = messageRepository.findExceededAttempts(limit);
+    if (candidates.isEmpty()) {
+      return 0;
+    }
+    Instant now = Instant.now();
+    List<DeadLetterEntity> dlqEntries = candidates.stream().map(m -> {
       DeadLetterEntity d = new DeadLetterEntity();
       d.setTopic(m.getTopic());
       d.setPartitionId(m.getPartitionId());
@@ -113,12 +121,13 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
       d.setHeaders(m.getHeaders());
       d.setAttempts(m.getAttempts());
       d.setReason("max_attempts_exceeded");
-      d.setCreatedAt(Instant.now());
-      deadLetterRepository.save(d);
-      messageRepository.deleteById(m.getId());
-      moved++;
-    }
-    return moved;
+      d.setCreatedAt(now);
+      return d;
+    }).toList();
+    deadLetterRepository.saveAll(dlqEntries);
+    List<Long> ids = candidates.stream().map(MessageEntity::getId).toList();
+    messageRepository.deleteByIds(ids);
+    return candidates.size();
   }
 
   @Override
@@ -127,16 +136,22 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
     return messageRepository.reclaimExpiredLeases(limit);
   }
 
+  // P1-4: return typed StatusCount records instead of Object[]
   @Override
   @Transactional(readOnly = true)
-  public List<Object[]> countByStatus(String topic) {
-    return messageRepository.countByStatus(topic);
+  public List<StatusCount> countByStatus(String topic) {
+    return messageRepository.countByStatus(topic).stream()
+        .map(row -> new StatusCount(((Number) row[0]).intValue(), ((Number) row[1]).longValue()))
+        .toList();
   }
 
+  // P1-4: return typed PartitionCount records instead of Object[]
   @Override
   @Transactional(readOnly = true)
-  public List<Object[]> readyCountPerPartition(String topic) {
-    return messageRepository.readyCountPerPartition(topic);
+  public List<PartitionCount> readyCountPerPartition(String topic) {
+    return messageRepository.readyCountPerPartition(topic).stream()
+        .map(row -> new PartitionCount(((Number) row[0]).intValue(), ((Number) row[1]).longValue()))
+        .toList();
   }
 
   @Override
@@ -151,6 +166,7 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
     return deadLetterRepository.countByTopic(topic);
   }
 
+  // P1-7: map deletedAt field into the DTO
   @Override
   @Transactional(readOnly = true)
   public List<DeadLetterData> findDeadLettersByTopicLimit(String topic, int limit) {
@@ -164,34 +180,45 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
       d.setAttempts(e.getAttempts());
       d.setReason(e.getReason());
       d.setCreatedAt(e.getCreatedAt());
+      d.setDeletedAt(e.getDeletedAt());
       return d;
     }).toList();
   }
 
+  // P1-3: batch save recovered messages
   @Override
   @Transactional
-  public Long saveRecoveredMessage(DeadLetterData d) {
-    MessageEntity m = new MessageEntity();
-    m.setTopic(d.getTopic());
-    m.setPartitionId(d.getPartitionId());
-    m.setPriority(0);
-    m.setPayload(d.getPayload());
-    m.setHeaders(d.getHeaders());
-    m.setStatus(0);
-    m.setVisibleAt(Instant.now());
-    m.setLeaseOwner(null);
-    m.setLeaseUntil(null);
-    m.setAttempts(0);
-    m.setMaxAttempts(16);
-    m.setCreatedAt(Instant.now());
-    m.setUpdatedAt(Instant.now());
-    return messageRepository.save(m).getId();
+  public List<Long> saveRecoveredMessages(Collection<DeadLetterData> items) {
+    Instant now = Instant.now();
+    List<MessageEntity> entities = items.stream().map(d -> {
+      MessageEntity m = new MessageEntity();
+      m.setTopic(d.getTopic());
+      m.setPartitionId(d.getPartitionId());
+      m.setPriority(0);
+      m.setPayload(d.getPayload());
+      m.setHeaders(d.getHeaders());
+      m.setStatus(MessageStatus.READY);   // P1-1: use enum constant
+      m.setVisibleAt(now);
+      m.setLeaseOwner(null);
+      m.setLeaseUntil(null);
+      m.setAttempts(0);
+      m.setMaxAttempts(16);
+      m.setCreatedAt(now);
+      m.setUpdatedAt(now);
+      return m;
+    }).toList();
+    return messageRepository.saveAll(entities).stream().map(MessageEntity::getId).toList();
   }
 
+  // P1-3: batch delete dead letters
   @Override
   @Transactional
-  public void deleteDeadLetterById(Long id) {
-    deadLetterRepository.deleteById(id);
+  public int deleteDeadLettersByIds(Collection<Long> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return 0;
+    }
+    deadLetterRepository.deleteAllById(ids);
+    return ids.size();
   }
 
   @Override

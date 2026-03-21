@@ -14,4 +14,5 @@ public class DeadLetterData {
   private Integer attempts;
   private String reason;
   private Instant createdAt;
+  private Instant deletedAt;
 }

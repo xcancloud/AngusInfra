@@ -13,6 +13,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "Cache Management", description = "APIs to manage and monitor the hybrid cache")
 @RestController
@@ -30,15 +32,32 @@ public class CacheManagementController {
 
   private final IDistributedCache cache;
 
+  /** Maximum allowed length for a cache key path variable. */
+  private static final int MAX_KEY_LENGTH = 256;
+
   public CacheManagementController(IDistributedCache cache) {
     this.cache = cache;
+  }
+
+  /**
+   * Validates the key path variable: must be non-blank and within the allowed length.
+   * Throws {@link ResponseStatusException} with 400 on violation so callers get a
+   * structured HTTP error rather than a 500.
+   */
+  private void validateKey(String key) {
+    if (key == null || key.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cache key must not be blank");
+    }
+    if (key.length() > MAX_KEY_LENGTH) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+          "Cache key must not exceed " + MAX_KEY_LENGTH + " characters");
+    }
   }
 
   @Operation(operationId = "getCacheStats", summary = "Get cache statistics", description = "Returns aggregated cache metrics such as total entries, expired entries, memory size, hits, misses and hit rate.")
   @GetMapping("/stats")
   public RestfulApiResult<CacheStats> stats() {
-    CacheStats stats = cache.getStats();
-    return RestfulApiResult.success(stats);
+    return RestfulApiResult.success(cache.getStats());
   }
 
   @Operation(operationId = "getCacheValue", summary = "Get cache value by key", description = "Retrieve the value for the given cache key. Returns a business error in wrapper when the key does not exist.",
@@ -49,6 +68,7 @@ public class CacheManagementController {
   @GetMapping("/{key}")
   public RestfulApiResult<CacheValueResponse> get(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key) {
+    validateKey(key);
     return cache.get(key)
         .map(v -> RestfulApiResult.success(new CacheValueResponse(key, v)))
         .orElseGet(
@@ -62,6 +82,7 @@ public class CacheManagementController {
   public RestfulApiResult<?> set(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key,
       @Valid @RequestBody SetCacheRequest body) {
+    validateKey(key);
     cache.set(key, body.getValue(), body.getTtlSeconds());
     return RestfulApiResult.success();
   }
@@ -72,6 +93,7 @@ public class CacheManagementController {
   @DeleteMapping("/{key}")
   public RestfulApiResult<?> delete(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key) {
+    validateKey(key);
     cache.delete(key);
     return RestfulApiResult.success();
   }
@@ -79,8 +101,8 @@ public class CacheManagementController {
   @Operation(operationId = "existsCacheKey", summary = "Check if cache key exists", description = "Return whether the given cache key exists and is not expired.")
   @GetMapping("/{key}/exists")
   public RestfulApiResult<ExistsResponse> exists(@PathVariable("key") String key) {
-    boolean e = cache.exists(key);
-    return RestfulApiResult.success(new ExistsResponse(key, e));
+    validateKey(key);
+    return RestfulApiResult.success(new ExistsResponse(key, cache.exists(key)));
   }
 
   @Operation(operationId = "getCacheTTL", summary = "Get TTL for a cache key", description = "Return TTL (seconds) for a key: -1 = no expiration, -2 = not found.",
@@ -88,8 +110,8 @@ public class CacheManagementController {
           @ApiResponse(responseCode = "200", description = "TTL returned in wrapper")})
   @GetMapping("/{key}/ttl")
   public RestfulApiResult<TTLResponse> ttl(@PathVariable("key") String key) {
-    long ttl = cache.getTTL(key);
-    return RestfulApiResult.success(new TTLResponse(key, ttl));
+    validateKey(key);
+    return RestfulApiResult.success(new TTLResponse(key, cache.getTTL(key)));
   }
 
   @Operation(operationId = "expireCacheKey", summary = "Set expiration (TTL) for an existing key", description = "Set a new TTL (in seconds) for an existing cache key.",
@@ -98,6 +120,7 @@ public class CacheManagementController {
   @PostMapping("/{key}/expire")
   public RestfulApiResult<ExpireResponse> expire(@PathVariable("key") String key,
       @Valid @RequestBody ExpireRequest body) {
+    validateKey(key);
     boolean ok = cache.expire(key, body.getTtlSeconds());
     if (!ok) {
       return RestfulApiResult.error(RestfulApiResult.BUSINESS_ERROR_CODE, "Key not found");

@@ -54,8 +54,8 @@ public class PluginManagementServiceImpl implements PluginManagementService {
   public PluginStats stats() {
     List<PluginInfo> all = pluginManager.getAllPlugins();
     int total = all.size();
-    int endpoints = all.stream().mapToInt(PluginInfo::getEndpointCount).sum();
-    int active = (int) all.stream().filter(p -> p.getEndpointCount() > 0).count();
+    int endpoints = all.stream().mapToInt(p -> p.getEndpointCount() != null ? p.getEndpointCount() : 0).sum();
+    int active = (int) all.stream().filter(p -> p.getState() != null && p.getState().name().equals("STARTED")).count();
     return new PluginStats(total, active, endpoints);
   }
 }

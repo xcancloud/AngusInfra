@@ -28,8 +28,8 @@ public class SpringCachePersistenceAdapter implements CachePersistence {
 
   @Override
   @Transactional
-  public void deleteByKey(String key) {
-    repository.deleteByKey(key);
+  public boolean deleteByKey(String key) {
+    return repository.deleteByKeyQuery(key) > 0;
   }
 
   @Override

@@ -26,7 +26,7 @@ public class TransactionalDistributedCache implements IDistributedCache {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional // must NOT be readOnly: get() may lazily delete expired entries
   public Optional<String> get(String key) {
     return delegate.get(key);
   }

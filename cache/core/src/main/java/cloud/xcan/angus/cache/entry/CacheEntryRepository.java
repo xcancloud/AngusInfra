@@ -18,7 +18,7 @@ public interface CacheEntryRepository {
   /**
    * Delete cache entry by key
    */
-  void deleteByKey(String key);
+  boolean deleteByKey(String key);
 
   /**
    * Find all expired entries

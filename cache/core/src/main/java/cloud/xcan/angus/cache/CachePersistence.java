@@ -9,7 +9,12 @@ public interface CachePersistence {
 
   CacheEntry save(CacheEntry entry);
 
-  void deleteByKey(String key);
+  /**
+   * Deletes the entry with the given key.
+   *
+   * @return {@code true} if an entry was found and removed; {@code false} otherwise
+   */
+  boolean deleteByKey(String key);
 
   void deleteAll();
 

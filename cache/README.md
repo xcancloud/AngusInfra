@@ -29,8 +29,8 @@ and a persistent backing store. It is designed to provide:
 - `cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository` — Spring Data repository (starter).
 - `cloud.xcan.angus.cache.autoconfigure.HybridCacheAutoConfiguration` — Auto-configuration that
   wires persistence and management controller when appropriate.
-- `cloud.xcan.angus.cache.management.CacheManagementController` — Management REST controller
-  exposing monitoring and admin endpoints.
+- `cloud.xcan.angus.cache.web.CacheManagementController` — Management REST controller
+  exposing monitoring and admin endpoints (enabled via `angus.cache.management.enabled=true`).
 
 ## Quick Start
 
@@ -58,9 +58,22 @@ Example Maven dependency:
 
 The starter will auto-configure a `CachePersistence` adapter if a Spring
 Data `SpringDataCacheEntryRepository` bean is present (i.e. you include the JPA starter and
-repository). Otherwise the cache will run with in-memory persistence stub behavior.
+repository). Otherwise the cache runs with a **pure in-memory `NoOpCachePersistence`** — data is not
+durable across restarts.
 
 If you enable JPA persistence, configure a datasource in `application.yml`.
+
+### 4. Enable the management API
+
+The management REST API is **disabled by default** for security reasons. Enable it only in trusted
+environments, and always protect the endpoints with authentication:
+
+```yaml
+angus:
+  cache:
+    management:
+      enabled: true
+```
 
 ## Management API
 

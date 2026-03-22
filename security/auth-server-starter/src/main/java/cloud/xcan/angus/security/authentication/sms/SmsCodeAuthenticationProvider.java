@@ -102,7 +102,12 @@ public final class SmsCodeAuthenticationProvider implements AuthenticationProvid
       log.trace("Retrieved registered client");
     }
 
-    assert registeredClient != null;
+    if (registeredClient == null) {
+      throw new OAuth2AuthenticationException(new OAuth2Error(
+          OAuth2ErrorCodes.SERVER_ERROR,
+          "Registered client resolved to null after client authentication",
+          ERROR_URI));
+    }
     if (!registeredClient.getAuthorizationGrantTypes().contains(SMS_CODE_GRANT_TYPE)) {
       if (log.isDebugEnabled()) {
         log.debug(String.format(

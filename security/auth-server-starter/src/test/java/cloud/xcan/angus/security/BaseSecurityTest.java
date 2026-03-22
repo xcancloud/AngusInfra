@@ -1,5 +1,6 @@
 package cloud.xcan.angus.security;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -201,7 +202,7 @@ public abstract class BaseSecurityTest {
       throws Exception {
     String content = result.getResponse().getContentAsString();
     Map<String, Object> response = objectMapper.readValue(content, Map.class);
-    assert response.containsKey("error");
+    assertThat(response.containsKey("error")).isTrue();
   }
 
   /**
@@ -266,14 +267,14 @@ public abstract class BaseSecurityTest {
   protected void assertTokenHasRequiredClaims(String token) {
     // Parse and verify token contains required claims
     // Implementation depends on token format (JWT, opaque, etc.)
-    assert token != null && !token.isEmpty();
+    assertThat(token).isNotNull().isNotEmpty();
   }
 
   /**
    * Asserts token validity and expiration
    */
   protected void assertTokenValidity(String token, long expectedExpirationSeconds) {
-    assert token != null && !token.isEmpty();
+    assertThat(token).isNotNull().isNotEmpty();
     // Additional validation logic can be added here
   }
 }

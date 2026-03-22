@@ -8,6 +8,7 @@ import cloud.xcan.angus.validator.EditorContentLength;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
+import java.util.Objects;
 
 public class EditorContentLengthValidator implements
     ConstraintValidator<EditorContentLength, String> {
@@ -29,7 +30,7 @@ public class EditorContentLengthValidator implements
     }
     // Read quill length
     List<Object> values = JsonPropertyExtractor.extractValues(value, "insert");
-    int totalLength = values.stream().map(Object::toString)
+    int totalLength = values.stream().filter(Objects::nonNull).map(Object::toString)
         .mapToInt(String::length).sum();
     return totalLength <= annotation.max();
   }

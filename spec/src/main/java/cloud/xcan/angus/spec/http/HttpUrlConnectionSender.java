@@ -116,15 +116,17 @@ public class HttpUrlConnectionSender implements HttpSender {
       InputStream bodyIS = null;
       try {
         if (conn.getErrorStream() != null) {
-          // conn.getErrorStream() is closed in usage.
-          byte[] data = conn.getErrorStream().readAllBytes();
-          bodyIS = new ByteArrayInputStream(data);
-          body = IOUtils.toString(new ByteArrayInputStream(data));
+          try (InputStream errorStream = conn.getErrorStream()) {
+            byte[] data = errorStream.readAllBytes();
+            bodyIS = new ByteArrayInputStream(data);
+            body = IOUtils.toString(new ByteArrayInputStream(data));
+          }
         } else if (conn.getInputStream() != null) {
-          // conn.getInputStream() is closed in usage.
-          byte[] data = conn.getInputStream().readAllBytes();
-          bodyIS = new ByteArrayInputStream(data);
-          body = IOUtils.toString(new ByteArrayInputStream(data));
+          try (InputStream inputStream = conn.getInputStream()) {
+            byte[] data = inputStream.readAllBytes();
+            bodyIS = new ByteArrayInputStream(data);
+            body = IOUtils.toString(new ByteArrayInputStream(data));
+          }
         }
       } catch (Exception e) {
         log.error("Handle InputStream exception: ", e);
@@ -153,7 +155,7 @@ public class HttpUrlConnectionSender implements HttpSender {
   }
 
   private static ConnectionConfigurator createConnectionConfigurator() {
-    if (Boolean.parseBoolean(System.getProperty(TRUST_ALL, "true"))) {
+    if (Boolean.parseBoolean(System.getProperty(TRUST_ALL, "false"))) {
       try {
         // Create a trust manager that does not validate certificate chains
         final TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {

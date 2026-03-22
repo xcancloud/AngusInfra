@@ -9,13 +9,15 @@ import cloud.xcan.angus.validator.Password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 public class PasswordValidator implements ConstraintValidator<Password, String> {
 
-  public final static Set<Character> SPECIAL_CHARS = "`-=[];',./~!@#$%^&*()_+{}:\"<>?".chars()
-      .mapToObj(i -> (char) i).collect(toSet());
+  public final static Set<Character> SPECIAL_CHARS = Collections.unmodifiableSet(
+      "`-=[];',./~!@#$%^&*()_+{}:\"<>?".chars()
+          .mapToObj(i -> (char) i).collect(toSet()));
 
   private Password annotation;
 

@@ -22,7 +22,7 @@ public class CollectionCharLengthValidator implements
       ConstraintValidatorContext constraintValidatorContext) {
     if (isNotEmpty(input)) {
       for (String i : input) {
-        if (i.length() > maxCharLength) {
+        if (i != null && i.length() > maxCharLength) {
           return false;
         }
       }

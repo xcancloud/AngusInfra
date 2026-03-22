@@ -513,7 +513,7 @@ public class Assert {
    */
   public static Class<?> assertInstanceOf(Class<?> type, Object obj,
       Supplier<String> messageSupplier) {
-    assertNull(type, "Type to check against must not be null");
+    assertNotNull(type, "Type to check against must not be null");
     if (!type.isInstance(obj)) {
       instanceCheckFailed(type, obj, nullSafeGet(messageSupplier));
     }
@@ -547,7 +547,7 @@ public class Assert {
    * @throws IllegalArgumentException if the classes are not assignable
    */
   public static Class<?> assertAssignable(Class<?> superType, Class<?> subType, String message) {
-    assertNull(superType, "Super type to check against must not be null");
+    assertNotNull(superType, "Super type to check against must not be null");
     if (subType == null || !superType.isAssignableFrom(subType)) {
       assignableCheckFailed(superType, subType, message);
     }
@@ -568,7 +568,7 @@ public class Assert {
    */
   public static Class<?> assertAssignable(Class<?> superType, Class<?> subType,
       Supplier<String> messageSupplier) {
-    assertNull(superType, "Super type to check against must not be null");
+    assertNotNull(superType, "Super type to check against must not be null");
     if (subType == null || !superType.isAssignableFrom(subType)) {
       assignableCheckFailed(superType, subType, nullSafeGet(messageSupplier));
     }

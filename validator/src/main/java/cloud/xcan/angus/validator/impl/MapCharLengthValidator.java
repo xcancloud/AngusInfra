@@ -27,7 +27,11 @@ public class MapCharLengthValidator implements
     if (isNotEmpty(input)) {
       Set<String> keys = input.keySet();
       for (String key : keys) {
-        if (key.length() > keyMaxLength || input.get(key).toString().length() > valueMaxLength) {
+        if (key.length() > keyMaxLength) {
+          return false;
+        }
+        Object value = input.get(key);
+        if (value != null && value.toString().length() > valueMaxLength) {
           return false;
         }
       }

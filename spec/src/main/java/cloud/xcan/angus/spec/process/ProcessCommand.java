@@ -147,17 +147,18 @@ public final class ProcessCommand {
     boolean execSuccess = true;
     List<String> result = new ArrayList<>();
     try {
-      Scanner s = new Scanner(p.getInputStream(), UTF_8).useDelimiter(System.lineSeparator());
-      while (s.hasNext()) {
-        result.add(s.next());
+      try (Scanner s = new Scanner(p.getInputStream(), UTF_8).useDelimiter(System.lineSeparator())) {
+                while (s.hasNext()) {
+                  result.add(s.next());
+                }
+                // Block the current thread until the child process completes execution.
+                exitCode = p.waitFor();
+              } catch (Exception e) {
+                log.error("Problem reading output by command `{}`: {}", Arrays.toString(cmdToRunWithArgs),
+                    e.getMessage());
+                execSuccess = false;
+                result.add(e.getMessage());
       }
-      // Block the current thread until the child process completes execution.
-      exitCode = p.waitFor();
-    } catch (Exception e) {
-      log.error("Problem reading output by command `{}`: {}", Arrays.toString(cmdToRunWithArgs),
-          e.getMessage());
-      execSuccess = false;
-      result.add(e.getMessage());
     }
     boolean success = execSuccess && exitCode == 0;
     if (onlyMatchSuccessMessage) {

@@ -1,6 +1,5 @@
 package cloud.xcan.angus.core.spring;
 
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
@@ -62,12 +61,14 @@ public class SpringContextHolder implements ApplicationContextAware {
     return SpringContextHolder.getBean(DefaultBidGenerator.class);
   }
 
+  private static final String PROFILE_PROD = "prod";
+  private static final String EDITION_CLOUD_SERVICE = "CLOUD_SERVICE";
+
   public static boolean isProd() {
     String[] profiles = SpringContextHolder.getCtx().getEnvironment().getActiveProfiles();
     if (profiles.length != 0) {
       for (String profile : profiles) {
-        if (new Str0(new long[]{0xCAF92BDCBDAB7E47L, 0x8F884AE8DB0EC24CL})
-            .toString() /* => "prod" */.equalsIgnoreCase(profile)) {
+        if (PROFILE_PROD.equalsIgnoreCase(profile)) {
           return true;
         }
       }
@@ -77,8 +78,7 @@ public class SpringContextHolder implements ApplicationContextAware {
 
   public static boolean isCloudService() {
     ApplicationInfo info = SpringContextHolder.getBean(ApplicationInfo.class);
-    return new Str0(new long[]{0x23B748A968A51B4AL, 0x18317A1449BDB49L, 0x2478AB091CEF106L})
-        .toString() /* => "CLOUD_SERVICE" */.equalsIgnoreCase(info.getEditionType());
+    return EDITION_CLOUD_SERVICE.equalsIgnoreCase(info.getEditionType());
   }
 
 }

@@ -32,7 +32,9 @@ public class CacheManagementController {
 
   private final IDistributedCache cache;
 
-  /** Maximum allowed length for a cache key path variable. */
+  /**
+   * Maximum allowed length for a cache key path variable.
+   */
   private static final int MAX_KEY_LENGTH = 256;
 
   public CacheManagementController(IDistributedCache cache) {
@@ -40,9 +42,9 @@ public class CacheManagementController {
   }
 
   /**
-   * Validates the key path variable: must be non-blank and within the allowed length.
-   * Throws {@link ResponseStatusException} with 400 on violation so callers get a
-   * structured HTTP error rather than a 500.
+   * Validates the key path variable: must be non-blank and within the allowed length. Throws
+   * {@link ResponseStatusException} with 400 on violation so callers get a structured HTTP error
+   * rather than a 500.
    */
   private void validateKey(String key) {
     if (key == null || key.isBlank()) {

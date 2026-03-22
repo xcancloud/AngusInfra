@@ -13,15 +13,13 @@ package cloud.xcan.angus.security.model.cache;
 public enum CacheType {
 
   /**
-   * In-memory token cache using volatile fields.
-   * Suitable for single-instance deployments.
+   * In-memory token cache using volatile fields. Suitable for single-instance deployments.
    */
   LOCAL,
 
   /**
-   * Distributed token cache using {@code IDistributedCache}.
-   * Suitable for multi-instance deployments.
-   * Requires {@code xcan-angusinfra.cache} module on the classpath.
+   * Distributed token cache using {@code IDistributedCache}. Suitable for multi-instance
+   * deployments. Requires {@code xcan-angusinfra.cache} module on the classpath.
    */
   DISTRIBUTED
 }

@@ -1,29 +1,27 @@
 package cloud.xcan.angus.idgen.benchmark;
 
 import cloud.xcan.angus.idgen.DefaultBidGenerator;
+import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.Set;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 /**
  * BID（业务ID）生成性能基准测试
- *
- * 测试以下场景：
- * 1. 单个业务key的ID生成
- * 2. 多个业务key（10个租户）的并发生成
- * 3. 批量ID生成（步长配置）
- *
+ * <p>
+ * 测试以下场景： 1. 单个业务key的ID生成 2. 多个业务key（10个租户）的并发生成 3. 批量ID生成（步长配置）
+ * <p>
  * 目标吞吐量：≥200K ops/sec（单租户）
- *
- * 运行方式：
- * mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.BidGeneratorBenchmark"
+ * <p>
+ * 运行方式： mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.BidGeneratorBenchmark"
  */
 @State(Scope.Benchmark)
 @Fork(1)
@@ -123,15 +121,16 @@ public class BidGeneratorBenchmark {
   }
 
   /**
-   * 批量ID获取（一次获取10个ID）
-   * 获取格式示例：seq_1, seq_2, ..., seq_10
+   * 批量ID获取（一次获取10个ID） 获取格式示例：seq_1, seq_2, ..., seq_10
    */
   @Benchmark
   public String batchIdGeneration() {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < 10; i++) {
       String bid = bidGenerator.nextId("tenant_0", "ORDER_SEQ_0");
-      if (i > 0) sb.append(",");
+      if (i > 0) {
+        sb.append(",");
+      }
       sb.append(bid);
     }
     return sb.toString();

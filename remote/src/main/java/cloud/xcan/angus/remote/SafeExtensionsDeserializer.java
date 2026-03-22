@@ -1,24 +1,20 @@
 package cloud.xcan.angus.remote;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.deser.std.MapDeserializer;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-
 /**
- * Safe deserializer for Map<String, Object> fields that prevents gadget chain deserialization attacks.
- * 
- * This deserializer restricts values in the extensions map to safe types only:
- * - String
- * - Number (Integer, Long, Double, Float, etc.)
- * - Boolean
- * - null
- * 
+ * Safe deserializer for Map<String, Object> fields that prevents gadget chain deserialization
+ * attacks.
+ * <p>
+ * This deserializer restricts values in the extensions map to safe types only: - String - Number
+ * (Integer, Long, Double, Float, etc.) - Boolean - null
+ * <p>
  * Any attempt to deserialize complex objects (lists, nested objects, etc.) will be rejected.
  */
 public class SafeExtensionsDeserializer extends JsonDeserializer<Map<String, Object>> {
@@ -50,11 +46,11 @@ public class SafeExtensionsDeserializer extends JsonDeserializer<Map<String, Obj
 
       // Deserialize and validate value
       Object value = deserializeValue(p, ctxt);
-      
+
       if (!isValueTypeSafe(value)) {
         throw new IllegalArgumentException(
             String.format("Unsafe value type in extensions: %s for key '%s'. "
-                + "Only String, Number, Boolean, and null are allowed.",
+                    + "Only String, Number, Boolean, and null are allowed.",
                 value != null ? value.getClass().getName() : "null", fieldName));
       }
 

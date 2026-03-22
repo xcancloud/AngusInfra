@@ -15,8 +15,8 @@ import org.springframework.stereotype.Repository;
 public interface DistributedLockRepository extends JpaRepository<DistributedLock, String> {
 
   /**
-   * Atomically removes all locks that have expired as of {@code now}.
-   * Executed on a schedule to prevent stale lock accumulation.
+   * Atomically removes all locks that have expired as of {@code now}. Executed on a schedule to
+   * prevent stale lock accumulation.
    *
    * @param now current server time
    * @return number of rows deleted
@@ -26,8 +26,8 @@ public interface DistributedLockRepository extends JpaRepository<DistributedLock
   int deleteExpiredLocks(@Param("now") LocalDateTime now);
 
   /**
-   * Removes an expired lock for the given key so that a new lock can be inserted.
-   * Operates only on expired rows to preserve any concurrently acquired valid lock.
+   * Removes an expired lock for the given key so that a new lock can be inserted. Operates only on
+   * expired rows to preserve any concurrently acquired valid lock.
    *
    * @param lockKey target lock key
    * @param now     current server time; only rows with expireTime &le; now are affected

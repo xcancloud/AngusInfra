@@ -2,29 +2,24 @@ package cloud.xcan.angus.remote.benchmark;
 
 import cloud.xcan.angus.remote.result.ApiResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
 /**
  * API响应序列化性能基准测试
- *
- * 测试以下场景：
- * 1. 简单对象序列化（Object只含原始类型字段）
- * 2. 复杂对象序列化（包含嵌套对象）
- * 3. 集合序列化（List<Object>）
- * 4. 反序列化性能
- *
+ * <p>
+ * 测试以下场景： 1. 简单对象序列化（Object只含原始类型字段） 2. 复杂对象序列化（包含嵌套对象） 3. 集合序列化（List<Object>） 4. 反序列化性能
+ * <p>
  * 目标：序列化延迟 < 1ms（1000个对象），吞吐量 > 100K ops/sec
- *
- * 运行方式：
- * mvn exec:java -Dexec.mainClass="cloud.xcan.angus.remote.benchmark.ApiResponseBenchmark"
+ * <p>
+ * 运行方式： mvn exec:java -Dexec.mainClass="cloud.xcan.angus.remote.benchmark.ApiResponseBenchmark"
  */
 @State(Scope.Benchmark)
 @Fork(1)
@@ -164,6 +159,7 @@ public class ApiResponseBenchmark {
    * 测试方法数据模型
    */
   public static class UserDTO {
+
     private Long id;
     private String username;
     private String email;

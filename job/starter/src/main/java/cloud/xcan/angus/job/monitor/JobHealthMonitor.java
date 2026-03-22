@@ -38,8 +38,8 @@ public class JobHealthMonitor {
   private final JobProperties properties;
 
   /**
-   * Purges all expired distributed-lock rows in one batch DELETE.
-   * Originally used {@code findAll()} which could OOM on large datasets.
+   * Purges all expired distributed-lock rows in one batch DELETE. Originally used {@code findAll()}
+   * which could OOM on large datasets.
    */
   @Scheduled(fixedDelay = 60_000)
   @Transactional
@@ -58,9 +58,8 @@ public class JobHealthMonitor {
    * Detects executions that have been in RUNNING state longer than the configured threshold.
    *
    * <p>The query looks for {@code startTime BEFORE (now - threshold)} — jobs that
-   * started before the threshold are the ones potentially timed out.  The original
-   * implementation queried {@code startTime AFTER threshold}, which would never match
-   * long-running jobs.
+   * started before the threshold are the ones potentially timed out.  The original implementation
+   * queried {@code startTime AFTER threshold}, which would never match long-running jobs.
    */
   @Scheduled(fixedDelay = 30_000)
   public void monitorTimeoutJobs() {
@@ -89,9 +88,9 @@ public class JobHealthMonitor {
    * Logs an hourly health summary.
    *
    * <p>Queries <em>all</em> statuses in the last-hour window via
-   * {@code findByStartTimeBetween} — the previous implementation incorrectly
-   * queried only {@code RUNNING} logs and then counted {@code SUCCESS}/
-   * {@code FAILURE} within that set, which always returned zero.
+   * {@code findByStartTimeBetween} — the previous implementation incorrectly queried only
+   * {@code RUNNING} logs and then counted {@code SUCCESS}/ {@code FAILURE} within that set, which
+   * always returned zero.
    */
   @Scheduled(cron = "0 0 * * * *")
   public void generateHealthReport() {

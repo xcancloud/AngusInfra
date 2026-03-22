@@ -53,7 +53,7 @@ public class HybridCacheManager implements IDistributedCache {
 
     // Always save to memory cache first (fast path)
     memoryCache.put(key, value, expireAt);
-    
+
     // Try to persist to database (best effort, with degradation strategy)
     try {
       CacheEntry entry = cachePersistence.findByKey(key).orElse(null);
@@ -79,8 +79,9 @@ public class HybridCacheManager implements IDistributedCache {
     } catch (Exception e) {
       // Degradation: DB persistence failed but memory cache still works
       // Service continues with memory-only mode
-      log.error("[CACHE-DEGRADATION] Failed to persist cache to DB, falling back to memory-only mode. " +
-                "key={}, error={}", key, e.getMessage(), e);
+      log.error(
+          "[CACHE-DEGRADATION] Failed to persist cache to DB, falling back to memory-only mode. " +
+              "key={}, error={}", key, e.getMessage(), e);
       // TODO: Emit metric for monitoring: cache_db_persistence_failures_total
       //MemoryCache continues to work - no exception thrown
     }

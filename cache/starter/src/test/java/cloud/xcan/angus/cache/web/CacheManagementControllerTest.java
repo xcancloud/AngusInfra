@@ -69,7 +69,8 @@ public class CacheManagementControllerTest {
   void testSet_withTtl() throws Exception {
     String body = objectMapper.writeValueAsString(
         new CacheManagementController.SetCacheRequest("v_ttl", 60L));
-    mockMvc.perform(put("/api/v1/cache/ttlkey").contentType(MediaType.APPLICATION_JSON).content(body))
+    mockMvc.perform(
+            put("/api/v1/cache/ttlkey").contentType(MediaType.APPLICATION_JSON).content(body))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value("S"));
     verify(cache).set("ttlkey", "v_ttl", 60L);

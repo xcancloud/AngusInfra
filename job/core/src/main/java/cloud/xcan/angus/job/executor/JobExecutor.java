@@ -8,8 +8,8 @@ import cloud.xcan.angus.job.model.JobExecutionResult;
  *
  * <p>Implementations must be Spring beans so that they can be discovered and
  * registered with {@link JobExecutorRegistry}.  The bean name used in the
- * {@link cloud.xcan.angus.job.entity.ScheduledJob#getBeanName()} field must
- * match the Spring component name exactly.
+ * {@link cloud.xcan.angus.job.entity.ScheduledJob#getBeanName()} field must match the Spring
+ * component name exactly.
  *
  * <p>Example:
  * <pre>{@code

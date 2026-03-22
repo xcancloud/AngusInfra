@@ -14,7 +14,9 @@
   <artifactId>xcan-angusinfra.core</artifactId>
   <name>AngusInfra :: Core :: Base</name>
   <packaging>jar</packaging>
-  <description>Core base library for Angus projects - fundamental utilities, exception handling, and business template.</description>
+  <description>Core base library for Angus projects - fundamental utilities, exception handling, and
+    business template.
+  </description>
 
   <dependencies>
     <!-- Angus Dependencies -->

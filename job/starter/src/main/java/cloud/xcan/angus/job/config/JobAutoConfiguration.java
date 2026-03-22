@@ -12,7 +12,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 /**
  * Spring Boot auto-configuration for the Job scheduler module.
  *
- * <p>Registers the shared thread pools used by {@link cloud.xcan.angus.job.service.JobSchedulerService}.
+ * <p>Registers the shared thread pools used by
+ * {@link cloud.xcan.angus.job.service.JobSchedulerService}.
  * All thread counts are driven by {@link JobProperties} instead of being hard-coded.
  *
  * <p>The {@code @EnableScheduling} annotation activates Spring's scheduling
@@ -21,8 +22,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * {@link cloud.xcan.angus.job.service.JobSchedulerService} are picked up.
  *
  * <p>JPA repositories and entity scanning are handled by Spring Boot's
- * auto-configuration ({@code JpaRepositoriesAutoConfiguration}) — no
- * hard-coded package strings are needed here.
+ * auto-configuration ({@code JpaRepositoriesAutoConfiguration}) — no hard-coded package strings are
+ * needed here.
  */
 @AutoConfiguration
 @EnableScheduling
@@ -30,9 +31,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 public class JobAutoConfiguration {
 
   /**
-   * Shared executor pool for job and shard work items.
-   * Used by {@link cloud.xcan.angus.job.service.JobSchedulerService} for SHARDING
-   * and MAP_REDUCE parallel phases.  Injected by name {@code "jobExecutorPool"}.
+   * Shared executor pool for job and shard work items. Used by
+   * {@link cloud.xcan.angus.job.service.JobSchedulerService} for SHARDING and MAP_REDUCE parallel
+   * phases.  Injected by name {@code "jobExecutorPool"}.
    */
   @Bean(name = "jobExecutorPool")
   @ConditionalOnMissingBean(name = "jobExecutorPool")
@@ -42,7 +43,8 @@ public class JobAutoConfiguration {
     executor.setMaxPoolSize(props.getExecutorMaxPoolSize());
     executor.setQueueCapacity(props.getExecutorQueueCapacity());
     executor.setThreadNamePrefix("job-executor-");
-    executor.setRejectedExecutionHandler(new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy());
+    executor.setRejectedExecutionHandler(
+        new java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy());
     executor.initialize();
     return executor;
   }

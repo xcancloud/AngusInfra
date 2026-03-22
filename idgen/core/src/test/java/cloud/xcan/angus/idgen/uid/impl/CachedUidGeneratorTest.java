@@ -1,11 +1,9 @@
 package cloud.xcan.angus.idgen.uid.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import cloud.xcan.angus.idgen.exception.IdGenerateException;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import java.util.HashSet;
 import java.util.Set;
@@ -108,7 +106,7 @@ class CachedUidGeneratorTest {
     // RingBuffer size is limited, but with proper padding strategy should not get full
     // under normal circumstances. This test validates that extreme edge cases are handled.
     generator.setBoostPower(0); // Very small buffer to trigger rejections
-    
+
     // After triggering buffer full scenarios, generator should remain functional
     long uid = generator.getUID();
     assertThat(uid).isGreaterThan(0);

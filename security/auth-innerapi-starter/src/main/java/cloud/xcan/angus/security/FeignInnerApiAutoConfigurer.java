@@ -75,8 +75,8 @@ public class FeignInnerApiAutoConfigurer {
   }
 
   /**
-   * Attempt to find an IDistributedCache bean from the application context.
-   * Uses class name matching to avoid hard dependency on cache module.
+   * Attempt to find an IDistributedCache bean from the application context. Uses class name
+   * matching to avoid hard dependency on cache module.
    */
   private Object findDistributedCache(ObjectProvider<Object> provider) {
     try {

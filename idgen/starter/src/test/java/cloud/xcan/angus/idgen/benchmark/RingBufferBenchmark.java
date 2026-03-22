@@ -1,31 +1,27 @@
 package cloud.xcan.angus.idgen.benchmark;
 
 import cloud.xcan.angus.idgen.uid.RingBuffer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * RingBuffer性能基准测试
- *
+ * <p>
  * RingBuffer是lock-free的环形缓冲区，用于缓存预生成的UID
- *
- * 测试以下场景：
- * 1. 单线程put/take操作
- * 2. 多线程并发put（生产者）
- * 3. 多线程并发take（消费者）
- * 4. 生产者-消费者（不同比率）
- * 5. 填充率（Padding）
- *
+ * <p>
+ * 测试以下场景： 1. 单线程put/take操作 2. 多线程并发put（生产者） 3. 多线程并发take（消费者） 4. 生产者-消费者（不同比率） 5. 填充率（Padding）
+ * <p>
  * 目标：单线程吞吐 > 50M ops/sec
- *
- * 运行方式：
- * mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.RingBufferBenchmark"
+ * <p>
+ * 运行方式： mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.RingBufferBenchmark"
  */
 @State(Scope.Benchmark)
 @Fork(1)
@@ -208,8 +204,7 @@ public class RingBufferBenchmark {
   }
 
   /**
-   * 测试Padding对性能的影响
-   * 通过避免False Sharing，单线程和多线程性能差异应该较小
+   * 测试Padding对性能的影响 通过避免False Sharing，单线程和多线程性能差异应该较小
    */
   @Benchmark
   public void paddingEffectMeasure() throws InterruptedException {

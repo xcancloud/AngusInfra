@@ -3,6 +3,7 @@
 ## 📋 概览
 
 `persistence-jdbc-starter` 是 Spring Data JDBC 集成模块，提供：
+
 - JDBC 数据访问封装
 - 多租户数据隔离
 - 审计日志
@@ -18,6 +19,7 @@
 ## 📦 包含内容
 
 从 `core` 模块迁移以下内容：
+
 - `core/jdbc/` → `persistence-jdbc-starter/jdbc/`
 
 ## 🚀 快速开始
@@ -25,16 +27,17 @@
 ### 添加依赖
 
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.jdbc</artifactId>
   <version>3.0.0</version>
 </dependency>
 
-<!-- 数据库驱动（根据需要选择） -->
+  <!-- 数据库驱动（根据需要选择） -->
 <dependency>
-  <groupId>com.mysql</groupId>
-  <artifactId>mysql-connector-j</artifactId>
+<groupId>com.mysql</groupId>
+<artifactId>mysql-connector-j</artifactId>
 </dependency>
 ```
 
@@ -54,7 +57,9 @@ spring:
 ### 从 core 模块迁移
 
 **旧方式**（包含所有功能）:
+
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.core</artifactId>
@@ -62,6 +67,7 @@ spring:
 ```
 
 **新方式**（按需引入）:
+
 ```xml
 <!-- 基础功能 -->
 <dependency>
@@ -69,10 +75,10 @@ spring:
   <artifactId>xcan-angusinfra.core</artifactId>
 </dependency>
 
-<!-- 仅使用 JDBC -->
+  <!-- 仅使用 JDBC -->
 <dependency>
-  <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-angusinfra.jdbc</artifactId>
+<groupId>cloud.xcan.angus</groupId>
+<artifactId>xcan-angusinfra.jdbc</artifactId>
 </dependency>
 ```
 

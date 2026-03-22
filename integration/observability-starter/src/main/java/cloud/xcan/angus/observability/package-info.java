@@ -90,11 +90,11 @@
  * public class OrderService {
  *     @Autowired
  *     private MeterRegistry meterRegistry;
- *     
+ *
  *     public void createOrder(Order order) {
  *         // 计数器
  *         meterRegistry.counter("orders.created").increment();
- *         
+ *
  *         // 计时器
  *         Timer.Sample sample = Timer.start(meterRegistry);
  *         processOrder(order);
@@ -107,7 +107,7 @@
  * public class PaymentService {
  *     @Autowired
  *     private Tracer tracer;
- *     
+ *
  *     public void processPayment(Payment payment) {
  *         Span span = tracer.nextSpan().name("processPayment").start();
  *         try (Tracer.SpanInScope ws = tracer.withSpan(span)) {
@@ -148,7 +148,7 @@
  *   tracing:
  *     sampling:
  *       probability: 1.0  # 采样率
- * 
+ *
  * logging:
  *   level:
  *     root: INFO

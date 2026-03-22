@@ -7,10 +7,10 @@ import static cloud.xcan.angus.spec.principal.PrincipalContext.getAuthorization;
 
 import cloud.xcan.angus.security.config.Openapi2pAuthProperties;
 import cloud.xcan.angus.security.model.cache.TokenStore;
-import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.security.model.remote.dto.ClientSignInDto;
 import cloud.xcan.angus.security.model.remote.vo.ClientSignInVo;
 import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
+import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import java.util.Optional;
@@ -36,8 +36,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * @author Framework Team
  * @version 3.0 (Refactored with TokenStore abstraction)
- * @since 2025-03-22
  * @see TokenStore
+ * @since 2025-03-22
  */
 @Slf4j
 public class FeignOpenapi2pAuthInterceptor implements RequestInterceptor {

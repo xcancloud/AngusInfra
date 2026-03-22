@@ -3,6 +3,7 @@
 ## 📋 概览
 
 `core-base` 是 AngusInfra 框架的核心基础模块，提供了所有业务应用的基础功能：
+
 - 业务模板（BizTemplate）
 - 异常处理体系
 - 枚举定义
@@ -21,7 +22,9 @@
 ## 📦 主要功能
 
 ### 1. BizTemplate（业务模板）
+
 提供标准的业务逻辑执行模板，支持：
+
 - 参数校验
 - 权限检查
 - 多租户控制
@@ -30,15 +33,19 @@
 - 异常处理
 
 ### 2. 异常体系（exception/）
+
 统一的异常处理机制
 
 ### 3. 枚举定义（enums/）
+
 通用枚举类型
 
 ### 4. 工具类（utils/）
+
 常用工具方法集合
 
 ### 5. Spring 集成（spring/）
+
 Spring 框架集成和扩展
 
 ## 🚀 快速开始
@@ -46,6 +53,7 @@ Spring 框架集成和扩展
 ### 添加依赖
 
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.core</artifactId>
@@ -57,12 +65,12 @@ Spring 框架集成和扩展
 
 ```java
 public class CreateOrderBiz extends BizTemplate<Order> {
-  
+
   @Override
   protected void checkParams() {
     // 参数校验
   }
-  
+
   @Override
   protected Order process() {
     // 业务逻辑
@@ -79,7 +87,9 @@ Order order = new CreateOrderBiz().execute();
 如果你之前依赖 `xcan-angusinfra.core`，现在可以：
 
 ### 选项 1：继续使用 core（推荐，向后兼容）
+
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.core</artifactId>
@@ -87,7 +97,9 @@ Order order = new CreateOrderBiz().execute();
 ```
 
 ### 选项 2：仅使用基础功能
+
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.core</artifactId>

@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+
 @Entity
 @Table(name = "mq_message", indexes = {
     // leaseBatch: WHERE topic=? AND partition_id IN (?) AND status=0 AND visible_at<=NOW()

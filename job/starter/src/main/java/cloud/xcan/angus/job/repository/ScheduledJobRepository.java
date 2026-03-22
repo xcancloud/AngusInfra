@@ -25,9 +25,8 @@ public interface ScheduledJobRepository extends JpaRepository<ScheduledJob, Long
   List<ScheduledJob> findByStatusAndNextExecuteTimeBefore(JobStatus status, LocalDateTime time);
 
   /**
-   * Bounded variant — returns at most {@code pageable.getPageSize()} due jobs.
-   * Used by the scheduler to prevent loading an unbounded result set when many
-   * jobs become due simultaneously.
+   * Bounded variant — returns at most {@code pageable.getPageSize()} due jobs. Used by the
+   * scheduler to prevent loading an unbounded result set when many jobs become due simultaneously.
    */
   List<ScheduledJob> findByStatusAndNextExecuteTimeBefore(JobStatus status, LocalDateTime time,
       Pageable pageable);

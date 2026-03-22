@@ -1,6 +1,5 @@
 package cloud.xcan.angus.security;
 
-import cloud.xcan.angus.api.enums.GrantType;
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import java.time.Instant;
@@ -14,21 +13,19 @@ import org.springframework.security.oauth2.server.authorization.settings.TokenSe
 
 /**
  * Test fixture factory for creating OAuth2 domain objects for unit tests.
- * 
- * Provides fluent builders and factory methods for constructing:
- * - OAuth2 registered clients
- * - OAuth2 users with various configurations
- * - Token settings and client settings
- * 
+ * <p>
+ * Provides fluent builders and factory methods for constructing: - OAuth2 registered clients -
+ * OAuth2 users with various configurations - Token settings and client settings
+ * <p>
  * Usage:
  * <pre>
- *   CustomOAuth2RegisteredClient client = 
+ *   CustomOAuth2RegisteredClient client =
  *     SecurityTestFixtures.clientBuilder()
  *       .clientId("test-client")
  *       .withPasswordGrant()
  *       .build();
  * </pre>
- * 
+ *
  * @author Test Framework
  * @version 1.0
  */

@@ -20,8 +20,8 @@ import lombok.Setter;
  * Persistent definition of a scheduled job.
  *
  * <p>One row represents one recurring or one-shot job registered in the system.
- * The scheduler polls rows in READY state whose {@code nextExecuteTime} is in
- * the past and dispatches them for execution under a distributed lock.
+ * The scheduler polls rows in READY state whose {@code nextExecuteTime} is in the past and
+ * dispatches them for execution under a distributed lock.
  */
 @Entity
 @Table(
@@ -53,8 +53,8 @@ public class ScheduledJob {
   private String cronExpression;
 
   /**
-   * Spring bean name that implements {@link cloud.xcan.angus.job.executor.JobExecutor}.
-   * Must be registered in the application context before the job is triggered.
+   * Spring bean name that implements {@link cloud.xcan.angus.job.executor.JobExecutor}. Must be
+   * registered in the application context before the job is triggered.
    */
   @Column(name = "bean_name", nullable = false, length = 255)
   private String beanName;
@@ -67,13 +67,15 @@ public class ScheduledJob {
   @Column(name = "status", nullable = false, length = 50)
   private JobStatus status;
 
-  /** Number of data shards; relevant for MAP_REDUCE and SHARDING job types. */
+  /**
+   * Number of data shards; relevant for MAP_REDUCE and SHARDING job types.
+   */
   @Column(name = "sharding_count")
   private Integer shardingCount;
 
   /**
-   * Comma-separated shard parameters, one per shard.
-   * Length must match {@code shardingCount} when provided.
+   * Comma-separated shard parameters, one per shard. Length must match {@code shardingCount} when
+   * provided.
    */
   @Column(name = "sharding_parameter", columnDefinition = "TEXT")
   private String shardingParameter;

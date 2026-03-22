@@ -12,14 +12,15 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Caffeine-based In-Memory Cache Implementation.
- * Uses per-entry TTL via {@link Expiry} so each cache item expires at its own
- * {@code expireAt} timestamp, independent of any global access-based eviction policy.
+ * Caffeine-based In-Memory Cache Implementation. Uses per-entry TTL via {@link Expiry} so each
+ * cache item expires at its own {@code expireAt} timestamp, independent of any global access-based
+ * eviction policy.
  */
 @Slf4j
 public class CaffeineMemoryCache {
 
   private static class CacheItem {
+
     final String value;
     final LocalDateTime expireAt;
 
@@ -41,9 +42,9 @@ public class CaffeineMemoryCache {
 
   /**
    * @param maxSize                maximum number of entries held in memory (LRU eviction)
-   * @param cleanupIntervalSeconds retained for API compatibility; Caffeine manages per-entry
-   *                               expiry automatically via the {@code expireAt} timestamp,
-   *                               so this parameter is no longer used in the Caffeine builder
+   * @param cleanupIntervalSeconds retained for API compatibility; Caffeine manages per-entry expiry
+   *                               automatically via the {@code expireAt} timestamp, so this
+   *                               parameter is no longer used in the Caffeine builder
    */
   public CaffeineMemoryCache(long maxSize, long cleanupIntervalSeconds) {
     this.maxSize = maxSize;

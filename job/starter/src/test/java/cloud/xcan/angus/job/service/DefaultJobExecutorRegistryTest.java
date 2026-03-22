@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cloud.xcan.angus.job.executor.JobExecutor;
 import cloud.xcan.angus.job.executor.JobExecutorRegistry;
-import cloud.xcan.angus.job.model.JobContext;
 import cloud.xcan.angus.job.model.JobExecutionResult;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;

@@ -28,8 +28,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
   /**
-   * Handles Bean Validation failures ({@code @Valid} on controller parameters).
-   * Returns HTTP 400 with field → message pairs — safe to expose.
+   * Handles Bean Validation failures ({@code @Valid} on controller parameters). Returns HTTP 400
+   * with field → message pairs — safe to expose.
    */
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<Map<String, Object>> handleValidation(
@@ -43,8 +43,8 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Handles explicit bad-input signals raised by the service layer.
-   * Returns HTTP 400 with the exception's message (assumed to be safe).
+   * Handles explicit bad-input signals raised by the service layer. Returns HTTP 400 with the
+   * exception's message (assumed to be safe).
    */
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
@@ -53,8 +53,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Handles state-machine violations (e.g. triggering a RUNNING job).
-   * Returns HTTP 409 Conflict.
+   * Handles state-machine violations (e.g. triggering a RUNNING job). Returns HTTP 409 Conflict.
    */
   @ExceptionHandler(IllegalStateException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
@@ -63,8 +62,7 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Handles lookups for non-existent resources.
-   * Returns HTTP 404.
+   * Handles lookups for non-existent resources. Returns HTTP 404.
    */
   @ExceptionHandler(EntityNotFoundException.class)
   public ResponseEntity<Map<String, Object>> handleNotFound(EntityNotFoundException ex) {

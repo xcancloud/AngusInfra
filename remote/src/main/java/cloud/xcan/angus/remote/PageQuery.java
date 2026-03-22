@@ -16,7 +16,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -69,10 +68,10 @@ public abstract class PageQuery extends AbstractQuery implements Serializable {
       throw new IllegalArgumentException("Default orderBy not specified");
     }
     String orderBy = isBlank(this.getOrderBy()) ? this.getDefaultOrderBy() : this.getOrderBy();
-    
+
     // Validate orderBy against whitelist to prevent SQL injection
     validateOrderBy(orderBy);
-    
+
     OrderSort orderSort = isNull(this.getOrderSort())
         ? this.getDefaultOrderSort() : this.getOrderSort();
     return PageRequest.of(
@@ -81,24 +80,24 @@ public abstract class PageQuery extends AbstractQuery implements Serializable {
   }
 
   /**
-   * Validate orderBy field against whitelist to prevent SQL injection.
-   * Subclasses should override this method to provide their specific allowed fields.
-   * Default implementation only allows alphanumeric characters and underscores.
-   * 
+   * Validate orderBy field against whitelist to prevent SQL injection. Subclasses should override
+   * this method to provide their specific allowed fields. Default implementation only allows
+   * alphanumeric characters and underscores.
+   *
    * @param orderBy the field name to validate
    * @throws IllegalArgumentException if the field is not in the whitelist
    */
   protected void validateOrderBy(String orderBy) {
     // Get allowed fields from subclass implementation
     Set<String> allowedFields = getAllowedOrderByFields();
-    
+
     // If whitelist is not empty, validate against it
     if (!allowedFields.isEmpty() && !allowedFields.contains(orderBy)) {
       throw new IllegalArgumentException(
-          String.format("Invalid orderBy field: '%s'. Allowed fields are: %s", 
+          String.format("Invalid orderBy field: '%s'. Allowed fields are: %s",
               orderBy, allowedFields));
     }
-    
+
     // Apply regex pattern to detect potential SQL injection attempts
     // Only allow alphanumeric characters, underscores, and dots (for table.field notation)
     if (!orderBy.matches("^[a-zA-Z0-9_\\.]+$")) {
@@ -109,9 +108,9 @@ public abstract class PageQuery extends AbstractQuery implements Serializable {
   }
 
   /**
-   * Returns the set of allowed orderBy field names for this query.
-   * Subclasses should override this method to provide their specific allowed fields.
-   * 
+   * Returns the set of allowed orderBy field names for this query. Subclasses should override this
+   * method to provide their specific allowed fields.
+   *
    * @return set of allowed field names (empty set means allow any field matching regex pattern)
    */
   protected Set<String> getAllowedOrderByFields() {

@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 /**
  * Unit tests for OAuth2 SMS Code Authentication Provider
- * 
+ * <p>
  * Tests the SMS code grant flow covering success and failure cases.
- * 
+ *
  * @author Test Framework
  * @version 1.0
  */

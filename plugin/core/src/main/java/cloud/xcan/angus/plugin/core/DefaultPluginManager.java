@@ -187,10 +187,12 @@ public class DefaultPluginManager implements PluginManager {
           descriptor.getVersion()));
       return true;
     } catch (PluginException e) {
-      String pluginId = descriptor != null ? descriptor.getId() : pluginPath.getFileName().toString();
+      String pluginId =
+          descriptor != null ? descriptor.getId() : pluginPath.getFileName().toString();
       String pluginName = descriptor != null ? descriptor.getName() : pluginId;
       String pluginVersion = descriptor != null ? descriptor.getVersion() : "";
-      publishEvent(new PluginFailedEvent(this, pluginId, pluginName, pluginVersion, "start failed", e));
+      publishEvent(
+          new PluginFailedEvent(this, pluginId, pluginName, pluginVersion, "start failed", e));
       return false;
     } catch (Exception e) {
       log.error("Failed to load plugin from: {}", pluginPath, e);
@@ -284,7 +286,7 @@ public class DefaultPluginManager implements PluginManager {
       log.error("Plugin class is required");
       return false;
     }
-    
+
     // P1-8: Validate dependencies if present
     if (descriptor.getDependencies() != null && !descriptor.getDependencies().isEmpty()) {
       for (String depId : descriptor.getDependencies()) {
@@ -293,24 +295,26 @@ public class DefaultPluginManager implements PluginManager {
         }
       }
     }
-    
+
     // P1-8: Check minimum system version
     if (descriptor.getMinSystemVersion() != null && !descriptor.getMinSystemVersion().isEmpty()) {
-      String systemVersion = properties.getDefaultConfiguration().getOrDefault("system.version", "1.0.0").toString();
+      String systemVersion = properties.getDefaultConfiguration()
+          .getOrDefault("system.version", "1.0.0").toString();
       if (isVersionLess(systemVersion, descriptor.getMinSystemVersion())) {
         log.warn("Plugin {} requires system version {}, current is {}", descriptor.getId(),
             descriptor.getMinSystemVersion(), systemVersion);
       }
     }
-    
+
     // P1-8: Warn about required permissions
-    if (descriptor.getRequiredPermissions() != null && !descriptor.getRequiredPermissions().isEmpty()) {
+    if (descriptor.getRequiredPermissions() != null && !descriptor.getRequiredPermissions()
+        .isEmpty()) {
       if (properties.isEnableSecurityCheck()) {
         log.info("Plugin {} requires permissions: {}", descriptor.getId(),
             String.join(", ", descriptor.getRequiredPermissions()));
       }
     }
-    
+
     if (properties.isValidateOnStartup()) {
       log.debug("Validation passed for plugin: {}", descriptor.getId());
     }
@@ -321,8 +325,10 @@ public class DefaultPluginManager implements PluginManager {
     String[] actualParts = actual.split("\\.");
     String[] requiredParts = required.split("\\.");
     for (int i = 0; i < Math.max(actualParts.length, requiredParts.length); i++) {
-      int actualNum = i < actualParts.length ? Integer.parseInt(actualParts[i].replaceAll("\\D", "0")) : 0;
-      int requiredNum = i < requiredParts.length ? Integer.parseInt(requiredParts[i].replaceAll("\\D", "0")) : 0;
+      int actualNum =
+          i < actualParts.length ? Integer.parseInt(actualParts[i].replaceAll("\\D", "0")) : 0;
+      int requiredNum =
+          i < requiredParts.length ? Integer.parseInt(requiredParts[i].replaceAll("\\D", "0")) : 0;
       if (actualNum < requiredNum) {
         return true;
       } else if (actualNum > requiredNum) {

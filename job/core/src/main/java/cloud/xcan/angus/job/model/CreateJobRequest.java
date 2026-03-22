@@ -12,8 +12,7 @@ import lombok.Data;
  * Request body for creating a new scheduled job.
  *
  * <p>Using a dedicated DTO instead of accepting the JPA entity directly prevents
- * mass-assignment vulnerabilities and decouples the API contract from the
- * persistence model.
+ * mass-assignment vulnerabilities and decouples the API contract from the persistence model.
  */
 @Data
 public class CreateJobRequest {
@@ -27,17 +26,17 @@ public class CreateJobRequest {
   private String jobGroup;
 
   /**
-   * Standard cron expression (6 fields: second minute hour day month weekday).
-   * Validated at runtime by {@code CronExpression.parse}.
+   * Standard cron expression (6 fields: second minute hour day month weekday). Validated at runtime
+   * by {@code CronExpression.parse}.
    */
   @NotBlank(message = "cronExpression must not be blank")
   @Size(max = 255)
   private String cronExpression;
 
   /**
-   * Spring bean name of the executor; must be registered in {@link cloud.xcan.angus.job.executor.JobExecutorRegistry}.
-   * Only alphanumeric characters, hyphens, and underscores are permitted to prevent
-   * bean-name injection.
+   * Spring bean name of the executor; must be registered in
+   * {@link cloud.xcan.angus.job.executor.JobExecutorRegistry}. Only alphanumeric characters,
+   * hyphens, and underscores are permitted to prevent bean-name injection.
    */
   @NotBlank(message = "beanName must not be blank")
   @Pattern(regexp = "^[A-Za-z0-9_\\-]+$", message = "beanName may only contain letters, digits, hyphens and underscores")

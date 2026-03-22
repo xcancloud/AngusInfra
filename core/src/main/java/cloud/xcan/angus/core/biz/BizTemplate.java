@@ -84,9 +84,9 @@ public abstract class BizTemplate<T> {
       MDC.put("traceId", traceId);
     }
     long startTime = System.currentTimeMillis();
-    
+
     log.info("[BizTemplate] Starting execution - bizKey={}, traceId={}", bizKey0, traceId);
-    
+
     checkParams();
     checkPolicy();
 
@@ -94,25 +94,25 @@ public abstract class BizTemplate<T> {
       T result = process();
       onSuccess();
       long duration = System.currentTimeMillis() - startTime;
-      log.info("[BizTemplate] Execution succeeded - bizKey={}, traceId={}, duration={}ms", 
-               bizKey0, traceId, duration);
+      log.info("[BizTemplate] Execution succeeded - bizKey={}, traceId={}, duration={}ms",
+          bizKey0, traceId, duration);
       return result;
     } catch (AbstractResultMessageException e) {
       long duration = System.currentTimeMillis() - startTime;
-      log.info("[BizTemplate] Custom exception - bizKey={}, traceId={}, duration={}ms, error={}", 
-               bizKey0, traceId, duration, e.toString());
+      log.info("[BizTemplate] Custom exception - bizKey={}, traceId={}, duration={}ms, error={}",
+          bizKey0, traceId, duration, e.toString());
       onCustomException(e);
       return null;
     } catch (RuntimeException e) {
       long duration = System.currentTimeMillis() - startTime;
-      log.error("[BizTemplate] Runtime exception - bizKey={}, traceId={}, duration={}ms", 
-                bizKey0, traceId, duration, e);
+      log.error("[BizTemplate] Runtime exception - bizKey={}, traceId={}, duration={}ms",
+          bizKey0, traceId, duration, e);
       onException(e);
       return null;
     } catch (Throwable e) {
       long duration = System.currentTimeMillis() - startTime;
-      log.error("[BizTemplate] Fatal error - bizKey={}, traceId={}, duration={}ms", 
-                bizKey0, traceId, duration, e);
+      log.error("[BizTemplate] Fatal error - bizKey={}, traceId={}, duration={}ms",
+          bizKey0, traceId, duration, e);
       throw e;
     } finally {
       afterProcess();

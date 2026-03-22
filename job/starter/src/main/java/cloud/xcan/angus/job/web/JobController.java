@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
  * REST API for managing scheduled jobs.
  *
  * <p>This controller owns no repository references — all data access is
- * delegated to {@link JobManagementService}, which enforces business rules
- * and audit logic (P1 fix).
+ * delegated to {@link JobManagementService}, which enforces business rules and audit logic (P1
+ * fix).
  *
  * <p>Input is validated via {@code @Valid} on DTO parameters.  JPA entities
  * are never accepted directly as request bodies to prevent mass-assignment.

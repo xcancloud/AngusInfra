@@ -18,8 +18,8 @@ import lombok.Setter;
  * One processing shard within a sharded or MapReduce job execution.
  *
  * <p>A new set of shards is created at the start of each job execution, replacing
- * any shards left over from the previous run.  The {@code mapResult} field is
- * only populated for MAP_REDUCE jobs during the map phase.
+ * any shards left over from the previous run.  The {@code mapResult} field is only populated for
+ * MAP_REDUCE jobs during the map phase.
  */
 @Entity
 @Table(
@@ -50,7 +50,9 @@ public class JobShard {
   @Column(name = "status", nullable = false, length = 50)
   private ShardStatus status;
 
-  /** Serialised result of the map phase; populated only for MAP_REDUCE job type. */
+  /**
+   * Serialised result of the map phase; populated only for MAP_REDUCE job type.
+   */
   @Column(name = "map_result", columnDefinition = "TEXT")
   private String mapResult;
 

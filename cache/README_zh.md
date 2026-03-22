@@ -56,7 +56,8 @@ mvn -pl cache -am clean install
 
 ### 4. 启用管理 API
 
-管理 REST 接口默认 **关闭**（安全考虑），需在配置中显式启用，且务必在前端添加身份认证（如 Spring Security）后再对外暴露：
+管理 REST 接口默认 **关闭**（安全考虑），需在配置中显式启用，且务必在前端添加身份认证（如 Spring
+Security）后再对外暴露：
 
 ```yaml
 angus:

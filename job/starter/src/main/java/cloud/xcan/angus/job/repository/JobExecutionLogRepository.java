@@ -24,8 +24,8 @@ public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog
   Page<JobExecutionLog> findByJobIdOrderByStartTimeDesc(Long jobId, Pageable pageable);
 
   /**
-   * Finds jobs still in RUNNING state that started before the given threshold
-   * (used to detect timed-out executions).
+   * Finds jobs still in RUNNING state that started before the given threshold (used to detect
+   * timed-out executions).
    *
    * @param status    RUNNING
    * @param threshold jobs that started before this time are candidates for timeout
@@ -34,9 +34,9 @@ public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog
       LocalDateTime threshold);
 
   /**
-   * Returns all execution records whose {@code startTime} falls within [start, end).
-   * Used by {@link cloud.xcan.angus.job.monitor.JobHealthMonitor} to compute
-   * health statistics across <em>all</em> statuses for a given time window.
+   * Returns all execution records whose {@code startTime} falls within [start, end). Used by
+   * {@link cloud.xcan.angus.job.monitor.JobHealthMonitor} to compute health statistics across
+   * <em>all</em> statuses for a given time window.
    *
    * @param start window start (inclusive)
    * @param end   window end (exclusive)
@@ -44,8 +44,8 @@ public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog
   List<JobExecutionLog> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 
   /**
-   * Deletes all execution records for the specified job.
-   * Called when a job definition is permanently deleted.
+   * Deletes all execution records for the specified job. Called when a job definition is
+   * permanently deleted.
    */
   @Modifying
   @Query("DELETE FROM JobExecutionLog l WHERE l.jobId = :jobId")

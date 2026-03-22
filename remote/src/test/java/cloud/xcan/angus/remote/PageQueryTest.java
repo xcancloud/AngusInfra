@@ -3,7 +3,6 @@ package cloud.xcan.angus.remote;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,7 +95,7 @@ class PageQueryTest {
   @DisplayName("should validate against whitelist when provided")
   void testWhitelistValidation() {
     TestPageQueryWithWhitelist restrictedQuery = new TestPageQueryWithWhitelist();
-    
+
     // Valid field
     restrictedQuery.setOrderBy("id");
     assertThat(restrictedQuery.tranPage()).isNotNull();

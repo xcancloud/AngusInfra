@@ -16,6 +16,7 @@ import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.service.JobManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import java.util.List;
 
 @WebMvcTest(controllers = {JobController.class, GlobalExceptionHandler.class})
 class JobControllerTest {
@@ -120,7 +120,8 @@ class JobControllerTest {
   @Test
   @DisplayName("POST /api/v1/jobs/1/trigger — returns 409 when job is RUNNING")
   void triggerJob_running() throws Exception {
-    org.mockito.Mockito.doThrow(new IllegalStateException("Job 1 cannot be triggered in status RUNNING"))
+    org.mockito.Mockito.doThrow(
+            new IllegalStateException("Job 1 cannot be triggered in status RUNNING"))
         .when(jobManagementService).triggerJob(1L);
 
     mockMvc.perform(post("/api/v1/jobs/1/trigger"))
@@ -154,7 +155,8 @@ class JobControllerTest {
         .andExpect(status().isInternalServerError())
         .andExpect(jsonPath("$.success").value(false))
         // The raw exception message must NOT appear in the response
-        .andExpect(jsonPath("$.message").value("Internal server error. Please contact the administrator."));
+        .andExpect(jsonPath("$.message").value(
+            "Internal server error. Please contact the administrator."));
   }
 
   // ---------------------------------------------------------------------------

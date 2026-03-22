@@ -24,6 +24,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.support.CronExpression;
@@ -32,9 +33,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-
-// ScheduledJobRepository pageable overload needs PageRequest
-import org.springframework.data.domain.PageRequest;
 
 /**
  * Core scheduler that polls for due jobs and dispatches them for execution.
@@ -69,7 +67,9 @@ public class JobSchedulerService {
   private final ThreadPoolTaskExecutor jobExecutorPool;
   private final PlatformTransactionManager transactionManager;
 
-  /** Stable per-node identifier included in lock ownership and execution-log records. */
+  /**
+   * Stable per-node identifier included in lock ownership and execution-log records.
+   */
   private final String nodeId = UUID.randomUUID().toString();
 
   // ---------------------------------------------------------------------------
@@ -150,7 +150,8 @@ public class JobSchedulerService {
       JobExecutor executor = executorRegistry.getExecutor(job.getBeanName());
       JobExecutionResult result = executor.execute(buildContext(job, null));
 
-      executionLog.setStatus(result.isSuccess() ? ExecutionStatus.SUCCESS : ExecutionStatus.FAILURE);
+      executionLog.setStatus(
+          result.isSuccess() ? ExecutionStatus.SUCCESS : ExecutionStatus.FAILURE);
       executionLog.setResult(result.getResult());
       executionLog.setErrorMessage(result.getErrorMessage());
 
@@ -239,7 +240,8 @@ public class JobSchedulerService {
       if (!(raw instanceof MapReduceJobExecutor executor)) {
         throw new IllegalArgumentException(
             "Executor '" + job.getBeanName() + "' does not implement MapReduceJobExecutor "
-                + "(required for MAP_REDUCE reduce phase). Actual type: " + raw.getClass().getName());
+                + "(required for MAP_REDUCE reduce phase). Actual type: " + raw.getClass()
+                .getName());
       }
       String result = executor.reduce(buildContext(job, null), mapResults);
       executionLog.setStatus(ExecutionStatus.SUCCESS);
@@ -307,7 +309,8 @@ public class JobSchedulerService {
           shard.getShardingParameter());
 
       shard.setStatus(result.isSuccess() ? ShardStatus.COMPLETED : ShardStatus.FAILED);
-      executionLog.setStatus(result.isSuccess() ? ExecutionStatus.SUCCESS : ExecutionStatus.FAILURE);
+      executionLog.setStatus(
+          result.isSuccess() ? ExecutionStatus.SUCCESS : ExecutionStatus.FAILURE);
       executionLog.setResult(result.getResult());
       executionLog.setErrorMessage(result.getErrorMessage());
 
@@ -330,15 +333,14 @@ public class JobSchedulerService {
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates a fresh set of shards for this execution, replacing any leftovers
-   * from previous runs.
+   * Creates a fresh set of shards for this execution, replacing any leftovers from previous runs.
    *
    * <p><strong>Transaction isolation fix:</strong> this method runs in its own
    * {@code REQUIRES_NEW} transaction so that the inserted shard rows are
    * <em>committed</em> before the child-thread {@link TransactionTemplate}s
-   * start.  Without this, child threads (which use separate DB connections
-   * with READ_COMMITTED isolation) would not see the parent's uncommitted
-   * inserts and would fail with "entity not found" or issue duplicate inserts.
+   * start.  Without this, child threads (which use separate DB connections with READ_COMMITTED
+   * isolation) would not see the parent's uncommitted inserts and would fail with "entity not
+   * found" or issue duplicate inserts.
    */
   private List<JobShard> createShards(ScheduledJob job) {
     TransactionTemplate requiresNew = new TransactionTemplate(transactionManager);
@@ -424,7 +426,8 @@ public class JobSchedulerService {
     } else {
       job.setStatus(JobStatus.READY);
       job.setNextExecuteTime(LocalDateTime.now().plusMinutes(properties.getRetryBackoffMinutes()));
-      log.warn("Job {} will be retried (attempt {}/{})", job.getJobName(), retryCount + 1, maxRetry);
+      log.warn("Job {} will be retried (attempt {}/{})", job.getJobName(), retryCount + 1,
+          maxRetry);
     }
   }
 }

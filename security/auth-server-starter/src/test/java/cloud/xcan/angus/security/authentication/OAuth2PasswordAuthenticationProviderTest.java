@@ -1,13 +1,7 @@
 package cloud.xcan.angus.security.authentication;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import cloud.xcan.angus.security.BaseSecurityTest;
 import cloud.xcan.angus.security.SecurityTestFixtures;
@@ -16,16 +10,14 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.test.web.servlet.MvcResult;
 
 /**
  * Unit tests for OAuth2 Password Authentication Provider
- * 
- * Tests the password grant flow (Resource Owner Password Credentials Grant) 
- * covering success and failure cases.
- * 
+ * <p>
+ * Tests the password grant flow (Resource Owner Password Credentials Grant) covering success and
+ * failure cases.
+ *
  * @author Test Framework
  * @version 1.0
  */

@@ -18,8 +18,8 @@ import lombok.Setter;
  * Immutable audit record of one job execution attempt.
  *
  * <p>A new row is written at execution start and updated on completion or failure.
- * For sharded jobs, one row is written per shard item; for MapReduce jobs, one row
- * is written for the reduce phase and one per map shard.
+ * For sharded jobs, one row is written per shard item; for MapReduce jobs, one row is written for
+ * the reduce phase and one per map shard.
  */
 @Entity
 @Table(
@@ -44,7 +44,9 @@ public class JobExecutionLog {
   @Column(name = "job_name", nullable = false, length = 255)
   private String jobName;
 
-  /** Shard index for sharded/map executions; {@code null} for the reduce phase sentinel value. */
+  /**
+   * Shard index for sharded/map executions; {@code null} for the reduce phase sentinel value.
+   */
   @Column(name = "sharding_item")
   private Integer shardingItem;
 
@@ -58,7 +60,9 @@ public class JobExecutionLog {
   @Column(name = "end_time")
   private LocalDateTime endTime;
 
-  /** Wall-clock duration of the execution in milliseconds. */
+  /**
+   * Wall-clock duration of the execution in milliseconds.
+   */
   @Column(name = "execution_time")
   private Long executionTime;
 
@@ -68,7 +72,9 @@ public class JobExecutionLog {
   @Column(name = "error_message", columnDefinition = "TEXT")
   private String errorMessage;
 
-  /** Identifier of the cluster node that executed this record. */
+  /**
+   * Identifier of the cluster node that executed this record.
+   */
   @Column(name = "executor_node", length = 255)
   private String executorNode;
 }

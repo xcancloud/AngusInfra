@@ -13,9 +13,9 @@ import org.springframework.test.web.servlet.MvcResult;
 
 /**
  * Unit tests for OAuth2 Email Code Authentication Provider
- * 
+ * <p>
  * Tests the email code grant flow covering success and failure cases.
- * 
+ *
  * @author Test Framework
  * @version 1.0
  */

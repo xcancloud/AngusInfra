@@ -76,7 +76,8 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
         return super.nextId();
       } catch (Exception fallbackError) {
         LOGGER.error("Both cached and synchronous UID generation failed", fallbackError);
-        throw new IdGenerateException("Unable to generate UID in both cached and synchronous modes", fallbackError);
+        throw new IdGenerateException("Unable to generate UID in both cached and synchronous modes",
+            fallbackError);
       }
     }
   }
@@ -133,14 +134,14 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
 
     // set rejected put/take handle policy
     this.ringBuffer.setBufferPaddingExecutor(bufferPaddingExecutor);
-    
+
     // Use BlockPolicy by default to prevent UID loss; can be overridden via setter
     if (rejectedPutBufferHandler == null) {
       this.rejectedPutBufferHandler = new RejectedPutBufferPolicies.BlockPolicy();
       LOGGER.info("Using default BlockPolicy for rejected put buffer requests");
     }
     this.ringBuffer.setRejectedPutHandler(rejectedPutBufferHandler);
-    
+
     if (rejectedTakeBufferHandler != null) {
       this.ringBuffer.setRejectedTakeHandler(rejectedTakeBufferHandler);
     }

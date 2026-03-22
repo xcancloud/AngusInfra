@@ -44,8 +44,8 @@ public class DistributedLockService {
    *
    * @param lockKey unique lock identifier
    * @param owner   identifier of the requesting node (e.g. hostname + UUID)
-   * @return the lock value (UUID) to pass to {@link #unlock} if successful,
-   *         or {@code null} if the lock is already held by another node
+   * @return the lock value (UUID) to pass to {@link #unlock} if successful, or {@code null} if the
+   * lock is already held by another node
    */
   public String tryLock(String lockKey, String owner) {
     return tryLock(lockKey, owner, properties.getLockTimeoutSeconds());
@@ -57,8 +57,8 @@ public class DistributedLockService {
    * @param lockKey        unique lock identifier
    * @param owner          identifier of the requesting node
    * @param timeoutSeconds lock TTL in seconds
-   * @return the lock value (UUID) to pass to {@link #unlock} if successful,
-   *         or {@code null} if the lock is already held by another node
+   * @return the lock value (UUID) to pass to {@link #unlock} if successful, or {@code null} if the
+   * lock is already held by another node
    */
   @Transactional
   public String tryLock(String lockKey, String owner, int timeoutSeconds) {
@@ -94,8 +94,8 @@ public class DistributedLockService {
   }
 
   /**
-   * Releases a lock, verifying both {@code owner} and {@code lockValue} to prevent
-   * accidental or spoofed releases.
+   * Releases a lock, verifying both {@code owner} and {@code lockValue} to prevent accidental or
+   * spoofed releases.
    *
    * @param lockKey   lock to release
    * @param owner     must match the owner stored in the lock row
@@ -112,7 +112,7 @@ public class DistributedLockService {
       DistributedLock lock = optLock.get();
       if (!owner.equals(lock.getOwner()) || !lockValue.equals(lock.getLockValue())) {
         log.warn("Lock release rejected: key={} — owner/value mismatch "
-            + "(expected owner={} value={}, got owner={} value={})",
+                + "(expected owner={} value={}, got owner={} value={})",
             lockKey, lock.getOwner(), lock.getLockValue(), owner, lockValue);
         return;
       }

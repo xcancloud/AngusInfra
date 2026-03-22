@@ -42,7 +42,7 @@ import org.springframework.util.ReflectionUtils;
  * @param <ID> Entity ID
  * @author XiaoLong Liu
  */
-public abstract class CommCmd<T extends Entity<T,ID>, ID extends Serializable> {
+public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> {
 
   @Resource
   @PersistenceContext

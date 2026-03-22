@@ -7,12 +7,14 @@
 ### 1. 日志管理 (Logging)
 
 #### 1.1 结构化日志
+
 - **Logback**: 高性能日志框架
 - **Logstash Encoder**: JSON 格式日志
 - **MDC (Mapped Diagnostic Context)**: TraceId、UserId、RequestId
 - **日志级别动态调整**: 运行时修改日志级别
 
 #### 1.2 日志聚合
+
 - **文件输出**: 按日期、大小滚动
 - **控制台输出**: 彩色日志、格式化
 - **远程输出**: Logstash、Fluentd、Elasticsearch
@@ -21,18 +23,21 @@
 ### 2. 指标监控 (Metrics)
 
 #### 2.1 Micrometer 指标
+
 - **Counter**: 计数器（请求次数、错误次数）
 - **Gauge**: 仪表盘（当前活跃连接、内存使用）
 - **Timer**: 计时器（接口响应时间）
 - **Distribution Summary**: 分布汇总（请求大小分布）
 
 #### 2.2 JVM 指标
+
 - **内存**: heap、non-heap、GC 统计
 - **线程**: 活跃线程、死锁检测
 - **CPU**: CPU 使用率、负载
 - **类加载**: 已加载类数量
 
 #### 2.3 业务指标
+
 - **自定义指标**: 业务相关指标（订单量、用户数）
 - **标签（Tags）**: 多维度聚合（regioncode、环境、版本）
 - **百分位统计**: P50、P95、P99
@@ -40,12 +45,14 @@
 ### 3. 链路追踪 (Tracing)
 
 #### 3.1 分布式追踪
+
 - **OpenTelemetry**: 统一的可观测性标准
 - **Zipkin**: 轻量级链路追踪
 - **Jaeger**: 高级链路分析（可选）
 - **TraceId 传递**: HTTP Header、MQ、RPC
 
 #### 3.2 Span 管理
+
 - **自动埋点**: HTTP 请求、数据库查询、缓存操作
 - **手动埋点**: 自定义 Span
 - **Span 标签**: 添加业务上下文
@@ -54,17 +61,20 @@
 ### 4. 数据导出 (Export)
 
 #### 4.1 Excel 导出
+
 - **Apache POI**: 支持 .xlsx 格式
 - **大数据量**: 流式写入，避免 OOM
 - **样式定制**: 标题、格式、合并单元格
 - **模板导出**: 基于模板填充数据
 
 #### 4.2 CSV 导出
+
 - **OpenCSV**: 高性能 CSV 读写
 - **字符编码**: UTF-8、GBK
 - **批量导出**: 分批查询、分批写入
 
 #### 4.3 PDF 导出
+
 - **iText**: PDF 生成（可选）
 - **中文支持**: 字体嵌入
 - **复杂布局**: 表格、图片、水印
@@ -72,12 +82,14 @@
 ### 5. 健康检查 (Health Check)
 
 #### 5.1 Actuator 端点
+
 - **/actuator/health**: 健康状态
 - **/actuator/metrics**: 指标查询
 - **/actuator/prometheus**: Prometheus 格式指标
 - **/actuator/info**: 应用信息
 
 #### 5.2 自定义健康检查
+
 - **数据库健康检查**: 检查数据库连接
 - **Redis 健康检查**: 检查 Redis 可用性
 - **磁盘空间检查**: 检查磁盘剩余空间
@@ -105,21 +117,25 @@ observability-starter
 ## 使用场景
 
 ### 场景 1: 结构化日志
+
 ```java
+
 @Slf4j
 @RestController
 public class UserController {
-    @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Long id) {
-        MDC.put("userId", String.valueOf(id));
-        log.info("Fetching user, userId={}", id);
-        // ...
-        MDC.clear();
-    }
+
+  @GetMapping("/users/{id}")
+  public User getUser(@PathVariable Long id) {
+    MDC.put("userId", String.valueOf(id));
+    log.info("Fetching user, userId={}", id);
+    // ...
+    MDC.clear();
+  }
 }
 ```
 
 ### 场景 2: 自定义指标
+
 ```java
 @Service
 public class OrderService {
@@ -141,6 +157,7 @@ public class OrderService {
 ```
 
 ### 场景 3: 链路追踪
+
 ```java
 @Service
 public class PaymentService {
@@ -161,6 +178,7 @@ public class PaymentService {
 ```
 
 ### 场景 4: Excel 导出
+
 ```java
 @Service
 public class ExportService {
@@ -193,6 +211,7 @@ public class ExportService {
 ## 配置示例
 
 ### application.yml
+
 ```yaml
 # Actuator 端点配置
 management:
@@ -232,15 +251,17 @@ logging:
 ```
 
 ### logback-spring.xml
+
 ```xml
+
 <configuration>
-    <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/app-json.log</file>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <includeMdcKeyName>traceId</includeMdcKeyName>
-            <includeMdcKeyName>userId</includeMdcKeyName>
-        </encoder>
-    </appender>
+  <appender name="JSON" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/app-json.log</file>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <includeMdcKeyName>traceId</includeMdcKeyName>
+      <includeMdcKeyName>userId</includeMdcKeyName>
+    </encoder>
+  </appender>
 </configuration>
 ```
 
@@ -270,6 +291,7 @@ cloud.xcan.angus.observability/
 ## 迁移内容
 
 此模块包含从 `core/` 迁移的以下内容：
+
 - `log/` - 日志配置、日志过滤器、日志脱敏
 - `meter/` - Micrometer 指标、自定义指标
 - `export/` - Excel、CSV、PDF 导出
@@ -290,6 +312,7 @@ cloud.xcan.angus.observability/
 ## 监控指标
 
 ### 关键指标
+
 - **请求量 (QPS)**: `http.server.requests`
 - **响应时间**: `http.server.requests.percentile`
 - **错误率**: `http.server.requests{status=~"5.."}"`
@@ -297,6 +320,7 @@ cloud.xcan.angus.observability/
 - **GC 时间**: `jvm.gc.pause`
 
 ### Grafana 仪表盘
+
 - 使用 Prometheus + Grafana 可视化
 - 导入社区仪表盘（Spring Boot 2.x Dashboard）
 

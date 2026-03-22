@@ -21,7 +21,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -60,7 +59,8 @@ class JobManagementServiceTest {
     assertThat(created.getJobName()).isEqualTo("TestJob");
     assertThat(created.getStatus()).isEqualTo(JobStatus.READY);
     assertThat(created.getRetryCount()).isEqualTo(0);
-    assertThat(created.getNextExecuteTime()).isNotNull().isAfter(LocalDateTime.now().minusSeconds(1));
+    assertThat(created.getNextExecuteTime()).isNotNull()
+        .isAfter(LocalDateTime.now().minusSeconds(1));
   }
 
   @Test

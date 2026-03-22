@@ -7,13 +7,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * Configuration properties for remote API client module.
- * 
- * This configuration class manages all tunable parameters for:
- * - Feign client behavior and timeouts
- * - Request/response tracing
- * - Idempotence key management
- * - Security and validation settings
- * 
+ * <p>
+ * This configuration class manages all tunable parameters for: - Feign client behavior and timeouts
+ * - Request/response tracing - Idempotence key management - Security and validation settings
+ * <p>
  * Usage in application.yml:
  * <pre>
  * xcan:

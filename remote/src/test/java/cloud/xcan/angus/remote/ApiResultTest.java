@@ -2,7 +2,6 @@ package cloud.xcan.angus.remote;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -138,7 +137,7 @@ class ApiResultTest {
   @DisplayName("should implement toString")
   void testToString() {
     ApiResult<String> response = new ApiResult<>("S", "OK", "data");
-    
+
     String stringRepresentation = response.toString();
     assertThat(stringRepresentation).contains("ApiResult");
   }

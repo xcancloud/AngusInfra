@@ -10,48 +10,30 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Feign Request Interceptor for Inner API Authentication
- * 
- * This interceptor automatically injects OAuth2 Bearer tokens into Feign requests
- * that target inner API endpoints (service-to-service communication).
- * 
- * Features:
- * - Automatic token injection for configured request paths
- * - Thread-safe token caching and refresh
- * - Exponential backoff retry on failures
- * - Configuration-driven path and timeout management
- * - Comprehensive logging for monitoring
- * 
- * Configuration:
- * Place the following in application.yml:
- * ```yaml
- * xcan:
- *   auth:
- *     innerapi:
- *       enabled: true
- *       request-path-prefixes:
- *         - /innerapi
- *         - /system-api
- *       token-cache-interval: 15m
- *       token-refresh-threshold: 2m
- *       max-retries: 3
- *       retry-interval: 1s
- *       connection-timeout: 5s
- *       read-timeout: 10s
- * ```
- * 
- * Environment Variables:
- * - OAUTH2_INNER_API_CLIENT_ID: OAuth2 client ID for inner API
- * - OAUTH2_INNER_API_CLIENT_SECRET: OAuth2 client secret for inner API
- * 
- * Usage:
- * Spring automatically registers this interceptor with Feign clients
- * if InnerApiAuthProperties is properly configured.
- * 
+ * <p>
+ * This interceptor automatically injects OAuth2 Bearer tokens into Feign requests that target inner
+ * API endpoints (service-to-service communication).
+ * <p>
+ * Features: - Automatic token injection for configured request paths - Thread-safe token caching
+ * and refresh - Exponential backoff retry on failures - Configuration-driven path and timeout
+ * management - Comprehensive logging for monitoring
+ * <p>
+ * Configuration: Place the following in application.yml: ```yaml xcan: auth: innerapi: enabled:
+ * true request-path-prefixes: - /innerapi - /system-api token-cache-interval: 15m
+ * token-refresh-threshold: 2m max-retries: 3 retry-interval: 1s connection-timeout: 5s
+ * read-timeout: 10s ```
+ * <p>
+ * Environment Variables: - OAUTH2_INNER_API_CLIENT_ID: OAuth2 client ID for inner API -
+ * OAUTH2_INNER_API_CLIENT_SECRET: OAuth2 client secret for inner API
+ * <p>
+ * Usage: Spring automatically registers this interceptor with Feign clients if
+ * InnerApiAuthProperties is properly configured.
+ *
  * @author Framework Team
  * @version 2.0 (Redesigned with TokenCacheManager)
- * @since 2025-03-21
  * @see TokenCacheManager
  * @see InnerApiAuthProperties
+ * @since 2025-03-21
  */
 @Slf4j
 public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
@@ -61,9 +43,9 @@ public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
 
   /**
    * Constructor for FeignInnerApiAuthInterceptor
-   * 
+   *
    * @param tokenCacheManager manages OAuth2 token caching and refresh
-   * @param properties configuration properties for path matching
+   * @param properties        configuration properties for path matching
    */
   public FeignInnerApiAuthInterceptor(
       TokenCacheManager tokenCacheManager,
@@ -76,22 +58,18 @@ public class FeignInnerApiAuthInterceptor implements RequestInterceptor {
 
   /**
    * Apply the interceptor to the Feign request template.
-   * 
-   * This method is called by Feign for every outgoing request.
-   * It decides whether to inject the Authorization header based on
-   * the request path and configured prefixes.
-   * 
-   * Process:
-   * 1. Check if inner API authentication is enabled
-   * 2. Check if request path matches configured prefixes
-   * 3. If matched, fetch token from cache manager (with retry logic)
-   * 4. Inject token as "Authorization: Bearer <token>" header
-   * 
-   * Error Handling:
-   * - If token retrieval fails, the exception is propagated
-   * - The calling code can handle this appropriately (e.g., circuit breaker)
-   * - No silent failures to ensure visibility of authentication issues
-   * 
+   * <p>
+   * This method is called by Feign for every outgoing request. It decides whether to inject the
+   * Authorization header based on the request path and configured prefixes.
+   * <p>
+   * Process: 1. Check if inner API authentication is enabled 2. Check if request path matches
+   * configured prefixes 3. If matched, fetch token from cache manager (with retry logic) 4. Inject
+   * token as "Authorization: Bearer <token>" header
+   * <p>
+   * Error Handling: - If token retrieval fails, the exception is propagated - The calling code can
+   * handle this appropriately (e.g., circuit breaker) - No silent failures to ensure visibility of
+   * authentication issues
+   *
    * @param template Feign request template to modify
    * @throws RuntimeException if token retrieval fails (from tokenCacheManager)
    */

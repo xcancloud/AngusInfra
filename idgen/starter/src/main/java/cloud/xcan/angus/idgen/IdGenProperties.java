@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * Configuration properties for ID generation system.
- * 
- * This configuration class manages all tunable parameters for UID and BID generation,
- * allowing zero-downtime configuration adjustments via Spring properties.
- * 
+ * <p>
+ * This configuration class manages all tunable parameters for UID and BID generation, allowing
+ * zero-downtime configuration adjustments via Spring properties.
+ * <p>
  * Usage in application.yml:
  * <pre>
  * xcan:
@@ -101,16 +101,14 @@ public class IdGenProperties {
   public static class CachedUidConfig {
 
     /**
-     * Ring buffer size boost power.
-     * Final buffer size = (maxSequence + 1) << boostPower
-     * Default 2 means 1M size with 48MB memory cost
+     * Ring buffer size boost power. Final buffer size = (maxSequence + 1) << boostPower Default 2
+     * means 1M size with 48MB memory cost
      */
     private int boostPower = 2;
 
     /**
-     * Padding factor for ring buffer (0-100).
-     * When remaining IDs < (buffer_size * paddingFactor / 100), trigger padding
-     * Default 50 means trigger at 50% remaining
+     * Padding factor for ring buffer (0-100). When remaining IDs < (buffer_size * paddingFactor /
+     * 100), trigger padding Default 50 means trigger at 50% remaining
      */
     private int paddingFactor = 50;
 
@@ -120,8 +118,8 @@ public class IdGenProperties {
     private long scheduleInterval = 300; // 5 minutes
 
     /**
-     * Rejected put buffer handler policy: DISCARD, EXCEPTION, BLOCK
-     * Default BLOCK ensures no UID loss but may increase latency
+     * Rejected put buffer handler policy: DISCARD, EXCEPTION, BLOCK Default BLOCK ensures no UID
+     * loss but may increase latency
      */
     private String rejectionPolicy = "BLOCK";
   }

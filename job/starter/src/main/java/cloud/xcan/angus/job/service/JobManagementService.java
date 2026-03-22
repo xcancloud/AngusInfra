@@ -11,7 +11,6 @@ import cloud.xcan.angus.job.repository.JobShardRepository;
 import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,8 +135,8 @@ public class JobManagementService {
    * Schedules a job for immediate execution on the next scan cycle.
    *
    * <p>Only READY or PAUSED jobs may be triggered.  Triggering a RUNNING job
-   * would create a duplicate execution; triggering a FAILED job requires a
-   * human-intentional resume first.
+   * would create a duplicate execution; triggering a FAILED job requires a human-intentional resume
+   * first.
    */
   @Transactional
   public void triggerJob(Long jobId) {
@@ -206,8 +205,8 @@ public class JobManagementService {
   // ---------------------------------------------------------------------------
 
   /**
-   * Calculates the next fire time for a cron expression using Spring's built-in parser.
-   * Accepts the standard 6-field format (second minute hour day month weekday).
+   * Calculates the next fire time for a cron expression using Spring's built-in parser. Accepts the
+   * standard 6-field format (second minute hour day month weekday).
    *
    * @throws IllegalArgumentException if the expression is invalid
    */

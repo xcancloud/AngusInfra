@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 public class HybridCacheAutoConfiguration {
 
   /**
-   * JPA-backed persistence adapter — registered when a {@link SpringDataCacheEntryRepository}
-   * bean is present (i.e. Spring Data JPA is on the classpath and a datasource is configured).
+   * JPA-backed persistence adapter — registered when a {@link SpringDataCacheEntryRepository} bean
+   * is present (i.e. Spring Data JPA is on the classpath and a datasource is configured).
    */
   @Bean
   @ConditionalOnBean(SpringDataCacheEntryRepository.class)
@@ -31,8 +31,8 @@ public class HybridCacheAutoConfiguration {
   }
 
   /**
-   * Pure in-memory fallback persistence — used when no JPA repository is available.
-   * Data is not durable across restarts. Suitable for local/dev environments.
+   * Pure in-memory fallback persistence — used when no JPA repository is available. Data is not
+   * durable across restarts. Suitable for local/dev environments.
    */
   @Bean
   @ConditionalOnMissingBean(CachePersistence.class)

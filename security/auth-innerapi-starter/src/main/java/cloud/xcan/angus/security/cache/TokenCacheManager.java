@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
  * Thread-safe OAuth2 Token Cache Manager for Inner API Authentication
  *
  * <p>Manages the caching and refreshing of OAuth2 access tokens used for inter-service
- * (service-to-service) authentication. Supports both local (in-memory) and distributed
- * cache backends via the {@link TokenStore} abstraction.</p>
+ * (service-to-service) authentication. Supports both local (in-memory) and distributed cache
+ * backends via the {@link TokenStore} abstraction.</p>
  *
  * <p>Features:</p>
  * <ul>
@@ -52,17 +52,17 @@ public class TokenCacheManager {
   private final TokenStore tokenStore;
 
   /**
-   * Fallback token kept in memory for degraded mode.
-   * Used when token refresh fails but a previous token was obtained.
+   * Fallback token kept in memory for degraded mode. Used when token refresh fails but a previous
+   * token was obtained.
    */
   private volatile String fallbackToken;
 
   /**
    * Constructor for TokenCacheManager
    *
-   * @param properties             configuration properties
+   * @param properties               configuration properties
    * @param clientSignInnerApiRemote Feign client for OAuth2 token endpoint
-   * @param tokenStore             pluggable cache backend
+   * @param tokenStore               pluggable cache backend
    */
   public TokenCacheManager(
       InnerApiAuthProperties properties,

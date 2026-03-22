@@ -2,8 +2,6 @@ package cloud.xcan.angus.idgen.bid.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +12,6 @@ import cloud.xcan.angus.idgen.bid.Format;
 import cloud.xcan.angus.idgen.bid.Mode;
 import cloud.xcan.angus.idgen.entity.IdConfig;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -147,7 +144,8 @@ class DefaultBidGeneratorTest {
   void testInvalidBatchNum() {
     assertThatThrownBy(() -> bidGenerator.getIds("ORDER", 0)).isInstanceOf(
         IdGenerateException.class);
-    assertThatThrownBy(() -> bidGenerator.getIds("ORDER", BidGenerator.MAX_BATCH_NUM + 1)).isInstanceOf(
+    assertThatThrownBy(
+        () -> bidGenerator.getIds("ORDER", BidGenerator.MAX_BATCH_NUM + 1)).isInstanceOf(
         IdGenerateException.class);
   }
 

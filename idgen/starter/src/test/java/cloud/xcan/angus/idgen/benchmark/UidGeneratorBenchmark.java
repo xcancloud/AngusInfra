@@ -2,29 +2,28 @@ package cloud.xcan.angus.idgen.benchmark;
 
 import cloud.xcan.angus.idgen.DefaultUidGenerator;
 import cloud.xcan.angus.idgen.WorkerNodeStrategy;
-import cloud.xcan.angus.idgen.uid.RingBuffer;
 import cloud.xcan.angus.idgen.uid.UID;
+import java.util.Collections;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.*;
-import java.util.concurrent.*;
-
 /**
  * UID生成性能基准测试
- *
- * 测试以下场景：
- * 1. 单线程顺序生成
- * 2. 多线程并发生成（10个线程）
- * 3. 并发+批量获取
- *
+ * <p>
+ * 测试以下场景： 1. 单线程顺序生成 2. 多线程并发生成（10个线程） 3. 并发+批量获取
+ * <p>
  * 目标吞吐量：≥6.5M ops/sec（单线程）
- *
- * 运行方式：
- * mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.UidGeneratorBenchmark"
+ * <p>
+ * 运行方式： mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.UidGeneratorBenchmark"
  */
 @State(Scope.Benchmark)
 @Fork(1)
@@ -89,8 +88,7 @@ public class UidGeneratorBenchmark {
   }
 
   /**
-   * 多线程并发生成UID（10个线程）
-   * 使用CountDownLatch等待所有线程完成【注：基准测试中应避免复杂同步】
+   * 多线程并发生成UID（10个线程） 使用CountDownLatch等待所有线程完成【注：基准测试中应避免复杂同步】
    */
   @Benchmark
   public void multiThreadConcurrent() throws InterruptedException {
@@ -161,6 +159,7 @@ public class UidGeneratorBenchmark {
    * Mock WorkerNodeStrategy实现
    */
   static class MockWorkerNodeStrategy implements WorkerNodeStrategy {
+
     static final MockWorkerNodeStrategy INSTANCE = new MockWorkerNodeStrategy();
 
     @Override

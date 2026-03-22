@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
  * Distributed token store backed by an {@code IDistributedCache} implementation.
  *
  * <p>This implementation is suitable for multi-instance deployments where tokens must be shared
- * across all service instances. It delegates to the {@code IDistributedCache} interface, which
- * may be backed by Redis, database-backed hybrid cache, or any other distributed cache.</p>
+ * across all service instances. It delegates to the {@code IDistributedCache} interface, which may
+ * be backed by Redis, database-backed hybrid cache, or any other distributed cache.</p>
  *
  * <p>Uses the {@code IDistributedCache} from {@code xcan-angusinfra.cache} module.</p>
  *
@@ -20,8 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 public class DistributedTokenStore implements TokenStore {
 
   /**
-   * We accept Object to avoid a hard compile-time dependency on the cache module.
-   * At runtime the auto-configurer passes the real {@code IDistributedCache} bean.
+   * We accept Object to avoid a hard compile-time dependency on the cache module. At runtime the
+   * auto-configurer passes the real {@code IDistributedCache} bean.
    */
   private final Object distributedCache;
 

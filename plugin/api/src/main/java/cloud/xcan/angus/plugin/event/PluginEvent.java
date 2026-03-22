@@ -1,7 +1,6 @@
 package cloud.xcan.angus.plugin.event;
 
 import cloud.xcan.angus.plugin.model.PluginState;
-import java.time.Instant;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 

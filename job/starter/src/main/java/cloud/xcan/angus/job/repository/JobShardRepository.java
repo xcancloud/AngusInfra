@@ -20,8 +20,8 @@ public interface JobShardRepository extends JpaRepository<JobShard, Long> {
   List<JobShard> findByJobId(Long jobId);
 
   /**
-   * Bulk-deletes all shards for the given job.
-   * Used before creating a fresh set of shards for a new execution run.
+   * Bulk-deletes all shards for the given job. Used before creating a fresh set of shards for a new
+   * execution run.
    */
   @Modifying
   @Query("DELETE FROM JobShard s WHERE s.jobId = :jobId")

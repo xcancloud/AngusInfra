@@ -5,18 +5,18 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Standard rejection policies for RingBuffer put operations when buffer is full.
- *
- * These policies provide different strategies for handling rejected UID generation requests
- * when the ring buffer reaches capacity.
+ * <p>
+ * These policies provide different strategies for handling rejected UID generation requests when
+ * the ring buffer reaches capacity.
  */
 public class RejectedPutBufferPolicies {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RejectedPutBufferPolicies.class);
 
   /**
-   * Discard policy: Simply logs and discards the UID without raising an exception.
-   * Use this only for non-critical scenarios where losing some UIDs is acceptable.
-   *
+   * Discard policy: Simply logs and discards the UID without raising an exception. Use this only
+   * for non-critical scenarios where losing some UIDs is acceptable.
+   * <p>
    * Trade-off: Lower latency but potential data loss.
    */
   public static class DiscardPolicy implements RejectedPutBufferHandler {
@@ -24,15 +24,15 @@ public class RejectedPutBufferPolicies {
     @Override
     public void rejectPutBuffer(RingBuffer ringBuffer, long uid) {
       LOGGER.warn("Rejected putting UID into buffer (buffer full). UID={}, BufferSize={}, "
-          + "Tail={}, Cursor={}", uid, ringBuffer.getBufferSize(),
+              + "Tail={}, Cursor={}", uid, ringBuffer.getBufferSize(),
           ringBuffer.getTail(), ringBuffer.getCursor());
     }
   }
 
   /**
-   * Exception policy: Throws an exception immediately when buffer is full.
-   * This forces the caller to handle the rejection explicitly, providing better error awareness.
-   *
+   * Exception policy: Throws an exception immediately when buffer is full. This forces the caller
+   * to handle the rejection explicitly, providing better error awareness.
+   * <p>
    * Trade-off: Higher reliability but may cause cascading failures.
    */
   public static class ExceptionPolicy implements RejectedPutBufferHandler {
@@ -46,9 +46,9 @@ public class RejectedPutBufferPolicies {
   }
 
   /**
-   * Block policy: Blocks the caller thread until buffer has space available.
-   * This ensures no UIDs are lost but may increase latency.
-   *
+   * Block policy: Blocks the caller thread until buffer has space available. This ensures no UIDs
+   * are lost but may increase latency.
+   * <p>
    * Trade-off: Higher reliability but potential thread blocking.
    */
   public static class BlockPolicy implements RejectedPutBufferHandler {

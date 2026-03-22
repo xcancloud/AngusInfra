@@ -519,35 +519,24 @@ public class OAuth2IntegrationTest {
 
 ---
 
-### 6. **[配置与扩展]** 缺少分布式部署支持
+### 6. **[配置与扩展]** ~~缺少分布式部署支持~~ ✅ 已完成
 
-**现状**:
-- Token缓存仅本地存储
-- 多实例部署下可能出现一致性问题
+**现状**: ✅ 已实现 TokenStore 抽象 + 分布式缓存支持
+- Token缓存支持 local (单实例) 和 distributed (多实例) 两种模式
+- 通过 `cache-type` 配置项选择缓存后端
+- 分布式模式使用 `IDistributedCache` (xcan-infra.cache)
 
-**建议** (预计12小时):
+**配置示例**:
 ```yaml
 # application.yml
 xcan:
   auth:
-    cache:
-      type: redis  # 改为 local 用于单实例，redis 用于分布式
-      ttl: 5m
-```
-
-```java
-@Component
-@ConditionalOnProperty(prefix = "xcan.auth.cache", name = "type", havingValue = "redis")
-public class RedisTokenCache implements TokenCache {
-  private final RedisTemplate<String, CachedToken> redisTemplate;
-  
-  @Override
-  public Optional<String> getToken(String key) {
-    return Optional.ofNullable(redisTemplate.opsForValue().get(key))
-        .filter(ct -> !ct.isExpired())
-        .map(CachedToken::getValue);
-  }
-}
+    innerapi:
+      cache-type: local        # 或 "distributed" 用于多实例部署
+      cache-key: auth:innerapi:token
+    openapi2p:
+      cache-type: distributed  # 需要 xcan-infra.cache 模块
+      cache-key: auth:openapi2p:token
 ```
 
 ---

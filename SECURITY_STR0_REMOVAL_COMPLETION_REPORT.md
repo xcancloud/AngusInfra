@@ -248,15 +248,17 @@ export OAUTH2_INTROSPECT_CLIENT_SECRET=legacy-secret
 
 - [x] Remove all Str0 obfuscation from FeignInnerApiAuthInterceptor
 - [x] Remove all Str0 obfuscation from FeignOpenapi2pAuthInterceptor
+- [x] Remove all Str0 obfuscation from core-base module (5 files)
 - [x] Create TokenCacheManager for thread-safe token caching
 - [x] Create InnerApiAuthProperties for configuration
 - [x] Update FeignInnerApiAutoConfigurer to new API
 - [x] Register auto-configuration via spring.factories
 - [x] Verify compilation - no errors
 - [x] Document configuration
-- [x] Add unit tests for auth-innerapi-starter (58 tests)
+- [x] Add unit tests for auth-innerapi-starter (66 tests)
 - [x] Add unit tests for auth-openapi2p-starter (19 tests)
 - [x] Add unit tests for auth-resource-starter (25 tests)
+- [x] Add distributed token cache support via TokenStore abstraction
 - [ ] Add integration tests (future work)
 - [ ] Deploy in test environment
 - [ ] Monitor token cache metrics in production
@@ -334,9 +336,9 @@ FeignOpenapi2pAuthInterceptor.java    ✅ No errors
 
 ### Medium Term (Future Work)
 1. [x] Implement OpenAPI 2P configuration properties
-2. [ ] Review other Str0 usages in core-base module
+2. [x] Review other Str0 usages in core-base module
 3. [ ] Consider extracting authentication logic to Spring Cloud Config
-4. [ ] Add distributed token cache for multi-instance deployments
+4. [x] Add distributed token cache for multi-instance deployments
 
 ---
 

@@ -1,7 +1,7 @@
 package cloud.xcan.angus.l2cache.synchronous;
 
 
-import cloud.xcan.angus.core.cache.CacheManagerClear;
+import cloud.xcan.angus.l2cache.spring.CacheManagerClear;
 import cloud.xcan.angus.spec.experimental.Assert;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

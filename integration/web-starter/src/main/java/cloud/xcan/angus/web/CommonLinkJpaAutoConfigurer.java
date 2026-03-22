@@ -1,12 +1,12 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.angus.core.jpa.repository.BaseRepositoryImpl;
 import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
 import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
 import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
 import cloud.xcan.angus.datasource.config.DataSourceProperties;
 import cloud.xcan.angus.datasource.config.HikariProperties;
 import cloud.xcan.angus.jpa.CommonLinkHibernateJpaConfiguration;
+import cloud.xcan.angus.persistence.jpa.repository.BaseRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;

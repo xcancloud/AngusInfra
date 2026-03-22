@@ -49,7 +49,7 @@ Spring 框架集成和扩展
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.core</artifactId>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -114,7 +114,7 @@ core-base/
 - `xcan-angusinfra.core` - 完整的 core 模块（聚合所有子模块）
 - `xcan-angusinfra.jpa-starter` - JPA 持久化
 - `xcan-angusinfra.jdbc` - JDBC 持久化
-- `xcan-angusinfra.feign-integration-starter` - Feign 远程调用
+- `xcan-angusinfra.feign-starter` - Feign 远程调用
 
 ## 📝 版本历史
 

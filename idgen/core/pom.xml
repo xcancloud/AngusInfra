@@ -15,15 +15,11 @@
   <packaging>jar</packaging>
   <description>A core library for generating unique IDs.</description>
 
-  <properties>
-    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.spec</artifactId>
-      <version>${xcan-angusinfra.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

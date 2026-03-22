@@ -42,14 +42,14 @@
     <!-- Persistence JPA Starter: Spring Data JPA integration -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.jpa-starter</artifactId>
+      <artifactId>xcan-angusinfra.jpa</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <!-- Feign Integration Starter: Declarative HTTP clients -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.feign-integration-starter</artifactId>
+      <artifactId>xcan-angusinfra.feign-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -20,10 +20,8 @@ import cloud.xcan.angus.core.event.remote.ApiLogEventRemote;
 import cloud.xcan.angus.core.event.remote.CommonEventRemote;
 import cloud.xcan.angus.core.event.remote.OperationEventRemote;
 import cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventRepository;
-import cloud.xcan.angus.core.log.ApiLogFilter;
-import cloud.xcan.angus.core.log.ApiLogProperties;
-import cloud.xcan.angus.core.log.OperationLogAspect;
-import cloud.xcan.angus.core.log.OperationLogProperties;
+import cloud.xcan.angus.observability.log.ApiLogFilter;
+import cloud.xcan.angus.observability.log.ApiLogProperties;
 import cloud.xcan.angus.security.FeignInnerApiAuthInterceptor;
 import cloud.xcan.angus.spec.thread.DefaultThreadFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,7 +50,7 @@ import org.springframework.context.annotation.DependsOn;
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(FeignAutoConfigurer.class)
 //@Conditional({AuditLogAutoConfigurer.AuditLogCondition.class}) <- Fix:: Will cause CommonService#Setting to be invalid
-@EnableConfigurationProperties({ApiLogProperties.class, OperationLogProperties.class})
+@EnableConfigurationProperties({ApiLogProperties.class})
 @ConditionalOnExpression(value = "${xcan.api-log.enabled:true} || ${xcan.opt-log.enabled:false}")
 public class AuditLogAutoConfigurer {
 
@@ -147,13 +145,6 @@ public class AuditLogAutoConfigurer {
             , Thread.NORM_PRIORITY),
         operationEventListener
     );
-  }
-
-  @Bean
-  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
-  public OperationLogAspect operationLogAspect(
-      DisruptorQueueManager<OperationEvent> operationEventDisruptorQueue) {
-    return new OperationLogAspect(operationEventDisruptorQueue);
   }
 
   @ConditionalOnMissingBean

@@ -37,7 +37,7 @@ Spring Cloud OpenFeign 声明式 HTTP 客户端集成模块。
 ## 依赖关系
 
 ```
-feign-integration-starter
+feign-starter
   ├── core-base (核心基础功能)
   ├── spring-cloud-starter-openfeign (Spring Cloud OpenFeign)
   ├── feign-httpclient (Apache HttpClient)

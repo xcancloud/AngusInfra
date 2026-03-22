@@ -14,8 +14,7 @@
   <name>AngusInfra :: Plugin :: Core</name>
   <packaging>jar</packaging>
   <description>Core implementation and runtime logic for plugins, providing default implementations,
-    services and
-    foundational libraries.
+    services and foundational libraries.
   </description>
 
   <properties>

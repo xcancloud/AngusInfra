@@ -4,9 +4,9 @@ import static cloud.xcan.angus.spec.SpecConstant.UTF8;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.biz.exception.BizException;
-import cloud.xcan.angus.core.utils.GsonUtils;
 import cloud.xcan.angus.remote.ApiResult;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
+import cloud.xcan.angus.spec.utils.JsonUtils;
 import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -119,9 +119,8 @@ public class OkHttpFeignConfiguration {
         ResponseBody body = response.body();
         if (nonNull(body)) {
           byte[] bodyBytes = body.bytes();
-          ApiResult<?> apiResult = GsonUtils.fromJson(new String(bodyBytes, UTF8),
-              ApiResult.class);
-          throw BizException.of(apiResult.getCode(), apiResult.getMsg());
+          ApiResult<?> apiResult = JsonUtils.fromJson(new String(bodyBytes, UTF8), ApiResult.class);
+          throw BizException.of(apiResult.getCode(), apiResult.getMessage());
         }
       }
       return response;

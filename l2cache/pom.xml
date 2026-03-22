@@ -13,7 +13,7 @@
 
   <artifactId>xcan-angusinfra.l2cache</artifactId>
   <name>AngusInfra :: L2Cache :: Parent</name>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>A two-level Cache library for angus projects.</description>
 

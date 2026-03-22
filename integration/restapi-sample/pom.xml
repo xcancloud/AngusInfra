@@ -10,20 +10,16 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>RestapiSample</artifactId>
+  <artifactId>xcan-angusinfra.restapi-sample</artifactId>
   <name>AngusInfra :: Integration :: RESTFul api sample</name>
   <packaging>jar</packaging>
-
-  <properties>
-    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
-  </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.bom</artifactId>
-        <version>${xcan-angusinfra.version}</version>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

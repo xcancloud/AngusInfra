@@ -14,14 +14,8 @@
   <artifactId>xcan-angusinfra.bom</artifactId>
   <name>AngusInfra :: BOM</name>
   <packaging>pom</packaging>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
   <description>The Bill of Materials of angus infra</description>
-
-  <properties>
-    <xcan-angusinfra.idgen.version>2.0.0</xcan-angusinfra.idgen.version>
-    <xcan-angusinfra.l2cache.version>2.0.0</xcan-angusinfra.l2cache.version>
-    <xcan-angusinfra.security.version>2.0.0</xcan-angusinfra.security.version>
-  </properties>
 
   <dependencyManagement>
     <dependencies>
@@ -46,37 +40,7 @@
       <!-- Core Sub-Modules -->
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.jdbc</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.jpa-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.feign-integration-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.jackson-customizer</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.observability-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -101,25 +65,49 @@
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.l2cache-core</artifactId>
-        <version>${xcan-angusinfra.l2cache.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.l2cache-starter</artifactId>
-        <version>${xcan-angusinfra.l2cache.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.idgen-core</artifactId>
-        <version>${xcan-angusinfra.idgen.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.idgen-starter</artifactId>
-        <version>${xcan-angusinfra.idgen.version}</version>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.jpa</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.feign-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.jackson-customizer</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.observability-starter</artifactId>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
@@ -137,32 +125,32 @@
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.auth-resource-model</artifactId>
-        <version>${xcan-angusinfra.security.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.auth-innerapi-starter</artifactId>
-        <version>${xcan-angusinfra.security.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>
-        <version>${xcan-angusinfra.security.version}</version>
+        <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.auth-server-starter</artifactId>
-        <version>${xcan-angusinfra.security.version}</version>
+        <version>${project.version}</version>
         <scope>compile</scope>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.auth-openapi2p-starter</artifactId>
-        <version>${xcan-angusinfra.security.version}</version>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

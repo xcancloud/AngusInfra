@@ -1,5 +1,6 @@
 package cloud.xcan.angus.queue.core.model;
 
+import cloud.xcan.angus.queue.core.entity.MessageStatus;
 import java.time.Instant;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ public class MessageData {
   private Integer priority;
   private String payload;
   private String headers;
-  private Integer status;
+  private MessageStatus status;
   private Instant visibleAt;
   private Instant leaseUntil;
   private String leaseOwner;

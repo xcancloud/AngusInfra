@@ -5,7 +5,7 @@ import static cloud.xcan.angus.core.spring.rest.ProxyRequestRest.PROXY_ENDPOINT;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.QueryParameterUtils.parseQueryString;
-import static org.apache.commons.codec.CharEncoding.UTF_8;
+import static org.apache.commons.lang3.CharEncoding.UTF_8;
 
 import cloud.xcan.angus.spec.utils.StreamUtils;
 import io.swagger.v3.oas.annotations.Operation;

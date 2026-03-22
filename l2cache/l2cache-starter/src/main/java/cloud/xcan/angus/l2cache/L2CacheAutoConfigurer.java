@@ -1,10 +1,10 @@
 package cloud.xcan.angus.l2cache;
 
 
-import cloud.xcan.angus.core.jackson.Jackson2JsonRedisSerializer;
 import cloud.xcan.angus.l2cache.config.L2CacheProperties;
 import cloud.xcan.angus.l2cache.spring.RedisCaffeineCacheManager;
 import cloud.xcan.angus.l2cache.synchronous.CacheMessageListener;
+import cloud.xcan.angus.lettucex.serializer.Jackson2JsonRedisSerializer;
 import cloud.xcan.angus.lettucex.util.RedisService;
 import cloud.xcan.angus.spec.jackson.EnumModule;
 import cloud.xcan.angus.spec.jackson.serializer.BigDecimalDeSerializer;

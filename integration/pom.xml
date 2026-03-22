@@ -16,30 +16,27 @@
   <description>Auto-configured library for angus web projects.</description>
 
   <modules>
+    <module>feign-starter</module>
+    <module>observability-starter</module>
     <module>web-starter</module>
     <module>oas3-starter</module>
     <module>restapi-sample</module>
   </modules>
-
-  <properties>
-    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
-    <xcan-plugin.version>1.0.0</xcan-plugin.version>
-  </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.bom</artifactId>
-        <version>${xcan-angusinfra.version}</version>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-plugin.bom</artifactId>
-        <version>${xcan-plugin.version}</version>
+        <artifactId>xcan-angusinfra.plugin-bom</artifactId>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

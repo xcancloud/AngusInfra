@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import cloud.xcan.angus.spec.experimental.EndpointRegister;
 import cloud.xcan.angus.spec.experimental.Value;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 
 public class ReflectionTest {

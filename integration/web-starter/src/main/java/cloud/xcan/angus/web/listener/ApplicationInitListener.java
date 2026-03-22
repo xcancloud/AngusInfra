@@ -1,19 +1,17 @@
 package cloud.xcan.angus.web.listener;
 
-import static cloud.xcan.angus.core.app.verx.VerxRegister.cacheManager;
 import static cloud.xcan.angus.core.spring.SpringContextHolder.getCtx;
 import static cloud.xcan.angus.core.spring.SpringContextHolder.registerBean;
-import static cloud.xcan.angus.core.utils.AppEnvUtils.initSneakyLogDir;
 import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AppCache.openedAppCache;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static java.lang.System.exit;
 
+import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.app.AppBeanReadyInit;
 import cloud.xcan.angus.core.app.AppPropertiesRegisterInit;
 import cloud.xcan.angus.core.app.AppWorkspaceInit;
 import cloud.xcan.angus.core.app.ApplicationInit;
-import cloud.xcan.angus.core.app.verx.VerxRegister;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.utils.AppEnvUtils;
 import cloud.xcan.angus.spec.locale.MessageHolder;
@@ -26,7 +24,6 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.MessageSource;
-import org.typelevel.v.Str0;
 
 /**
  * Built-in init order.
@@ -52,7 +49,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
     initApplication(event);
 
     // Init application cache environment
-    initApplicationCache();
+    // initApplicationCache();
 
     // Init international message.
     MessageSource messageSource = event.getApplicationContext().getBean(MessageSource.class);
@@ -81,36 +78,36 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
   }
 
   private static void initApplicationCache() {
-    try {
-      if (openedAppCache()) {
-        // Note: Register the main application cache manager, must be initialized at the beginning.
-        // Used by application initialization verification
-        registerBean(VerxRegister.class, new Str0(
-            new long[]{0x34CC9A19DE6ECD99L, 0x9D0E22B0DC98A9ADL, 0xB94135F40269A5C7L})
-            .toString() /* => "dCacheManager" */);
-
-        // Verify the cache environment
-        cacheManager().var();
-
-        // Init sneaky logger check
-        try {
-          initSneakyLogDir();
-        } catch (Exception e) {
-          System.out.println(
-              "\n***********" + AM + "*************\n" + "\t cause: " + e.getMessage());
-          if (runAtJar()) {
-            SpringApplication.exit(getCtx(), () -> -1);
-            exit(-1);
-          }
-        }
-      }
-    } catch (Exception e) {
-      System.out.println("\n***********" + IM + "*************\n" + "\t cause: " + e.getMessage());
-      if (runAtJar()) {
-        SpringApplication.exit(getCtx(), () -> -1);
-        exit(-1);
-      }
-    }
+    //    try {
+    //      if (openedAppCache()) {
+    //        // Note: Register the main application cache manager, must be initialized at the beginning.
+    //        // Used by application initialization verification
+    //        registerBean(VerxRegister.class, new Str0(
+    //            new long[]{0x34CC9A19DE6ECD99L, 0x9D0E22B0DC98A9ADL, 0xB94135F40269A5C7L})
+    //            .toString() /* => "dCacheManager" */);
+    //
+    //        // Verify the cache environment
+    //        cacheManager().var();
+    //
+    //        // Init sneaky logger check
+    //        try {
+    //          initSneakyLogDir();
+    //        } catch (Exception e) {
+    //          System.out.println(
+    //              "\n***********" + AM + "*************\n" + "\t cause: " + e.getMessage());
+    //          if (runAtJar()) {
+    //            SpringApplication.exit(getCtx(), () -> -1);
+    //            exit(-1);
+    //          }
+    //        }
+    //      }
+    //    } catch (Exception e) {
+    //      System.out.println("\n***********" + IM + "*************\n" + "\t cause: " + e.getMessage());
+    //      if (runAtJar()) {
+    //        SpringApplication.exit(getCtx(), () -> -1);
+    //        exit(-1);
+    //      }
+    //    }
   }
 
   private static final String IM = new Str0(

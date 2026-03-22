@@ -1,6 +1,5 @@
 package cloud.xcan.angus.l2cache.spring;
 
-import cloud.xcan.angus.core.cache.CacheManagerClear;
 import cloud.xcan.angus.l2cache.config.L2CacheProperties;
 import cloud.xcan.angus.lettucex.util.RedisService;
 import com.github.benmanes.caffeine.cache.Caffeine;

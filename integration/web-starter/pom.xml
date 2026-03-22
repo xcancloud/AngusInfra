@@ -36,17 +36,17 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-plugin.core</artifactId>
+      <artifactId>xcan-angusinfra.jpa</artifactId>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-plugin.spring</artifactId>
+      <artifactId>xcan-angusinfra.plugin-core</artifactId>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-plugin.updater</artifactId>
+      <artifactId>xcan-angusinfra.plugin-starter</artifactId>
     </dependency>
 
     <dependency>
@@ -61,7 +61,17 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.observability-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.oas3-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.feign-starter</artifactId>
     </dependency>
 
     <dependency>
@@ -114,7 +124,6 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
-
   </dependencies>
 
   <build>

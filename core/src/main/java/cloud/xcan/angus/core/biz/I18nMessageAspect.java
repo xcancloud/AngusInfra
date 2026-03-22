@@ -7,7 +7,6 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.angus.core.jpa.repository.I18nMessageJoinRepository;
 import cloud.xcan.angus.remote.MessageJoinField;
 import java.lang.reflect.Field;
 import java.util.HashMap;

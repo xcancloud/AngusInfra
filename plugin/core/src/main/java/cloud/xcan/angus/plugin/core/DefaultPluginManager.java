@@ -130,12 +130,13 @@ public class DefaultPluginManager implements PluginManager {
 
   @Override
   public boolean loadPlugin(Path pluginPath) {
+    PluginDescriptor descriptor = null;
     try {
       if (pluginPath == null) {
         log.warn("Plugin path is null, cannot load");
         return false;
       }
-      PluginDescriptor descriptor = readPluginDescriptor(pluginPath);
+      descriptor = readPluginDescriptor(pluginPath);
       if (descriptor == null) {
         return false;
       }
@@ -186,8 +187,10 @@ public class DefaultPluginManager implements PluginManager {
           descriptor.getVersion()));
       return true;
     } catch (PluginException e) {
-      publishEvent(new PluginFailedEvent(this, descriptor.getId(), descriptor.getName(),
-          descriptor.getVersion(), "start failed", e));
+      String pluginId = descriptor != null ? descriptor.getId() : pluginPath.getFileName().toString();
+      String pluginName = descriptor != null ? descriptor.getName() : pluginId;
+      String pluginVersion = descriptor != null ? descriptor.getVersion() : "";
+      publishEvent(new PluginFailedEvent(this, pluginId, pluginName, pluginVersion, "start failed", e));
       return false;
     } catch (Exception e) {
       log.error("Failed to load plugin from: {}", pluginPath, e);

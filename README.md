@@ -52,7 +52,7 @@ build scalable, secure, and maintainable server-side applications more efficient
 | **`core-base`**                   | Essential business logic, exception handling, event collection, multi-tenancy, Spring extensions, and utilities.|  
 | **`persistence-jdbc-starter`**    | Spring Data JDBC integration with multi-tenant support, batch operations, and converter utilities.              |  
 | **`persistence-jpa-starter`**     | Spring Data JPA integration including generic repositories, specification builders, and audit support.          |  
-| **`feign-integration-starter`**   | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.         |  
+| **`feign-starter`**   | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.         |  
 | **`jackson-customizer`**          | Jackson JSON serialization customization with standard ObjectMapper configuration and custom serializers.       |  
 | **`observability-starter`**       | Logging, metrics, and data export utilities for application observability.                                      |  
 

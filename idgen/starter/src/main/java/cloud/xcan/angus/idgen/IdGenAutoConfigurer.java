@@ -10,6 +10,7 @@ import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
 import cloud.xcan.angus.idgen.dao.IdConfigRepo;
 import cloud.xcan.angus.idgen.dao.InstanceRepo;
+import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies;
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -47,11 +48,10 @@ public class IdGenAutoConfigurer {
   @Bean
   @DependsOn("dataSourceInitializer")
   @ConditionalOnMissingBean
-  public CachedUidGenerator cachedUidGenerator(InstanceRepo instanceRepo,
-      InstanceInfoConfig configurer, DisposableInstanceIdAssigner instanceIdAssigner)
-      throws Exception {
+  public CachedUidGenerator cachedUidGenerator(InstanceInfoConfig configurer,
+      DisposableInstanceIdAssigner instanceIdAssigner) throws Exception {
     CachedUidGenerator generator = new CachedUidGenerator();
-    
+
     // Apply UID configuration
     IdGenProperties.UidGeneatorConfig uidConfig = idGenProperties.getUid();
     generator.setTimeBits(uidConfig.getTimeBits());
@@ -59,26 +59,23 @@ public class IdGenAutoConfigurer {
     generator.setSeqBits(uidConfig.getSeqBits());
     generator.setEpochStr(uidConfig.getEpochStr());
     generator.setRetriesNum(uidConfig.getRetriesNum());
-    
+
     // Apply cached UID configuration
     IdGenProperties.CachedUidConfig cachedConfig = idGenProperties.getCached();
     generator.setBoostPower(cachedConfig.getBoostPower());
     generator.setScheduleInterval(cachedConfig.getScheduleInterval());
-    
+
     // Apply rejection policy
     String rejectionPolicy = cachedConfig.getRejectionPolicy();
     if ("EXCEPTION".equalsIgnoreCase(rejectionPolicy)) {
-      generator.setRejectedPutBufferHandler(
-          new cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies.ExceptionPolicy());
+      generator.setRejectedPutBufferHandler(new RejectedPutBufferPolicies.ExceptionPolicy());
     } else if ("DISCARD".equalsIgnoreCase(rejectionPolicy)) {
-      generator.setRejectedPutBufferHandler(
-          new cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies.DiscardPolicy());
+      generator.setRejectedPutBufferHandler(new RejectedPutBufferPolicies.DiscardPolicy());
     } else {
       // Default to BLOCK policy
-      generator.setRejectedPutBufferHandler(
-          new cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies.BlockPolicy());
+      generator.setRejectedPutBufferHandler(new RejectedPutBufferPolicies.BlockPolicy());
     }
-    
+
     generator.setInstanceIdAssigner(instanceIdAssigner);
     generator.setInstanceInfo(new InstanceInfo() {
       @Override

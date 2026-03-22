@@ -12,8 +12,6 @@ import static cloud.xcan.angus.remote.CommonMessage.APP_NOT_OPENED_T;
 
 import cloud.xcan.angus.core.biz.BizAssert;
 import cloud.xcan.angus.core.biz.exception.BizException;
-import cloud.xcan.angus.core.jpa.repository.AppAuthRepository;
-import cloud.xcan.angus.core.jpa.repository.app.AppAuth;
 import cloud.xcan.angus.spec.experimental.Assert;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,7 +59,7 @@ public class CheckAppExpirationAspect {
     if (isCloudServiceEdition()) {
       Long optTenantId = getOptTenantId();
       if (isValidOptTenantId(optTenantId)) {
-        appAuth = commonAppOpenRepo.get(0)
+        appAuth = commonAppOpenRepo.getFirst()
             .findLatestByTenantIdAndAppCode(optTenantId, appExpiration.appCode());
         BizAssert.assertNotNull(appAuth, BizException.of(APP_NOT_OPENED_CODE,
             APP_NOT_OPENED_T, new Object[]{appExpiration.appCode()}));
@@ -70,7 +68,7 @@ public class CheckAppExpirationAspect {
             "CheckAppExpiration parameter is missing, the tenantId was not read from the  Isn't it a user interface?");
       }
     } else if (isPrivateEdition()) {
-      appAuth = commonAppOpenRepo.get(0).findLatestByAppCode(appExpiration.appCode());
+      appAuth = commonAppOpenRepo.getFirst().findLatestByAppCode(appExpiration.appCode());
       BizAssert.assertNotNull(appAuth, BizException.of(APP_NOT_OPENED_CODE,
           APP_NOT_OPENED_T, new Object[]{appExpiration.appCode()}));
     }

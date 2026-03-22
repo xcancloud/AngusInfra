@@ -2,6 +2,7 @@ package cloud.xcan.angus.queue.starter.service;
 
 import cloud.xcan.angus.queue.core.entity.DeadLetterEntity;
 import cloud.xcan.angus.queue.core.entity.MessageEntity;
+import cloud.xcan.angus.queue.core.entity.MessageStatus;
 import cloud.xcan.angus.queue.starter.repository.DeadLetterRepository;
 import cloud.xcan.angus.queue.starter.repository.MessageRepository;
 import java.time.Instant;
@@ -63,7 +64,7 @@ public class AdminService {
       m.setPriority(0);
       m.setPayload(d.getPayload());
       m.setHeaders(d.getHeaders());
-      m.setStatus(0);
+      m.setStatus(MessageStatus.READY);
       m.setVisibleAt(Instant.now());
       m.setLeaseOwner(null);
       m.setLeaseUntil(null);

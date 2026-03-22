@@ -5,12 +5,6 @@ import static cloud.xcan.angus.remote.search.SearchCriteria.equal;
 import static cloud.xcan.angus.remote.search.SearchCriteria.greaterThanEqual;
 import static cloud.xcan.angus.remote.search.SearchCriteria.in;
 import static cloud.xcan.angus.remote.search.SearchCriteria.lessThanEqual;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_DATE_TIME_FORMAT;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_DAY_FORMAT;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_HOUR_FORMAT;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_MONTH_FORMAT;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_WEEK_FORMAT;
-import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DEFAULT_YEAR_FORMAT;
 import static cloud.xcan.angus.spec.utils.ClassUtils.classSafe;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
@@ -22,7 +16,6 @@ import static java.util.stream.Collectors.toSet;
 
 import cloud.xcan.angus.api.enums.PasswordStrength;
 import cloud.xcan.angus.core.biz.ResourceName;
-import cloud.xcan.angus.core.jpa.repository.summary.DateRangeType;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.remote.PageResult;
 import cloud.xcan.angus.remote.message.SysException;
@@ -43,10 +36,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -56,7 +47,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.SneakyThrows;
 import org.apache.commons.lang3.ArrayUtils;
 import org.reflections.Reflections;
 import org.springframework.beans.BeanUtils;
@@ -343,62 +333,6 @@ public class CoreUtils {
       return PageResult.of(page.getTotalElements(), vos);
     }
     return PageResult.empty();
-  }
-
-  @SneakyThrows
-  public static List<String> getDateStrBetween(String startDateStr, String endDateStr,
-      DateRangeType dateUnit) {
-    List<String> result = new ArrayList<>();
-    SimpleDateFormat sdf;
-    Calendar start = Calendar.getInstance();
-    Calendar end = Calendar.getInstance();
-
-    sdf = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);
-    start.setTime(sdf.parse(startDateStr));
-    end.setTime(sdf.parse(endDateStr));
-    // end.add(Calendar.DAY_OF_MONTH,-1);
-
-    switch (dateUnit) {
-      case YEAR:
-        sdf = new SimpleDateFormat(DEFAULT_YEAR_FORMAT);
-        while (start.before(end)) {
-          result.add(sdf.format(start.getTime()));
-          start.add(Calendar.YEAR, 1);
-        }
-        break;
-      case MONTH:
-        sdf = new SimpleDateFormat(DEFAULT_MONTH_FORMAT);
-        while (start.before(end)) {
-          result.add(sdf.format(start.getTime()));
-          start.add(Calendar.MONTH, 1);
-        }
-        break;
-      case WEEK:
-        sdf = new SimpleDateFormat(DEFAULT_WEEK_FORMAT);
-        while (start.before(end)) {
-          result.add(sdf.format(start.getTime()));
-          start.add(Calendar.WEEK_OF_MONTH, 1);
-        }
-        break;
-      case DAY:
-        sdf = new SimpleDateFormat(DEFAULT_DAY_FORMAT);
-        while (start.before(end)) {
-          result.add(sdf.format(start.getTime()));
-          start.add(Calendar.DAY_OF_MONTH, 1);
-        }
-        break;
-      case HOUR:
-        sdf = new SimpleDateFormat(DEFAULT_HOUR_FORMAT);
-        while (start.before(end)) {
-          result.add(sdf.format(start.getTime()));
-          start.add(Calendar.HOUR_OF_DAY, 1);
-        }
-        break;
-      default:
-        // NOOP
-    }
-    result.add(sdf.format(end.getTime()));
-    return result.stream().distinct().collect(Collectors.toList());
   }
 
   /**

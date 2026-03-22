@@ -13,7 +13,7 @@
 
   <artifactId>xcan-angusinfra.idgen</artifactId>
   <name>AngusInfra :: ID Generator :: Parent</name>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>A foundational library for generating unique IDs.</description>
 

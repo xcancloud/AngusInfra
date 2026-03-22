@@ -28,7 +28,7 @@
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.jdbc</artifactId>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
 </dependency>
 
 <!-- 数据库驱动（根据需要选择） -->

@@ -37,7 +37,7 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
     d.setPriority(e.getPriority());
     d.setPayload(e.getPayload());
     d.setHeaders(e.getHeaders());
-    d.setStatus(e.getStatus() != null ? e.getStatus().getCode() : null);
+    d.setStatus(e.getStatus());
     d.setVisibleAt(e.getVisibleAt());
     d.setLeaseUntil(e.getLeaseUntil());
     d.setLeaseOwner(e.getLeaseOwner());

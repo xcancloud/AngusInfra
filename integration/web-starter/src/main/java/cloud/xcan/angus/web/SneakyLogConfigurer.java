@@ -1,9 +1,9 @@
 package cloud.xcan.angus.web;
 
-import static cloud.xcan.angus.core.jpa.JpaDynamicQueryUtils.executeDynamicQuery0;
-import static cloud.xcan.angus.core.jpa.JpaDynamicQueryUtils.objectArrToInt;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getApplicationInfo;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
+import static cloud.xcan.angus.persistence.jpa.JpaDynamicQueryUtils.executeDynamicQuery0;
+import static cloud.xcan.angus.persistence.jpa.JpaDynamicQueryUtils.objectArrToInt;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.api.obf.Str0;

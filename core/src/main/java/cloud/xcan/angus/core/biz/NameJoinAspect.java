@@ -13,7 +13,6 @@ import static java.util.Objects.nonNull;
 import static org.apache.commons.lang3.reflect.FieldUtils.getAllFields;
 import static org.apache.commons.lang3.reflect.FieldUtils.getField;
 
-import cloud.xcan.angus.core.jpa.repository.NameJoinRepository;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.remote.NameJoinField;
 import cloud.xcan.angus.spec.annotations.NonNullable;

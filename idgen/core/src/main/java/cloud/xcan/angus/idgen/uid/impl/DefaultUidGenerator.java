@@ -256,4 +256,22 @@ public class DefaultUidGenerator implements UidGenerator/*, InitializingBean*/ {
     }
   }
 
+  /**
+   * Epoch date string in {@code yyyy-MM-dd} format (start of that day in default timezone).
+   */
+  public void setEpochStr(String epochStr) {
+    if (epochStr == null || epochStr.isBlank()) {
+      return;
+    }
+    this.epochStr = epochStr.trim();
+    Date epoch = DateUtils.parseByDatePattern(this.epochStr);
+    this.epochSeconds = TimeUnit.MILLISECONDS.toSeconds(epoch.getTime());
+  }
+
+  public void setRetriesNum(int retriesNum) {
+    if (retriesNum > 0) {
+      this.retriesNum = retriesNum;
+    }
+  }
+
 }

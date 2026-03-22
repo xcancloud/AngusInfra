@@ -7,7 +7,7 @@
   <parent>
     <groupId>cloud.xcan.angus</groupId>
     <artifactId>xcan-angusinfra.plugin-examples</artifactId>
-    <version>1.0.0</version>
+    <version>3.0.0</version>
   </parent>
 
   <artifactId>angus-plugin.github</artifactId>

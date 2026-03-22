@@ -23,7 +23,7 @@
  *
  * <h2>依赖关系</h2>
  * <pre>
- * feign-integration-starter
+ * feign-starter
  *   ├── core-base (核心基础功能)
  *   ├── spring-cloud-starter-openfeign (Spring Cloud OpenFeign)
  *   ├── feign-httpclient (Apache HttpClient)

@@ -160,12 +160,10 @@ public class OAuth2AuthorizationServerAutoConfigurer {
       UserDetailsService userDetailsService, PasswordEncoder passwordEncoder,
       DaoAuthenticationProvider daoAuthenticationProvider)
       throws Exception {
-    return http.getSharedObject(AuthenticationManagerBuilder.class)
-        .authenticationProvider(daoAuthenticationProvider)
-        .userDetailsService(userDetailsService)
-        .passwordEncoder(passwordEncoder)
-        .and()
-        .build();
+    AuthenticationManagerBuilder authBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+    authBuilder.authenticationProvider(daoAuthenticationProvider);
+    authBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+    return authBuilder.build();
   }
 
   @Bean

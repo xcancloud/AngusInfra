@@ -28,14 +28,7 @@
     <!-- Core Module Refactoring: New Sub-modules -->
     <module>core</module>
     <module>jdbc</module>
-    <module>jpa-starter</module>
-    <module>feign-starter</module>
-    <module>jackson-customizer</module>
-    <module>observability-starter</module>
-
-    <!-- Core Aggregator Module (depends on all sub-modules above) -->
-    <module>core2</module>
-
+    <module>jpa</module>
     <module>cache</module>
     <module>job</module>
     <module>queue</module>
@@ -45,10 +38,6 @@
     <module>l2cache</module>
     <module>integration</module>
     <module>security</module>
-
-    <!-- <module>sharding</module>-->
-    <!-- <module>codegen</module>-->
-    <!-- <module>archetype</module>-->
   </modules>
 
   <organization>

@@ -10,7 +10,7 @@
         <version>3.0.0</version>
     </parent>
 
-    <artifactId>xcan-angusinfra.feign-integration-starter</artifactId>
+    <artifactId>xcan-angusinfra.feign-starter</artifactId>
     <packaging>jar</packaging>
 
     <name>Angus Infrastructure - Feign Integration Starter</name>
@@ -30,11 +30,11 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
-        <!-- Feign HttpClient (替代默认 URLConnection) -->
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-httpclient</artifactId>
-        </dependency>
+        <!--        &lt;!&ndash; Feign HttpClient (替代默认 URLConnection) &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>io.github.openfeign</groupId>-->
+        <!--            <artifactId>feign-httpclient</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- Feign OkHttp (可选，更好的 HTTP/2 支持) -->
         <dependency>
@@ -43,18 +43,18 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Feign Hystrix (断路器，可选) -->
-        <dependency>
-            <groupId>io.github.openfeign</groupId>
-            <artifactId>feign-hystrix</artifactId>
-            <optional>true</optional>
-        </dependency>
+        <!--        &lt;!&ndash; Feign Hystrix (断路器，可选) &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>io.github.openfeign</groupId>-->
+        <!--            <artifactId>feign-hystrix</artifactId>-->
+        <!--            <optional>true</optional>-->
+        <!--        </dependency>-->
 
-        <!-- Spring Retry (重试机制) -->
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-        </dependency>
+        <!--        &lt;!&ndash; Spring Retry (重试机制) &ndash;&gt;-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.retry</groupId>-->
+        <!--            <artifactId>spring-retry</artifactId>-->
+        <!--        </dependency>-->
 
         <!-- Apache HttpClient (可选，传统 HTTP 客户端) -->
         <dependency>
@@ -67,13 +67,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- Lombok (provided) -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Spring Boot Test (test scope) -->

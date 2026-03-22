@@ -1,7 +1,7 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.angus.core.fegin.CustomErrorDecoder;
-import cloud.xcan.angus.core.fegin.FilterQueryMapEncoder;
+import cloud.xcan.angus.feign.CustomErrorDecoder;
+import cloud.xcan.angus.feign.FilterQueryMapEncoder;
 import cloud.xcan.angus.remote.client.FeignRemoteFactory;
 import cloud.xcan.angus.remote.client.HttpBroadcastInvoker;
 import cloud.xcan.angus.remote.client.ServiceDiscoveryHelper;

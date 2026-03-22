@@ -39,7 +39,7 @@ high performance for UID generation, use `CachedUidGenerator`.
 ```xml
 <dependency>
    <groupId>cloud.xcan.angus</groupId>
-   <artifactId>xcan-infra.idgen-starter</artifactId>
+   <artifactId>xcan-angusinfra.idgen-starter</artifactId>
    <version>2.0.0</version>
 </dependency>
 ```
@@ -115,7 +115,7 @@ segmentation and pre-segmentation.
 ```xml
 <dependency>
    <groupId>cloud.xcan.angus</groupId>
-   <artifactId>xcan-infra.idgen-starter</artifactId>
+   <artifactId>xcan-angusinfra.idgen-starter</artifactId>
    <version>2.0.0</version>
 </dependency>
 ```

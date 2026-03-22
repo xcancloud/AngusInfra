@@ -131,7 +131,7 @@ Include the auto-configuration dependency in your Boot module:
 ```xml
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-infra.core-starter</artifactId>
+  <artifactId>xcan-angusinfra.core-starter</artifactId>
   <version>0.1.0</version>
 </dependency>
 ```

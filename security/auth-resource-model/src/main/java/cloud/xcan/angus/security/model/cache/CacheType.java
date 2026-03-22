@@ -21,7 +21,7 @@ public enum CacheType {
   /**
    * Distributed token cache using {@code IDistributedCache}.
    * Suitable for multi-instance deployments.
-   * Requires {@code xcan-infra.cache} module on the classpath.
+   * Requires {@code xcan-angusinfra.cache} module on the classpath.
    */
   DISTRIBUTED
 }

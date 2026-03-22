@@ -6,13 +6,13 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>./parent</relativePath>
   </parent>
 
   <artifactId>AngusInfra</artifactId>
-  <version>2.0.0</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <name>AngusInfra :: Parent</name>
   <description>Angus SaaS Development Framework</description>
@@ -24,18 +24,18 @@
     <module>validator</module>
     <module>remote</module>
     <module>idgen</module>
-    
+
     <!-- Core Module Refactoring: New Sub-modules -->
-    <module>core-base</module>
-    <module>persistence-jdbc-starter</module>
-    <module>persistence-jpa-starter</module>
-    <module>feign-integration-starter</module>
+    <module>core</module>
+    <module>jdbc</module>
+    <module>jpa-starter</module>
+    <module>feign-starter</module>
     <module>jackson-customizer</module>
     <module>observability-starter</module>
-    
+
     <!-- Core Aggregator Module (depends on all sub-modules above) -->
-    <module>core</module>
-    
+    <module>core2</module>
+
     <module>cache</module>
     <module>job</module>
     <module>queue</module>
@@ -110,7 +110,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <java.version>17</java.version>
+    <java.version>21</java.version>
     <source.property>${java.version}</source.property>
     <target.property>${java.version}</target.property>
 

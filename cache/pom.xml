@@ -6,14 +6,14 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.cache</artifactId>
+  <artifactId>xcan-angusinfra.cache</artifactId>
   <name>AngusInfra :: Cache</name>
-  <version>1.0.0</version>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>Implementation of Two-Level Cache with Memory and Database.</description>
 

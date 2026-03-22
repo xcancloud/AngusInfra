@@ -123,13 +123,13 @@ CREATE TABLE `tenant`
 
 ### 1. 引入依赖
 
-在 Boot 模块添加自动装配依赖 `xcan-infra.core-starter`，包含公共表数据源和对应 JPA 配置。
+在 Boot 模块添加自动装配依赖 `xcan-angusinfra.core-starter`，包含公共表数据源和对应 JPA 配置。
 
 ```xml
 
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-infra.core-starter</artifactId>
+  <artifactId>xcan-angusinfra.core-starter</artifactId>
   <version>0.1.0</version>
 </dependency>
 ```

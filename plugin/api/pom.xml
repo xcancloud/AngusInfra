@@ -6,11 +6,11 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.plugin</artifactId>
-    <version>1.0.0</version>
+    <artifactId>xcan-angusinfra.plugin</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.plugin-api</artifactId>
+  <artifactId>xcan-angusinfra.plugin-api</artifactId>
   <name>AngusInfra :: Plugin :: Api</name>
   <packaging>jar</packaging>
   <description>Plugin public API and SDK: defines extension points, contracts and common interfaces

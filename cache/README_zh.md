@@ -42,7 +42,7 @@ mvn -pl cache -am clean install
 ```xml
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-infra.cache-starter</artifactId>
+  <artifactId>xcan-angusinfra.cache-starter</artifactId>
   <version>${project.version}</version>
 </dependency>
 ```

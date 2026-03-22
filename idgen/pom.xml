@@ -6,12 +6,12 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.idgen</artifactId>
+  <artifactId>xcan-angusinfra.idgen</artifactId>
   <name>AngusInfra :: ID Generator :: Parent</name>
   <version>2.0.0</version>
   <packaging>pom</packaging>

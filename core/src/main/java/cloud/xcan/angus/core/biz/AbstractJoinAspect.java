@@ -3,7 +3,6 @@ package cloud.xcan.angus.core.biz;
 import static cloud.xcan.angus.remote.ApiConstant.LCS_PUB;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.app.AppWorkspace;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.remote.PageResult;
@@ -48,6 +47,9 @@ public abstract class AbstractJoinAspect {
 
   protected abstract void joinArrayVoName(Object[] toArray) throws IllegalAccessException;
 
+  private static final String PUBLIC_CERT_KEYSTORE_PATH = "cert/XCanTest.publicCert.keystore";
+  private static final String CREATE_PUBLIC_KEY_FAILED = "Create public lcs key failed";
+
   public static String writePublicFileWhenNotExists() {
     String fileName =
         new AppWorkspace().getWorkDir() /*+ LCS_DIR // -> confusing paths */ + LCS_PUB;
@@ -61,10 +63,7 @@ public abstract class AbstractJoinAspect {
       InputStream stream = null;
       try {
         // Warning: Development and prod environments use the same configuration
-        stream = SpringContextHolder.class.getResourceAsStream("/" + new Str0(
-            new long[]{0x1FD7C425A441EEA3L, 0x607B2B538143A9DDL, 0x856DD71B65B34080L,
-                0xD47F89A37D540550L, 0x9C78C085BDE0AE08L, 0x4FB8C83CD88E7F52L})
-            .toString()) /* => "cert/XCanTest.publicCert.keystore" */;
+        stream = SpringContextHolder.class.getResourceAsStream("/" + PUBLIC_CERT_KEYSTORE_PATH);
         FileUtils.copyInputStreamToFile(stream, publicFile);
       } catch (Exception e) {
         e.printStackTrace();
@@ -74,11 +73,7 @@ public abstract class AbstractJoinAspect {
         }
       }
     } catch (Exception e) {
-      System.out.println(
-          new cloud.xcan.angus.api.obf.Str0(
-              new long[]{0x8B60B722C3C6EF28L, 0xD4DEF5A0D5325EEBL, 0x2E744FB20DEFC5A9L,
-                  0xDDECDCB81E0B9377L, 0xEDD4A420BF7A38A9L})
-              .toString() /* => "Create public lcs key failed" */);
+      System.out.println(CREATE_PUBLIC_KEY_FAILED);
       return null;
     }
     return fileName;

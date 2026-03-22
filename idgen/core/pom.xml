@@ -6,24 +6,24 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.idgen</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.idgen</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.idgen-core</artifactId>
+  <artifactId>xcan-angusinfra.idgen-core</artifactId>
   <name>AngusInfra :: ID Generator :: Core</name>
   <packaging>jar</packaging>
   <description>A core library for generating unique IDs.</description>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.spec</artifactId>
-      <version>${xcan-infra.version}</version>
+      <artifactId>xcan-angusinfra.spec</artifactId>
+      <version>${xcan-angusinfra.version}</version>
     </dependency>
 
     <dependency>

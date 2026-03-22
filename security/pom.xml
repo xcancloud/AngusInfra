@@ -5,12 +5,12 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.security</artifactId>
+  <artifactId>xcan-angusinfra.security</artifactId>
   <name>AngusInfra :: Security :: Parent</name>
   <packaging>pom</packaging>
   <description>A library for OAuth2-based resource authentication, offering enhanced protection and
@@ -30,7 +30,7 @@
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.bom</artifactId>
+        <artifactId>xcan-angusinfra.bom</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>

@@ -6,11 +6,11 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.plugin</artifactId>
-    <version>1.0.0</version>
+    <artifactId>xcan-angusinfra.plugin</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.plugin-bom</artifactId>
+  <artifactId>xcan-angusinfra.plugin-bom</artifactId>
   <name>AngusInfra :: BOM</name>
   <packaging>pom</packaging>
   <version>1.0.0</version>
@@ -23,19 +23,19 @@
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.plugin-api</artifactId>
+        <artifactId>xcan-angusinfra.plugin-api</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.plugin-core</artifactId>
+        <artifactId>xcan-angusinfra.plugin-core</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.plugin-starter</artifactId>
+        <artifactId>xcan-angusinfra.plugin-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
     </dependencies>

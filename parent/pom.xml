@@ -5,8 +5,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-infra.parent</artifactId>
-  <version>2.0.0</version>
+  <artifactId>xcan-angusinfra.parent</artifactId>
+  <version>3.0.0</version>
   <name>AngusInfra :: Component :: Parent</name>
   <packaging>pom</packaging>
   <description>Maven dependency version management for angus components.</description>
@@ -71,7 +71,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <java.version>17</java.version>
+    <java.version>21</java.version>
     <source.property>${java.version}</source.property>
     <target.property>${java.version}</target.property>
 

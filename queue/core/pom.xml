@@ -6,11 +6,11 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.queue</artifactId>
-    <version>1.0.0</version>
+    <artifactId>xcan-angusinfra.queue</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.queue-core</artifactId>
+  <artifactId>xcan-angusinfra.queue-core</artifactId>
   <name>AngusInfra :: Queue :: Core</name>
   <packaging>jar</packaging>
   <description>Core implementation and runtime logic for message queue.</description>

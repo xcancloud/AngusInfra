@@ -5,12 +5,12 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.integration</artifactId>
+  <artifactId>xcan-angusinfra.integration</artifactId>
   <name>AngusInfra :: Integration :: Parent</name>
   <packaging>pom</packaging>
   <description>Auto-configured library for angus web projects.</description>
@@ -22,7 +22,7 @@
   </modules>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
     <xcan-plugin.version>1.0.0</xcan-plugin.version>
   </properties>
 
@@ -30,8 +30,8 @@
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.bom</artifactId>
-        <version>${xcan-infra.version}</version>
+        <artifactId>xcan-angusinfra.bom</artifactId>
+        <version>${xcan-angusinfra.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>

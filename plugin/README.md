@@ -52,7 +52,7 @@ Maven dependency example:
 ```xml
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-infra.plugin-starter</artifactId>
+  <artifactId>xcan-angusinfra.plugin-starter</artifactId>
   <version>${project.version}</version>
 </dependency>
 ```

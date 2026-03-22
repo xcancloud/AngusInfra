@@ -27,7 +27,7 @@
 ```xml
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
-  <artifactId>xcan-infra.auth-resource-starter</artifactId>
+  <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>
   <version>2.0.0</version>
 </dependency>
 ```

@@ -6,163 +6,163 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.bom</artifactId>
+  <artifactId>xcan-angusinfra.bom</artifactId>
   <name>AngusInfra :: BOM</name>
   <packaging>pom</packaging>
   <version>2.0.0</version>
   <description>The Bill of Materials of angus infra</description>
 
   <properties>
-    <xcan-infra.idgen.version>2.0.0</xcan-infra.idgen.version>
-    <xcan-infra.l2cache.version>2.0.0</xcan-infra.l2cache.version>
-    <xcan-infra.security.version>2.0.0</xcan-infra.security.version>
+    <xcan-angusinfra.idgen.version>2.0.0</xcan-angusinfra.idgen.version>
+    <xcan-angusinfra.l2cache.version>2.0.0</xcan-angusinfra.l2cache.version>
+    <xcan-angusinfra.security.version>2.0.0</xcan-angusinfra.security.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.spec</artifactId>
+        <artifactId>xcan-angusinfra.spec</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.remote</artifactId>
+        <artifactId>xcan-angusinfra.remote</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.core</artifactId>
+        <artifactId>xcan-angusinfra.core</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <!-- Core Sub-Modules -->
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.core-base</artifactId>
+        <artifactId>xcan-angusinfra.core</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.persistence-jdbc-starter</artifactId>
+        <artifactId>xcan-angusinfra.jdbc</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.persistence-jpa-starter</artifactId>
+        <artifactId>xcan-angusinfra.jpa-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.feign-integration-starter</artifactId>
+        <artifactId>xcan-angusinfra.feign-integration-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.jackson-customizer</artifactId>
+        <artifactId>xcan-angusinfra.jackson-customizer</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.observability-starter</artifactId>
+        <artifactId>xcan-angusinfra.observability-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.lettucex</artifactId>
+        <artifactId>xcan-angusinfra.lettucex</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.datasource</artifactId>
+        <artifactId>xcan-angusinfra.datasource</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.validator</artifactId>
+        <artifactId>xcan-angusinfra.validator</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.l2cache-core</artifactId>
-        <version>${xcan-infra.l2cache.version}</version>
+        <artifactId>xcan-angusinfra.l2cache-core</artifactId>
+        <version>${xcan-angusinfra.l2cache.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.l2cache-starter</artifactId>
-        <version>${xcan-infra.l2cache.version}</version>
+        <artifactId>xcan-angusinfra.l2cache-starter</artifactId>
+        <version>${xcan-angusinfra.l2cache.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.idgen-core</artifactId>
-        <version>${xcan-infra.idgen.version}</version>
+        <artifactId>xcan-angusinfra.idgen-core</artifactId>
+        <version>${xcan-angusinfra.idgen.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.idgen-starter</artifactId>
-        <version>${xcan-infra.idgen.version}</version>
+        <artifactId>xcan-angusinfra.idgen-starter</artifactId>
+        <version>${xcan-angusinfra.idgen.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.web-starter</artifactId>
+        <artifactId>xcan-angusinfra.web-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.oas3-starter</artifactId>
+        <artifactId>xcan-angusinfra.oas3-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.auth-resource-model</artifactId>
-        <version>${xcan-infra.security.version}</version>
+        <artifactId>xcan-angusinfra.auth-resource-model</artifactId>
+        <version>${xcan-angusinfra.security.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.auth-innerapi-starter</artifactId>
-        <version>${xcan-infra.security.version}</version>
+        <artifactId>xcan-angusinfra.auth-innerapi-starter</artifactId>
+        <version>${xcan-angusinfra.security.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.auth-resource-starter</artifactId>
-        <version>${xcan-infra.security.version}</version>
+        <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>
+        <version>${xcan-angusinfra.security.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.auth-server-starter</artifactId>
-        <version>${xcan-infra.security.version}</version>
+        <artifactId>xcan-angusinfra.auth-server-starter</artifactId>
+        <version>${xcan-angusinfra.security.version}</version>
         <scope>compile</scope>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.auth-openapi2p-starter</artifactId>
-        <version>${xcan-infra.security.version}</version>
+        <artifactId>xcan-angusinfra.auth-openapi2p-starter</artifactId>
+        <version>${xcan-angusinfra.security.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

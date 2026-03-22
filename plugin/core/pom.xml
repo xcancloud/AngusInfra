@@ -6,11 +6,11 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.plugin</artifactId>
-    <version>1.0.0</version>
+    <artifactId>xcan-angusinfra.plugin</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.plugin-core</artifactId>
+  <artifactId>xcan-angusinfra.plugin-core</artifactId>
   <name>AngusInfra :: Plugin :: Core</name>
   <packaging>jar</packaging>
   <description>Core implementation and runtime logic for plugins, providing default implementations,
@@ -40,7 +40,7 @@
     <!-- Depend on plugin API -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.plugin-api</artifactId>
+      <artifactId>xcan-angusinfra.plugin-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -6,11 +6,11 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.job</artifactId>
-    <version>1.0.0</version>
+    <artifactId>xcan-angusinfra.job</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.job-starter</artifactId>
+  <artifactId>xcan-angusinfra.job-starter</artifactId>
   <name>AngusInfra :: Job :: Starter</name>
   <packaging>jar</packaging>
   <description>Spring Boot starter for job; includes auto-configuration and out-of-the-box
@@ -21,7 +21,7 @@
     <!-- Depend on job core(api) -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.job-core</artifactId>
+      <artifactId>xcan-angusinfra.job-core</artifactId>
       <version>${project.version}</version>
     </dependency>
 

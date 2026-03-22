@@ -6,12 +6,12 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.remote</artifactId>
+  <artifactId>xcan-angusinfra.remote</artifactId>
   <name>AngusInfra :: Remote</name>
   <packaging>jar</packaging>
   <description>A shared library for remote calls to the Angus RESTful API using OpenFeign.
@@ -20,13 +20,13 @@
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.spec</artifactId>
+      <artifactId>xcan-angusinfra.spec</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.validator</artifactId>
+      <artifactId>xcan-angusinfra.validator</artifactId>
       <version>${project.version}</version>
     </dependency>
 

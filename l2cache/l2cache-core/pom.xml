@@ -5,30 +5,30 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.l2cache</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.l2cache</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.l2cache-core</artifactId>
+  <artifactId>xcan-angusinfra.l2cache-core</artifactId>
   <name>AngusInfra :: L2Cache :: Core</name>
   <packaging>jar</packaging>
   <description>A core library for angus project two-level Cache.</description>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.spec</artifactId>
-      <version>${xcan-infra.version}</version>
+      <artifactId>xcan-angusinfra.spec</artifactId>
+      <version>${xcan-angusinfra.version}</version>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.lettucex</artifactId>
-      <version>${xcan-infra.version}</version>
+      <artifactId>xcan-angusinfra.lettucex</artifactId>
+      <version>${xcan-angusinfra.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework.security.oauth</groupId>

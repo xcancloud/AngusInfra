@@ -6,12 +6,12 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.parent</artifactId>
-    <version>2.0.0</version>
+    <artifactId>xcan-angusinfra.parent</artifactId>
+    <version>3.0.0</version>
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-infra.validator</artifactId>
+  <artifactId>xcan-angusinfra.validator</artifactId>
   <name>AngusInfra :: Validator</name>
   <packaging>jar</packaging>
   <description>A library for parameter validation in the Angus project.</description>
@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.spec</artifactId>
+      <artifactId>xcan-angusinfra.spec</artifactId>
       <version>${project.version}</version>
     </dependency>
 

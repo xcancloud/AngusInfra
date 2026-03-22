@@ -104,7 +104,7 @@ public class InnerApiAuthProperties {
    * - LOCAL: In-memory cache using volatile fields (default, single-instance)
    * - DISTRIBUTED: Distributed cache using IDistributedCache (multi-instance)
    *
-   * When set to DISTRIBUTED, requires xcan-infra.cache module on the classpath
+   * When set to DISTRIBUTED, requires xcan-angusinfra.cache module on the classpath
    * and a configured IDistributedCache bean.
    *
    * Default: LOCAL

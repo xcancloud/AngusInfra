@@ -6,7 +6,7 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.plugin-examples</artifactId>
+    <artifactId>xcan-angusinfra.plugin-examples</artifactId>
     <version>1.0.0</version>
   </parent>
 
@@ -19,7 +19,7 @@
     <!-- plugin API -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.plugin-api</artifactId>
+      <artifactId>xcan-angusinfra.plugin-api</artifactId>
       <version>${project.version}</version>
     </dependency>
 

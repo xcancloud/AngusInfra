@@ -12,7 +12,6 @@ import static cloud.xcan.angus.validator.impl.DomainValidator.DOMAIN_PATTERN;
 import static org.apache.commons.io.IOUtils.toByteArray;
 
 import cloud.xcan.angus.api.enums.EditionType;
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
 import cloud.xcan.angus.spec.utils.crypto.MD5Utils;
 import java.util.Objects;
@@ -188,53 +187,40 @@ public class ValidatorUtils {
     return DOMAIN_PATTERN.matcher(domain).matches();
   }
 
+  private static final String EDITION_TYPE_PROPERTY = "info.app.editionType";
+  private static final String LICENSE_PROTECTOR_CLASS = "LicenseProtector.class";
+  private static final String LICENSE_SIGNATURE_HASH = "7098161456bd2ac2fe3557feedca00e4";
+  private static final String LICENSE_VERIFICATION_ERROR =
+      "Critical warning, license signature verification error, system forced exit";
+  private static final String DCACHE_MANAGER_BEAN = "dCacheManager";
+  private static final String INTERNAL_APP_ERROR = "Internal application error: LE-0909";
+
   public static void checkValidParams(Object param) {
     try {
       String editionType = SpringContextHolder.getCtx().getEnvironment()
-          .getProperty(new Str0(
-              new long[]{0x479F8F16B670118AL, 0xB2020DACAB3E6EB7L, 0xEBA7DA6FEBFCC7CDL,
-                  0x8A20BDAF8BF690FFL}).toString() /* => "info.app.editionType" */);
+          .getProperty(EDITION_TYPE_PROPERTY);
       if (EditionType.valueOf(editionType).isPrivatization()) {
         String sign = MD5Utils.encrypt(toByteArray(ValidatorUtils.class.getResourceAsStream(
-            new Str0(new long[]{0x72EF4DCB15D8F8A3L, 0x69120DB47A85384EL, 0xCFE552E6CDD22372L,
-                0x7808D39035915283L}).toString() /* => "LicenseProtector.class" */)));
-        boolean valid = Objects.nonNull(sign) && sign.equalsIgnoreCase(new Str0(
-            new long[]{0x1BB0D8BA6FC3B55CL, 0xB0B813217510F001L, 0xD156226D7C1EED01L,
-                0xA7B547358FDC82C8L, 0xF790BBED26A59110L})
-            .toString() /* => "7098161456bd2ac2fe3557feedca00e4" */);
+            LICENSE_PROTECTOR_CLASS)));
+        boolean valid = Objects.nonNull(sign) && sign.equalsIgnoreCase(LICENSE_SIGNATURE_HASH);
         if (!valid) {
-          System.out.println(new Str0(
-              new long[]{0x5AC407D52C14D3DEL, 0x3A454D980CCE9F77L, 0x670F88D35256D1L,
-                  0xF1CD6A529DAF54CBL, 0xB15385C61F508FB7L, 0x96A553A8A8DFA7L, 0xED2231FFDE35F748L,
-                  0x3961D896CE4C1D09L, 0xAE514955B44B11FDL, 0x7DB46AC123D01164L,
-                  0xDB6ECDE88CF710CEL})
-              .toString() /* => "Critical warning, license signature verification error, system forced exit" */);
+          System.out.println(LICENSE_VERIFICATION_ERROR);
           exitApp();
         }
       }
     } catch (Exception e) {
       System.err.println(e.getMessage());
-      System.out.println(new Str0(
-          new long[]{0x5AC407D52C14D3DEL, 0x3A454D980CCE9F77L, 0x670F88D35256D1L,
-              0xF1CD6A529DAF54CBL, 0xB15385C61F508FB7L, 0x96A553A8A8DFA7L, 0xED2231FFDE35F748L,
-              0x3961D896CE4C1D09L, 0xAE514955B44B11FDL, 0x7DB46AC123D01164L,
-              0xDB6ECDE88CF710CEL})
-          .toString() /* => "Critical warning, license signature verification error, system forced exit" */);
+      System.out.println(LICENSE_VERIFICATION_ERROR);
       exitApp();
     }
   }
 
   private boolean checkDCache() {
     try {
-      Assert.notNull(getBean(
-          new Str0(new long[]{0x2C2A5B3FA95108E4L, 0x41543111699BA0A2L, 0x4A8ADEE3E3B4F01CL})
-              .toString() /* => "dCacheManager" */), "DCache is empty");
+      Assert.notNull(getBean(DCACHE_MANAGER_BEAN), "DCache is empty");
     } catch (Exception e) {
       if (SpringContextHolder.getCtx() instanceof ConfigurableApplicationContext closable) {
-        System.out.println(new Str0(
-            new long[]{0xFBE1B679968A5928L, 0x9C8723410DC6E9E2L, 0xFD44F079DD30374EL,
-                0x370ABD98F3B928BFL, 0xBCFB830EEFFE98F1L, 0x18C1336D4B13241BL})
-            .toString() /* => "Internal application error: LE-0909" */);
+        System.out.println(INTERNAL_APP_ERROR);
         closable.close();
         return false;
       }

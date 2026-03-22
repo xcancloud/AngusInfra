@@ -21,7 +21,6 @@ import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toSet;
 
 import cloud.xcan.angus.api.enums.PasswordStrength;
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.biz.ResourceName;
 import cloud.xcan.angus.core.jpa.repository.summary.DateRangeType;
 import cloud.xcan.angus.core.spring.SpringContextHolder;
@@ -576,18 +575,15 @@ public class CoreUtils {
     return inputStream;
   }
 
+  private static final String LICENSE_PROTECTOR_CLASS = "LicenseProtector.class";
+  private static final String LICENSE_SIGNATURE_HASH = "7098161456bd2ac2fe3557feedca00e4";
+  private static final String LICENSE_VERIFICATION_ERROR =
+      "Critical warning, license signature verification error, system forced exit";
+
   public static void checkAccess(double percentage/*0.0 - 0.00000000xxx*/) {
     if (Math.random() >= (1 - percentage) && !classSafe(
-        new Str0(new long[]{0xCA5A04D99F204EAAL, 0x6A5624BF207A51AL, 0xA8E96D2E08FD3C52L,
-            0xAF5FCC949E49A622L}).toString() /* => "LicenseProtector.class" */, new Str0(
-            new long[]{0xCB57033157F77942L, 0x31C8852A5769926DL, 0x852B34B8FC1835F5L,
-                0x2326396EEB4B2AE2L, 0x67A3A369A1DF2FB6L})
-            .toString() /* => "7098161456bd2ac2fe3557feedca00e4" */)) {
-      System.out.println(new Str0(
-          new long[]{0xF287B54D8D4073A9L, 0x88A7D4D1B8DCEF13L, 0xE5E544C81E27905EL,
-              0x3FF0EBA04C3C1AF0L, 0x8EEDE35BAA688057L, 0x1B8E47A874F6988DL, 0xAAE33080A0F4031CL,
-              0x914BC90A36F84CEBL, 0x1A3487BC4D9E3FBDL, 0xB769D5128B37114EL, 0x884064881055A1DDL})
-          .toString() /* => "Critical warning, license signature verification error, system forced exit" */);
+        LICENSE_PROTECTOR_CLASS, LICENSE_SIGNATURE_HASH)) {
+      System.out.println(LICENSE_VERIFICATION_ERROR);
       exitApp();
     }
   }

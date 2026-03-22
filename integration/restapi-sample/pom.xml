@@ -6,7 +6,7 @@
   <parent>
     <groupId>cloud.xcan.angus</groupId>
     <artifactId>AngusInfra</artifactId>
-    <version>2.0.0</version>
+    <version>3.0.0</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
@@ -15,15 +15,15 @@
   <packaging>jar</packaging>
 
   <properties>
-    <xcan-infra.version>1.0.0</xcan-infra.version>
+    <xcan-angusinfra.version>1.0.0</xcan-angusinfra.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-infra.bom</artifactId>
-        <version>${xcan-infra.version}</version>
+        <artifactId>xcan-angusinfra.bom</artifactId>
+        <version>${xcan-angusinfra.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -33,12 +33,12 @@
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.web-starter</artifactId>
+      <artifactId>xcan-angusinfra.web-starter</artifactId>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-infra.auth-resource-starter</artifactId>
+      <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>
     </dependency>
 
     <dependency>

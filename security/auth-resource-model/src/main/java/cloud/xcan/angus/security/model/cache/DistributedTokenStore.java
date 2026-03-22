@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * across all service instances. It delegates to the {@code IDistributedCache} interface, which
  * may be backed by Redis, database-backed hybrid cache, or any other distributed cache.</p>
  *
- * <p>Uses the {@code IDistributedCache} from {@code xcan-infra.cache} module.</p>
+ * <p>Uses the {@code IDistributedCache} from {@code xcan-angusinfra.cache} module.</p>
  *
  * @author Framework Team
  * @version 1.0

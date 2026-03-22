@@ -6,11 +6,11 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-infra.plugin</artifactId>
-    <version>1.0.0</version>
+    <artifactId>xcan-angusinfra.plugin</artifactId>
+    <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-infra.plugin-examples</artifactId>
+  <artifactId>xcan-angusinfra.plugin-examples</artifactId>
   <name>AngusInfra :: Plugin :: Examples</name>
   <packaging>pom</packaging>
   <description>The Examples of RESTFull API plugin.</description>

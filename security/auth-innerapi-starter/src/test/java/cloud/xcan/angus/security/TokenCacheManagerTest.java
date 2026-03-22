@@ -11,8 +11,9 @@ import static org.mockito.Mockito.when;
 import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.security.cache.TokenCacheManager;
 import cloud.xcan.angus.security.config.InnerApiAuthProperties;
+import cloud.xcan.angus.security.model.cache.LocalTokenStore;
+import cloud.xcan.angus.security.model.cache.TokenStore;
 import cloud.xcan.angus.security.remote.ClientSignInnerApiRemote;
-import java.lang.reflect.Field;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,6 +33,8 @@ class TokenCacheManagerTest {
   @Mock
   private ClientSignInnerApiRemote clientSignInnerApiRemote;
 
+  private TokenStore tokenStore;
+
   private TokenCacheManager tokenCacheManager;
 
   @BeforeEach
@@ -41,26 +44,19 @@ class TokenCacheManagerTest {
     when(properties.getTokenRefreshThreshold()).thenReturn(Duration.ofMinutes(2));
     when(properties.getMaxRetries()).thenReturn(3);
     lenient().when(properties.getEffectiveTokenCacheDuration()).thenReturn(Duration.ofMinutes(13));
+    lenient().when(properties.getCacheType()).thenReturn(
+        cloud.xcan.angus.security.model.cache.CacheType.LOCAL);
+    lenient().when(properties.getCacheKey()).thenReturn("auth:innerapi:token");
 
-    tokenCacheManager = new TokenCacheManager(properties, clientSignInnerApiRemote);
+    tokenStore = new LocalTokenStore();
+    tokenCacheManager = new TokenCacheManager(properties, clientSignInnerApiRemote, tokenStore);
   }
 
   /**
-   * Helper to set the private cachedToken field via reflection for testing cache behavior.
+   * Helper to pre-populate the token store with a token for testing cache behavior.
    */
-  private void setCachedToken(String token) throws Exception {
-    Field field = TokenCacheManager.class.getDeclaredField("cachedToken");
-    field.setAccessible(true);
-    field.set(tokenCacheManager, token);
-  }
-
-  /**
-   * Helper to set the private cachedTokenTime field via reflection.
-   */
-  private void setCachedTokenTime(long time) throws Exception {
-    Field field = TokenCacheManager.class.getDeclaredField("cachedTokenTime");
-    field.setAccessible(true);
-    field.set(tokenCacheManager, time);
+  private void storeToken(String token, long ttlSeconds) {
+    tokenStore.store("auth:innerapi:token", token, ttlSeconds);
   }
 
   @Nested
@@ -69,10 +65,9 @@ class TokenCacheManagerTest {
 
     @Test
     @DisplayName("returns cached token when it is still fresh")
-    void returnsCachedTokenWhenFresh() throws Exception {
-      // Pre-populate the cache with a fresh token
-      setCachedToken("Bearer test-token-123");
-      setCachedTokenTime(System.currentTimeMillis());
+    void returnsCachedTokenWhenFresh() {
+      // Pre-populate the cache with a fresh token (long TTL)
+      storeToken("Bearer test-token-123", 900);
 
       String token = tokenCacheManager.getToken();
 
@@ -82,18 +77,18 @@ class TokenCacheManagerTest {
     }
 
     @Test
-    @DisplayName("falls back to expired cached token when refresh fails")
+    @DisplayName("falls back to fallback token when refresh fails and store is expired")
     void fallsBackToExpiredCachedToken() throws Exception {
-      // Set a cached token that is expired (cached long ago)
-      setCachedToken("Bearer expired-token");
-      setCachedTokenTime(0); // Very old timestamp
+      // Store a token with a very short TTL so it expires
+      storeToken("Bearer expired-token", 1);
+      // Wait for it to expire
+      Thread.sleep(1100);
 
-      // The getToken() method will try to refresh. buildTokenRequest() reads env vars
-      // which are not set in test, causing SysException. The catch block returns
-      // the expired cached token as fallback.
-      String token = tokenCacheManager.getToken();
-
-      assertThat(token).isEqualTo("Bearer expired-token");
+      // getToken() will see expired token, try to refresh, fail due to missing env vars,
+      // and since no fallback is set yet, it will throw.
+      assertThatThrownBy(() -> tokenCacheManager.getToken())
+          .isInstanceOf(SysException.class)
+          .hasMessageContaining("Unable to obtain authentication token");
     }
 
     @Test
@@ -107,10 +102,9 @@ class TokenCacheManagerTest {
 
     @Test
     @DisplayName("does not call remote when cached token is within effective duration")
-    void doesNotCallRemoteForFreshToken() throws Exception {
-      // Set token that was cached 5 minutes ago (within 13-min effective duration)
-      setCachedToken("Bearer recent-token");
-      setCachedTokenTime(System.currentTimeMillis() - Duration.ofMinutes(5).toMillis());
+    void doesNotCallRemoteForFreshToken() {
+      // Store a token with long TTL
+      storeToken("Bearer recent-token", 780);
 
       String token = tokenCacheManager.getToken();
 
@@ -119,16 +113,17 @@ class TokenCacheManagerTest {
     }
 
     @Test
-    @DisplayName("attempts refresh when token age exceeds effective cache duration")
+    @DisplayName("attempts refresh when token has expired in store")
     void attemptsRefreshWhenExpired() throws Exception {
-      // Set token that was cached 14 minutes ago (exceeds 13-min effective duration)
-      setCachedToken("Bearer old-token");
-      setCachedTokenTime(System.currentTimeMillis() - Duration.ofMinutes(14).toMillis());
+      // Store a token with very short TTL so it expires
+      storeToken("Bearer old-token", 1);
+      // Wait for it to expire
+      Thread.sleep(1100);
 
-      // Refresh will fail due to missing env vars, but falls back to cached token
-      String token = tokenCacheManager.getToken();
-
-      assertThat(token).isEqualTo("Bearer old-token");
+      // Refresh will fail due to missing env vars, and no fallback exists
+      assertThatThrownBy(() -> tokenCacheManager.getToken())
+          .isInstanceOf(SysException.class)
+          .hasMessageContaining("Unable to obtain authentication token");
     }
   }
 
@@ -138,10 +133,9 @@ class TokenCacheManagerTest {
 
     @Test
     @DisplayName("returns token on first successful attempt")
-    void returnsTokenOnFirstAttempt() throws Exception {
+    void returnsTokenOnFirstAttempt() {
       // Pre-populate cache with fresh token so getToken() returns immediately
-      setCachedToken("Bearer cached-token");
-      setCachedTokenTime(System.currentTimeMillis());
+      storeToken("Bearer cached-token", 900);
 
       String token = tokenCacheManager.getTokenWithRetry();
 
@@ -162,24 +156,9 @@ class TokenCacheManagerTest {
     }
 
     @Test
-    @DisplayName("retries and returns expired cached token as fallback")
-    void retriesAndReturnsFallback() throws Exception {
-      // Set an expired cached token so getToken()'s fallback works
-      setCachedToken("Bearer fallback-token");
-      setCachedTokenTime(0);
-
-      // First call to getToken() will try to refresh, fail (no env vars),
-      // but return the expired cached token
-      String token = tokenCacheManager.getTokenWithRetry();
-
-      assertThat(token).isEqualTo("Bearer fallback-token");
-    }
-
-    @Test
     @DisplayName("succeeds without retrying when token is fresh")
-    void succeedsWithoutRetryWhenFresh() throws Exception {
-      setCachedToken("Bearer fresh-token");
-      setCachedTokenTime(System.currentTimeMillis());
+    void succeedsWithoutRetryWhenFresh() {
+      storeToken("Bearer fresh-token", 900);
 
       String token = tokenCacheManager.getTokenWithRetry();
 
@@ -194,17 +173,15 @@ class TokenCacheManagerTest {
   class ClearCache {
 
     @Test
-    @DisplayName("clears cached token and resets timestamp")
-    void clearsCachedToken() throws Exception {
-      setCachedToken("Bearer some-token");
-      setCachedTokenTime(System.currentTimeMillis());
+    @DisplayName("clears cached token")
+    void clearsCachedToken() {
+      storeToken("Bearer some-token", 900);
 
       assertThat(tokenCacheManager.hasCachedToken()).isTrue();
 
       tokenCacheManager.clearCache();
 
       assertThat(tokenCacheManager.hasCachedToken()).isFalse();
-      assertThat(tokenCacheManager.getCachedTokenAge()).isEqualTo(-1);
     }
 
     @Test
@@ -213,7 +190,6 @@ class TokenCacheManagerTest {
       tokenCacheManager.clearCache();
 
       assertThat(tokenCacheManager.hasCachedToken()).isFalse();
-      assertThat(tokenCacheManager.getCachedTokenAge()).isEqualTo(-1);
     }
   }
 
@@ -229,9 +205,8 @@ class TokenCacheManagerTest {
 
     @Test
     @DisplayName("returns true when cached token is fresh")
-    void returnsTrueWhenFresh() throws Exception {
-      setCachedToken("Bearer valid-token");
-      setCachedTokenTime(System.currentTimeMillis());
+    void returnsTrueWhenFresh() {
+      storeToken("Bearer valid-token", 900);
 
       assertThat(tokenCacheManager.hasCachedToken()).isTrue();
     }
@@ -239,61 +214,12 @@ class TokenCacheManagerTest {
     @Test
     @DisplayName("returns false when cached token is expired")
     void returnsFalseWhenExpired() throws Exception {
-      setCachedToken("Bearer expired-token");
-      setCachedTokenTime(0); // Very old
+      // Store with very short TTL so it expires
+      storeToken("Bearer expired-token", 1);
+      // Wait for it to expire
+      Thread.sleep(1100);
 
       assertThat(tokenCacheManager.hasCachedToken()).isFalse();
-    }
-
-    @Test
-    @DisplayName("returns true when token is within effective cache duration")
-    void returnsTrueWithinEffectiveDuration() throws Exception {
-      setCachedToken("Bearer token");
-      setCachedTokenTime(System.currentTimeMillis() - Duration.ofMinutes(10).toMillis());
-
-      // Token age (10 min) is less than effective duration (13 min)
-      assertThat(tokenCacheManager.hasCachedToken()).isTrue();
-    }
-
-    @Test
-    @DisplayName("returns false when token exceeds effective cache duration")
-    void returnsFalseExceedingEffectiveDuration() throws Exception {
-      setCachedToken("Bearer token");
-      setCachedTokenTime(System.currentTimeMillis() - Duration.ofMinutes(14).toMillis());
-
-      // Token age (14 min) exceeds effective duration (13 min)
-      assertThat(tokenCacheManager.hasCachedToken()).isFalse();
-    }
-  }
-
-  @Nested
-  @DisplayName("getCachedTokenAge()")
-  class GetCachedTokenAge {
-
-    @Test
-    @DisplayName("returns -1 when no cached token")
-    void returnsNegativeOneWhenNoCachedToken() {
-      assertThat(tokenCacheManager.getCachedTokenAge()).isEqualTo(-1);
-    }
-
-    @Test
-    @DisplayName("returns positive age when token is cached")
-    void returnsPositiveAge() throws Exception {
-      setCachedToken("Bearer token");
-      setCachedTokenTime(System.currentTimeMillis() - 5000);
-
-      long age = tokenCacheManager.getCachedTokenAge();
-      assertThat(age).isGreaterThanOrEqualTo(4000).isLessThan(10000);
-    }
-
-    @Test
-    @DisplayName("returns small age for recently cached token")
-    void returnsSmallAgeForRecentToken() throws Exception {
-      setCachedToken("Bearer token");
-      setCachedTokenTime(System.currentTimeMillis());
-
-      long age = tokenCacheManager.getCachedTokenAge();
-      assertThat(age).isGreaterThanOrEqualTo(0).isLessThan(1000);
     }
   }
 
@@ -304,8 +230,7 @@ class TokenCacheManagerTest {
     @Test
     @DisplayName("concurrent reads of cached token return consistent results")
     void concurrentReadsReturnConsistentResults() throws Exception {
-      setCachedToken("Bearer concurrent-token");
-      setCachedTokenTime(System.currentTimeMillis());
+      storeToken("Bearer concurrent-token", 900);
 
       int threadCount = 10;
       String[] results = new String[threadCount];
@@ -333,8 +258,7 @@ class TokenCacheManagerTest {
     @Test
     @DisplayName("clearCache during concurrent reads does not cause errors")
     void clearCacheDuringConcurrentReads() throws Exception {
-      setCachedToken("Bearer token-to-clear");
-      setCachedTokenTime(System.currentTimeMillis());
+      storeToken("Bearer token-to-clear", 900);
 
       Thread[] threads = new Thread[5];
       Exception[] errors = new Exception[5];

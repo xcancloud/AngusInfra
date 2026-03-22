@@ -1,5 +1,6 @@
 package cloud.xcan.angus.security.config;
 
+import cloud.xcan.angus.security.model.cache.CacheType;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,27 @@ public class InnerApiAuthProperties {
    * @see #tokenCacheInterval
    */
   private Duration tokenRefreshThreshold = Duration.ofMinutes(2);
+
+  /**
+   * Token cache storage type.
+   *
+   * - LOCAL: In-memory cache using volatile fields (default, single-instance)
+   * - DISTRIBUTED: Distributed cache using IDistributedCache (multi-instance)
+   *
+   * When set to DISTRIBUTED, requires xcan-infra.cache module on the classpath
+   * and a configured IDistributedCache bean.
+   *
+   * Default: LOCAL
+   */
+  private CacheType cacheType = CacheType.LOCAL;
+
+  /**
+   * Cache key prefix for storing the token in distributed cache.
+   * Only used when cacheType is DISTRIBUTED.
+   *
+   * Default: "auth:innerapi:token"
+   */
+  private String cacheKey = "auth:innerapi:token";
 
   // ╔═══════════════════════════════════════════════════════════════════════╗
   // ║ Retry Configuration

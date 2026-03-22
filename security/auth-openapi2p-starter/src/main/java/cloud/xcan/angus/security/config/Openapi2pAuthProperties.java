@@ -1,5 +1,6 @@
 package cloud.xcan.angus.security.config;
 
+import cloud.xcan.angus.security.model.cache.CacheType;
 import java.time.Duration;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -57,6 +58,27 @@ public class Openapi2pAuthProperties {
    * Default: 15 minutes
    */
   private Duration tokenCacheInterval = Duration.ofMinutes(15);
+
+  /**
+   * Token cache storage type.
+   *
+   * - LOCAL: In-memory cache using volatile fields (default, single-instance)
+   * - DISTRIBUTED: Distributed cache using IDistributedCache (multi-instance)
+   *
+   * When set to DISTRIBUTED, requires xcan-infra.cache module on the classpath
+   * and a configured IDistributedCache bean.
+   *
+   * Default: LOCAL
+   */
+  private CacheType cacheType = CacheType.LOCAL;
+
+  /**
+   * Cache key for storing the token in distributed cache.
+   * Only used when cacheType is DISTRIBUTED.
+   *
+   * Default: "auth:openapi2p:token"
+   */
+  private String cacheKey = "auth:openapi2p:token";
 
   // ╔═══════════════════════════════════════════════════════════════════════╗
   // ║ Client Authentication Configuration (Environment Variables)

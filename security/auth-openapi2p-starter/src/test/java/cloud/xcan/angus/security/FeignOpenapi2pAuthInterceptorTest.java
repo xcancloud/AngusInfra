@@ -2,14 +2,17 @@ package cloud.xcan.angus.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.security.config.Openapi2pAuthProperties;
+import cloud.xcan.angus.security.model.cache.LocalTokenStore;
+import cloud.xcan.angus.security.model.cache.TokenStore;
 import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
 import feign.RequestTemplate;
-import java.lang.reflect.Field;
+import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,13 +38,20 @@ class FeignOpenapi2pAuthInterceptorTest {
   @Mock
   private RequestTemplate template;
 
+  private TokenStore tokenStore;
+
   private FeignOpenapi2pAuthInterceptor interceptor;
 
   @BeforeEach
   void setUp() {
     when(properties.getRequestPathPrefix()).thenReturn("/openapi2p");
+    lenient().when(properties.getCacheType()).thenReturn(
+        cloud.xcan.angus.security.model.cache.CacheType.LOCAL);
+    lenient().when(properties.getCacheKey()).thenReturn("auth:openapi2p:token");
+
+    tokenStore = new LocalTokenStore();
     interceptor = new FeignOpenapi2pAuthInterceptor(
-        clientSignOpenapi2pRemote, properties, environment);
+        clientSignOpenapi2pRemote, properties, environment, tokenStore);
   }
 
   @Nested
@@ -76,38 +86,26 @@ class FeignOpenapi2pAuthInterceptorTest {
   class ClearCache {
 
     @Test
-    @DisplayName("clears cached token and resets timestamp")
-    void clearsCachedToken() throws Exception {
-      // Pre-populate cache via reflection
-      Field tokenField = FeignOpenapi2pAuthInterceptor.class
-          .getDeclaredField("cachedOpenapi2pToken");
-      tokenField.setAccessible(true);
-      tokenField.set(interceptor, "Bearer some-token");
+    @DisplayName("clears cached token from token store")
+    void clearsCachedToken() {
+      // Pre-populate cache via the token store
+      tokenStore.store("auth:openapi2p:token", "Bearer some-token", 900);
 
-      Field timeField = FeignOpenapi2pAuthInterceptor.class
-          .getDeclaredField("cachedTokenTime");
-      timeField.setAccessible(true);
-      timeField.set(interceptor, System.currentTimeMillis());
-
-      // Verify token was set
-      assertThat(tokenField.get(interceptor)).isEqualTo("Bearer some-token");
+      // Verify token was stored
+      assertThat(tokenStore.exists("auth:openapi2p:token")).isTrue();
 
       interceptor.clearCache();
 
-      assertThat(tokenField.get(interceptor)).isNull();
-      assertThat((long) timeField.get(interceptor)).isEqualTo(0L);
+      assertThat(tokenStore.exists("auth:openapi2p:token")).isFalse();
     }
 
     @Test
     @DisplayName("clearCache is idempotent when already empty")
-    void clearCacheIdempotent() throws Exception {
+    void clearCacheIdempotent() {
       // Call clearCache on already empty state
       interceptor.clearCache();
 
-      Field tokenField = FeignOpenapi2pAuthInterceptor.class
-          .getDeclaredField("cachedOpenapi2pToken");
-      tokenField.setAccessible(true);
-      assertThat(tokenField.get(interceptor)).isNull();
+      assertThat(tokenStore.exists("auth:openapi2p:token")).isFalse();
     }
   }
 

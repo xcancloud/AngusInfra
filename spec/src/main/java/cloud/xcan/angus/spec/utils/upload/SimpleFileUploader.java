@@ -1,6 +1,5 @@
 package cloud.xcan.angus.spec.utils.upload;
 
-
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
@@ -13,24 +12,27 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.UUID;
 
+/**
+ * {@link FileUploader} using {@link HttpURLConnection} and {@code multipart/form-data}.
+ */
 public class SimpleFileUploader implements FileUploader {
 
-  /**
-   * Just generate some unique random value.
-   */
-  String boundary = java.util.UUID.randomUUID().toString();
+  private static final String CRLF = "\r\n";
 
-  /**
-   * Line separator required by multipart/form-data.
-   */
-  static String CRLF = "\r\n";
+  private static final String OCTET_STREAM = "application/octet-stream";
+
+  private final String boundary = UUID.randomUUID().toString();
 
   @Override
   public Response uploadFiles(String uploadUrl, String fileParamName, File[] files)
@@ -41,80 +43,114 @@ public class SimpleFileUploader implements FileUploader {
   @Override
   public Response uploadFiles(String uploadUrl, String fileParamName, File[] files,
       Map<String, String> headParams,
-      Map<String, String> params) throws IOException {
+      Map<String, String> textFormFields) throws IOException {
     if (isEmpty(uploadUrl)) {
       throw new IllegalArgumentException("Parameter uploadUrl cannot be empty");
+    }
+    if (isEmpty(fileParamName)) {
+      throw new IllegalArgumentException("Parameter fileParamName cannot be empty");
     }
     if (isEmpty(files)) {
       throw new IllegalArgumentException("Parameter files cannot be empty");
     }
-
-    // set up the URL connection
-    URLConnection conn = new URL(uploadUrl).openConnection();
-
-    // set headers
-    if (headParams != null) {
-      for (String key : headParams.keySet()) {
-        conn.setRequestProperty(key, headParams.get(key));
+    for (File file : files) {
+      Objects.requireNonNull(file, "files");
+      if (!file.isFile()) {
+        throw new IllegalArgumentException("Not a regular file: " + file);
       }
     }
 
-    conn.setDoOutput(true);
-    conn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
-    try (OutputStream output = conn.getOutputStream(); PrintWriter writer = new PrintWriter(
-        new OutputStreamWriter(output, StandardCharsets.UTF_8), true)) {
-      // Send normal param.
+    final URL url;
+    try {
+      url = new URI(uploadUrl).toURL();
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Invalid upload URL: " + uploadUrl, e);
+    }
+    URLConnection conn = url.openConnection();
+    if (!(conn instanceof HttpURLConnection)) {
+      throw new IllegalArgumentException("uploadUrl must use http or https: " + uploadUrl);
+    }
+    HttpURLConnection httpConn = (HttpURLConnection) conn;
+    httpConn.setRequestMethod("POST");
+
+    if (headParams != null) {
+      for (Entry<String, String> e : headParams.entrySet()) {
+        if (e.getKey() != null && e.getValue() != null) {
+          httpConn.setRequestProperty(e.getKey(), e.getValue());
+        }
+      }
+    }
+
+    httpConn.setDoOutput(true);
+    httpConn.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+    try (OutputStream output = httpConn.getOutputStream();
+        PrintWriter writer = new PrintWriter(
+            new OutputStreamWriter(output, StandardCharsets.UTF_8), true)) {
       writer.append("--").append(boundary).append(CRLF);
       writer.append("Content-Disposition: form-data; name=\"param\"").append(CRLF);
       writer.append("Content-Type: text/plain; charset=")
-          .append(String.valueOf(StandardCharsets.UTF_8)).append(CRLF);
+          .append(StandardCharsets.UTF_8.name()).append(CRLF);
       writer.append(CRLF).append(StandardCharsets.UTF_8.name()).append(CRLF).flush();
 
-      if (isNotEmpty(params)) {
-        for (Entry<String, String> entry : params.entrySet()) {
+      if (isNotEmpty(textFormFields)) {
+        for (Entry<String, String> entry : textFormFields.entrySet()) {
+          if (entry.getKey() == null) {
+            continue;
+          }
           writer.append("--").append(boundary).append(CRLF);
           writer.append("Content-Disposition: form-data; name=\"").append(entry.getKey())
               .append("\"").append(CRLF);
           writer.append("Content-Type: text/plain; charset=")
-              .append(String.valueOf(StandardCharsets.UTF_8)).append(CRLF);
-          writer.append(CRLF).append(entry.getValue()).append(CRLF).flush();
+              .append(StandardCharsets.UTF_8.name()).append(CRLF);
+          String value = entry.getValue() != null ? entry.getValue() : "";
+          writer.append(CRLF).append(value).append(CRLF).flush();
         }
       }
 
       for (File file : files) {
-        // Send binary file.
         writer.append("--").append(boundary).append(CRLF);
         writer.append("Content-Disposition: form-data; name=\"").append(fileParamName)
             .append("\"; filename=\"").append(file.getName()).append("\"").append(CRLF);
-        writer.append("Content-Type: ")
-            .append(URLConnection.guessContentTypeFromName(file.getName())).append(CRLF);
+        String contentType = URLConnection.guessContentTypeFromName(file.getName());
+        if (contentType == null || contentType.isEmpty()) {
+          contentType = OCTET_STREAM;
+        }
+        writer.append("Content-Type: ").append(contentType).append(CRLF);
         writer.append("Content-Transfer-Encoding: binary").append(CRLF);
         writer.append(CRLF).flush();
         Files.copy(file.toPath(), output);
-        // Important before continuing with writer!
         output.flush();
-        // CRLF is important! It indicates end of boundary.
         writer.append(CRLF).flush();
       }
 
-      // End of multipart/form-data.
       writer.append("--").append(boundary).append("--").append(CRLF).flush();
 
-      // Request is lazily fired whenever you need to obtain information about response.
-      int status = ((HttpURLConnection) conn).getResponseCode();
-      String body = null;
-      InputStream bodyIS = null;
-      try {
-        if (((HttpURLConnection) conn).getErrorStream() != null) {
-          bodyIS = ((HttpURLConnection) conn).getErrorStream();
-          body = IOUtils.toString((bodyIS));
-        } else if (conn.getInputStream() != null) {
-          bodyIS = conn.getInputStream();
-          body = IOUtils.toString(bodyIS);
-        }
-      } catch (IOException ignored) {
-      }
-      return new Response(status, null, body, bodyIS);
+      int status = httpConn.getResponseCode();
+      String body = readResponseBodyUtf8(httpConn, status);
+      return new Response(status, null, body, null);
+    } finally {
+      httpConn.disconnect();
     }
+  }
+
+  private static String readResponseBodyUtf8(HttpURLConnection conn, int status) {
+    InputStream in;
+    if (status >= HttpURLConnection.HTTP_BAD_REQUEST) {
+      in = conn.getErrorStream();
+    } else {
+      try {
+        in = conn.getInputStream();
+      } catch (IOException ex) {
+        in = conn.getErrorStream();
+      }
+    }
+    if (in == null) {
+      in = conn.getErrorStream();
+    }
+    if (in == null) {
+      return null;
+    }
+    return IOUtils.toString(in, StandardCharsets.UTF_8);
   }
 }

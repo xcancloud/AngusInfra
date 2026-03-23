@@ -19,6 +19,9 @@ public class DataSizeTest {
     Assert.assertEquals(dataSize.getUnit().getSuffix(), "GB");
     Assert.assertEquals(dataSize.getValue(), 25.5D, 1);
 
+    dataSize = DataSize.parse("20");
+    Assert.assertEquals(DataUnit.Bytes, dataSize.getUnit());
+    Assert.assertEquals(20L, dataSize.toBytes());
   }
 
 }

@@ -1,59 +1,44 @@
-/*
- * Copyright (c) 2021   XCan Company
- *
- *        http://www.xcan.cloud
- *
- * The product is based on the open source project io.dropwizard.metrics
- * modified or rewritten by the XCan team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * On the basis of Apache License 2.0, other terms need to comply with
- * XCBL License restriction requirements. Detail XCBL license at:
- *
- * http://www.xcan.cloud/licenses/XCBL-1.0
- */
 package cloud.xcan.angus.spec.time;
 
 /**
- * An abstraction for how time passes. It is passed to {@link Timer} to track timing.
+ * Abstraction for reading time, used by rate/moving-average utilities ({@code getTick()} for
+ * high-resolution deltas, {@link #getTime()} for wall-clock millis when needed).
+ * <p>
+ * {@link #getTick()} is typically monotonic (e.g. {@link System#nanoTime()}); it is not comparable
+ * across different {@link Clock} implementations. {@link #getTime()} follows epoch wall-clock
+ * semantics where overridden (see {@link ManualClock}).
  */
 public abstract class Clock {
 
+  protected Clock() {
+  }
+
   /**
-   * The default clock to use.
-   *
-   * @return the default {@link Clock} instance
-   * @see UserTimeClock
+   * @return the default clock ({@link UserTimeClock}, based on {@link System#nanoTime()})
    */
   public static Clock defaultClock() {
     return UserTimeClockHolder.DEFAULT;
   }
 
   /**
-   * Returns the current time tick.
-   *
-   * @return time tick in nanoseconds
+   * High-resolution tick suitable for measuring elapsed time on this clock (nanoseconds; semantics
+   * depend on the implementation).
    */
   public abstract long getTick();
 
   /**
-   * Returns the current time in milliseconds.
-   *
-   * @return time in milliseconds
+   * Wall-clock time in milliseconds since the Unix epoch, unless a subclass defines test/simulated
+   * time (e.g. {@link ManualClock}).
    */
   public long getTime() {
     return System.currentTimeMillis();
   }
 
   /**
-   * A clock implementation which returns the current time in epoch nanoseconds.
+   * Default implementation: {@link System#nanoTime()} for {@link #getTick()}, {@link System#currentTimeMillis()}
+   * for {@link #getTime()}.
    */
-  public static class UserTimeClock extends Clock {
+  public static final class UserTimeClock extends Clock {
 
     @Override
     public long getTick() {
@@ -61,7 +46,7 @@ public abstract class Clock {
     }
   }
 
-  private static class UserTimeClockHolder {
+  private static final class UserTimeClockHolder {
 
     private static final Clock DEFAULT = new UserTimeClock();
   }

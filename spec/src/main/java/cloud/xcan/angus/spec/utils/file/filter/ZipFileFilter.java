@@ -3,7 +3,7 @@ package cloud.xcan.angus.spec.utils.file.filter;
 /**
  * File filter that accepts all files ending with .ZIP. This filter is case insensitive.
  */
-public class ZipFileFilter extends ExtensionFileFilter {
+public final class ZipFileFilter extends ExtensionFileFilter {
 
   /**
    * The extension that this filter will search for.

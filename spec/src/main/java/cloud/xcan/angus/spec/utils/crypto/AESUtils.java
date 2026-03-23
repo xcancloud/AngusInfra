@@ -1,13 +1,13 @@
 package cloud.xcan.angus.spec.utils.crypto;
 
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import cloud.xcan.angus.api.pojo.Pair;
 import cloud.xcan.angus.spec.experimental.Assert;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 import javax.crypto.Cipher;
@@ -24,8 +24,20 @@ public final class AESUtils {
 
   public static final String ALGORITHM = "AES";
   public static final String ALGORITHM_TRANSFORMATION = "AES/CBC/PKCS5Padding";
+  /** Legacy PRNG name used only when a non-null seed is supplied (stable derivation vs older releases). */
   public static final String KEY_ALGORITHM = "SHA1PRNG";
   public static final int KEY_SIZE = 256;
+
+  private AESUtils() {
+  }
+
+  private static SecureRandom newSecureRandom() {
+    try {
+      return SecureRandom.getInstanceStrong();
+    } catch (NoSuchAlgorithmException e) {
+      return new SecureRandom();
+    }
+  }
 
   public static String generateKey(int keySize) {
     return generateKey(null, keySize, DEFAULT_ENCODING);
@@ -44,30 +56,25 @@ public final class AESUtils {
   }
 
   private static String generateKey(byte[] seed, int keySize, String encodingType) {
-    try {
-      SecretKey key = generateKey0(seed, keySize);
-      return new String(Base64.getEncoder().encode(key.getEncoded()), encodingType);
-    } catch (UnsupportedEncodingException e) {
-      log.error("Unsupported encoding {} exception: {}", encodingType, e.getMessage());
-      throw new RuntimeException("No such algorithm " + encodingType);
-    }
+    Charset cs = Charset.forName(encodingType);
+    byte[] encoded = Base64.getEncoder().encode(generateKey0(seed, keySize).getEncoded());
+    return new String(encoded, cs);
   }
 
   public static SecretKey generateKey0(byte[] seed, int keySize) {
-    KeyGenerator keyGen;
     try {
-      keyGen = KeyGenerator.getInstance(ALGORITHM);
-      if (Objects.nonNull(seed)) {
-        SecureRandom secureRandom = SecureRandom.getInstance(KEY_ALGORITHM);
-        secureRandom.setSeed(seed);
-        keyGen.init(keySize, secureRandom);
+      KeyGenerator keyGen = KeyGenerator.getInstance(ALGORITHM);
+      if (seed != null && seed.length > 0) {
+        SecureRandom sr = SecureRandom.getInstance(KEY_ALGORITHM);
+        sr.setSeed(seed);
+        keyGen.init(keySize, sr);
       } else {
-        keyGen.init(keySize);
+        keyGen.init(keySize, newSecureRandom());
       }
       return keyGen.generateKey();
     } catch (NoSuchAlgorithmException e) {
-      log.error("No such algorithm {} exception: {}", ALGORITHM, e.getMessage());
-      throw new RuntimeException("No such algorithm " + ALGORITHM);
+      log.error("KeyGenerator algorithm not available: {}", ALGORITHM, e);
+      throw new CryptoException("No such algorithm: " + ALGORITHM, e);
     }
   }
 
@@ -89,10 +96,9 @@ public final class AESUtils {
       cipher.init(Cipher.DECRYPT_MODE, keySpec, initVector);
       return cipher.doFinal(content);
     } catch (Exception e) {
-      log.error("AES decrypt exception, iv={}, key={}",
-          Arrays.toString(initVector.getIV()),
-          Arrays.toString(keySpec.getEncoded()), e);
-      throw new CryptoException("AES decrypt exception", e);
+      log.error("AES decrypt failed (iv length={}, key length={})",
+          initVector.getIV().length, keySpec.getEncoded().length, e);
+      throw new CryptoException("AES decrypt failed", e);
     }
   }
 
@@ -102,36 +108,35 @@ public final class AESUtils {
       cipher.init(Cipher.ENCRYPT_MODE, keySpec, initVector);
       return cipher.doFinal(content);
     } catch (Exception e) {
-      log.error("AES encrypt exception, iv={}, key={}",
-          Arrays.toString(initVector.getIV()),
-          Arrays.toString(keySpec.getEncoded()), e);
-      throw new CryptoException("AES encrypt exception", e);
+      log.error("AES encrypt failed (iv length={}, key length={})",
+          initVector.getIV().length, keySpec.getEncoded().length, e);
+      throw new CryptoException("AES encrypt failed", e);
     }
   }
 
   public static String encrypt(String encryptKey, String initVector, String transformation,
       String content) {
+    Objects.requireNonNull(content, "content");
     try {
-      IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(DEFAULT_ENCODING));
+      IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(Charset.forName(DEFAULT_ENCODING)));
       SecretKeySpec skeySpec = new SecretKeySpec(Base64Utils.decode(encryptKey), ALGORITHM);
 
       Cipher cipher = Cipher.getInstance(transformation);
       cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
 
-      byte[] encrypted = cipher.doFinal(content.getBytes());
+      byte[] encrypted = cipher.doFinal(content.getBytes(UTF_8));
       return Base64.getEncoder().encodeToString(encrypted);
     } catch (Exception e) {
-      log.error(
-          "AES encrypt exception, encryptKey={}, initVector={}, transformation={}, content={}",
-          encryptKey, initVector, transformation, content, e);
-      throw new CryptoException("AES decrypt exception", e);
+      log.error("AES string encrypt failed (transformation={})", transformation, e);
+      throw new CryptoException("AES encrypt failed", e);
     }
   }
 
   public static String decrypt(String decryptKey, String initVector, String transformation,
       String content) {
+    Objects.requireNonNull(content, "content");
     try {
-      IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(DEFAULT_ENCODING));
+      IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(Charset.forName(DEFAULT_ENCODING)));
       SecretKeySpec skeySpec = new SecretKeySpec(Base64Utils.decode(decryptKey), ALGORITHM);
 
       Cipher cipher = Cipher.getInstance(transformation);
@@ -139,19 +144,21 @@ public final class AESUtils {
 
       byte[] original = cipher.doFinal(Base64.getDecoder().decode(content));
 
-      return new String(original);
+      return new String(original, UTF_8);
     } catch (Exception e) {
-      log.error(
-          "AES decrypt exception, decryptKey={}, initVector={}, transformation={}, content={}",
-          decryptKey, initVector, transformation, content, e);
-      throw new CryptoException("AES decrypt exception", e);
+      log.error("AES string decrypt failed (transformation={})", transformation, e);
+      throw new CryptoException("AES decrypt failed", e);
     }
   }
 
+  /**
+   * Derives a key from {@code pair.first()} and encrypts {@code pair.second()}. IV is the first 16
+   * characters of the Base64 key string (16 UTF-8 bytes for ASCII), matching historical behavior.
+   */
   public static String encrypt(Pair<String, String> pair) {
     Assert.assertNotNull(pair.first(), "Encrypt key is required");
     Assert.assertNotNull(pair.second(), "Encrypt content is required");
-    String encryptKey = generateKey(pair.first().getBytes());
+    String encryptKey = generateKey(pair.first().getBytes(UTF_8));
     String initVector = encryptKey.substring(0, 16);
     return encrypt(encryptKey, initVector, ALGORITHM_TRANSFORMATION, pair.second());
   }
@@ -159,50 +166,8 @@ public final class AESUtils {
   public static String decrypt(Pair<String, String> pair) {
     Assert.assertNotNull(pair.first(), "Decrypt key is required");
     Assert.assertNotNull(pair.second(), "Decrypt content is required");
-    String decryptKey = generateKey(pair.first().getBytes());
+    String decryptKey = generateKey(pair.first().getBytes(UTF_8));
     String initVector = decryptKey.substring(0, 16);
     return decrypt(decryptKey, initVector, ALGORITHM_TRANSFORMATION, pair.second());
   }
-
-  /**
-   * 在AES算法中，密钥长度有限制，必须符合以下规则：
-   * <p>
-   * 对于AES-128，密钥长度必须是128位（16字节）, 如：0123456789abcdef
-   * <p>
-   * 对于AES-192，密钥长度必须是192位（24字节）, 如：0123456789abcdef12345678
-   * <p>
-   * 对于AES-256，密钥长度必须是256位（32字节）
-   */
-  public static void main(String[] args) {
-
-    String key = AESUtils.generateKey(KEY_SIZE, DEFAULT_ENCODING);
-    String initVector = key.substring(0, 16);
-    String content = "XCan";
-    System.out.println("Content   : " + content);
-
-    String encrypted = AESUtils.encrypt(key, initVector, ALGORITHM_TRANSFORMATION, content);
-    System.out.println("Encrypted : " + encrypted);
-
-    String decrypted = AESUtils.decrypt(key, initVector, ALGORITHM_TRANSFORMATION, encrypted);
-    System.out.println("Decrypted : " + decrypted);
-
-    // First run >_
-    // Content   : XCan
-    // Encrypted : artlftRsDrwnDIzF8y36hA==
-    // Decrypted : XCan
-
-    // Second run >_
-    // Content   : XCan
-    // Encrypted : c7OhJzs9RSZQDdRTfSOYPw==
-    // Decrypted : XCan
-
-    Pair<String, String> passdAndContent = Pair.of("0123456789abcdef", content);
-    String encrypted2 = AESUtils.encrypt(passdAndContent);
-    System.out.println("Encrypted : " + encrypted2);
-
-    Pair<String, String> passdAndEncrypted = Pair.of("0123456789abcdef", encrypted2);
-    String decrypted2 = AESUtils.decrypt(passdAndEncrypted);
-    System.out.println("Decrypted : " + decrypted2);
-  }
 }
-

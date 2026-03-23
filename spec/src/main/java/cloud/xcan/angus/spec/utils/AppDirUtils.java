@@ -126,7 +126,7 @@ public class AppDirUtils {
   }
 
   public String getBizLogsDir(String homeDir, String bizDir) {
-    return getDataDir(homeDir) + bizDir + File.separator;
+    return getLogsDir(homeDir) + bizDir + File.separator;
   }
 
   public String getConfDir() {

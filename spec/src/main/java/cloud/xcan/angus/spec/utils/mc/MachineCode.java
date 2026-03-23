@@ -4,14 +4,15 @@ import static cloud.xcan.angus.spec.utils.mc.Util.format;
 import static cloud.xcan.angus.spec.utils.mc.Util.md5;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class MachineCode {
+/**
+ * Fingerprint material from IP / MAC / CPU / mainboard; digest is built from the first non-blank
+ * field in that order.
+ */
+public final class MachineCode {
 
   private final String ipAddress;
-
   private final String macAddress;
-
   private final String cpuSerial;
-
   private final String mainBoardSerial;
 
   private MachineCode(Builder builder) {
@@ -30,13 +31,16 @@ public class MachineCode {
     if (!isBlank(ipAddress)) {
       machineInfo.append(ipAddress);
     } else if (!isBlank(macAddress)) {
-      machineInfo.append(ipAddress);
+      machineInfo.append(macAddress);
     } else if (!isBlank(cpuSerial)) {
       machineInfo.append(cpuSerial);
     } else if (!isBlank(mainBoardSerial)) {
       machineInfo.append(mainBoardSerial);
     }
     String machineDigest = md5(machineInfo.toString());
+    if (machineDigest == null) {
+      throw new IllegalStateException("Failed to compute machine digest");
+    }
     return format(machineDigest);
   }
 

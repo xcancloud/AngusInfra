@@ -1,25 +1,20 @@
 package cloud.xcan.angus.spec.utils.download;
 
-import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.spec.http.HttpResponseHeader;
 import cloud.xcan.angus.spec.utils.AppDirUtils;
-import cloud.xcan.angus.spec.utils.FileUtils;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,23 +24,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Downloads a file from a URL.
+ * Downloads a file from HTTP(S), FTP, or copies a {@code file:} URL via the filesystem.
  */
-public class SimpleFileDownloader implements FileDownloader {
+public final class SimpleFileDownloader implements FileDownloader {
 
-  public static final String TEMP_DIRECTORY = "sdf-downloader";
+  /** Subdirectory under the application tmp root for downloader-created temp folders. */
+  public static final String TEMP_DIRECTORY = "angus-downloader";
+
+  private static final int BUFFER_SIZE = 8192;
 
   private static final Logger log = LoggerFactory.getLogger(SimpleFileDownloader.class);
 
-  /**
-   * Downloads a file. If HTTP(S) or FTP, stream content, if local file:/ do a simple filesystem
-   * copy to tmp folder. Other protocols not supported.
-   *
-   * @param fileUrl the URI representing the file to download
-   * @return the path of downloaded/copied file
-   * @throws IOException      in case of network or IO problems
-   * @throws RuntimeException in case of other problems
-   */
   @Override
   public Path downloadFile(URL fileUrl) throws Exception {
     return downloadFile(fileUrl, null, null);
@@ -64,16 +53,13 @@ public class SimpleFileDownloader implements FileDownloader {
   @Override
   public Path downloadFile(URL fileUrl, Map<String, String> headParams, String destinationPath)
       throws Exception {
-    switch (fileUrl.getProtocol()) {
-      case "http":
-      case "https":
-      case "ftp":
-        return downloadFileHttp(fileUrl, headParams, destinationPath);
-      case "file":
-        return copyLocalFile(fileUrl);
-      default:
-        throw new RuntimeException("URL protocol " + fileUrl.getProtocol() + " not supported");
-    }
+    String protocol = fileUrl.getProtocol();
+    return switch (protocol) {
+      case "http", "https", "ftp" -> downloadFileHttp(fileUrl, headParams, destinationPath);
+      case "file" -> copyLocalFile(fileUrl);
+      default -> throw new UnsupportedOperationException(
+          "URL protocol '" + protocol + "' is not supported");
+    };
   }
 
   @Override
@@ -82,94 +68,63 @@ public class SimpleFileDownloader implements FileDownloader {
   }
 
   @Override
-  public byte[] downloadBytes(URL fileUrl, Map<String, String> headParams)
-      throws Exception {
-    switch (fileUrl.getProtocol()) {
-      case "http":
-      case "https":
-      case "ftp":
-        return downloadBytesHttp(fileUrl, headParams);
-      case "file":
-        return copyLocalFileBytes(fileUrl);
-      default:
-        throw new RuntimeException("URL protocol " + fileUrl.getProtocol() + " not supported");
-    }
+  public byte[] downloadBytes(URL fileUrl, Map<String, String> headParams) throws Exception {
+    String protocol = fileUrl.getProtocol();
+    return switch (protocol) {
+      case "http", "https", "ftp" -> downloadBytesHttp(fileUrl, headParams);
+      case "file" -> copyLocalFileBytes(fileUrl);
+      default -> throw new UnsupportedOperationException(
+          "URL protocol '" + protocol + "' is not supported");
+    };
   }
 
   /**
-   * Efficient copy of file in case of local file system.
-   *
-   * @param fileUrl source file
-   * @return path of target file
-   * @throws IOException      if problems during copy
-   * @throws RuntimeException in case of other problems
+   * Copies a local {@code file:} URL into a new temp directory and returns the destination file.
    */
-  protected Path copyLocalFile(URL fileUrl) throws IOException {
-    Path destination = Files.createTempDirectory(initDownloadTempDir().toPath(), null);
-    destination.toFile().deleteOnExit();
+  Path copyLocalFile(URL fileUrl) throws IOException {
+    Path tempParent = Files.createTempDirectory(initDownloadTempDir(), "local-");
+    tempParent.toFile().deleteOnExit();
     try {
       Path fromFile = Paths.get(fileUrl.toURI());
-      Path toFile = getFileUrlPath(fileUrl, destination);
+      Path toFile = resolveOutputFileName(fileUrl, tempParent);
       Files.copy(fromFile, toFile, COPY_ATTRIBUTES, REPLACE_EXISTING);
       return toFile;
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Something wrong with given URL", e);
+    } catch (Exception e) {
+      throw new IOException("Invalid file URL: " + fileUrl, e);
     }
   }
 
-  protected byte[] copyLocalFileBytes(URL fileUrl) throws IOException {
+  byte[] copyLocalFileBytes(URL fileUrl) throws IOException {
     try {
       Path fromFile = Paths.get(fileUrl.toURI());
-      return FileUtils.readFileToByteArray(fromFile.toFile());
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("Something wrong with given URL", e);
+      return Files.readAllBytes(fromFile);
+    } catch (Exception e) {
+      throw new IOException("Invalid file URL: " + fileUrl, e);
     }
   }
 
-  /**
-   * Downloads file from HTTP or FTP.
-   *
-   * @param fileUrl source file
-   * @return path of downloaded file
-   * @throws Exception        if IO problems
-   * @throws RuntimeException if validation fails or any other problems
-   */
-  protected Path downloadFileHttp(URL fileUrl, Map<String, String> headers,
-      String destinationPath) throws Exception {
-    Path destination = isNotEmpty(destinationPath) ? Path.of(destinationPath).toFile().exists()
-        ? Path.of(destinationPath) : Files.createDirectory(Path.of(destinationPath))
-        : Files.createTempDirectory(initDownloadTempDir().toPath(), null);
-    destination.toFile().deleteOnExit();
-    Path file = getFileUrlPath(fileUrl, destination);
-
-    // set up the URL connection
-    URLConnection connection = fileUrl.openConnection();
-
-    // set headers
-    if (isNotEmpty(headers)) {
-      for (String key : headers.keySet()) {
-        connection.setRequestProperty(key, headers.get(key));
-      }
+  Path downloadFileHttp(URL fileUrl, Map<String, String> headers, String destinationPath)
+      throws Exception {
+    Path destination = resolveDestination(destinationPath);
+    if (!isNotEmpty(destinationPath)) {
+      destination.toFile().deleteOnExit();
     }
+    Path file = resolveOutputFileName(fileUrl, destination);
 
-    // connect to the remote site (may takes some time)
+    URLConnection connection = openConnection(fileUrl, headers);
     connection.connect();
 
-    // check for http authorization
-    HttpURLConnection httpConnection = (HttpURLConnection) connection;
-    if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-      throw new ConnectException("HTTP Authorization failure");
+    long lastModified = System.currentTimeMillis();
+    if (connection instanceof HttpURLConnection http) {
+      if (http.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+        throw new ConnectException("HTTP Authorization failure");
+      }
+      lastModified = http.getHeaderFieldDate(HttpResponseHeader.Last_Modified.value, lastModified);
     }
 
-    // try to get the server-specified last-modified date of this artifact
-    long lastModified = httpConnection.getHeaderFieldDate(HttpResponseHeader.Last_Modified.value,
-        System.currentTimeMillis());
-
-    // try to get the input stream (three times)
-    try (InputStream is = getDownloadInputStream(fileUrl,
-        connection); FileOutputStream fos = new FileOutputStream(file.toFile())) {
-      // reade from remote resource and write to the local file
-      byte[] buffer = new byte[1024];
+    try (InputStream is = getDownloadInputStream(fileUrl, connection);
+        FileOutputStream fos = new FileOutputStream(file.toFile())) {
+      byte[] buffer = new byte[BUFFER_SIZE];
       int length;
       while ((length = is.read(buffer)) >= 0) {
         fos.write(buffer, 0, length);
@@ -181,78 +136,78 @@ public class SimpleFileDownloader implements FileDownloader {
     return file;
   }
 
-  /**
-   * Downloads bytes from HTTP or FTP.
-   *
-   * @param fileUrl source file
-   * @return bytes of downloaded file
-   * @throws IOException      if IO problems
-   * @throws RuntimeException if validation fails or any other problems
-   */
-  protected byte[] downloadBytesHttp(URL fileUrl, Map<String, String> headers) throws Exception {
-    // set up the URL connection
-    URLConnection connection = fileUrl.openConnection();
-
-    // set headers
-    if (isNotEmpty(headers)) {
-      for (String key : headers.keySet()) {
-        connection.setRequestProperty(key, headers.get(key));
-      }
-    }
-
-    // connect to the remote site (may takes some time)
+  byte[] downloadBytesHttp(URL fileUrl, Map<String, String> headers) throws Exception {
+    URLConnection connection = openConnection(fileUrl, headers);
     connection.connect();
 
-    // check for http authorization
-    HttpURLConnection httpConnection = (HttpURLConnection) connection;
-    if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
-      throw new ConnectException("HTTP Authorization failure");
+    if (connection instanceof HttpURLConnection http) {
+      if (http.getResponseCode() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+        throw new ConnectException("HTTP Authorization failure");
+      }
     }
 
-    // Try to get the input stream (three times)
-    // try to get the input stream (three times)
-    try (InputStream is = getDownloadInputStream(fileUrl,
-        connection); ByteArrayOutputStream fos = new ByteArrayOutputStream()) {
-      // reade from remote resource and write to the local file
-      byte[] buffer = new byte[1024];
-      int length;
-      while ((length = is.read(buffer)) >= 0) {
-        fos.write(buffer, 0, length);
-      }
-      return fos.toByteArray();
+    try (InputStream is = getDownloadInputStream(fileUrl, connection)) {
+      return is.readAllBytes();
     }
+  }
+
+  private static URLConnection openConnection(URL fileUrl, Map<String, String> headers)
+      throws IOException {
+    URLConnection connection = fileUrl.openConnection();
+    if (isNotEmpty(headers)) {
+      for (Map.Entry<String, String> e : headers.entrySet()) {
+        if (e.getKey() != null && e.getValue() != null) {
+          connection.setRequestProperty(e.getKey(), e.getValue());
+        }
+      }
+    }
+    return connection;
   }
 
   private InputStream getDownloadInputStream(URL fileUrl, URLConnection connection)
       throws ConnectException {
-    InputStream is = null;
+    IOException last = null;
     for (int i = 0; i < 3; i++) {
       try {
-        is = connection.getInputStream();
-        break;
+        return connection.getInputStream();
       } catch (IOException e) {
-        log.error(e.getMessage(), e);
+        last = e;
+        log.warn("Open stream attempt {} failed for {}: {}", i + 1, fileUrl, e.getMessage());
       }
     }
-    if (is == null) {
-      throw new ConnectException("Can't download from '" + fileUrl.toString());
-    }
-    return is;
+    throw new ConnectException(
+        "Can't download from '" + fileUrl + "'" + (last != null ? ": " + last.getMessage() : ""));
   }
 
-  private Path getFileUrlPath(URL fileUrl, Path destination) throws UnsupportedEncodingException {
+  private static Path resolveOutputFileName(URL fileUrl, Path destination) {
     String path = fileUrl.getPath();
-    String fileName = path.substring(path.lastIndexOf('/') + 1);
-    fileName = URLDecoder.decode(fileName, DEFAULT_ENCODING);
+    int slash = path.lastIndexOf('/');
+    String fileName = slash >= 0 ? path.substring(slash + 1) : path;
+    if (fileName.isEmpty()) {
+      fileName = "download";
+    }
+    fileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
     return destination.resolve(fileName);
   }
 
-  private File initDownloadTempDir() throws IOException {
-    String tempDir = new AppDirUtils().getTmpDir() + TEMP_DIRECTORY;
-    File tempFile = new File(tempDir);
-    if (tempFile.mkdirs()) {
-      return tempFile;
+  private static Path initDownloadTempDir() throws IOException {
+    Path dir = Paths.get(new AppDirUtils().getTmpDir(), TEMP_DIRECTORY);
+    Files.createDirectories(dir);
+    return dir;
+  }
+
+  /**
+   * When {@code destinationPath} is blank, creates a temp directory under the downloader tmp root.
+   * Otherwise uses an existing path or creates the directory (including parents).
+   */
+  private static Path resolveDestination(String destinationPath) throws IOException {
+    if (!isNotEmpty(destinationPath)) {
+      return Files.createTempDirectory(initDownloadTempDir(), "dl-");
     }
-    return tempFile;
+    Path p = Path.of(destinationPath);
+    if (Files.exists(p)) {
+      return p;
+    }
+    return Files.createDirectories(p);
   }
 }

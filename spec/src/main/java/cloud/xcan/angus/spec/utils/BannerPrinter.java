@@ -14,7 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class BannerPrinter {
 
-  public static final String DECORATION_CHARD = "#############################################";
+  public static final String DECORATION_CHAR = "#############################################";
+
+  /**
+   * @deprecated Use {@link #DECORATION_CHAR} (typo in name).
+   */
+  @Deprecated
+  public static final String DECORATION_CHARD = DECORATION_CHAR;
 
   private final URL resource;
 
@@ -32,10 +38,10 @@ public class BannerPrinter {
   }
 
   public void printBanner() {
-    try {
-      String banner = StreamUtils.copyToString(this.resource.openStream(), StandardCharsets.UTF_8);
-      log.info(DECORATION_CHARD + "\n" + banner);
-      System.out.println(DECORATION_CHARD + "\n" + banner);
+    try (var in = this.resource.openStream()) {
+      String banner = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
+      log.info(DECORATION_CHAR + "\n" + banner);
+      System.out.println(DECORATION_CHAR + "\n" + banner);
     } catch (Exception ex) {
       log.warn(String.format("Application banner not printable: %s (%s: '%s')", this.resource,
           ex.getClass(), ex.getMessage()), ex);
@@ -43,11 +49,11 @@ public class BannerPrinter {
   }
 
   public void printConsoleBanner() {
-    try {
-      String banner = StreamUtils.copyToString(this.resource.openStream(), StandardCharsets.UTF_8);
+    try (var in = this.resource.openStream()) {
+      String banner = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
       System.out.println(banner);
-    } catch (Exception ex) {
-      // NOOP
+    } catch (Exception ignored) {
+      // optional console banner
     }
   }
 

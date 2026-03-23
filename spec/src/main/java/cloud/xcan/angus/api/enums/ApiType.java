@@ -1,7 +1,11 @@
 package cloud.xcan.angus.api.enums;
 
 import cloud.xcan.angus.spec.experimental.Value;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public enum ApiType implements Value<String> {
 
@@ -12,21 +16,31 @@ public enum ApiType implements Value<String> {
           "/innerapi/",
           PUB_API, "/pubapi/", VIEW, "/view/", PUB_VIEW, "/pubview/");
 
+  /**
+   * Prefix entries ordered by path length descending so that a longer path (e.g. {@code /openapi2p/})
+   * wins over a shorter shared prefix when both could match.
+   */
+  private static final List<Map.Entry<ApiType, String>> API_TYPE_PREFIXES_SORTED;
+
+  static {
+    List<Map.Entry<ApiType, String>> list = new ArrayList<>(API_TYPE_MAP.entrySet());
+    list.sort(Comparator.<Map.Entry<ApiType, String>>comparingInt(e -> e.getValue().length())
+        .reversed());
+    API_TYPE_PREFIXES_SORTED = List.copyOf(list);
+  }
+
+  /**
+   * Resolves the API type from the request URI prefix.
+   *
+   * @param uri request path or full URI, non-null
+   * @return matching type, or {@link #API} when no configured prefix matches
+   */
   public static ApiType findByUri(String uri) {
-    if (uri.startsWith(API_TYPE_MAP.get(API))) {
-      return API;
-    } else if (uri.startsWith(API_TYPE_MAP.get(OPEN_API))) {
-      return OPEN_API;
-    } else if (uri.startsWith(API_TYPE_MAP.get(OPEN_API_2P))) {
-      return OPEN_API_2P;
-    } else if (uri.startsWith(API_TYPE_MAP.get(DOOR_API))) {
-      return DOOR_API;
-    } else if (uri.startsWith(API_TYPE_MAP.get(PUB_API))) {
-      return PUB_API;
-    } else if (uri.startsWith(API_TYPE_MAP.get(VIEW))) {
-      return VIEW;
-    } else if (uri.startsWith(API_TYPE_MAP.get(PUB_VIEW))) {
-      return PUB_VIEW;
+    Objects.requireNonNull(uri, "uri");
+    for (Map.Entry<ApiType, String> e : API_TYPE_PREFIXES_SORTED) {
+      if (uri.startsWith(e.getValue())) {
+        return e.getKey();
+      }
     }
     return API;
   }

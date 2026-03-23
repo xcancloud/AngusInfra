@@ -1,30 +1,18 @@
-/*
- * Copyright (c) 2021   XCan Company
- *
- *        http://www.xcan.cloud
- *
- * The product is based on the open source project io.dropwizard.metrics
- * modified or rewritten by the XCan team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * On the basis of Apache License 2.0, other terms need to comply with
- * XCBL License restriction requirements. Detail XCBL license at:
- *
- * http://www.xcan.cloud/licenses/XCBL-1.0
- */
 package cloud.xcan.angus.spec.time;
 
+import java.time.Duration;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class ManualClock extends Clock {
+/**
+ * A test-oriented clock: {@link #getTick()} returns a value advanced only via {@code add*} /
+ * {@link #setNanos(long)} / {@link #reset()}. {@link #getTime()} returns simulated epoch millis
+ * derived from the tick offset from {@code initialTicksInNanos}.
+ */
+public final class ManualClock extends Clock {
 
   private final long initialTicksInNanos;
-  long ticksInNanos;
+  private long ticksInNanos;
 
   public ManualClock(long initialTicksInNanos) {
     this.initialTicksInNanos = initialTicksInNanos;
@@ -51,14 +39,32 @@ public class ManualClock extends Clock {
     ticksInNanos += TimeUnit.HOURS.toNanos(hours);
   }
 
+  /** Advances the tick by the given duration (nanosecond precision). */
+  public synchronized void add(Duration duration) {
+    Objects.requireNonNull(duration, "duration");
+    ticksInNanos += duration.toNanos();
+  }
+
+  /** Sets the absolute tick in nanoseconds (same basis as {@link #getTick()}). */
+  public synchronized void setNanos(long nanos) {
+    ticksInNanos = nanos;
+  }
+
+  /** Restores the tick to the initial value passed to the constructor. */
+  public synchronized void reset() {
+    ticksInNanos = initialTicksInNanos;
+  }
+
   @Override
   public synchronized long getTick() {
     return ticksInNanos;
   }
 
+  /**
+   * Simulated wall millis: {@code NANOSECONDS.toMillis(getTick() - initialTicksInNanos)}.
+   */
   @Override
   public synchronized long getTime() {
     return TimeUnit.NANOSECONDS.toMillis(ticksInNanos - initialTicksInNanos);
   }
-
 }

@@ -20,7 +20,7 @@ import java.util.EnumSet;
  * @see Path
  * @see Files
  */
-public class FileSystemUtils {
+public final class FileSystemUtils {
 
   private FileSystemUtils() { /* no instance */ }
 
@@ -126,7 +126,11 @@ public class FileSystemUtils {
             }
           });
     } else if (srcAttr.isRegularFile()) {
-      Files.copy(src, dest);
+      Path parent = dest.getParent();
+      if (parent != null) {
+        Files.createDirectories(parent);
+      }
+      Files.copy(src, dest, StandardCopyOption.REPLACE_EXISTING);
     } else {
       throw new IllegalArgumentException("Source File must denote a directory or file");
     }

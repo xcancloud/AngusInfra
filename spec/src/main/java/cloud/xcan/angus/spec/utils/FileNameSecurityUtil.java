@@ -1,10 +1,14 @@
 package cloud.xcan.angus.spec.utils;
 
 import java.text.Normalizer;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-public class FileNameSecurityUtil {
+public final class FileNameSecurityUtil {
+
+  private FileNameSecurityUtil() {
+  }
 
   // 允许的文件名字符（可根据需求调整）
   private static final Pattern ALLOWED_CHARS = Pattern.compile("[a-zA-Z0-9._\\-]");
@@ -101,7 +105,7 @@ public class FileNameSecurityUtil {
     }
 
     String extension = fileName.substring(fileName.lastIndexOf('.') + 1);
-    return extension.toLowerCase();
+    return extension.toLowerCase(Locale.ROOT);
   }
 
   /**

@@ -4,8 +4,17 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
-public class CharsetUtils {
+/**
+ * Charset resolution helpers.
+ */
+public final class CharsetUtils {
 
+  private CharsetUtils() {
+  }
+
+  /**
+   * Resolves a charset by name, or {@code null} if {@code name} is null or unknown.
+   */
   public static Charset lookup(final String name) {
     if (name == null) {
       return null;
@@ -17,6 +26,10 @@ public class CharsetUtils {
     }
   }
 
+  /**
+   * Like {@link #lookup(String)} but throws when the name is unknown; returns {@code null} only when
+   * {@code name} is {@code null}.
+   */
   public static Charset get(final String name) throws UnsupportedEncodingException {
     if (name == null) {
       return null;
@@ -27,5 +40,4 @@ public class CharsetUtils {
       throw new UnsupportedEncodingException(name);
     }
   }
-
 }

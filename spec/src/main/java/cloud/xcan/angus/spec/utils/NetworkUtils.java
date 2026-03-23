@@ -25,7 +25,10 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class NetworkUtils {
+public final class NetworkUtils {
+
+  private NetworkUtils() {
+  }
 
   /**
    * IP address
@@ -96,7 +99,7 @@ public class NetworkUtils {
   }
 
   public static boolean isIpAddress(String ipAddress) {
-    return REGEX_IPV4.matcher(ipAddress).matches();
+    return ipAddress != null && REGEX_IPV4.matcher(ipAddress).matches();
   }
 
   public static String domainToIp(String domain) {
@@ -107,9 +110,8 @@ public class NetworkUtils {
       InetAddress address = InetAddress.getByName(domain);
       return address.getHostAddress();
     } catch (UnknownHostException e) {
-      e.printStackTrace();
+      return domain;
     }
-    return domain;
   }
 
   public static String formatPossibleIpv6Address(String address) {
@@ -269,19 +271,19 @@ public class NetworkUtils {
     }
   }
 
-  public static String urlToString(String url, List<SimpleHttpAuth> auths) throws Throwable {
+  public static String urlToString(String url, List<SimpleHttpAuth> auths) throws IOException {
     Response response = Request.build(url, new HttpUrlConnectionSender()).withAuths(auths).send();
     return response.body();
   }
 
   public static InputStream urlToInputStream(String url, List<SimpleHttpAuth> auths)
-      throws Throwable {
+      throws IOException {
     Response response = Request.build(url, new HttpUrlConnectionSender()).withAuths(auths).send();
     return response.bodyIS();
   }
 
   public static byte[] urlToBytes(String url, List<SimpleHttpAuth> auths)
-      throws Throwable {
+      throws IOException {
     Response response = Request.build(url, new HttpUrlConnectionSender()).withAuths(auths).send();
     try (InputStream is = response.bodyIS()) {
       return is.readAllBytes();

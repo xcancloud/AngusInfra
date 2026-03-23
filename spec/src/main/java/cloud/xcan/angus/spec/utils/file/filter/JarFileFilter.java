@@ -3,7 +3,7 @@ package cloud.xcan.angus.spec.utils.file.filter;
 /**
  * File filter that accepts all files ending with .JAR. This filter is case insensitive.
  */
-public class JarFileFilter extends ExtensionFileFilter {
+public final class JarFileFilter extends ExtensionFileFilter {
 
   /**
    * The extension that this filter will search for.

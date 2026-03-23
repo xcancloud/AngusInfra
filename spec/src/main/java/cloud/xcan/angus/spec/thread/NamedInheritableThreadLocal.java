@@ -8,7 +8,7 @@ import static cloud.xcan.angus.spec.experimental.Assert.assertHasText;
  *
  * @see NamedThreadLocal
  */
-public class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
+public final class NamedInheritableThreadLocal<T> extends InheritableThreadLocal<T> {
 
   private final String name;
 

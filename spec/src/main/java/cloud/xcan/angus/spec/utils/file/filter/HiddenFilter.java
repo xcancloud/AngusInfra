@@ -4,13 +4,17 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * Filter that only accepts hidden files.
+ * Accepts files that {@linkplain File#isHidden() are hidden}.
  */
-public class HiddenFilter implements FileFilter {
+public final class HiddenFilter implements FileFilter {
+
+  public static final HiddenFilter INSTANCE = new HiddenFilter();
+
+  public HiddenFilter() {
+  }
 
   @Override
   public boolean accept(File file) {
     return file.isHidden();
   }
-
 }

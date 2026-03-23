@@ -7,54 +7,36 @@ import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.utils.StringUtils;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.Setter;
 
 /**
- * @see `org.openjdk.jmh.runner.options.TimeValue`
+ * Immutable duration as a (value, {@link ShortTimeUnit}) pair; conversions normalize to milliseconds.
+ *
+ * @see org.openjdk.jmh.runner.options.TimeValue (conceptual analogue)
  */
-@Setter
-public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
+public final class TimeValue implements ValueUnit<Long, ShortTimeUnit>, Comparable<TimeValue> {
 
-  /**
-   * The pattern for parsing.
-   */
-  private static final Pattern PATTERN = Pattern.compile("^(\\d+)([a-zA-Z]{0,3})$");
+  private static final Pattern PATTERN = Pattern.compile("^\\s*(\\d+)([a-zA-Z]{0,3})\\s*$");
 
-  /**
-   * Millisecond per second.
-   */
   private static final long MILLISECOND_PER_SECOND = 1000;
 
-  /**
-   * Millisecond per Minute.
-   */
   private static final long MILLISECOND_PER_MINUTE = MILLISECOND_PER_SECOND * 60;
 
-  /**
-   * Millisecond per Hour.
-   */
   private static final long MILLISECOND_PER_HOUR = MILLISECOND_PER_MINUTE * 60;
 
-  /**
-   * Millisecond per Day.
-   */
   private static final long MILLISECOND_PER_DAY = MILLISECOND_PER_HOUR * 24;
 
-  private long value;
+  private final long value;
 
-  private ShortTimeUnit unit;
+  private final ShortTimeUnit unit;
 
   public TimeValue() {
-    this.value = 0L;
-    this.unit = ShortTimeUnit.Millisecond;
+    this(0L, ShortTimeUnit.Millisecond);
   }
 
   public TimeValue(long value) {
-    this.value = value;
-    this.unit = ShortTimeUnit.Millisecond;
+    this(value, ShortTimeUnit.Millisecond);
   }
 
   public TimeValue(long value, ShortTimeUnit unit) {
@@ -114,39 +96,44 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
       case Hour -> value * MILLISECOND_PER_HOUR;
       case Minute -> value * MILLISECOND_PER_MINUTE;
       case Second -> value * MILLISECOND_PER_SECOND;
-      default -> // MS
-          value;
+      case Millisecond -> value;
     };
   }
 
+  /** Same as {@link #formatMilliseconds()} (legacy name). */
   public String formatMilliSecond() {
-    return toMilliSecond() + ShortTimeUnit.Millisecond.getValue();
+    return formatMilliseconds();
+  }
+
+  /** Returns total milliseconds plus the {@code ms} suffix, e.g. {@code "1500ms"}. */
+  public String formatMilliseconds() {
+    return toMilliSecond() + ShortTimeUnit.Millisecond.getSuffix();
   }
 
   @Override
   public String toString() {
-    return value + unit.getValue();
+    return value + unit.getSuffix();
   }
 
   @Override
   public String toHumanString() {
-    double value = toSecond();
-    if (value < 1) {
+    double v = toSecond();
+    if (v < 1) {
       return getFormatString(toMilliSecond(), ShortTimeUnit.Millisecond);
     }
-    value = toMinutes();
-    if (value < 1) {
+    v = toMinutes();
+    if (v < 1) {
       return getFormatString(toSecond(), ShortTimeUnit.Second);
     }
-    value = toHours();
-    if (value < 1) {
+    v = toHours();
+    if (v < 1) {
       return getFormatString(toMinutes(), ShortTimeUnit.Minute);
     }
-    value = toDays();
-    if (value < 1) {
+    v = toDays();
+    if (v < 1) {
       return getFormatString(toHours(), ShortTimeUnit.Hour);
     }
-    return getFormatString(value, ShortTimeUnit.Day);
+    return getFormatString(v, ShortTimeUnit.Day);
   }
 
   public String toHumanString(ShortTimeUnit unit) {
@@ -159,9 +146,9 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
     };
   }
 
-  private String getFormatString(double size, ShortTimeUnit unit) {
-    BigDecimal value = new BigDecimal(size);
-    double result = value.setScale(2, RoundingMode.HALF_UP).doubleValue();
+  private static String getFormatString(double size, ShortTimeUnit unit) {
+    BigDecimal bd = new BigDecimal(size);
+    double result = bd.setScale(2, RoundingMode.HALF_UP).doubleValue();
     return result + unit.getSuffix();
   }
 
@@ -174,8 +161,8 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
     try {
       Matcher matcher = PATTERN.matcher(text);
       assertState(matcher.matches(), "Does not match time value pattern");
-      ShortTimeUnit unit = determineTimeUnit(matcher.group(2), defaultUnit);
       long amount = Long.parseLong(matcher.group(1));
+      ShortTimeUnit unit = determineTimeUnit(matcher.group(2), defaultUnit);
       return TimeValue.of(amount, unit);
     } catch (Exception ex) {
       throw new IllegalArgumentException("'" + text + "' is not a valid time value", ex);
@@ -183,9 +170,9 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
   }
 
   private static ShortTimeUnit determineTimeUnit(String suffix, ShortTimeUnit defaultUnit) {
-    ShortTimeUnit defaultUnitToUse = (defaultUnit != null ? defaultUnit
-        : ShortTimeUnit.Millisecond);
-    return (StringUtils.hasLength(suffix) ? ShortTimeUnit.fromSuffix(suffix) : defaultUnitToUse);
+    ShortTimeUnit defaultUnitToUse =
+        defaultUnit != null ? defaultUnit : ShortTimeUnit.Millisecond;
+    return StringUtils.hasLength(suffix) ? ShortTimeUnit.fromSuffix(suffix) : defaultUnitToUse;
   }
 
   @Override
@@ -199,6 +186,11 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
   }
 
   @Override
+  public int compareTo(TimeValue o) {
+    return Long.compare(toMilliSecond(), o.toMilliSecond());
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -206,12 +198,11 @@ public class TimeValue implements ValueUnit<Long, ShortTimeUnit> {
     if (!(o instanceof TimeValue timeValue)) {
       return false;
     }
-    return (value == timeValue.value && unit == timeValue.unit)
-        || timeValue.toMilliSecond() == toMilliSecond();
+    return toMilliSecond() == timeValue.toMilliSecond();
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(value, unit);
+    return Long.hashCode(toMilliSecond());
   }
 }

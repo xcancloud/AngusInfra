@@ -1,37 +1,33 @@
-/*
- * Copyright (c) 2021   XCan Company
- *
- *        http://www.xcan.cloud
- *
- * The product is based on the open source project io.dropwizard.metrics
- * modified or rewritten by the XCan team.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * On the basis of Apache License 2.0, other terms need to comply with
- * XCBL License restriction requirements. Detail XCBL license at:
- *
- * http://www.xcan.cloud/licenses/XCBL-1.0
- */
 package cloud.xcan.angus.spec.time;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
 /**
- * A clock implementation which returns the current thread's CPU time.
+ * A clock whose {@link #getTick()} returns the <em>current thread</em> CPU time in nanoseconds
+ * (when supported). {@link #getTime()} remains wall-clock millis from {@link Clock#getTime()}.
+ * <p>
+ * If CPU time is not supported, {@link ThreadMXBean#getCurrentThreadCpuTime()} may return
+ * {@code -1}; callers should handle that case if relevant.
  */
-public class CpuTimeClock extends Clock {
+public final class CpuTimeClock extends Clock {
 
-  private static final ThreadMXBean THREAD_MX_BEAN = ManagementFactory.getThreadMXBean();
+  private static final ThreadMXBean THREAD_MX_BEAN = initMxBean();
+
+  private static ThreadMXBean initMxBean() {
+    ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+    try {
+      if (bean.isThreadCpuTimeSupported() && !bean.isThreadCpuTimeEnabled()) {
+        bean.setThreadCpuTimeEnabled(true);
+      }
+    } catch (SecurityException | UnsupportedOperationException ignored) {
+      // JVM may disallow enabling; getCurrentThreadCpuTime() may still work or return -1
+    }
+    return bean;
+  }
 
   @Override
   public long getTick() {
     return THREAD_MX_BEAN.getCurrentThreadCpuTime();
   }
-
 }

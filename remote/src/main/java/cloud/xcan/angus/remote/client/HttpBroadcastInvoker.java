@@ -11,6 +11,7 @@ import cloud.xcan.angus.spec.http.HttpSender.Response;
 import cloud.xcan.angus.spec.http.HttpUrlConnectionSender;
 import cloud.xcan.angus.spec.utils.JsonUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,7 @@ public class HttpBroadcastInvoker {
    * @param payload   Request payload
    */
   public <V> Map<String, ApiLocaleResult<V>> broadcast(
-      String serviceId, String apiPath, Object payload) throws Throwable {
+      String serviceId, String apiPath, Object payload) throws IOException {
     List<String> instanceUrls = serviceDiscoveryHelper.getAllInstanceUrls(serviceId);
     Map<String, ApiLocaleResult<V>> results = new HashMap<>();
     for (String instanceUrl : instanceUrls) {

@@ -4,13 +4,17 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * Filter accepts files that are directories.
+ * Accepts directories only.
  */
-public class DirectoryFileFilter implements FileFilter {
+public final class DirectoryFileFilter implements FileFilter {
+
+  public static final DirectoryFileFilter INSTANCE = new DirectoryFileFilter();
+
+  public DirectoryFileFilter() {
+  }
 
   @Override
   public boolean accept(File file) {
     return file.isDirectory();
   }
-
 }

@@ -11,16 +11,18 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * @author XiaoLong Liu
+ * Schedules {@link Runnable} tasks on a {@link DelayQueue} and executes them on a fixed pool when due.
  */
 @Slf4j
 public class DelayOrderQueueManager {
 
+  public static final String XCAN_DELAY_ORDER_QUEUE_SCHEDULE = "xcanDelayOrderQueueSchedule";
+  public static final String XCAN_DELAY_ORDER_QUEUE_EXEC = "xcanDelayOrderQueueExec";
+
   private final ExecutorService executor;
   private final DelayQueue<DelayOrderTask<?>> delayQueue;
-
-  public final static String XCAN_DELAY_ORDER_QUEUE_SCHEDULE = "xcanDelayOrderQueueSchedule";
-  public final static String XCAN_DELAY_ORDER_QUEUE_EXEC = "xcanDelayOrderQueueExec";
+  private final Thread scheduleThread;
+  private volatile boolean running = true;
 
   public DelayOrderQueueManager() {
     this(Runtime.getRuntime().availableProcessors() * 2, XCAN_DELAY_ORDER_QUEUE_EXEC,
@@ -32,54 +34,65 @@ public class DelayOrderQueueManager {
   }
 
   public DelayOrderQueueManager(int execThreads, String execThreadName, String scheduleThreadName) {
+    Objects.requireNonNull(execThreadName, "execThreadName");
+    Objects.requireNonNull(scheduleThreadName, "scheduleThreadName");
     this.executor = Executors.newFixedThreadPool(execThreads,
-        new DefaultThreadFactory(execThreadName, NORM_PRIORITY + 1));
+        new DefaultThreadFactory(execThreadName, false, Math.min(NORM_PRIORITY + 1, Thread.MAX_PRIORITY)));
     this.delayQueue = new DelayQueue<>();
-    startScheduleThread(scheduleThreadName);
+    this.scheduleThread = Thread.ofPlatform().name(scheduleThreadName).start(this::scheduleLoop);
   }
 
-  private void startScheduleThread(String scheduleThreadName) {
-    Thread scheduleThread = new Thread(this::execute);
-    scheduleThread.setName(scheduleThreadName);
-    scheduleThread.start();
-  }
-
-  private void execute() {
-    DelayOrderTask<?> delayOrderTask;
-    Runnable task;
-    for (; ; ) {
+  private void scheduleLoop() {
+    while (running) {
       try {
-        delayOrderTask = delayQueue.take();
-        task = delayOrderTask.getTask();
-        if (Objects.nonNull(task)) {
+        DelayOrderTask<?> delayOrderTask = delayQueue.take();
+        Runnable task = delayOrderTask.getTask();
+        if (task != null) {
           executor.execute(task);
         }
       } catch (InterruptedException e) {
-        log.error("Handling delay task exception", e);
+        Thread.currentThread().interrupt();
+        log.debug("Delay schedule thread interrupted, stopping: {}", scheduleThread.getName());
+        break;
+      } catch (Throwable t) {
+        log.error("Unexpected error in delay schedule loop", t);
       }
     }
   }
 
   /**
-   * Add task
+   * Enqueues a delayed task; returns the wrapper for {@link #removeTask(DelayOrderTask)}.
    *
-   * @param time Delay time
-   * @param unit time unit
+   * @param time delay amount
+   * @param unit time unit of {@code time}
    */
-  public void put(Runnable task, long time, TimeUnit unit) {
-    long timeout = TimeUnit.NANOSECONDS.convert(time, unit);
-    DelayOrderTask<?> delayOrder = new DelayOrderTask<>(timeout, task);
+  public DelayOrderTask<?> put(Runnable task, long time, TimeUnit unit) {
+    Objects.requireNonNull(task, "task");
+    Objects.requireNonNull(unit, "unit");
+    long delayNanos = unit.toNanos(time);
+    DelayOrderTask<?> delayOrder = new DelayOrderTask<>(delayNanos, task);
     delayQueue.put(delayOrder);
+    return delayOrder;
   }
 
-  /**
-   * Delete task
-   */
   public boolean removeTask(DelayOrderTask<?> task) {
     return delayQueue.remove(task);
   }
 
+  /**
+   * Stops accepting new delayed work, interrupts the scheduler, and shuts down the executor pool.
+   */
   public void stop() {
+    running = false;
+    scheduleThread.interrupt();
     executor.shutdown();
+    try {
+      if (!executor.awaitTermination(30, TimeUnit.SECONDS)) {
+        executor.shutdownNow();
+      }
+    } catch (InterruptedException e) {
+      executor.shutdownNow();
+      Thread.currentThread().interrupt();
+    }
   }
 }

@@ -5,7 +5,11 @@ import java.nio.file.Path;
 import java.util.Map;
 
 /**
- * Interface to download a file.
+ * Downloads remote or local resources to a path or in-memory bytes.
+ * <p>
+ * Implementations may throw {@link IOException} for I/O failures; other runtime failures use
+ * unchecked exceptions. The {@code throws Exception} signatures are retained for backward
+ * compatibility with existing callers.
  */
 public interface FileDownloader {
 
@@ -21,5 +25,4 @@ public interface FileDownloader {
   byte[] downloadBytes(URL fileUrl) throws Exception;
 
   byte[] downloadBytes(URL fileUrl, Map<String, String> headParams) throws Exception;
-
 }

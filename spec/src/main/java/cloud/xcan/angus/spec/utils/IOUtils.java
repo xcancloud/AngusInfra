@@ -47,10 +47,9 @@ public final class IOUtils {
   }
 
   /**
-   * Create a {@code String} from {@link InputStream} with default {@link Charset}.
-   *
-   * @param inputStream source {@link InputStream}
-   * @return created {@code String}
+   * Create a {@code String} from {@link InputStream} using {@link Charset#defaultCharset()} (platform
+   * dependent). Prefer {@link #toString(InputStream, Charset)} with {@link java.nio.charset.StandardCharsets#UTF_8}
+   * when the encoding is known.
    */
   public static String toString(InputStream inputStream) {
     return toString(inputStream, Charset.defaultCharset());

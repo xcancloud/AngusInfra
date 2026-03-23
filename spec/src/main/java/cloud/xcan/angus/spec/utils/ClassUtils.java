@@ -46,10 +46,10 @@ public final class ClassUtils {
   }
 
   public static List<String> getAllAbstractClassesNames(Class<?> aClass) {
-    return toString(getAllInterfaces(aClass));
+    return toString(getAllAbstractClasses(aClass));
   }
 
-  public static List getAllAbstractClasses(Class aClass) {
+  public static List<Class<?>> getAllAbstractClasses(Class<?> aClass) {
     List<Class<?>> list = new ArrayList<>();
 
     Class<?> superclass = aClass.getSuperclass();

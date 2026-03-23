@@ -2,6 +2,9 @@ package cloud.xcan.angus.spec.unit;
 
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Value;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import lombok.Getter;
 
 /**
@@ -52,6 +55,8 @@ public enum DataUnit implements Value<String> {
    */
   Terabytes("TB");
 
+  private static final Map<String, DataUnit> BY_SUFFIX_LC = initSuffixMap();
+
   private final String suffix;
 
   DataUnit(String suffix) {
@@ -59,8 +64,16 @@ public enum DataUnit implements Value<String> {
     this.suffix = suffix;
   }
 
+  private static Map<String, DataUnit> initSuffixMap() {
+    Map<String, DataUnit> m = new HashMap<>();
+    for (DataUnit u : values()) {
+      m.put(u.suffix.toLowerCase(Locale.ROOT), u);
+    }
+    return Map.copyOf(m);
+  }
+
   /**
-   * Return the {@link DataUnit} matching the specified {@code suffix}.
+   * Return the {@link DataUnit} matching the specified {@code suffix} (case-insensitive).
    *
    * @param suffix one of the standard suffixes
    * @return the {@link DataUnit} matching the specified {@code suffix}
@@ -68,17 +81,16 @@ public enum DataUnit implements Value<String> {
    *                                  constants
    */
   public static DataUnit fromSuffix(String suffix) {
-    for (DataUnit candidate : values()) {
-      if (candidate.suffix.equalsIgnoreCase(suffix)) {
-        return candidate;
-      }
+    Assert.assertNotNull(suffix, "suffix");
+    DataUnit unit = BY_SUFFIX_LC.get(suffix.toLowerCase(Locale.ROOT));
+    if (unit == null) {
+      throw new IllegalArgumentException("Unknown data unit suffix '" + suffix + "'");
     }
-    throw new IllegalArgumentException("Unknown data unit suffix '" + suffix + "'");
+    return unit;
   }
 
   @Override
   public String getValue() {
     return this.name();
   }
-
 }

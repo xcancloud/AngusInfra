@@ -29,10 +29,10 @@ public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils 
   /**
    * Patterns
    */
-  public static DateTimeFormatter DATE_TIME_FMT = DateTimeFormatter
+  public static final DateTimeFormatter DATE_TIME_FMT = DateTimeFormatter
       .ofPattern(DEFAULT_DATE_TIME_FORMAT);
-  public static DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern(DATE_FMT_4);
-  public static DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern(DATE_FMT_10);
+  public static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern(DATE_FMT_4);
+  public static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern(DATE_FMT_10);
 
   public static final Date DEFAULT_DATE = DateUtils.parseByDatePattern("1970-01-01");
 
@@ -121,6 +121,9 @@ public abstract class DateUtils extends org.apache.commons.lang3.time.DateUtils 
    * Format date by 'yyyy-MM-dd HH:mm:ss' pattern
    */
   public static String formatByDateTimePattern(Date date) {
+    if (date == null) {
+      return null;
+    }
     return DateFormatUtils.format(date, DEFAULT_DATE_TIME_FORMAT);
   }
 

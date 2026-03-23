@@ -5,7 +5,6 @@ import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 
 import cloud.xcan.angus.spec.utils.AppDirUtils;
 import cloud.xcan.angus.spec.utils.EnumUtils;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -13,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -28,28 +28,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AppSettingHelper {
 
+  private static final Object SETTING_LOCK = new Object();
   private static volatile Setting setting;
 
-  public static Setting getSetting() {
-    if (setting == null) {
-      setting = new Setting();
+  private static Setting ensureSetting(Supplier<Setting> factory) {
+    Setting s = setting;
+    if (s != null) {
+      return s;
     }
-    return setting;
+    synchronized (SETTING_LOCK) {
+      if (setting == null) {
+        setting = factory.get();
+      }
+      return setting;
+    }
+  }
+
+  public static Setting getSetting() {
+    return ensureSetting(Setting::new);
   }
 
   public static Setting getSetting(String defaultPropertiesFile, Class<?> loadResourceClass) {
-    if (setting == null) {
-      setting = new Setting(defaultPropertiesFile, null, loadResourceClass);
-    }
-    return setting;
+    return ensureSetting(() -> new Setting(defaultPropertiesFile, null, loadResourceClass));
   }
 
   public static Setting getSetting(String defaultPropertiesFile, String customPropertiesFile,
       Class<?> loadResourceClass) {
-    if (setting == null) {
-      setting = new Setting(defaultPropertiesFile, customPropertiesFile, loadResourceClass);
-    }
-    return setting;
+    return ensureSetting(
+        () -> new Setting(defaultPropertiesFile, customPropertiesFile, loadResourceClass));
   }
 
   /**
@@ -58,8 +64,27 @@ public class AppSettingHelper {
    * getAsyncHttpClientConfig() to get the new property values.
    */
   public static void reloadProperties() {
-    if (setting != null) {
-      setting.reload();
+    Setting s = setting;
+    if (s != null) {
+      s.reload();
+    }
+  }
+
+  private record RawKeySetting(String key) implements SystemSetting {
+
+    @Override
+    public String property() {
+      return key;
+    }
+
+    @Override
+    public String environmentVariable() {
+      return key;
+    }
+
+    @Override
+    public String defaultValue() {
+      return null;
     }
   }
 
@@ -100,44 +125,45 @@ public class AppSettingHelper {
 
     private Properties parsePropertiesFile(String file, boolean custom, boolean required) {
       Properties props = new Properties();
-
-      InputStream is = null;
-
-      if (file != null) {
-        String confDir = getConfDir();
-        if (confDir != null) {
-          if (!confDir.endsWith(File.separator)) {
-            confDir += File.separator;
-          }
-          Path path = Paths.get(confDir + file);
-          if (custom && Files.exists(path)) {
-            try {
-              is = Files.newInputStream(path);
-            } catch (IOException e) {
-              log.error("Read {} exception", path.toString(), e);
-            }
-          }
+      if (file == null) {
+        if (required) {
+          throw new IllegalArgumentException("Can't locate setting file (null name)");
         }
-
-        if (is == null) {
-          is = loadResourceClassClass.getResourceAsStream(file);
-
-          if (is == null) {
-            is = loadResourceClassClass.getClassLoader().getResourceAsStream(file);
-          }
-        }
+        return props;
       }
 
-      if (is != null) {
-        try {
+      try (InputStream is = openSettingStream(file, custom)) {
+        if (is != null) {
           props.load(is);
-        } catch (IOException e) {
-          throw new IllegalArgumentException("Can't parse setting file " + file, e);
+          return props;
         }
-      } else if (required) {
+      } catch (IOException e) {
+        throw new IllegalArgumentException("Can't parse setting file " + file, e);
+      }
+
+      if (required) {
         throw new IllegalArgumentException("Can't locate setting file " + file);
       }
       return props;
+    }
+
+    private InputStream openSettingStream(String file, boolean custom) throws IOException {
+      String confDir = getConfDir();
+      if (confDir != null) {
+        Path path = Paths.get(confDir, file);
+        if (custom && Files.isRegularFile(path)) {
+          return Files.newInputStream(path);
+        }
+      }
+
+      InputStream is = loadResourceClassClass.getResourceAsStream(file);
+      if (is == null) {
+        ClassLoader cl = loadResourceClassClass.getClassLoader();
+        if (cl != null) {
+          is = cl.getResourceAsStream(file);
+        }
+      }
+      return is;
     }
 
     public String getConfDir() {
@@ -150,27 +176,57 @@ public class AppSettingHelper {
 
     public int getInt(String key) {
       String value = getString(key);
-      return isEmpty(value) ? 0 : Integer.parseInt(value.trim());
+      if (isEmpty(value)) {
+        return 0;
+      }
+      return Integer.parseInt(value.trim());
     }
 
     public int getInt(String key, int defaultValue) {
       String value = getString(key);
-      return isEmpty(value) ? defaultValue : Integer.parseInt(value.trim());
+      if (isEmpty(value)) {
+        return defaultValue;
+      }
+      try {
+        return Integer.parseInt(value.trim());
+      } catch (NumberFormatException ex) {
+        log.warn("Invalid integer for '{}': '{}', using default {}", key, value, defaultValue);
+        return defaultValue;
+      }
     }
 
     public long getLong(String key) {
       String value = getString(key);
-      return isEmpty(value) ? 0 : Long.parseLong(value.trim());
+      if (isEmpty(value)) {
+        return 0;
+      }
+      return Long.parseLong(value.trim());
     }
 
     public long getLong(String key, long defaultValue) {
       String value = getString(key);
-      return isEmpty(value) ? defaultValue : Long.parseLong(value.trim());
+      if (isEmpty(value)) {
+        return defaultValue;
+      }
+      try {
+        return Long.parseLong(value.trim());
+      } catch (NumberFormatException ex) {
+        log.warn("Invalid long for '{}': '{}', using default {}", key, value, defaultValue);
+        return defaultValue;
+      }
     }
 
     public double getDouble(String key, double defaultValue) {
       String value = getString(key);
-      return isEmpty(value) ? defaultValue : Double.parseDouble(value.trim());
+      if (isEmpty(value)) {
+        return defaultValue;
+      }
+      try {
+        return Double.parseDouble(value.trim());
+      } catch (NumberFormatException ex) {
+        log.warn("Invalid double for '{}': '{}', using default {}", key, value, defaultValue);
+        return defaultValue;
+      }
     }
 
     public boolean getBoolean(String key) {
@@ -200,22 +256,7 @@ public class AppSettingHelper {
      */
     public String getString(String key) {
       return propsCache.computeIfAbsent(key, k -> {
-        String value = SystemSettingUtils.resolveSetting(new SystemSetting() {
-          @Override
-          public String property() {
-            return key;
-          }
-
-          @Override
-          public String environmentVariable() {
-            return key;
-          }
-
-          @Override
-          public String defaultValue() {
-            return null;
-          }
-        }).orElse(null);
+        String value = SystemSettingUtils.resolveSetting(new RawKeySetting(k)).orElse(null);
         if (value == null) {
           value = customProperties.getProperty(k);
         }
@@ -233,11 +274,14 @@ public class AppSettingHelper {
 
     public String[] getStringArray(String key) {
       String s = getString(key);
-      s = s.trim();
-      if (s.isEmpty()) {
+      if (isEmpty(s)) {
         return null;
       }
-      String[] rawArray = s.split(",");
+      String trimmed = s.trim();
+      if (trimmed.isEmpty()) {
+        return null;
+      }
+      String[] rawArray = trimmed.split(",");
       String[] array = new String[rawArray.length];
       for (int i = 0; i < rawArray.length; i++) {
         array[i] = rawArray[i].trim();

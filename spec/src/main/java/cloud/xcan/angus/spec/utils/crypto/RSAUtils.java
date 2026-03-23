@@ -1,7 +1,5 @@
 package cloud.xcan.angus.spec.utils.crypto;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import cloud.xcan.angus.api.pojo.Pair;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
@@ -41,10 +39,17 @@ public final class RSAUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RSAUtils.class);
 
+  private RSAUtils() {
+  }
+
+  /** Default RSA modulus size in bits. */
+  public static final int RSA_KEY_SIZE = 1024;
+
   /**
-   * Key(secret) bits
+   * @deprecated Misspelling; use {@link #RSA_KEY_SIZE}.
    */
-  public static final int RAS_KEY_SIZE = 1024;
+  @Deprecated(since = "3.0.0", forRemoval = false)
+  public static final int RAS_KEY_SIZE = RSA_KEY_SIZE;
 
   /**
    * Encryption Algorithm RSA
@@ -60,16 +65,6 @@ public final class RSAUtils {
    * Signature algorithm
    */
   public static final String SIGNATURE_ALGORITHM = "MD5withRSA";
-
-  /**
-   * RSA maximum decrypted ciphertext size
-   */
-  private static final int MAX_DECRYPT_BLOCK = 128;
-
-  /**
-   * RSA maximum encrypted plaintext size
-   */
-  private static final int MAX_ENCRYPT_BLOCK = 128 - 11;
 
   /**
    * Generate public and private keys
@@ -254,7 +249,7 @@ public final class RSAUtils {
   }
 
   private static int getTmpArrayLength(int l) {
-    int s = MAX_DECRYPT_BLOCK;
+    int s = 256;
     while (s < l) {
       s <<= 1;
     }
@@ -269,10 +264,11 @@ public final class RSAUtils {
    * @return decrypted value
    */
   public static byte[] decryptByPrivateKey(byte[] data, String privateKey) throws Exception {
-    PrivateKey key = decodePrivateKey(privateKey);
+    RSAPrivateKey rsaKey = (RSAPrivateKey) decodePrivateKey(privateKey);
     Cipher cipher = Cipher.getInstance(KEY_ALGORITHM_PADDING);
-    cipher.init(Cipher.DECRYPT_MODE, key);
-    return doFinal(cipher, data, MAX_DECRYPT_BLOCK);
+    cipher.init(Cipher.DECRYPT_MODE, rsaKey);
+    int keyLen = rsaKey.getModulus().bitLength() / 8;
+    return doFinal(cipher, data, keyLen);
   }
 
   /**
@@ -283,10 +279,11 @@ public final class RSAUtils {
    * @return decrypted value
    */
   public static byte[] decryptByPublicKey(byte[] data, String publicKey) throws Exception {
-    PublicKey key = decodePublicKey(publicKey);
+    RSAPublicKey rsaKey = (RSAPublicKey) decodePublicKey(publicKey);
     Cipher cipher = Cipher.getInstance(KEY_ALGORITHM_PADDING);
-    cipher.init(Cipher.DECRYPT_MODE, key);
-    return doFinal(cipher, data, MAX_DECRYPT_BLOCK);
+    cipher.init(Cipher.DECRYPT_MODE, rsaKey);
+    int keyLen = rsaKey.getModulus().bitLength() / 8;
+    return doFinal(cipher, data, keyLen);
   }
 
   /**
@@ -297,10 +294,11 @@ public final class RSAUtils {
    * @return encrypted value
    */
   public static byte[] encryptByPublicKey(byte[] data, String publicKey) throws Exception {
-    PublicKey key = decodePublicKey(publicKey);
+    RSAPublicKey rsaKey = (RSAPublicKey) decodePublicKey(publicKey);
     Cipher cipher = Cipher.getInstance(KEY_ALGORITHM_PADDING);
-    cipher.init(Cipher.ENCRYPT_MODE, key);
-    return doFinal(cipher, data, MAX_ENCRYPT_BLOCK);
+    cipher.init(Cipher.ENCRYPT_MODE, rsaKey);
+    int keyLen = rsaKey.getModulus().bitLength() / 8;
+    return doFinal(cipher, data, keyLen - 11);
   }
 
   /**
@@ -311,51 +309,10 @@ public final class RSAUtils {
    * @return encrypted value
    */
   public static byte[] encryptByPrivateKey(byte[] data, String privateKey) throws Exception {
-    PrivateKey key = decodePrivateKey(privateKey);
+    RSAPrivateKey rsaKey = (RSAPrivateKey) decodePrivateKey(privateKey);
     Cipher cipher = Cipher.getInstance(KEY_ALGORITHM_PADDING);
-    cipher.init(Cipher.ENCRYPT_MODE, key);
-    return doFinal(cipher, data, MAX_ENCRYPT_BLOCK);
-  }
-
-  public static void main(String[] args) throws Exception {
-    int keySize = RAS_KEY_SIZE;
-    if (args.length > 0) {
-      keySize = Integer.parseInt(args[0]);
-    }
-    if (keySize < RAS_KEY_SIZE) {
-      keySize = RAS_KEY_SIZE;
-    }
-    Pair<RSAPublicKey, RSAPrivateKey> pair = RSAUtils.genKeyPair(keySize);
-    RSAPublicKey publicKey = pair.name;
-    RSAPrivateKey privateKey = pair.value;
-
-    byte[] text = "This is a test text.".getBytes(UTF_8);
-    System.out.println("Plain           text:\t" + new String(text, UTF_8));
-
-    System.out.println("Private          key:\t" + RSAUtils.encodeBase64(privateKey));
-    System.out.println("Public           key:\t" + RSAUtils.encodeBase64(publicKey));
-
-    byte[] ciphertext = RSAUtils.encryptByPublicKey(text, publicKey);
-    System.out.println("Encrypted ciphertext:\t" + new String(ciphertext, UTF_8));
-
-    text = RSAUtils.decryptByPrivateKey(ciphertext, privateKey);
-    System.out.println("Decrypted plaintext:\t" + new String(text, UTF_8));
-
-    String modulus = publicKey.getModulus().toString();
-    String public_exponent = publicKey.getPublicExponent().toString();
-    String private_exponent = privateKey.getPrivateExponent().toString();
-    text = "123456789".getBytes(UTF_8);
-    System.out.println("\n\nPlain           text:\t" + new String(text, UTF_8));
-    //Generate public and private keys using modulus and exponent
-    RSAPrivateKey priKey = RSAUtils.getPrivateKey(modulus, private_exponent);
-    RSAPublicKey pubKey = RSAUtils.getPublicKey(modulus, public_exponent);
-    System.out.println("Private          key:\t" + priKey);
-    System.out.println("Public           key:\t" + pubKey);
-
-    ciphertext = RSAUtils.encryptByPublicKey(text, pubKey);
-    System.out.println("Encrypted ciphertext:\t" + new String(ciphertext, UTF_8));
-
-    text = RSAUtils.decryptByPrivateKey(ciphertext, priKey);
-    System.out.println("Decrypted  plaintext:\t" + new String(text, UTF_8));
+    cipher.init(Cipher.ENCRYPT_MODE, rsaKey);
+    int keyLen = rsaKey.getModulus().bitLength() / 8;
+    return doFinal(cipher, data, keyLen - 11);
   }
 }

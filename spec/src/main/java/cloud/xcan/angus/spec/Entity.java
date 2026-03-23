@@ -1,7 +1,7 @@
 package cloud.xcan.angus.spec;
 
 /**
- * An entity, as explained in the DDD sdf.
+ * An entity, as explained in Domain-Driven Design (identity over attribute equality).
  */
 public interface Entity<T> {
 

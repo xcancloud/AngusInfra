@@ -9,13 +9,14 @@ import java.io.File;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Configurations;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 public class PropertiesRepo extends AbstractPropertiesRepo {
 
   private final File file;
   private final PropertiesConfiguration config;
 
-  public PropertiesRepo(String envPath, String envFileName) throws Exception {
+  public PropertiesRepo(String envPath, String envFileName) throws ConfigurationException {
     this.file = new File(getEnvPath(envPath) + envFileName);
     Configurations configs = new Configurations();
     FileBasedConfigurationBuilder.setDefaultEncoding(PropertiesConfiguration.class, UTF_8);
@@ -23,15 +24,16 @@ public class PropertiesRepo extends AbstractPropertiesRepo {
     this.config.setIOFactory(new IOFactory()); // Fix write configuration2 character encoding issue
   }
 
-  public static PropertiesRepo of(String envPath, String envFileName) throws Exception {
+  public static PropertiesRepo of(String envPath, String envFileName)
+      throws ConfigurationException {
     return new PropertiesRepo(envPath, envFileName);
   }
 
-  public static PropertiesRepo ofPrivate(String envPath) throws Exception {
+  public static PropertiesRepo ofPrivate(String envPath) throws ConfigurationException {
     return new PropertiesRepo(envPath, PRIVATE_ENV_NAME);
   }
 
-  public static PropertiesRepo ofPrivateStatics(String envPath) throws Exception {
+  public static PropertiesRepo ofPrivateStatics(String envPath) throws ConfigurationException {
     return new PropertiesRepo(envPath + "meta", PRIVATE_STATIC_ENV_NAME);
   }
 

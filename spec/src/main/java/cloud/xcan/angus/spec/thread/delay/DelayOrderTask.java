@@ -1,39 +1,57 @@
 package cloud.xcan.angus.spec.thread.delay;
 
+import java.util.Objects;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
-public class DelayOrderTask<T extends Runnable> implements Delayed {
+/**
+ * A {@link Delayed} wrapper around a {@link Runnable}. The delay is measured in nanoseconds from
+ * construction: execution is due at {@code System.nanoTime() + delayNanos}.
+ *
+ * @param <T> runnable implementation type
+ */
+public final class DelayOrderTask<T extends Runnable> implements Delayed {
 
-  private final long timeout;
+  private final long fireAtNanos;
   private final T task;
 
-  public DelayOrderTask(long timeout, T task) {
-    this.timeout = System.nanoTime() + timeout;
-    this.task = task;
+  /**
+   * @param delayNanos delay from now until the task is due ({@link TimeUnit#NANOSECONDS})
+   * @param task       non-null runnable to run when due
+   */
+  public DelayOrderTask(long delayNanos, T task) {
+    this.fireAtNanos = System.nanoTime() + delayNanos;
+    this.task = Objects.requireNonNull(task, "task");
   }
 
   @Override
   public int compareTo(Delayed o) {
-    DelayOrderTask other = (DelayOrderTask) o;
-    long diff = timeout - other.timeout;
-    if (diff > 0) {
-      return 1;
-    } else if (diff < 0) {
-      return -1;
-    } else {
-      return 0;
+    if (!(o instanceof DelayOrderTask<?> other)) {
+      throw new ClassCastException(
+          "Expected DelayOrderTask, got " + o.getClass().getName());
     }
+    return Long.compare(this.fireAtNanos, other.fireAtNanos);
   }
 
   @Override
   public long getDelay(TimeUnit unit) {
-    return unit.convert(this.timeout - System.nanoTime(), TimeUnit.NANOSECONDS);
+    return unit.convert(fireAtNanos - System.nanoTime(), TimeUnit.NANOSECONDS);
   }
 
   @Override
   public int hashCode() {
-    return task.hashCode();
+    return Objects.hash(task, fireAtNanos);
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof DelayOrderTask<?> that)) {
+      return false;
+    }
+    return fireAtNanos == that.fireAtNanos && task.equals(that.task);
   }
 
   public T getTask() {

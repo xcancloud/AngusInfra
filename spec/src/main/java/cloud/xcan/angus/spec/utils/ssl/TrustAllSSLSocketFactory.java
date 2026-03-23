@@ -3,6 +3,7 @@ package cloud.xcan.angus.spec.utils.ssl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import javax.net.SocketFactory;
@@ -15,92 +16,117 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 /**
- * This class can be used as a SocketFactory with SSL-connections.<p> Its purpose is to ensure that
- * all certificates - no matter from which CA - are accepted to enable the SSL-connection.<p>
- * <b>This is of course not secure</b>
+ * {@link SSLSocketFactory} that accepts all certificates and hostnames.
+ * <p><b>Not suitable for production</b> — use only for local testing or controlled environments.
+ * <p>Calling {@link #disableSSLVerification()} installs JVM-wide defaults for
+ * {@link HttpsURLConnection} once; constructing this class alone does not change those defaults.
  */
 public class TrustAllSSLSocketFactory extends SSLSocketFactory {
 
+  private static final X509Certificate[] EMPTY_ISSUERS = new X509Certificate[0];
+
+  private static final TrustManager TRUST_ALL = new X509ExtendedTrustManager() {
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+      return EMPTY_ISSUERS;
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType) {
+      // intentionally accept all — testing / perf tooling only
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType) {
+      // intentionally accept all — testing / perf tooling only
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket)
+        throws CertificateException {
+      // NOOP
+    }
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
+        throws CertificateException {
+      // NOOP
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket)
+        throws CertificateException {
+      // NOOP
+    }
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine)
+        throws CertificateException {
+      // NOOP
+    }
+  };
+
+  private static volatile SSLContext sharedContext;
+
   private final SSLSocketFactory factory;
 
-  // Empty arrays are immutable
-  private static final X509Certificate[] EMPTY_X509Certificate = new X509Certificate[0];
-
-  /**
-   * Standard constructor
-   */
   public TrustAllSSLSocketFactory() {
-    SSLContext sslcontext = null;
+    factory = sharedSslContext().getSocketFactory();
+  }
+
+  private static SSLContext sharedSslContext() {
+    SSLContext ctx = sharedContext;
+    if (ctx != null) {
+      return ctx;
+    }
+    synchronized (TrustAllSSLSocketFactory.class) {
+      if (sharedContext == null) {
+        sharedContext = createSslContext();
+      }
+      return sharedContext;
+    }
+  }
+
+  private static SSLContext createSslContext() {
     try {
-      sslcontext = SSLContext.getInstance("TLS"); // $NON-NLS-1$
-      sslcontext.init(null, new TrustManager[]{
-              new X509ExtendedTrustManager() {
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                  return EMPTY_X509Certificate;
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain,
-                    String authType) { // NOSONAR JMeter is a pentest and perf testing tool
-                  // NOOP
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain,
-                    String authType) { // NOSONAR JMeter is a pentest and perf testing tool
-                  // NOOP
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket)
-                    throws CertificateException {
-                  // NOOP
-                }
-
-                @Override
-                public void checkClientTrusted(X509Certificate[] chain, String authType,
-                    SSLEngine engine)
-                    throws CertificateException {
-                  // NOOP
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket)
-                    throws CertificateException {
-                  // NOOP
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] chain, String authType,
-                    SSLEngine engine)
-                    throws CertificateException {
-                  // NOOP
-                }
-              }
-          },
-          new java.security.SecureRandom());
-
-      HttpsURLConnection.setDefaultSSLSocketFactory(sslcontext.getSocketFactory());
-      HostnameVerifier allHostsValid = (hostname, session) -> true;
-      HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+      SSLContext sslcontext = SSLContext.getInstance("TLS"); // $NON-NLS-1$
+      sslcontext.init(null, new TrustManager[]{TRUST_ALL}, new SecureRandom());
+      return sslcontext;
     } catch (Exception e) {
       throw new IllegalStateException("Could not create the SSL context", e);
     }
-    factory = sslcontext.getSocketFactory();
+  }
+
+  private static volatile boolean jvmDefaultsInstalled;
+
+  private static void installJvmHttpsDefaultsOnce() {
+    if (jvmDefaultsInstalled) {
+      return;
+    }
+    synchronized (TrustAllSSLSocketFactory.class) {
+      if (jvmDefaultsInstalled) {
+        return;
+      }
+      SSLContext ctx = sharedSslContext();
+      HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
+      HostnameVerifier allHostsValid = (hostname, session) -> true;
+      HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+      jvmDefaultsInstalled = true;
+    }
   }
 
   /**
-   * Factory method
-   *
-   * @return New TrustAllSSLSocketFactory
+   * Returns a new factory instance (no JVM-wide {@link HttpsURLConnection} side effects).
    */
-  public static synchronized SocketFactory getDefault() {
+  public static SocketFactory getDefault() {
     return new TrustAllSSLSocketFactory();
   }
 
-  public static synchronized void disableSSLVerification() {
-    new TrustAllSSLSocketFactory();
+  /**
+   * Installs trust-all defaults for {@link HttpsURLConnection} at most once for this JVM.
+   */
+  public static void disableSSLVerification() {
+    installJvmHttpsDefaultsOnce();
   }
 
   /**
@@ -118,17 +144,15 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
   @Override
   public Socket createSocket(InetAddress address, int port,
       InetAddress localAddress, int localPort) throws IOException {
-    return factory.createSocket(address, port, localAddress,
-        localPort); // NOSONAR JMeter is a pentest and perf testing tool
+    return factory.createSocket(address, port, localAddress, localPort);
   }
 
   /**
    * {@inheritDoc}
    */
   @Override
-  public Socket createSocket(InetAddress address, int port) throws
-      IOException {
-    return factory.createSocket(address, port); // NOSONAR JMeter is a pentest and perf testing tool
+  public Socket createSocket(InetAddress address, int port) throws IOException {
+    return factory.createSocket(address, port);
   }
 
   /**
@@ -137,8 +161,7 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
   @Override
   public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
       throws IOException {
-    return factory.createSocket(host, port, localHost,
-        localPort); // NOSONAR JMeter is a pentest and perf testing tool
+    return factory.createSocket(host, port, localHost, localPort);
   }
 
   /**
@@ -146,7 +169,7 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
    */
   @Override
   public Socket createSocket(String host, int port) throws IOException {
-    return factory.createSocket(host, port); // NOSONAR JMeter is a pentest and perf testing tool
+    return factory.createSocket(host, port);
   }
 
   /**
@@ -154,7 +177,7 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
    */
   @Override
   public Socket createSocket() throws IOException {
-    return factory.createSocket(); // NOSONAR JMeter is a pentest and perf testing tool
+    return factory.createSocket();
   }
 
   /**
@@ -162,7 +185,7 @@ public class TrustAllSSLSocketFactory extends SSLSocketFactory {
    */
   @Override
   public String[] getDefaultCipherSuites() {
-    return factory.getSupportedCipherSuites();
+    return factory.getDefaultCipherSuites();
   }
 
   /**

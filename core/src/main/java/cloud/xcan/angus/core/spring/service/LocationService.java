@@ -6,6 +6,7 @@ import cloud.xcan.angus.spec.http.HttpSender.Response;
 import cloud.xcan.angus.spec.http.HttpUrlConnectionSender;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.utils.JsonUtils;
+import java.io.IOException;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 
@@ -53,7 +54,7 @@ public class LocationService {
       if (response.isSuccessful()) {
         return JsonUtils.fromJson(body, LocationInfo.class);
       }
-    } catch (Throwable e) {
+    } catch (IOException e) {
       log.warn("获取IP地理位置失败: {}", ipAddress, e);
     }
     return new LocationInfo();

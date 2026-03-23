@@ -38,7 +38,8 @@ public final class DataSize implements Comparable<DataSize>,
   /**
    * The pattern for parsing.
    */
-  private static final Pattern PATTERN = Pattern.compile("(\\d+(\\.\\d+)?)\\s*(\\w+)");
+  private static final Pattern PATTERN =
+      Pattern.compile("^\\s*(\\d+(?:\\.\\d+)?)\\s*(\\w*)\\s*$");
 
   /**
    * Bytes per Kilobyte.
@@ -252,8 +253,8 @@ public final class DataSize implements Comparable<DataSize>,
     try {
       Matcher matcher = PATTERN.matcher(text);
       assertState(matcher.matches(), "Does not match data size pattern");
-      DataUnit unit = determineDataUnit(matcher.group(3), defaultUnit);
       double amount = Double.parseDouble(matcher.group(1));
+      DataUnit unit = determineDataUnit(matcher.group(2), defaultUnit);
       return DataSize.of(amount, unit);
     } catch (Exception ex) {
       throw new IllegalArgumentException("'" + text + "' is not a valid data size", ex);

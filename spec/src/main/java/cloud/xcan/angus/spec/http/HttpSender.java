@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.zip.GZIPOutputStream;
-import lombok.SneakyThrows;
 
 /**
  * A general-purpose interface for controlling how implementations perform HTTP calls for various
@@ -38,7 +38,7 @@ import lombok.SneakyThrows;
  */
 public interface HttpSender {
 
-  Response send(Request request) throws Throwable;
+  Response send(Request request) throws IOException;
 
   default Request.Builder post(String uri) {
     return newRequest(uri).withMethod(HttpMethod.POST);
@@ -124,7 +124,7 @@ public interface HttpSender {
         }
       }
       String requestBody = entity == null || entity.length == 0
-          ? "<no request body>" : new String(entity);
+          ? "<no request body>" : new String(entity, StandardCharsets.UTF_8);
       printed.append("-------------Request Body---------------------\n").append(requestBody);
       return printed.toString();
     }
@@ -177,7 +177,6 @@ public interface HttpSender {
         return this;
       }
 
-      @SneakyThrows
       public final Builder withAuths(List<SimpleHttpAuth> auths0) {
         if (isEmpty(auths0)) {
           return this;
@@ -186,14 +185,12 @@ public interface HttpSender {
           if (auth.getIn().isHeader()) {
             requestHeaders.put(auth.getKeyName(), auth.getValue());
           } else {
-            url = appendParameter(url.toURI(), auth.getKeyName(), auth.getValue())
-                .toURL();
+            url = appendAuthQuery(url, auth);
           }
         }
         return this;
       }
 
-      @SneakyThrows
       public final Builder withAuth(SimpleHttpAuth auth) {
         if (isEmpty(auth)) {
           return this;
@@ -201,9 +198,18 @@ public interface HttpSender {
         if (auth.getIn().isHeader()) {
           requestHeaders.put(auth.getKeyName(), auth.getValue());
         } else {
-          url = appendParameter(url.toURI(), auth.getKeyName(), auth.getValue()).toURL();
+          url = appendAuthQuery(url, auth);
         }
         return this;
+      }
+
+      private static URL appendAuthQuery(URL base, SimpleHttpAuth auth) {
+        try {
+          return appendParameter(base.toURI(), auth.getKeyName(), auth.getValue()).toURL();
+        } catch (MalformedURLException | URISyntaxException e) {
+          throw new IllegalArgumentException(
+              "Invalid URL after appending auth parameter: " + base, e);
+        }
       }
 
       /**
@@ -358,7 +364,7 @@ public interface HttpSender {
         return this;
       }
 
-      public Response send() throws Throwable {
+      public Response send() throws IOException {
         return sender.send(new Request(url, entity, httpMethod, requestHeaders, auths));
       }
     }

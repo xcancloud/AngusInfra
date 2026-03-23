@@ -3,7 +3,7 @@ package cloud.xcan.angus.spec.setting;
 import java.util.Optional;
 
 /**
- * An interface implemented by enums in other packages in order to define the system settings the
+ * An interface implemented by enums in other packages in order to define the system settings they
  * want loaded. An enum is expected to implement this interface, and then have values loaded from
  * the {@link System} using methods like {@link #getStringValue()}.
  */
@@ -81,8 +81,8 @@ public interface SystemSetting {
   default String getStringValueOrThrow() {
     return getStringValue().orElseThrow(() ->
         new IllegalStateException(
-            "Either the environment variable " + environmentVariable() + " or the java"
-                + "property " + property() + " must be set."));
+            "Either the environment variable " + environmentVariable()
+                + " or the Java system property " + property() + " must be set."));
   }
 
   /**
@@ -139,7 +139,7 @@ public interface SystemSetting {
   default Boolean getBooleanValueOrThrow() {
     return getBooleanValue().orElseThrow(() ->
         new IllegalStateException(
-            "Either the environment variable " + environmentVariable() + " or the java"
-                + "property " + property() + " must be set."));
+            "Either the environment variable " + environmentVariable()
+                + " or the Java system property " + property() + " must be set."));
   }
 }

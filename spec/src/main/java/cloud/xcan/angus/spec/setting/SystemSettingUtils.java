@@ -48,9 +48,18 @@ public final class SystemSettingUtils {
    * Attempt to load this setting from the system properties.
    */
   private static Optional<String> resolveProperty(SystemSetting setting) {
-    // CHECKSTYLE:OFF - This is the only place we're allowed to use System.getProperty
-    return Optional.ofNullable(setting.property()).map(System::getProperty);
-    // CHECKSTYLE:ON
+    String key = setting.property();
+    if (key == null) {
+      return Optional.empty();
+    }
+    try {
+      // CHECKSTYLE:OFF - This is the only place we're allowed to use System.getProperty
+      return Optional.ofNullable(System.getProperty(key));
+      // CHECKSTYLE:ON
+    } catch (SecurityException e) {
+      log.debug("Unable to read system property '{}'", key, e);
+      return Optional.empty();
+    }
   }
 
   /**
@@ -64,12 +73,17 @@ public final class SystemSettingUtils {
    * Attempt to load a key from the environment variables.
    */
   public static Optional<String> resolveEnvironmentVariable(String key) {
+    if (key == null) {
+      return Optional.empty();
+    }
     try {
       return Optional.ofNullable(System.getenv(key));
     } catch (SecurityException e) {
       log.debug(
           "Unable to load the environment variable '{}' because the security manager did not allow the SDK"
-              + " to read this system property. This setting will be assumed to be null", key, e);
+              + " to read it. This setting will be assumed to be unset",
+          key,
+          e);
       return Optional.empty();
     }
   }
@@ -98,6 +112,4 @@ public final class SystemSettingUtils {
             setting.property() + "' was defined as '" + value
             + "', but should be 'false' or 'true'");
   }
-
-
 }

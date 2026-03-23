@@ -371,6 +371,7 @@ public class CaffeineCacheUtils {
    */
   public static void clearAll() {
     CACHE_MAP.values().forEach(Cache::invalidateAll);
+    ASYNC_CACHE_MAP.values().forEach(c -> c.synchronous().invalidateAll());
   }
 
   /**
@@ -387,6 +388,10 @@ public class CaffeineCacheUtils {
     Cache<?, ?> cache = CACHE_MAP.remove(cacheName);
     if (cache != null) {
       cache.invalidateAll();
+    }
+    AsyncCache<?, ?> asyncCache = ASYNC_CACHE_MAP.remove(cacheName);
+    if (asyncCache != null) {
+      asyncCache.synchronous().invalidateAll();
     }
   }
 
@@ -405,8 +410,14 @@ public class CaffeineCacheUtils {
    */
   public static <K, V> Map<K, V> getAll(String cacheName, Iterable<K> keys,
       Function<Iterable<? extends K>, Map<K, V>> loadFunction) {
-    LoadingCache<K, V> cache = getLoadingCache(cacheName);
-    return cache.getAll(keys);
+    Cache<Object, Object> existing = CACHE_MAP.get(cacheName);
+    if (existing instanceof LoadingCache) {
+      @SuppressWarnings("unchecked")
+      LoadingCache<K, V> loading = (LoadingCache<K, V>) existing;
+      return loading.getAll(keys);
+    }
+    Cache<K, V> cache = getCache(cacheName);
+    return cache.getAll(keys, missing -> loadFunction.apply(missing));
   }
 
   // ==================== 内部方法 ====================
@@ -419,15 +430,6 @@ public class CaffeineCacheUtils {
       cache = createCache(cacheName);
     }
     return cache;
-  }
-
-  @SuppressWarnings("unchecked")
-  private static <K, V> LoadingCache<K, V> getLoadingCache(String cacheName) {
-    Cache<Object, Object> cache = CACHE_MAP.get(cacheName);
-    if (cache instanceof LoadingCache) {
-      return (LoadingCache<K, V>) cache;
-    }
-    throw new IllegalArgumentException("Cache [" + cacheName + "] is not LoadingCache type");
   }
 
   @SuppressWarnings("unchecked")

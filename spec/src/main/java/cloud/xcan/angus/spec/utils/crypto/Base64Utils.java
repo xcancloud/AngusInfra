@@ -1,24 +1,23 @@
 package cloud.xcan.angus.spec.utils.crypto;
 
-
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.util.Base64;
+import java.util.Objects;
 
-public class Base64Utils {
+/** Base64 helpers (UTF-8 for text round-trips). */
+public final class Base64Utils {
 
-  /**
-   * Decode BASE64 string to binary data
-   */
+  private Base64Utils() {
+  }
+
+  /** Decodes a Base64 string (URL-safe alphabet not supported; use standard Base64 only). */
   public static byte[] decode(String base64) {
-    return Base64.getDecoder().decode(base64.getBytes(UTF_8));
+    Objects.requireNonNull(base64, "base64");
+    return Base64.getDecoder().decode(base64);
   }
 
-  /**
-   * Binary data is encoded as a BASE64 string
-   */
+  /** Encodes binary data as a standard Base64 ASCII string. */
   public static String encode(byte[] bytes) {
-    return new String(Base64.getEncoder().encode(bytes), UTF_8);
+    Objects.requireNonNull(bytes, "bytes");
+    return Base64.getEncoder().encodeToString(bytes);
   }
-
 }

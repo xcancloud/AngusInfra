@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 
 public final class DeflateUtils {
 
-  private static final Logger log = LoggerFactory.getLogger(IOUtils.class);
+  private static final Logger log = LoggerFactory.getLogger(DeflateUtils.class);
 
   public static void close(Closeable closeable) {
     if (closeable != null) {
@@ -43,18 +43,14 @@ public final class DeflateUtils {
   }
 
   public static byte[] compress(byte[] data) {
-
-    ByteArrayOutputStream out = new ByteArrayOutputStream(data.length / 4);
-    DeflaterOutputStream zipOut = new DeflaterOutputStream(out);
-    try {
+    ByteArrayOutputStream out = new ByteArrayOutputStream(
+        Math.max(16, data.length / 4));
+    try (DeflaterOutputStream zipOut = new DeflaterOutputStream(out)) {
       zipOut.write(data);
       zipOut.finish();
-      zipOut.close();
     } catch (IOException e) {
       log.error("compress ex", e);
       return null;
-    } finally {
-      close(zipOut);
     }
     return out.toByteArray();
   }

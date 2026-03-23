@@ -524,11 +524,20 @@ public class Version implements Comparable<Version> {
     return compareTo(other) <= 0;
   }
 
+  /**
+   * @param versions non-null, non-empty list of SemVer strings
+   * @return the greatest version by {@link #compareTo(Version)} (build metadata not compared)
+   * @throws IllegalArgumentException if {@code versions} is null or empty
+   */
   public static String findMaxVersion(List<String> versions) {
+    if (versions == null || versions.isEmpty()) {
+      throw new IllegalArgumentException("versions must be non-null and non-empty");
+    }
     Version maxVersion = Version.valueOf(versions.get(0));
     for (int i = 1; i < versions.size(); i++) {
-      if (Version.valueOf(versions.get(i)).greaterThan(maxVersion)) {
-        maxVersion = Version.valueOf(versions.get(i));
+      Version candidate = Version.valueOf(versions.get(i));
+      if (candidate.greaterThan(maxVersion)) {
+        maxVersion = candidate;
       }
     }
     return maxVersion.toString();

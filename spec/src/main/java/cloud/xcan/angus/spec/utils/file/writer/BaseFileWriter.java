@@ -2,7 +2,10 @@ package cloud.xcan.angus.spec.utils.file.writer;
 
 import java.io.IOException;
 
-public interface BaseFileWriter {
+/**
+ * Line-oriented text output; {@link #close()} should be used in try-with-resources.
+ */
+public interface BaseFileWriter extends AutoCloseable {
 
   void write(String row) throws IOException;
 
@@ -14,6 +17,6 @@ public interface BaseFileWriter {
 
   void flush() throws IOException;
 
+  @Override
   void close() throws IOException;
-
 }

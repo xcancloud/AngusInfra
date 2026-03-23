@@ -2,36 +2,34 @@ package cloud.xcan.angus.spec.utils.file.writer;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class BufferedFileWriter implements BaseFileWriter {
+/**
+ * Thread-safe buffered writer using UTF-8. Honors the {@code append} flag (fixed in this revision:
+ * previously {@link java.io.FileWriter} was constructed without {@code append}).
+ */
+public final class BufferedFileWriter implements BaseFileWriter {
 
-  private File file;
-
-  private boolean append;
-
+  private final File file;
+  private final boolean append;
   private final BufferedWriter writer;
-
   private final ReentrantLock lock = new ReentrantLock();
 
   public BufferedFileWriter(File file, boolean append) throws IOException {
-    this.initFile(file, append);
-    this.writer = new BufferedWriter(new FileWriter(file));
-  }
-
-  private void initFile(File file, boolean append) throws IOException {
-    if (file.exists()) {
-      if (!append) {
-        file.delete();
-        file.createNewFile();
-      }
-    } else {
-      file.createNewFile();
-    }
+    this.file = Objects.requireNonNull(file, "file");
     this.append = append;
-    this.file = file;
+    File parent = file.getParentFile();
+    if (parent != null) {
+      Files.createDirectories(parent.toPath());
+    }
+    this.writer = new BufferedWriter(
+        new OutputStreamWriter(new FileOutputStream(file, append), StandardCharsets.UTF_8));
   }
 
   @Override
@@ -90,8 +88,13 @@ public class BufferedFileWriter implements BaseFileWriter {
 
   @Override
   public void close() throws IOException {
-    flush();
-    writer.close();
+    lock.lock();
+    try {
+      writer.flush();
+      writer.close();
+    } finally {
+      lock.unlock();
+    }
   }
 
   public File getFile() {
@@ -102,6 +105,10 @@ public class BufferedFileWriter implements BaseFileWriter {
     return append;
   }
 
+  /**
+   * Exposes the underlying writer; external writes bypass this class’s lock — use only when no
+   * concurrent calls to other methods occur.
+   */
   public BufferedWriter getWriter() {
     return writer;
   }

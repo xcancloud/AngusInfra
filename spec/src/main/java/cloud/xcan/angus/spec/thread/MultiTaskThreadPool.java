@@ -1,6 +1,7 @@
 package cloud.xcan.angus.spec.thread;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -12,7 +13,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class MultiTaskThreadPool {
+public class MultiTaskThreadPool implements AutoCloseable {
 
   private static final String DEFAULT_THREAD_PREFIX = "MultiTaskThreadPool";
   private static final int DEFAULT_CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors();
@@ -37,11 +38,11 @@ public class MultiTaskThreadPool {
   }
 
   public void execute(Runnable task) {
-    executorService.execute(task);
+    executorService.execute(Objects.requireNonNull(task, "task"));
   }
 
   public <T> Future<T> submit(Callable<T> task) {
-    return executorService.submit(task);
+    return executorService.submit(Objects.requireNonNull(task, "task"));
   }
 
   public <T> List<Future<T>> invokeAll(List<Callable<T>> tasks) throws InterruptedException {
@@ -72,4 +73,12 @@ public class MultiTaskThreadPool {
     return executorService.awaitTermination(timeout, unit);
   }
 
+  /**
+   * Calls {@link ExecutorService#shutdown()}; does not block until idle. Use
+   * {@link #awaitTermination(long, TimeUnit)} if you need to wait for tasks to finish.
+   */
+  @Override
+  public void close() {
+    executorService.shutdown();
+  }
 }

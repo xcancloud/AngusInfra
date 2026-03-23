@@ -30,6 +30,10 @@ public final class EncodingUtils {
       final int length, final String charset) {
     Assert.assertNotNull(data, "Input");
     Assert.assertNotEmpty(charset, "Charset");
+    if (offset < 0 || length < 0 || (long) offset + length > data.length) {
+      throw new IndexOutOfBoundsException(
+          "offset=" + offset + ", length=" + length + ", array.length=" + data.length);
+    }
     try {
       return new String(data, offset, length, charset);
     } catch (final UnsupportedEncodingException e) {

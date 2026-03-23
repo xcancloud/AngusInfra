@@ -40,10 +40,14 @@ public final class EnumUtils {
   }
 
   /**
-   * Null-safe valueOf function
+   * Null-safe {@link Enum#valueOf(Class, String)}: returns {@code null} when {@code name} or
+   * {@code enumType} is {@code null}. Invalid enum names still throw {@link IllegalArgumentException}.
    */
   public static <T extends Enum<T>> T valueOf(Class<T> enumType, String name) {
-    return name == null ? null : Enum.valueOf(enumType, name);
+    if (name == null || enumType == null) {
+      return null;
+    }
+    return Enum.valueOf(enumType, name);
   }
 
   /**

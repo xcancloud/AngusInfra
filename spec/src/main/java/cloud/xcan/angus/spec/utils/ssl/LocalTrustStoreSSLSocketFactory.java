@@ -2,31 +2,47 @@ package cloud.xcan.angus.spec.utils.ssl;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.Objects;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
- * This class implements an SSLSocketFactory which supports a local truststore.
+ * {@link SSLSocketFactory} backed by a local truststore file (for example a custom CA bundle).
  */
 public class LocalTrustStoreSSLSocketFactory extends SSLSocketFactory {
 
   private final SSLSocketFactory factory;
 
+  /**
+   * Loads a JKS truststore from the given file (no keystore password).
+   */
   public LocalTrustStoreSSLSocketFactory(File truststore) {
+    this(Objects.requireNonNull(truststore, "truststore").toPath(), "JKS");
+  }
+
+  /**
+   * Loads a truststore from the given path (no keystore password).
+   *
+   * @param truststore path to the keystore file
+   * @param keyStoreType keystore type, for example {@code "JKS"} or {@code "PKCS12"}
+   */
+  public LocalTrustStoreSSLSocketFactory(Path truststore, String keyStoreType) {
+    Objects.requireNonNull(truststore, "truststore");
+    Objects.requireNonNull(keyStoreType, "keyStoreType");
     SSLContext sslcontext;
     try {
-      KeyStore ks = KeyStore.getInstance("JKS"); // $NON-NLS-1$
-      try (FileInputStream fileStream = new FileInputStream(truststore);
-          InputStream stream = new BufferedInputStream(fileStream)) {
+      KeyStore ks = KeyStore.getInstance(keyStoreType);
+      try (InputStream stream = new BufferedInputStream(Files.newInputStream(truststore))) {
         ks.load(stream, null);
       }
 
@@ -37,7 +53,7 @@ public class LocalTrustStoreSSLSocketFactory extends SSLSocketFactory {
       sslcontext = SSLContext.getInstance("TLS"); // $NON-NLS-1$
       sslcontext.init(null, trustmanagers, new SecureRandom());
     } catch (Exception e) {
-      throw new RuntimeException("Could not create the SSL context", e);
+      throw new IllegalStateException("Could not create the SSL context", e);
     }
     factory = sslcontext.getSocketFactory();
   }
@@ -96,7 +112,7 @@ public class LocalTrustStoreSSLSocketFactory extends SSLSocketFactory {
    */
   @Override
   public String[] getDefaultCipherSuites() {
-    return factory.getSupportedCipherSuites();
+    return factory.getDefaultCipherSuites();
   }
 
   /**

@@ -1,16 +1,16 @@
 package cloud.xcan.angus.spec.thread;
 
+import java.util.Objects;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.NonNull;
 
 /**
- * The default thread factory.
+ * The default thread factory (JDK 21 {@link Thread#ofPlatform()}).
  */
 public class DefaultThreadFactory implements ThreadFactory {
 
   private static final AtomicInteger POOL_NUM = new AtomicInteger(1);
-  private final ThreadGroup group;
   private final AtomicInteger threadNumber = new AtomicInteger(1);
   private final String namePrefix;
   private final boolean daemon;
@@ -29,7 +29,11 @@ public class DefaultThreadFactory implements ThreadFactory {
   }
 
   public DefaultThreadFactory(String prefix, boolean daemon, int priority) {
-    this.group = Thread.currentThread().getThreadGroup();
+    Objects.requireNonNull(prefix, "prefix");
+    if (priority < Thread.MIN_PRIORITY || priority > Thread.MAX_PRIORITY) {
+      throw new IllegalArgumentException(
+          "priority must be in [" + Thread.MIN_PRIORITY + ", " + Thread.MAX_PRIORITY + "]: " + priority);
+    }
     this.namePrefix = prefix + POOL_NUM.getAndIncrement() + "-Thread-";
     this.daemon = daemon;
     this.priority = priority;
@@ -37,9 +41,11 @@ public class DefaultThreadFactory implements ThreadFactory {
 
   @Override
   public Thread newThread(@NonNull Runnable r) {
-    Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
-    t.setDaemon(this.daemon);
-    t.setPriority(this.priority);
-    return t;
+    int n = threadNumber.getAndIncrement();
+    return Thread.ofPlatform()
+        .name(namePrefix, n)
+        .daemon(daemon)
+        .priority(priority)
+        .unstarted(r);
   }
 }

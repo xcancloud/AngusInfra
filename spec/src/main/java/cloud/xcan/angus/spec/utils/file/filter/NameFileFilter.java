@@ -2,22 +2,21 @@ package cloud.xcan.angus.spec.utils.file.filter;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Objects;
 
 /**
- * Filter accepts any file with this name. The case of the filename is ignored.
+ * Accepts files whose {@linkplain File#getName() name} equals the given value (case-insensitive).
  */
-public class NameFileFilter implements FileFilter {
+public final class NameFileFilter implements FileFilter {
 
-  private String name;
+  private final String name;
 
   public NameFileFilter(String name) {
-    this.name = name;
+    this.name = Objects.requireNonNull(name, "name");
   }
 
   @Override
   public boolean accept(File file) {
-    // perform a case insensitive check.
     return file.getName().equalsIgnoreCase(name);
   }
-
 }

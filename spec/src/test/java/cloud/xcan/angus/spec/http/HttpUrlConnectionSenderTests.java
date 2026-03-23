@@ -6,6 +6,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.time.Duration;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,8 @@ class HttpUrlConnectionSenderTests {
   HttpSender httpSender = new HttpUrlConnectionSender();
 
   @Test
-  void customReadTimeoutHonored(@WiremockResolver.Wiremock WireMockServer server) throws Throwable {
+  void customReadTimeoutHonored(@WiremockResolver.Wiremock WireMockServer server)
+      throws IOException {
     this.httpSender = new HttpUrlConnectionSender(Duration.ofSeconds(1), Duration.ofMillis(1));
     server.stubFor(any(urlEqualTo("/endpoint")).willReturn(ok().withFixedDelay(5)));
 

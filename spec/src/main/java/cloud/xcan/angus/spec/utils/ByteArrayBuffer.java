@@ -36,7 +36,7 @@ public final class ByteArrayBuffer implements Serializable {
    * @param b   the bytes to be appended.
    * @param off the index of the first byte to append.
    * @param len the number of bytes to append.
-   * @throws IndexOutOfBoundsException if {@code off} if out of range, {@code len} is negative, or
+   * @throws IndexOutOfBoundsException if {@code off} is out of range, {@code len} is negative, or
    *                                   {@code off} + {@code len} is out of range.
    */
   public void append(final byte[] b, final int off, final int len) {
@@ -84,7 +84,7 @@ public final class ByteArrayBuffer implements Serializable {
    * @param b   the chars to be appended.
    * @param off the index of the first char to append.
    * @param len the number of bytes to append.
-   * @throws IndexOutOfBoundsException if {@code off} if out of range, {@code len} is negative, or
+   * @throws IndexOutOfBoundsException if {@code off} is out of range, {@code len} is negative, or
    *                                   {@code off} + {@code len} is out of range.
    */
   public void append(final char[] b, final int off, final int len) {
@@ -128,7 +128,7 @@ public final class ByteArrayBuffer implements Serializable {
    * @param b   the chars to be appended.
    * @param off the index of the first char to append.
    * @param len the number of bytes to append.
-   * @throws IndexOutOfBoundsException if {@code off} if out of range, {@code len} is negative, or
+   * @throws IndexOutOfBoundsException if {@code off} is out of range, {@code len} is negative, or
    *                                   {@code off} + {@code len} is out of range.
    */
   public void append(final CharArrayBuffer b, final int off, final int len) {

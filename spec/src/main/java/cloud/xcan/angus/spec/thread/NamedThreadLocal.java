@@ -9,7 +9,7 @@ import static cloud.xcan.angus.spec.experimental.Assert.assertHasText;
  * @param <T> the value type
  * @see NamedInheritableThreadLocal
  */
-public class NamedThreadLocal<T> extends ThreadLocal<T> {
+public final class NamedThreadLocal<T> extends ThreadLocal<T> {
 
   private final String name;
 

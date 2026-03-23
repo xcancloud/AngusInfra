@@ -15,12 +15,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
@@ -59,8 +58,7 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
       if (adjustedLocation.toLowerCase().startsWith("http")) {
         return NetworkUtils.urlToString(adjustedLocation, auth);
       } else if (adjustedLocation.toLowerCase().startsWith("jar:")) {
-        final InputStream in = new URI(adjustedLocation).toURL().openStream();
-        return IOUtils.toString(in, encoding);
+        return readJarUriAsString(adjustedLocation, encoding);
       } else {
         adjustedLocation = location.replaceAll("file:", "");
         File localFile = new File(adjustedLocation);
@@ -79,6 +77,12 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
     } catch (Throwable e) {
       throw new IllegalStateException(
           String.format("Unable to read location `%s`", adjustedLocation), e);
+    }
+  }
+
+  private static String readJarUriAsString(String jarUri, String encoding) throws IOException {
+    try (InputStream in = new URI(jarUri).toURL().openStream()) {
+      return IOUtils.toString(in, Charset.forName(encoding));
     }
   }
 
@@ -146,23 +150,29 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   }
 
   public static boolean isDirectoryEmpty(File directory) throws IOException {
-    DirectoryStream<Path> stream = Files.newDirectoryStream(directory.toPath());
-    return !stream.iterator().hasNext();
+    try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory.toPath())) {
+      return !stream.iterator().hasNext();
+    }
   }
 
   public static List<String> readLines(Path path, boolean ignoreComments) throws IOException {
-    File file = path.toFile();
-    if (!file.isFile()) {
+    if (!Files.isRegularFile(path)) {
       return new ArrayList<>();
     }
 
     List<String> lines = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+    try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
       String line;
       while ((line = reader.readLine()) != null) {
-        if (ignoreComments && !line.startsWith("#") && !lines.contains(line)) {
-          lines.add(line);
+        if (ignoreComments) {
+          if (line.startsWith("#")) {
+            continue;
+          }
+          if (lines.contains(line)) {
+            continue;
+          }
         }
+        lines.add(line);
       }
     }
     return lines;
@@ -171,7 +181,7 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   public static List<String> readLines(String filePath, int startLine, int numLines)
       throws IOException {
     List<String> lines = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+    try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
       int currentLine = 0;
       String line;
       while ((line = reader.readLine()) != null && currentLine < startLine + numLines) {
@@ -187,7 +197,7 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   public static List<String> readLines(String filePath, int startPosition)
       throws IOException {
     List<String> lines = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+    try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
       for (int i = 0; i < startPosition; i++) {
         reader.readLine();
       }
@@ -213,17 +223,13 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
 
   public static void clearFile(String filePath) throws IOException {
     if (isExisted(filePath)) {
-      FileWriter fw = new FileWriter(filePath, false);
-      fw.write("");
-      fw.close();
+      Files.writeString(Path.of(filePath), "", StandardCharsets.UTF_8);
     }
   }
 
   public static void clearFile(File filePath) throws IOException {
     if (isExisted(filePath)) {
-      FileWriter fw = new FileWriter(filePath, false);
-      fw.write("");
-      fw.close();
+      Files.writeString(filePath.toPath(), "", StandardCharsets.UTF_8);
     }
   }
 
@@ -281,8 +287,8 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   public static String readFile(URL url) {
     try {
       return readFile(url.openStream());
-    } catch (IOException var2) {
-      throw new RuntimeException(var2);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 

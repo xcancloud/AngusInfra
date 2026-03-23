@@ -6,10 +6,12 @@ import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.distinctByKey;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.duplicateByKey;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cloud.xcan.angus.api.enums.PasswordStrength;
-import cloud.xcan.angus.core.jpa.multitenancy.TenantAuditingEntity;
+import cloud.xcan.angus.spec.experimental.Entity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -17,68 +19,73 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.jupiter.api.Order;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class CoreUtilsTest {
 
-  private static List<TestUser> users;
-  private static List<TestUser2> users21;
-  private static List<TestUser2> users22;
+  private List<TestUser> users;
 
-  @BeforeClass
-  public static void init() {
+  @BeforeEach
+  void setUp() {
     users = new ArrayList<>();
     users.add(new TestUser("a"));
     users.add(new TestUser("b"));
     users.add(new TestUser("b"));
     users.add(new TestUser("c"));
+  }
 
-    users21 = new ArrayList<>();
-    users21.add(new TestUser2(1L, "a"));
-    users21.add(new TestUser2(2L, "a"));
-    users21.add(new TestUser2(3L, "c"));
+  private static List<TestUser2> newUsers21() {
+    List<TestUser2> list = new ArrayList<>();
+    list.add(new TestUser2(1L, "a"));
+    list.add(new TestUser2(2L, "a"));
+    list.add(new TestUser2(3L, "c"));
+    return list;
+  }
 
-    users22 = new ArrayList<>();
-    users22.add(new TestUser2(1L, "a"));
-    users22.add(new TestUser2(2L, "a"));
-    users22.add(new TestUser2(1L, "b"));
+  private static List<TestUser2> newUsers22() {
+    List<TestUser2> list = new ArrayList<>();
+    list.add(new TestUser2(1L, "a"));
+    list.add(new TestUser2(2L, "a"));
+    list.add(new TestUser2(1L, "b"));
+    return list;
   }
 
   @Test
-  @Order(1)
-  public void testRetainAll() {
+  void testRetainAll() {
+    List<TestUser2> users21 = newUsers21();
+    List<TestUser2> users22 = newUsers22();
     assertTrue(CoreUtils.retainAll(users21, users22));
-    assertTrue(users21.size() == 2);
-    assertTrue(users21.get(0).getId() == 1L);
-    assertTrue(users21.get(1).getId() == 2L);
-    assertTrue(users22.size() == 3);
+    assertEquals(2, users21.size());
+    assertEquals(1L, users21.get(0).getId());
+    assertEquals(2L, users21.get(1).getId());
+    assertEquals(3, users22.size());
   }
 
   @Test
-  @Order(2)
-  public void testRemoveAll() {
+  void testRemoveAll() {
+    List<TestUser2> users21 = newUsers21();
+    List<TestUser2> users22 = newUsers22();
+    CoreUtils.retainAll(users21, users22);
     assertTrue(CoreUtils.removeAll(users21, users22));
     assertTrue(users21.isEmpty());
-    assertTrue(users22.size() == 3);
+    assertEquals(3, users22.size());
   }
 
   @Test
-  public void testContains() {
+  void testContains() {
+    List<TestUser2> users21 = newUsers21();
     assertTrue(CoreUtils.contains(users21, new TestUser2(1L, "a")));
-    assertTrue(!CoreUtils.contains(users21, new TestUser2(1L, "d")));
+    assertFalse(CoreUtils.contains(users21, new TestUser2(1L, "d")));
   }
 
   @Test
-  public void testRunAtJar() {
-    Assert.assertFalse(runAtJar());
+  void testRunAtJar() {
+    assertFalse(runAtJar());
   }
 
   @Test
-  public void testDistinctByKey() {
+  void testDistinctByKey() {
     List<TestUser> newUsers = users.stream()
         .filter(distinctByKey(TestUser::getUsername))
         .toList();
@@ -86,7 +93,7 @@ public class CoreUtilsTest {
   }
 
   @Test
-  public void testDuplicateByKey() {
+  void testDuplicateByKey() {
     List<TestUser> newUsers = users.stream()
         .filter(duplicateByKey(TestUser::getUsername))
         .toList();
@@ -95,14 +102,14 @@ public class CoreUtilsTest {
   }
 
   @Test
-  public void testExtractTokenKey() {
+  void testExtractTokenKey() {
     String accessToken = "873973a4-7d0d-49c5-962e-7d33b31434e2";
     String tokenKey = "1ff317629c0b301b7682794e6c1095be";
     assertEquals(tokenKey, extractMD5Key(accessToken));
   }
 
   @Test
-  public void testCalcPassdStrength() {
+  void testCalcPassdStrength() {
     assertEquals(PasswordStrength.WEAK, calcPasswordStrength("123456"));
     assertEquals(PasswordStrength.WEAK, calcPasswordStrength("123abc"));
     assertEquals(PasswordStrength.WEAK, calcPasswordStrength("123456!@#"));
@@ -114,33 +121,13 @@ public class CoreUtilsTest {
     assertEquals(PasswordStrength.STRONG, calcPasswordStrength("123456789Aa#"));
   }
 
-  /**
-   * The version number associated with this {@code UUID}.  The version number describes how this
-   * {@code UUID} was generated.
-   * <p>
-   * The version number has the following meaning:
-   * <ul>
-   * <li>1    Time-based UUID
-   * <li>2    DCE security UUID
-   * <li>3    Name-based UUID
-   * <li>4    Randomly generated UUID
-   * </ul>
-   */
   @Test
-  public void testJavaDefaultUuidStruct() {
+  void testJavaDefaultUuidStruct() {
     UUID uuid = UUID.randomUUID();
-    System.out.println("UUID:" + uuid.toString());
-    System.out.println("Version:" + uuid.version());
-    //System.out.println("Sequence:" + uuid.clockSequence()); // java.lang.UnsupportedOperationException: Not a time-based UUID
-    //System.out.println("Timestamp:" + uuid.timestamp()); // java.lang.UnsupportedOperationException: Not a time-based UUID
-    //System.out.println("Node:" + uuid.node()); // java.lang.UnsupportedOperationException: Not a time-based UUID
-    System.out.println("Variant:" + uuid.variant());
-    System.out.println("leastSigBits:" + uuid.getLeastSignificantBits());
-    System.out.println("mostSigBits:" + uuid.getMostSignificantBits());
-
-    // ce1ae06c-4d54-4abe-9b59-c0ed74f6de84
+    assertNotNull(uuid.toString());
+    assertEquals(4, uuid.version());
+    assertEquals(2, uuid.variant());
   }
-
 
   @Setter
   @Getter
@@ -150,13 +137,23 @@ public class CoreUtilsTest {
     private String username;
   }
 
-  @Setter
-  @Getter
-  @AllArgsConstructor
-  public static class TestUser2 extends TenantAuditingEntity<TestUser2, Long> {
+  public static class TestUser2 implements Entity<TestUser2, Long> {
 
-    private Long id;
-    private String username;
+    private final Long id;
+    private final String username;
+
+    public TestUser2(Long id, String username) {
+      this.id = id;
+      this.username = username;
+    }
+
+    public Long getId() {
+      return id;
+    }
+
+    public String getUsername() {
+      return username;
+    }
 
     @Override
     public boolean sameIdentityAs(TestUser2 other) {

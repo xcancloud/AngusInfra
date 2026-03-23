@@ -625,7 +625,8 @@ public class PrincipalContextUtils {
   }
 
   public static boolean isJob(Principal principal) {
-    return principal.getApiType() == null && DEFAULT_CLIENT_ID.equals(getClientId());
+    return principal.getApiType() == null
+        && DEFAULT_CLIENT_ID.equals(principal.getClientId());
   }
 
   public static boolean isCloudServiceEdition() {

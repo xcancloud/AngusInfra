@@ -148,7 +148,6 @@ public class DeviceInfoExtractorUtils {
   }
 
   public static String getClientIp(HttpServletRequest request) {
-    // 简化的IP获取，实际项目中应使用更完整的IP获取方法
-    return request.getRemoteAddr();
+    return IpAddressUtil.getClientIpAddress(request);
   }
 }

@@ -15,22 +15,41 @@ public class SpringContextHolder implements ApplicationContextAware {
 
   private static ApplicationContext ctx;
 
-  public static Object getBean(String name) {
-    return ctx.getBean(name);
+  private static ApplicationContext requireCtx() {
+    if (ctx == null) {
+      throw new IllegalStateException("ApplicationContext has not been set yet");
+    }
+    return ctx;
   }
 
+  public static Object getBean(String name) {
+    return requireCtx().getBean(name);
+  }
+
+  /**
+   * Returns the bean or {@code null} if missing or if the context is not ready.
+   */
   public static <T> T getBean(Class<T> clazz) {
+    if (ctx == null) {
+      return null;
+    }
     try {
       return ctx.getBean(clazz);
-    } catch (Exception e) {
+    } catch (BeansException e) {
       return null;
     }
   }
 
+  /**
+   * Returns the bean or {@code null} if missing or if the context is not ready.
+   */
   public static <T> T getBean(String name, Class<T> clazz) {
+    if (ctx == null) {
+      return null;
+    }
     try {
       return ctx.getBean(name, clazz);
-    } catch (Exception e) {
+    } catch (BeansException e) {
       return null;
     }
   }
@@ -40,7 +59,7 @@ public class SpringContextHolder implements ApplicationContextAware {
   }
 
   public static <T> T registerBean(Class<T> requiredType, String beanName) {
-    ConfigurableApplicationContext context = (ConfigurableApplicationContext) ctx;
+    ConfigurableApplicationContext context = (ConfigurableApplicationContext) requireCtx();
     DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) context
         .getAutowireCapableBeanFactory();
     BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(requiredType);
@@ -62,15 +81,15 @@ public class SpringContextHolder implements ApplicationContextAware {
   }
 
   private static final String PROFILE_PROD = "prod";
-  private static final String EDITION_CLOUD_SERVICE = "CLOUD_SERVICE";
 
   public static boolean isProd() {
-    String[] profiles = SpringContextHolder.getCtx().getEnvironment().getActiveProfiles();
-    if (profiles.length != 0) {
-      for (String profile : profiles) {
-        if (PROFILE_PROD.equalsIgnoreCase(profile)) {
-          return true;
-        }
+    if (ctx == null) {
+      return false;
+    }
+    String[] profiles = ctx.getEnvironment().getActiveProfiles();
+    for (String profile : profiles) {
+      if (PROFILE_PROD.equalsIgnoreCase(profile)) {
+        return true;
       }
     }
     return false;
@@ -78,7 +97,7 @@ public class SpringContextHolder implements ApplicationContextAware {
 
   public static boolean isCloudService() {
     ApplicationInfo info = SpringContextHolder.getBean(ApplicationInfo.class);
-    return EDITION_CLOUD_SERVICE.equalsIgnoreCase(info.getEditionType());
+    return info != null && info.isCloudServiceEdition();
   }
 
 }

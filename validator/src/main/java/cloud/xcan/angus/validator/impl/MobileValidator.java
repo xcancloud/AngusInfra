@@ -9,10 +9,7 @@ import java.util.regex.Pattern;
 
 public class MobileValidator implements ConstraintValidator<Mobile, String> {
 
-  /**
-   * @see cloud.xcan.angus.core.utils.ValidatorUtil#REGEX_MOBILE
-   * @see cloud.xcan.angus.core.utils.ValidatorUtil#REGEX_MOBILE_ITUTE123
-   */
+  /** Loose international-style digit groups (6–15 digits, optional spaces). */
   public static final String MOBILE_REGEX = "^(?:[0-9] ?){6,14}[0-9]$";
 
   public static final Pattern MOBILE_PATTERN = Pattern.compile(MOBILE_REGEX);

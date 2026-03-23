@@ -17,6 +17,9 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public final class NettySslUtils {
 
+  private NettySslUtils() {
+  }
+
   public static SslContext createSslContext(
       String keyPassword, String keyStoreResource, String keyStoreType, String keyStorePassword,
       String trustStoreResource, String trustStoreType, String trustStorePassword)
@@ -31,6 +34,9 @@ public final class NettySslUtils {
 
   private static KeyManagerFactory getKeyManagerFactory(
       String type, String resource, String keyPassword, String keyStorePassword) {
+    if (isEmpty(resource)) {
+      throw new IllegalArgumentException("keyStoreResource must not be empty");
+    }
     try {
       KeyStore keyStore = loadKeyStore(type, resource, keyStorePassword);
       KeyManagerFactory keyManagerFactory = KeyManagerFactory
@@ -49,6 +55,9 @@ public final class NettySslUtils {
 
   private static TrustManagerFactory getTrustManagerFactory(
       String trustStoreType, String trustStoreResource, String trustStorePassword) {
+    if (isEmpty(trustStoreResource)) {
+      throw new IllegalArgumentException("trustStoreResource must not be empty");
+    }
     try {
       KeyStore store = loadKeyStore(trustStoreType, trustStoreResource, trustStorePassword);
       TrustManagerFactory trustManagerFactory = TrustManagerFactory

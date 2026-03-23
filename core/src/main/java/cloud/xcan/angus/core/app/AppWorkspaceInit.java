@@ -14,37 +14,38 @@ public class AppWorkspaceInit implements ApplicationInit {
   public void init() {
     SpringAppDirUtils appDirUtils = new SpringAppDirUtils();
     String homeDir = appDirUtils.getHomeDir();
-    File dir = new File(homeDir);
+    File home = new File(homeDir);
     try {
-      if (!dir.exists() && !dir.mkdirs()) {
+      if (!home.exists() && !home.mkdirs()) {
         throw new RuntimeException("Failed to create home directory");
       }
       log.info("Find home dir: {}", homeDir);
-      initAppDir(appDirUtils.getTmpDir(homeDir), "Failed to create tmp directory",
+      ensureDirectory(appDirUtils.getTmpDir(homeDir), "Failed to create tmp directory",
           "Init tmp dir: {}", "Find tmp dir: {}");
-      initAppDir(appDirUtils.getWorkDir(homeDir), "Failed to create work directory",
+      ensureDirectory(appDirUtils.getWorkDir(homeDir), "Failed to create work directory",
           "Init work dir: {}", "Find work dir: {}");
-      initAppDir(appDirUtils.getDataDir(homeDir), "Failed to create data directory",
+      ensureDirectory(appDirUtils.getDataDir(homeDir), "Failed to create data directory",
           "Init data dir: {}", "Find data dir: {}");
-      initAppDir(appDirUtils.getLogsDir(homeDir), "Failed to create logs directory",
+      ensureDirectory(appDirUtils.getLogsDir(homeDir), "Failed to create logs directory",
           "Init logs dir: {}", "Find logs dir: {}");
     } catch (Exception e) {
       log.error("Failed to create application workspace directory and exit, cause: {}",
-          e.getMessage());
+          e.getMessage(), e);
       SpringApplication.exit(SpringContextHolder.getCtx(), () -> -1);
       System.exit(-1);
     }
   }
 
-  private void initAppDir(String dir0, String s, String s2, String s3) {
-    File dir = new File(dir0);
+  private void ensureDirectory(String path, String mkdirFailMessage, String logCreatedFormat,
+      String logExistsFormat) {
+    File dir = new File(path);
     if (!dir.exists()) {
       if (!dir.mkdirs()) {
-        throw new RuntimeException(s);
+        throw new RuntimeException(mkdirFailMessage);
       }
-      log.info(s2, dir.getAbsolutePath());
+      log.info(logCreatedFormat, dir.getAbsolutePath());
     } else {
-      log.info(s3, dir.getAbsolutePath());
+      log.info(logExistsFormat, dir.getAbsolutePath());
     }
   }
 

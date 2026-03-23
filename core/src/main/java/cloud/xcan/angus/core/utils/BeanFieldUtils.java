@@ -60,13 +60,14 @@ public class BeanFieldUtils {
       String[] pairs = StringUtils.split(search, "&");
       Objects.requireNonNull(pairs);
       for (String pair : pairs) {
-        if (pair.contains("=")) {
-          String[] kv = pair.split("=");
-          String key = kv[0];
-          Object value = kv[1];
+        int eq = pair.indexOf('=');
+        if (eq > 0 && eq < pair.length() - 1) {
+          String key = pair.substring(0, eq);
+          String value = pair.substring(eq + 1);
           if (nonNull(key)) {
             Field field = ReflectionUtils.findField(clazz, key);
             if (nonNull(field)) {
+              field.setAccessible(true);
               field.set(obj, value);
             }
           }

@@ -4,24 +4,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
+import java.util.TreeMap;
 
-@Slf4j
+/**
+ * Wraps a request with additional headers. Header names are matched case-insensitively, consistent
+ * with {@link HttpServletRequest#getHeader(String)}.
+ */
 public class MutableHttpServletRequest extends HttpServletRequestWrapper {
 
-  private final Map<String, String> customHeaders;
+  private final Map<String, String> customHeaders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
   public MutableHttpServletRequest(HttpServletRequest request) {
     super(request);
-    this.customHeaders = new HashMap<>();
   }
 
   public void putHeader(String name, String value) {
-    this.customHeaders.put(name, value);
+    customHeaders.put(name, value);
   }
 
   @Override
@@ -30,8 +31,7 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
     if (headerValue != null) {
       return headerValue;
     }
-
-    return ((HttpServletRequest) getRequest()).getHeader(name);
+    return super.getHeader(name);
   }
 
   @Override
@@ -40,8 +40,7 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
     if (headerValue != null) {
       return Collections.enumeration(Set.of(headerValue));
     }
-
-    return ((HttpServletRequest) getRequest()).getHeaders(name);
+    return super.getHeaders(name);
   }
 
   @Override
@@ -49,14 +48,11 @@ public class MutableHttpServletRequest extends HttpServletRequestWrapper {
     if (customHeaders.isEmpty()) {
       return super.getHeaderNames();
     }
-
-    Set<String> set = new HashSet<String>(customHeaders.keySet());
-    Enumeration<String> e = ((HttpServletRequest) getRequest()).getHeaderNames();
+    Set<String> names = new HashSet<>(customHeaders.keySet());
+    Enumeration<String> e = super.getHeaderNames();
     while (e.hasMoreElements()) {
-      String n = e.nextElement();
-      set.add(n);
+      names.add(e.nextElement());
     }
-
-    return Collections.enumeration(set);
+    return Collections.enumeration(names);
   }
 }

@@ -51,9 +51,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity.BodyBuilder;
 
 @Slf4j
-public class ServletUtils {
+public final class ServletUtils {
 
-  private ServletUtils() { /* no instance */ }
+  private ServletUtils() {
+  }
 
   public static String getRequestId(HttpServletRequest request) {
     String requestId = request.getHeader(Header.REQUEST_ID);
@@ -63,7 +64,7 @@ public class ServletUtils {
   public static String getAndSetRequestId(MutableHttpServletRequest request) {
     String requestId = request.getHeader(Header.REQUEST_ID);
     if (StringUtils.isBlank(requestId)) {
-      requestId = StringUtils.isBlank(requestId) ? randomUUIDWithoutDelimiter() : requestId;
+      requestId = randomUUIDWithoutDelimiter();
       request.putHeader(Header.REQUEST_ID, requestId);
     }
     return requestId;

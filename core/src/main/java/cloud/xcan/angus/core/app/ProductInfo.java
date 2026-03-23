@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+/**
+ * Product metadata from installation descriptors (e.g. {@code installation/.../product.json}).
+ */
 @Setter
 @Getter
 @Accessors(chain = true)

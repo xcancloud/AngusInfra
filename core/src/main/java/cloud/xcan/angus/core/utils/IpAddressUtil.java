@@ -2,8 +2,20 @@ package cloud.xcan.angus.core.utils;
 
 import cloud.xcan.angus.spec.utils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.regex.Pattern;
 
-public class IpAddressUtil {
+public final class IpAddressUtil {
+
+  private IpAddressUtil() {
+  }
+
+  private static final Pattern IPV4_PATTERN = Pattern.compile(
+      "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}"
+          + "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+
+  /** Full IPv6 form only; compressed forms are not matched. */
+  private static final Pattern IPV6_FULL_PATTERN = Pattern.compile(
+      "^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$");
 
   private static final String[] IP_HEADERS = {
       "X-Forwarded-For",
@@ -40,21 +52,15 @@ public class IpAddressUtil {
   }
 
   /**
-   * 验证IP地址格式
+   * 验证 IP 文本：IPv4、完整形式的 IPv6，或 IPv6 回环 {@code ::1} 的展开写法。
    */
   public static boolean isValidIp(String ip) {
     if (ip == null || ip.isEmpty()) {
       return false;
     }
-
-    // IPv4验证
-    String ipv4Pattern = "^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
-        "(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$";
-
-    // IPv6简化验证
-    String ipv6Pattern = "^([0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$";
-
-    return ip.matches(ipv4Pattern) || ip.matches(ipv6Pattern) || "0:0:0:0:0:0:0:1".equals(ip);
+    return IPV4_PATTERN.matcher(ip).matches()
+        || IPV6_FULL_PATTERN.matcher(ip).matches()
+        || "0:0:0:0:0:0:0:1".equals(ip);
   }
 
   /**
@@ -70,15 +76,20 @@ public class IpAddressUtil {
       return true;
     }
 
-    // 内网地址段
-    return ip.startsWith("192.168.") || ip.startsWith("10.") ||
-        ip.startsWith("172.16.") || ip.startsWith("172.17.") ||
-        ip.startsWith("172.18.") || ip.startsWith("172.19.") ||
-        ip.startsWith("172.20.") || ip.startsWith("172.21.") ||
-        ip.startsWith("172.22.") || ip.startsWith("172.23.") ||
-        ip.startsWith("172.24.") || ip.startsWith("172.25.") ||
-        ip.startsWith("172.26.") || ip.startsWith("172.27.") ||
-        ip.startsWith("172.28.") || ip.startsWith("172.29.") ||
-        ip.startsWith("172.30.") || ip.startsWith("172.31.");
+    if (ip.startsWith("192.168.") || ip.startsWith("10.")) {
+      return true;
+    }
+    if (ip.startsWith("172.")) {
+      int dot = ip.indexOf('.', 4);
+      if (dot > 4) {
+        try {
+          int second = Integer.parseInt(ip.substring(4, dot));
+          return second >= 16 && second <= 31;
+        } catch (NumberFormatException ignored) {
+          return false;
+        }
+      }
+    }
+    return false;
   }
 }

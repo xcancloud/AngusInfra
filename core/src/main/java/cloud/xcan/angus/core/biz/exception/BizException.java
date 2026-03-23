@@ -11,6 +11,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * Framework-local business exception with optional payload ({@link #data}). For HTTP API layers,
+ * prefer factory methods {@link #of(String)} / {@link #of(String, String)} for stable codes and
+ * messages.
+ */
 @Setter
 @Getter
 @ToString
@@ -56,7 +61,7 @@ public class BizException extends AbstractResultMessageException {
   }
 
   public BizException(String code, String message, Object[] args, Object data, Throwable cause) {
-    this(code, message, args, data, null, cause);
+    this(code, message, args, data, ERROR, cause);
   }
 
   public BizException(String code, String message, Object[] args, Object data, ExceptionLevel level,

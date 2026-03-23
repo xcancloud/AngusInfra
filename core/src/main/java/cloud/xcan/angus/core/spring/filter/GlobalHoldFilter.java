@@ -79,9 +79,11 @@ public class GlobalHoldFilter implements Filter {
 
   private static final int OPTION_MAX_AGE = 3 * 24 * 60 * 60;
 
-  public static final Cache<String, LocationInfo> LOCATION_INFO_CACHE
-      = CaffeineCacheUtils.createCache("LOCATION_INFO_CACHE");
-  public static Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
+  public static final Cache<String, LocationInfo> LOCATION_INFO_CACHE =
+      CaffeineCacheUtils.createCache("LOCATION_INFO_CACHE");
+
+  /** Last request time per user id (reference for throttling / auditing). */
+  public static final Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
 
 
   public GlobalHoldFilter(ApplicationInfo applicationInfo, GlobalProperties globalProperties,
@@ -107,7 +109,7 @@ public class GlobalHoldFilter implements Filter {
     setCors(request, path, response);
 
     // Processing option debugging requests for browser
-    if (request.getMethod().equals(HttpMethod.OPTIONS.name())) {
+    if (HttpMethod.OPTIONS.name().equals(request.getMethod())) {
       response.setHeader(HttpResponseHeader.Access_Control_Max_Age.value, valueOf(OPTION_MAX_AGE));
       response.setStatus(HttpStatus.NO_CONTENT.value);
       return;
@@ -133,7 +135,10 @@ public class GlobalHoldFilter implements Filter {
 
       setResponseHeader(response, principal);
 
-      USER_REQUEST_TIME.put(principal.getUserId(), LocalDateTime.now());
+      Long userId = principal.getUserId();
+      if (userId != null) {
+        USER_REQUEST_TIME.put(userId, LocalDateTime.now());
+      }
 
       MDC.put(AuthKey.REQUEST_ID, principal.getRequestId());
 
@@ -152,7 +157,6 @@ public class GlobalHoldFilter implements Filter {
       if (log.isDebugEnabled()) {
         log.debug("Remove MDC requestId : {}", principal.getRequestId());
       }
-      principal = null;
       LocaleContextHolder.resetLocaleContext();
       SdfLocaleHolder.resetLocaleContext();
       if (log.isDebugEnabled()) {
@@ -231,21 +235,24 @@ public class GlobalHoldFilter implements Filter {
   }
 
   private static LocationInfo getLocationInfo(Principal principal, SupportedLanguage language) {
-    // 获取位置信息（可根据IP查询）
-    LocationInfo locationInfo = new LocationInfo();
-    if (LOCATION_INFO_CACHE.get(principal.getRemoteAddress(), k -> null) != null) {
-      locationInfo = LOCATION_INFO_CACHE.get(principal.getRemoteAddress(),
-          k -> getLocationFromApi(principal.getRemoteAddress(), language));
-    } else {
-      locationInfo = getLocationFromApi(principal.getRemoteAddress(), language);
-      LOCATION_INFO_CACHE.put(principal.getRemoteAddress(), locationInfo);
+    String ip = principal.getRemoteAddress();
+    if (isEmpty(ip)) {
+      return new LocationInfo();
     }
-    return locationInfo;
+    return LOCATION_INFO_CACHE.get(ip, k -> getLocationFromApi(k, language));
   }
 
   public Long getOptTenantId(HttpServletRequest req) {
     String optTenantId = req.getHeader(Header.OPT_TENANT_ID);
-    return isEmpty(optTenantId) ? null : Long.valueOf(optTenantId);
+    if (isEmpty(optTenantId)) {
+      return null;
+    }
+    try {
+      return Long.valueOf(optTenantId.trim());
+    } catch (NumberFormatException ex) {
+      log.warn("Invalid {} header: {}", Header.OPT_TENANT_ID, optTenantId);
+      return null;
+    }
   }
 
   private void setResponseHeader(HttpServletResponse response, Principal principal) {
@@ -255,8 +262,9 @@ public class GlobalHoldFilter implements Filter {
   }
 
   private void allowCors(HttpServletRequest request, HttpServletResponse response) {
-    if (request.getHeader(HttpRequestHeader.Origin.getValue()) != null) {
-      response.setHeader(CORS_ORIGIN, request.getHeader(HttpRequestHeader.Origin.getValue()));
+    String requestOrigin = request.getHeader(HttpRequestHeader.Origin.getValue());
+    if (requestOrigin != null) {
+      response.setHeader(CORS_ORIGIN, requestOrigin);
     } else {
       response.setHeader(CORS_ORIGIN, globalProperties.getCors().getOrigin());
     }

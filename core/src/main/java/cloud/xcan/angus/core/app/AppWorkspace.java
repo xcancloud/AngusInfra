@@ -2,9 +2,12 @@ package cloud.xcan.angus.core.app;
 
 import cloud.xcan.angus.core.utils.SpringAppDirUtils;
 
+/**
+ * Spring bean facade over {@link SpringAppDirUtils} for resolved application directory layout.
+ */
 public class AppWorkspace {
 
-  SpringAppDirUtils appDirUtils = new SpringAppDirUtils();
+  private final SpringAppDirUtils appDirUtils = new SpringAppDirUtils();
 
   public String getHomeDir() {
     return appDirUtils.getHomeDir();
@@ -123,7 +126,7 @@ public class AppWorkspace {
   }
 
   public String getBizStaticDir(String bizDir) {
-    return appDirUtils.getStaticDir() + bizDir;
+    return appDirUtils.getBizStaticDir(bizDir);
   }
 
   public String getStaticPluginDir() {

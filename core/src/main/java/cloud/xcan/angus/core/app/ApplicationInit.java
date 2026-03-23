@@ -8,8 +8,11 @@ public interface ApplicationInit extends Comparable<ApplicationInit> {
 
   int getOrder();
 
+  /**
+   * Higher {@link #getOrder()} runs earlier (e.g. {@code 0} before {@code -100}).
+   */
   @Override
   default int compareTo(ApplicationInit o) {
-    return o.getOrder() - this.getOrder();
+    return Integer.compare(o.getOrder(), this.getOrder());
   }
 }

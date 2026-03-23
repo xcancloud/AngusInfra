@@ -14,10 +14,12 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import cloud.xcan.angus.core.app.ProductInfo;
 import java.util.Properties;
 import java.util.ServiceLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.bootstrap.BootstrapConfigFileApplicationListener;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+@Slf4j
 public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   public ConfigurableApplicationAndEnvLoader() {
@@ -31,21 +33,22 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
   @Override
   public void loadOrRewriteFromExternalEnvFiles(ConfigurableEnvironment environment,
       Properties envs) {
+    // NOOP — overrides may merge remote / external properties here
   }
 
   @Override
   public void configureApplication(ConfigurableEnvironment environment,
       SpringApplication application) {
     try {
-      ServiceLoader<ConfigurableApplication> configurableServices
-          = ServiceLoader.load(ConfigurableApplication.class);
-      for (ConfigurableApplication configurableService : configurableServices) {
-        System.out.println(
-            "Configuring application with " + configurableService.getClass().getName());
-        configurableService.doConfigureApplication(environment, envs);
+      ServiceLoader<ConfigurableApplication> loader =
+          ServiceLoader.load(ConfigurableApplication.class);
+      for (ConfigurableApplication service : loader) {
+        log.info("Configuring application with {}", service.getClass().getName());
+        service.doConfigureApplication(environment, envs);
       }
     } catch (Exception e) {
-      System.err.printf("Configure application failure, cause: %s\n", e.getMessage());
+      System.err.printf("Configure application failure, cause: %s%n", e.getMessage());
+      log.error("Configure application failure", e);
       exitApp();
     }
   }
@@ -65,16 +68,15 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
   }
 
   public static String getGMApisUrlPrefix() {
-    // Allow use http override https
     String apiUrlPrefix = EnvHelper.getString(EnvKeys.GM_APIS_URL_PREFIX);
     return isNotBlank(apiUrlPrefix) ? apiUrlPrefix : getGMWebsite();
   }
 
   public static String getGMWebsite() {
-    String website = EnvHelper.getString(EnvKeys.GM_WEBSITE);
-    return isNotBlank(website)
-        ? (website.startsWith("http") ? website : String.format("http://%s", website))
-        : (String.format("http://%s:%s", getInstallGMHost(), getInstallGMPort()));
+    return resolveWebsiteUrl(
+        EnvHelper.getString(EnvKeys.GM_WEBSITE),
+        getInstallGMHost(),
+        getInstallGMPort());
   }
 
   public static String getInstallGMHost() {
@@ -86,16 +88,15 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
   }
 
   public static String getTesterApisUrlPrefix() {
-    // Allow use http override https
     String apiUrlPrefix = EnvHelper.getString(EnvKeys.TESTER_APIS_SERVER_URL);
     return isNotBlank(apiUrlPrefix) ? apiUrlPrefix : getTesterWebsite();
   }
 
   public static String getTesterWebsite() {
-    String website = EnvHelper.getString(EnvKeys.TESTER_WEBSITE);
-    return isNotBlank(website)
-        ? (website.startsWith("http") ? website : String.format("http://%s", website))
-        : (String.format("http://%s:%s", getInstallTesterHost(), getInstallTesterPort()));
+    return resolveWebsiteUrl(
+        EnvHelper.getString(EnvKeys.TESTER_WEBSITE),
+        getInstallTesterHost(),
+        getInstallTesterPort());
   }
 
   public static String getInstallTesterHost() {
@@ -106,4 +107,16 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
     return EnvHelper.getInt(EnvKeys.TESTER_PORT, DEFAULT_TESTER_PORT);
   }
 
+  /**
+   * If {@code website} is set, returns it with an {@code http://} prefix when missing; otherwise
+   * {@code http://{host}:{port}}. A value starting with {@code "http"} (including {@code https})
+   * is left unchanged.
+   */
+  private static String resolveWebsiteUrl(String website, String host, int port) {
+    if (isNotBlank(website)) {
+      String w = website.trim();
+      return w.startsWith("http") ? w : "http://" + w;
+    }
+    return String.format("http://%s:%s", host, port);
+  }
 }

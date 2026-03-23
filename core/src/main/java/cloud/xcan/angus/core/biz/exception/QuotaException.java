@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.ToString;
 
 /**
- * Insufficient resource quota exception.
+ * Raised when an operation exceeds a configured resource quota.
  */
 @Getter
 @ToString
@@ -23,7 +23,7 @@ public class QuotaException extends AbstractResultMessageException {
   private final Object[] args;
 
   public QuotaException() {
-    this(QUOTA_ERROR_CODE, QUOTA_ERROR, null, null);
+    this(QUOTA_ERROR_CODE, QUOTA_ERROR, null, ERROR);
   }
 
   private QuotaException(String code, String message, Object[] args, ExceptionLevel level) {

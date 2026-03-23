@@ -1,5 +1,7 @@
 package cloud.xcan.angus.core.spring.filter;
 
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -31,6 +33,9 @@ public class GlobalProperties {
   }
 
   public boolean isDefault(String uri) {
+    if (isEmpty(uri)) {
+      return false;
+    }
     for (String defaultStartsWithPath : defaultStartsWithPaths) {
       if (uri.startsWith(defaultStartsWithPath)) {
         return true;
@@ -40,11 +45,14 @@ public class GlobalProperties {
   }
 
   public boolean allowedPaths(String uri) {
-    if (!cors.getEnabled()) {
+    if (!Boolean.TRUE.equals(cors.getEnabled())) {
       return false;
     }
     if (cors.startWithPaths == null || cors.startWithPaths.length == 0) {
       return true;
+    }
+    if (isEmpty(uri)) {
+      return false;
     }
     for (String startsWithPath : cors.startWithPaths) {
       if ("/".equals(startsWithPath) || uri.startsWith(startsWithPath)) {

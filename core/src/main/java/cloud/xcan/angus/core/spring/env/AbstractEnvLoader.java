@@ -21,12 +21,14 @@ import cloud.xcan.angus.core.utils.SpringAppDirUtils;
 import cloud.xcan.angus.spec.annotations.Beta;
 import cloud.xcan.angus.spec.utils.ssl.TrustAllSSLSocketFactory;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
@@ -56,9 +58,9 @@ import org.springframework.core.io.ResourceLoader;
  * 3. <strong>Spring Configuration Integration</strong>: - Loaded variables are registered as
  * highest-priority property source - Supports ${variable:default} syntax in application.yml
  * <p>
- * 4. <strong>Extension Mechanism</strong>: - Implement {@link AbstractEnvLoader} interface and
- * register as Spring Bean for custom loading logic - Example use cases: loading additional
- * variables from database/remote config center.
+ * 4. <strong>Extension Mechanism</strong>: - Subclass {@link AbstractEnvLoader} and register as
+ * {@link EnvironmentPostProcessor} for custom loading logic - Example use cases: loading
+ * additional variables from database/remote config center.
  *
  * <h3>Usage Examples:</h3>
  * <pre class="code">
@@ -87,11 +89,12 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
   public static String appName;
   public static String appVersion;
   public static EditionType appEdition;
-  private String[] activeProfiles;
 
   public static ProductInfo productInfo;
 
-  public AbstractEnvLoader() {
+  private String[] activeProfiles;
+
+  protected AbstractEnvLoader() {
     appDir = new SpringAppDirUtils();
     appHomeDir = appDir.getHomeDir();
   }
@@ -99,19 +102,12 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment,
       SpringApplication application) {
-    // Load the application info
     loadApplicationInfo(environment);
-    // Load the main environment file.
     loadCommonEnvFile();
-    // Load other environment files.
     loadAdditionalEnvFiles();
-    // Load or overwrite external env files.
     loadOrRewriteFromExternalEnvFiles(environment, envs);
-    // Register the variable to the Spring Environment.\
     environment.getPropertySources().addFirst(new PropertiesPropertySource("customEnv", envs));
-    // Disable ssl verification for self-signed certificate
     disableSslVerification();
-    // Configure and install application
     configureApplication(environment, application);
   }
 
@@ -123,64 +119,79 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
 
   @Override
   public int getOrder() {
-    // Ensure loading first
     return Ordered.HIGHEST_PRECEDENCE;
   }
 
   private void loadApplicationInfo(ConfigurableEnvironment environment) {
     appName = environment.getProperty(APP_NAME, "");
     appVersion = environment.getProperty(APP_VERSION, "");
-    appEdition = EditionType.valueOf(environment.getProperty(APP_EDITION, COMMUNITY.getValue()));
+    String editionRaw = environment.getProperty(APP_EDITION, COMMUNITY.getValue());
+    try {
+      appEdition = EditionType.valueOf(editionRaw.trim().toUpperCase(Locale.ROOT));
+    } catch (IllegalArgumentException ex) {
+      log.warn("Invalid {}='{}', using {}", APP_EDITION, editionRaw, COMMUNITY);
+      appEdition = COMMUNITY;
+    }
     activeProfiles = environment.getActiveProfiles();
   }
 
   public void loadCommonEnvFile() {
-    String searchDir = new SpringAppDirUtils().getConfDir();
-    Path envPath = Paths.get(searchDir, COMMON_ENV_FILE);
+    Path envPath = Paths.get(appDir.getConfDir(), COMMON_ENV_FILE);
     if (Files.exists(envPath)) {
-      System.out.printf("Loading common env file %s\n", envPath.getFileName().toString());
+      System.out.printf("Loading common env file %s%n", envPath.getFileName());
       loadEnvFile(envPath);
     }
   }
 
   public void loadAdditionalEnvFiles() {
     List<String> filesToLoad = new ArrayList<>();
+    collectNonProfileFilesFromEnvKey(filesToLoad);
+    addEditionOrProfileEnvFile(filesToLoad);
+    loadFirstExistingInConfDir(filesToLoad);
+  }
 
+  private void collectNonProfileFilesFromEnvKey(List<String> filesToLoad) {
     String envFiles = envs.getProperty(ENV_FILES_KEY, "");
-    if (isNotBlank(envFiles)) {
-      List<String> envs = Arrays.stream(envFiles.split(","))
-          .map(String::trim).filter(s -> !s.isEmpty()).toList();
-      for (String env : envs) {
-        boolean isProfile = false;
-        for (String profile : ENV_PROFILES) {
-          if (env.contains(profile)) {
-            isProfile = true;
-            break;
-          }
-        }
-        if (!isProfile) {
-          filesToLoad.add(env);
-        }
+    if (!isNotBlank(envFiles)) {
+      return;
+    }
+    for (String token : splitCsv(envFiles)) {
+      if (!referencesProfileInName(token)) {
+        filesToLoad.add(token);
       }
     }
+  }
 
+  private static List<String> splitCsv(String raw) {
+    return Arrays.stream(raw.split(","))
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .toList();
+  }
+
+  private static boolean referencesProfileInName(String fileName) {
+    return ENV_PROFILES.stream().anyMatch(fileName::contains);
+  }
+
+  private void addEditionOrProfileEnvFile(List<String> filesToLoad) {
     if (appEdition.isPrivatization()) {
       filesToLoad.add(PRIVATE_ENV_NAME);
     } else if (nonNull(activeProfiles)) {
       for (String activeProfile : activeProfiles) {
         if (ENV_PROFILES.contains(activeProfile)) {
-          String profileEnv = format(ENV_NAME_FORMAT, activeProfile);
-          filesToLoad.add(profileEnv);
+          filesToLoad.add(format(ENV_NAME_FORMAT, activeProfile));
           break;
         }
       }
     }
+  }
 
-    String searchDir = new SpringAppDirUtils().getConfDir();
+  private void loadFirstExistingInConfDir(List<String> filesToLoad) {
+    String confDir = appDir.getConfDir();
     for (String file : filesToLoad) {
-      Path filePath = Paths.get(searchDir, file);
+      Path filePath = Paths.get(confDir, file);
       if (Files.exists(filePath)) {
-        System.out.printf("Loading env file %s\n", filePath.getFileName().toString());
+        System.out.printf("Loading env file %s%n", filePath.getFileName());
         loadEnvFile(filePath);
         break;
       }
@@ -188,9 +199,9 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
   }
 
   public void loadEnvFile(Path filePath) {
-    try {
-      Resource resource = resourceLoader.getResource("file:" + filePath);
-      envs.load(resource.getInputStream());
+    Resource resource = resourceLoader.getResource("file:" + filePath);
+    try (InputStream in = resource.getInputStream()) {
+      envs.load(in);
     } catch (IOException e) {
       throw new IllegalStateException("Failed to load env file: " + filePath, e);
     }
@@ -198,10 +209,10 @@ public abstract class AbstractEnvLoader implements EnvironmentPostProcessor, Ord
 
   @Beta
   public void disableSslVerification() {
-    System.out.println("Disabling SSL verification");
     boolean disableSslVerification = EnvHelper.getBoolean(DISABLE_SSL_VERIFICATION,
         DEFAULT_DISABLE_SSL_VERIFICATION);
     if (disableSslVerification) {
+      log.warn("Disabling SSL verification ({}=true)", DISABLE_SSL_VERIFICATION);
       TrustAllSSLSocketFactory.disableSSLVerification();
     }
   }

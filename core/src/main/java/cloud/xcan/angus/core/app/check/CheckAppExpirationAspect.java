@@ -15,7 +15,6 @@ import cloud.xcan.angus.core.biz.exception.BizException;
 import cloud.xcan.angus.spec.experimental.Assert;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -25,9 +24,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Check whether the application is opened and expired when cloud service.
- * <p>
- * Check whether the application license expires when privatizing.
+ * Cloud: ensure the app is registered for the tenant and within the licensed window. Private: ensure
+ * license / expiry rules for the given {@link CheckAppNotExpired#appCode()}.
  *
  * @author XiaoLong Liu
  */
@@ -36,14 +34,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CheckAppExpirationAspect {
 
   @Autowired(required = false)
-  private List<AppAuthRepository> commonAppOpenRepo;
+  private List<AppAuthRepository> appAuthRepositories;
 
-  @Pointcut("@annotation(cloud.xcan.angus.core.app.check.CheckAppNotExpired)"
-  )
-  public void logPointCut() {
+  @Pointcut("@annotation(cloud.xcan.angus.core.app.check.CheckAppNotExpired)")
+  public void checkAppNotExpiredPointcut() {
   }
 
-  @Around("logPointCut()")
+  @Around("checkAppNotExpiredPointcut()")
   public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
     if (!isUserAction()) {
       return joinPoint.proceed();
@@ -54,31 +51,41 @@ public class CheckAppExpirationAspect {
   private Object check(ProceedingJoinPoint joinPoint) throws Throwable {
     CheckAppNotExpired appExpiration = ((MethodSignature) joinPoint.getSignature()).getMethod()
         .getAnnotation(CheckAppNotExpired.class);
-    Assert.assertNotEmpty(commonAppOpenRepo, "AppAuthRepository instance is required");
+    Assert.assertNotEmpty(appAuthRepositories, "AppAuthRepository instance is required");
+
+    AppAuthRepository repository = appAuthRepositories.getFirst();
     AppAuth appAuth = null;
+
     if (isCloudServiceEdition()) {
       Long optTenantId = getOptTenantId();
       if (isValidOptTenantId(optTenantId)) {
-        appAuth = commonAppOpenRepo.getFirst()
-            .findLatestByTenantIdAndAppCode(optTenantId, appExpiration.appCode());
+        appAuth = repository.findLatestByTenantIdAndAppCode(optTenantId, appExpiration.appCode());
         BizAssert.assertNotNull(appAuth, BizException.of(APP_NOT_OPENED_CODE,
             APP_NOT_OPENED_T, new Object[]{appExpiration.appCode()}));
       } else {
         throw new IllegalStateException(
-            "CheckAppExpiration parameter is missing, the tenantId was not read from the  Isn't it a user interface?");
+            "CheckAppNotExpired requires a valid tenant context (optTenantId) on cloud edition");
       }
     } else if (isPrivateEdition()) {
-      appAuth = commonAppOpenRepo.getFirst().findLatestByAppCode(appExpiration.appCode());
+      appAuth = repository.findLatestByAppCode(appExpiration.appCode());
       BizAssert.assertNotNull(appAuth, BizException.of(APP_NOT_OPENED_CODE,
           APP_NOT_OPENED_T, new Object[]{appExpiration.appCode()}));
     }
-    if (Objects.nonNull(appAuth)) {
-      if (appAuth.getExpirationDate().isBefore(LocalDateTime.now())) {
-        throw BizException
-            .of(APP_EXPIRED_CODE, APP_EXPIRED_T, new Object[]{appExpiration.appCode()});
+
+    if (appAuth != null) {
+      LocalDateTime now = LocalDateTime.now();
+      LocalDateTime openDate = appAuth.getOpenDate();
+      if (openDate != null && openDate.isAfter(now)) {
+        throw BizException.of(APP_NOT_OPENED_CODE, APP_NOT_OPENED_T,
+            new Object[]{appExpiration.appCode()});
+      }
+      LocalDateTime expirationDate = appAuth.getExpirationDate();
+      if (expirationDate != null && expirationDate.isBefore(now)) {
+        throw BizException.of(APP_EXPIRED_CODE, APP_EXPIRED_T,
+            new Object[]{appExpiration.appCode()});
       }
     }
+
     return joinPoint.proceed();
   }
-
 }

@@ -30,11 +30,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
+import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -57,25 +57,58 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
   public Class<?> entityClazz;
   public Class<?> idClazz;
 
-  public CommCmd() {
-    ParameterizedType type = (ParameterizedType) this.getClass().getGenericSuperclass();
-    Type[] typeArguments = type.getActualTypeArguments();
-    if (nonNull(typeArguments) && typeArguments.length > 2) {
-      this.entityClazz = (Class<?>) type.getActualTypeArguments()[0];
-      this.idClazz = (Class<?>) type.getActualTypeArguments()[1];
+  protected CommCmd() {
+    ParameterizedType parameterized = resolveCommCmdParameterizedType(getClass());
+    if (parameterized != null) {
+      Type[] typeArguments = parameterized.getActualTypeArguments();
+      if (typeArguments.length >= 2
+          && typeArguments[0] instanceof Class<?>
+          && typeArguments[1] instanceof Class<?>) {
+        this.entityClazz = (Class<?>) typeArguments[0];
+        this.idClazz = (Class<?>) typeArguments[1];
+      }
     }
+  }
+
+  /**
+   * Walks the superclass chain so subclasses of an intermediate base (e.g. {@code X extends
+   * BaseCmd&lt;E, I&gt;} and {@code BaseCmd extends CommCmd&lt;E, I&gt;}) still resolve entity/id
+   * types.
+   */
+  @Nullable
+  private static ParameterizedType resolveCommCmdParameterizedType(Class<?> from) {
+    for (Class<?> c = from; c != null && c != Object.class; c = c.getSuperclass()) {
+      Type g = c.getGenericSuperclass();
+      if (g instanceof ParameterizedType pt && pt.getRawType() == CommCmd.class) {
+        return pt;
+      }
+    }
+    return null;
   }
 
   protected abstract BaseRepository<T, ID> getRepository();
 
+  private static Class<?> firstEntityClass(Collection<?> entities) {
+    return entities.iterator().next().getClass();
+  }
+
   /**
-   * Batch Insert
-   *
-   * @param entities Persistent entities
+   * Ensures {@code keyName} exists on the entity class (and is accessible) for insert APIs that
+   * validate a business key column.
    */
-  public void batchInsert0(Collection<T> entities) {
-    assertNotEmpty(entities, "Batch insert entities is empty");
-    Class<?> entityClass = entities.stream().findFirst().get().getClass();
+  private static void requireBusinessKeyField(Class<?> entityClass, String keyName) {
+    Field key = ReflectionUtils.findField(entityClass, keyName);
+    Assert.assertNotNull(key, "key column is required");
+    key.setAccessible(true);
+  }
+
+  /**
+   * Assigns generated IDs and optional full-text merge column for each entity.
+   *
+   * @param keyLabel if non-null, included in error messages (e.g. business key field name)
+   */
+  private void assignIdsAndSearchMerge(Collection<T> entities, Class<?> entityClass,
+      @Nullable String keyLabel) {
     Field id = CoreUtils.getResourceIdFiled(entityClass, DEFAULT_RESOURCE_ID);
     Assert.assertNotNull(id, "ID column is required");
     id.setAccessible(true);
@@ -85,20 +118,31 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
       extSearchMerge.setAccessible(true);
     }
 
+    String errDetail =
+        keyLabel == null ? "the id not found" : "the id and " + keyLabel + " not found";
+
     for (T entity : entities) {
       try {
         if (Objects.isNull(id.get(entity))) {
-          long idValue = uidGenerator.getUID();
-          id.set(entity, idValue);
+          id.set(entity, uidGenerator.getUID());
         }
         if (nonNull(extSearchMerge)) {
           extSearchMerge.set(entity, String.valueOf(id.get(entity)));
         }
       } catch (Exception e) {
-        throw new IllegalArgumentException(
-            "Please check specifications, the id not found", e.getCause());
+        throw new IllegalArgumentException("Please check specifications, " + errDetail, e);
       }
     }
+  }
+
+  /**
+   * Batch Insert
+   *
+   * @param entities Persistent entities
+   */
+  public void batchInsert0(Collection<T> entities) {
+    assertNotEmpty(entities, "Batch insert entities is empty");
+    assignIdsAndSearchMerge(entities, firstEntityClass(entities), null);
     getRepository().batchInsert(entities);
   }
 
@@ -112,30 +156,7 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    */
   public Collection<T> batchInsert(Collection<T> entities) {
     assertNotEmpty(entities, "Batch insert entities is empty");
-    Class<?> entityClass = entities.stream().findFirst().get().getClass();
-    Field id = CoreUtils.getResourceIdFiled(entityClass, DEFAULT_RESOURCE_ID);
-    Assert.assertNotNull(id, "ID column is required");
-    id.setAccessible(true);
-
-    Field extSearchMerge = CoreUtils.getFiled(entityClass, DEFAULT_TEXT_SEARCH_COLUMN);
-    if (nonNull(extSearchMerge)) {
-      extSearchMerge.setAccessible(true);
-    }
-
-    for (T entity : entities) {
-      try {
-        if (Objects.isNull(id.get(entity))) {
-          long idValue = uidGenerator.getUID();
-          id.set(entity, idValue);
-        }
-        if (nonNull(extSearchMerge)) {
-          extSearchMerge.set(entity, String.valueOf(id.get(entity)));
-        }
-      } catch (Exception e) {
-        throw new IllegalArgumentException(
-            "Please check specifications, the id not found", e.getCause());
-      }
-    }
+    assignIdsAndSearchMerge(entities, firstEntityClass(entities), null);
     getRepository().batchInsert(entities);
     return entities;
   }
@@ -149,34 +170,9 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    */
   public Collection<T> batchInsert(Collection<T> entities, String keyName) {
     assertNotEmpty(entities, "Batch insert entities is empty");
-    Class<?> entityClass = entities.stream().findFirst().get().getClass();
-    Field id = CoreUtils.getResourceIdFiled(entityClass, DEFAULT_RESOURCE_ID);
-    Assert.assertNotNull(id, "ID column is required");
-    id.setAccessible(true);
-
-    Field key = ReflectionUtils.findField(entityClass, keyName);
-    Assert.assertNotNull(key, "key column is required");
-    key.setAccessible(true);
-
-    Field extSearchMerge = CoreUtils.getFiled(entityClass, DEFAULT_TEXT_SEARCH_COLUMN);
-    if (nonNull(extSearchMerge)) {
-      extSearchMerge.setAccessible(true);
-    }
-
-    for (T entity : entities) {
-      try {
-        if (Objects.isNull(id.get(entity))) {
-          long idValue = uidGenerator.getUID();
-          id.set(entity, idValue);
-        }
-        if (nonNull(extSearchMerge)) {
-          extSearchMerge.set(entity, String.valueOf(id.get(entity)));
-        }
-      } catch (Exception e) {
-        throw new IllegalArgumentException(
-            "Please check specifications, the id and " + keyName + " not found", e.getCause());
-      }
-    }
+    Class<?> entityClass = firstEntityClass(entities);
+    requireBusinessKeyField(entityClass, keyName);
+    assignIdsAndSearchMerge(entities, entityClass, keyName);
     getRepository().batchInsert(entities);
     return entities;
   }
@@ -190,32 +186,8 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    */
   public T insert(T entity, String keyName) {
     assertNotNull(entity, "Insert entity is empty");
-    Field id = CoreUtils.getResourceIdFiled(entity.getClass(), DEFAULT_RESOURCE_ID);
-    Assert.assertNotNull(id, "ID column is required");
-    id.setAccessible(true);
-
-    Field key = ReflectionUtils.findField(entity.getClass(), keyName);
-    Assert.assertNotNull(key, "key column is required");
-    key.setAccessible(true);
-
-    Field extSearchMerge = CoreUtils.getFiled(entity.getClass(), DEFAULT_TEXT_SEARCH_COLUMN);
-    if (nonNull(extSearchMerge)) {
-      extSearchMerge.setAccessible(true);
-    }
-
-    try {
-      if (Objects.isNull(id.get(entity))) {
-        long idValue = uidGenerator.getUID();
-        id.set(entity, idValue);
-      }
-      if (nonNull(extSearchMerge)) {
-        extSearchMerge.set(entity, String.valueOf(id.get(entity)));
-      }
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("Please check specifications, the setId not found");
-    }
-
-    // Fix:: getRepository().save(entity); -> Will trigger a query statement!!
+    requireBusinessKeyField(entity.getClass(), keyName);
+    assignIdsAndSearchMerge(Collections.singleton(entity), entity.getClass(), keyName);
     getRepository().batchInsert(Collections.singleton(entity));
     return entity;
   }
@@ -227,28 +199,7 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    */
   public void insert0(T entity) {
     assertNotNull(entity, "Insert entity is empty");
-    Field id = CoreUtils.getResourceIdFiled(entity.getClass(), DEFAULT_RESOURCE_ID);
-    Assert.assertNotNull(id, "ID column is required");
-    id.setAccessible(true);
-
-    Field extSearchMerge = CoreUtils.getFiled(entity.getClass(), DEFAULT_TEXT_SEARCH_COLUMN);
-    if (nonNull(extSearchMerge)) {
-      extSearchMerge.setAccessible(true);
-    }
-
-    try {
-      if (Objects.isNull(id.get(entity))) {
-        long idValue = uidGenerator.getUID();
-        id.set(entity, idValue);
-      }
-      if (nonNull(extSearchMerge)) {
-        extSearchMerge.set(entity, String.valueOf(id.get(entity)));
-      }
-    } catch (IllegalAccessException e) {
-      throw new IllegalArgumentException("Please check specifications, the setId not found");
-    }
-
-    // Fix:: getRepository().save(entity); -> Will trigger a query statement!!
+    assignIdsAndSearchMerge(Collections.singleton(entity), entity.getClass(), null);
     getRepository().batchInsert(Collections.singleton(entity));
   }
 
@@ -261,27 +212,8 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
   public T insert(T entity) {
     assertNotNull(entity, "Insert entity is empty");
     if (Objects.isNull(entity.identity())) {
-      Field id = CoreUtils.getResourceIdFiled(entity.getClass(), DEFAULT_RESOURCE_ID);
-      Assert.assertNotNull(id, "ID column is required");
-      id.setAccessible(true);
-
-      Field extSearchMerge = CoreUtils.getFiled(entity.getClass(), DEFAULT_TEXT_SEARCH_COLUMN);
-      if (nonNull(extSearchMerge)) {
-        extSearchMerge.setAccessible(true);
-      }
-      try {
-        if (Objects.isNull(id.get(entity))) {
-          long idValue = uidGenerator.getUID();
-          id.set(entity, idValue);
-        }
-        if (nonNull(extSearchMerge)) {
-          extSearchMerge.set(entity, String.valueOf(id.get(entity)));
-        }
-      } catch (IllegalAccessException e) {
-        throw new IllegalArgumentException("Please check specifications, the setId not found");
-      }
+      assignIdsAndSearchMerge(Collections.singleton(entity), entity.getClass(), null);
     }
-    // Fix:: getRepository().save(entity); -> Will trigger a query statement!!
     getRepository().batchInsert(Collections.singleton(entity));
     return entity;
   }
@@ -309,8 +241,7 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    */
   public List<T> batchUpdateOrNotFound0(Collection<T> entities) {
     assertNotEmpty(entities, "Batch update entities is empty");
-    List<ID> ids = entities.stream().map(entity -> (ID) entity.identity())
-        .collect(Collectors.toList());
+    List<ID> ids = entities.stream().map(entity -> (ID) entity.identity()).toList();
     List<T> dbEntities = getRepository().findAllById(ids);
     checkNotFound(entities, ids, dbEntities);
     getRepository().batchUpdate(
@@ -367,30 +298,29 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    * Warn:: Json type fields are not supported.
    */
   @SneakyThrows
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public int updateBySelective0(T entity, String idName, List<String> fields) {
     Assert.assertTrue(nonNull(idName) && nonNull(fields),
         "Parameter idName and fields is required");
-    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-    CriteriaUpdate update = cb.createCriteriaUpdate(entity.getClass());
-    Root root = update.from(entity.getClass());
+    CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+    CriteriaUpdate criteriaUpdate = criteriaBuilder.createCriteriaUpdate(entity.getClass());
+    Root root = criteriaUpdate.from(entity.getClass());
     for (String field : fields) {
       Field f = FieldUtils.getField(entity.getClass(), field, true);
-      update.set(root.get(field), f.get(entity));
+      criteriaUpdate.set(root.get(field), f.get(entity));
     }
-    update.where(cb.equal(root.get(idName),
+    criteriaUpdate.where(criteriaBuilder.equal(root.get(idName),
         FieldUtils.getField(entity.getClass(), idName, true).get(entity)));
-    return entityManager.createQuery(update).executeUpdate();
+    return entityManager.createQuery(criteriaUpdate).executeUpdate();
   }
 
   private void checkNotFound(Collection<T> entities, List<ID> ids, List<T> dbEntities) {
-    Class<?> entityClass = entities.stream().findFirst().get().getClass();
+    Class<?> entityClass = firstEntityClass(entities);
     if (ids.size() != dbEntities.size()) {
-      List<ID> dbIds = dbEntities.stream().map(entity -> (ID) entity.identity())
-          .collect(Collectors.toList());
+      List<ID> dbIds = dbEntities.stream().map(entity -> (ID) entity.identity()).toList();
       assertResourceNotFound(!dbIds.isEmpty(), StringUtils.join(ids, ","),
           entityClass.getSimpleName());
-      List<ID> notFoundIds = ids.stream().filter(x -> !dbIds.contains(x))
-          .collect(Collectors.toList());
+      List<ID> notFoundIds = ids.stream().filter(x -> !dbIds.contains(x)).toList();
       assertResourceNotFound(!notFoundIds.isEmpty(),
           StringUtils.join(notFoundIds, ","), entityClass.getSimpleName());
     }
@@ -403,27 +333,8 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
    */
   public void batchReplaceOrInsert(Collection<T> entities) {
     assertNotEmpty(entities, "Batch replace or insert entities is empty");
-    Class entityClass = entities.stream().findFirst().get().getClass();
-    Field id = CoreUtils.getResourceIdFiled(entityClass, DEFAULT_RESOURCE_ID);
-    Assert.assertNotNull(id, "ID column is required");
-    id.setAccessible(true);
-
-    Field extSearchMerge = CoreUtils.getFiled(entityClass, DEFAULT_TEXT_SEARCH_COLUMN);
-    if (nonNull(extSearchMerge)) {
-      extSearchMerge.setAccessible(true);
-    }
-    getRepository().batchUpdate(entities.stream().peek(entity -> {
-      try {
-        if (Objects.isNull(id.get(entity))) {
-          long idValue = uidGenerator.getUID();
-          id.set(entity, idValue);
-        }
-        if (nonNull(extSearchMerge)) {
-          extSearchMerge.set(entity, String.valueOf(id.get(entity)));
-        }
-      } catch (IllegalAccessException e) {
-        throw new IllegalArgumentException("Please check specifications, the setId not found");
-      }
-    }).collect(Collectors.toList()));
+    List<T> list = new ArrayList<>(entities);
+    assignIdsAndSearchMerge(list, firstEntityClass(list), null);
+    getRepository().batchUpdate(list);
   }
 }

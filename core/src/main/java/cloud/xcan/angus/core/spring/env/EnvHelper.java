@@ -7,26 +7,43 @@ import cloud.xcan.angus.spec.setting.SystemSetting;
 import cloud.xcan.angus.spec.setting.SystemSettingUtils;
 import cloud.xcan.angus.spec.utils.EnumUtils;
 
-public class EnvHelper {
+public final class EnvHelper {
+
+  private EnvHelper() {
+  }
+
+  private record KeySetting(String key) implements SystemSetting {
+
+    @Override
+    public String property() {
+      return key;
+    }
+
+    @Override
+    public String environmentVariable() {
+      return key;
+    }
+
+    @Override
+    public String defaultValue() {
+      return null;
+    }
+  }
 
   public static int getInt(String key) {
-    String value = getString(key);
-    return isBlank(value) ? 0 : Integer.parseInt(value.trim());
+    return parseInt(getString(key), 0);
   }
 
   public static int getInt(String key, int defaultValue) {
-    String value = getString(key);
-    return isBlank(value) ? defaultValue : Integer.parseInt(value.trim());
+    return parseInt(getString(key), defaultValue);
   }
 
   public static long getLong(String key) {
-    String value = getString(key);
-    return isBlank(value) ? 0 : Long.parseLong(value.trim());
+    return parseLong(getString(key), 0L);
   }
 
   public static long getLong(String key, long defaultValue) {
-    String value = getString(key);
-    return isBlank(value) ? defaultValue : Long.parseLong(value.trim());
+    return parseLong(getString(key), defaultValue);
   }
 
   public static boolean getBoolean(String key) {
@@ -41,7 +58,15 @@ public class EnvHelper {
 
   public static <T extends Enum<T>> T getEnum(String key, Class<T> enumClz, T defaultValue) {
     String value = getString(key);
-    return isBlank(value) ? defaultValue : EnumUtils.valueOf(enumClz, value.trim());
+    if (isBlank(value)) {
+      return defaultValue;
+    }
+    try {
+      T parsed = EnumUtils.valueOf(enumClz, value.trim());
+      return parsed != null ? parsed : defaultValue;
+    } catch (IllegalArgumentException ex) {
+      return defaultValue;
+    }
   }
 
   public static String getString(String key, String defaultValue) {
@@ -50,35 +75,36 @@ public class EnvHelper {
   }
 
   /**
-   * Resolve the value of this system setting, loading it from the System by checking:
-   * <ol>
-   *     <li>The system properties.</li>
-   *     <li>The environment variables.</li>
-   *     <li>The app env properties.</li>
-   *     <li>The default value.</li>
-   * </ol>
+   * Resolves a setting in order: JVM system property, OS environment variable, then values loaded
+   * from env files ({@link AbstractEnvLoader#envs}).
    */
   public static String getString(String key) {
-    String value = SystemSettingUtils.resolveSetting(new SystemSetting() {
-      @Override
-      public String property() {
-        return key;
-      }
-
-      @Override
-      public String environmentVariable() {
-        return key;
-      }
-
-      @Override
-      public String defaultValue() {
-        return null;
-      }
-    }).orElse(null);
-
+    String value = SystemSettingUtils.resolveSetting(new KeySetting(key)).orElse(null);
     if (isBlank(value)) {
       value = envs.getProperty(key);
     }
     return value;
+  }
+
+  private static int parseInt(String raw, int defaultValue) {
+    if (isBlank(raw)) {
+      return defaultValue;
+    }
+    try {
+      return Integer.parseInt(raw.trim());
+    } catch (NumberFormatException ex) {
+      return defaultValue;
+    }
+  }
+
+  private static long parseLong(String raw, long defaultValue) {
+    if (isBlank(raw)) {
+      return defaultValue;
+    }
+    try {
+      return Long.parseLong(raw.trim());
+    } catch (NumberFormatException ex) {
+      return defaultValue;
+    }
   }
 }

@@ -1,5 +1,9 @@
 package cloud.xcan.angus.core.spring.env;
 
+/**
+ * Central definitions for environment variable keys and related Spring property names used across
+ * Angus installation and runtime configuration.
+ */
 public interface EnvKeys {
 
   /* SpringBoot */
@@ -77,7 +81,7 @@ public interface EnvKeys {
   String VITE_GM_URL_PREFIX = "VITE_GM_URL_PREFIX";
   String VITE_TESTER_URL_PREFIX = "VITE_TESTER_URL_PREFIX";
 
-  /* SSL*/
+  /* SSL */
   String DISABLE_SSL_VERIFICATION = "DISABLE_SSL_VERIFICATION";
   boolean DEFAULT_DISABLE_SSL_VERIFICATION = false;
 }

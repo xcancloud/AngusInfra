@@ -2,11 +2,11 @@ package cloud.xcan.angus.core.spring.security;
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getApplicationInfo;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpMultiTenant;
 import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.utils.PrincipalContextUtils;
+import java.util.Objects;
 
 /**
  * `@PreAuthorize` will depend on a secure context:
@@ -17,39 +17,32 @@ import cloud.xcan.angus.core.utils.PrincipalContextUtils;
  */
 public class PrincipalPermissionService {
 
-  private boolean isPlatformSysAdmin(String platformCode) {
-    return PrincipalContextUtils.isPlatformSysAdmin(platformCode);
-  }
-
-  private boolean isTenantSysAdmin() {
-    return PrincipalContextUtils.isTenantSysAdmin();
-  }
-
-  private boolean isOpSysAdmin() {
-    return PrincipalContextUtils.isOpSysAdmin();
-  }
-
   public boolean hasAuthority(String authority) {
-    return isTenantSysAdmin() || PrincipalContextUtils.hasAuthority(authority);
+    return PrincipalContextUtils.isTenantSysAdmin()
+        || PrincipalContextUtils.hasAuthority(authority);
   }
 
   public boolean hasAnyAuthority(String... authorities) {
-    return isTenantSysAdmin() || PrincipalContextUtils.hasAnyAuthority(authorities);
+    return PrincipalContextUtils.isTenantSysAdmin()
+        || PrincipalContextUtils.hasAnyAuthority(authorities);
   }
 
   public boolean hasPolicy(String policy) {
-    return isTenantSysAdmin() || PrincipalContextUtils.hasAuthority(policy);
+    return PrincipalContextUtils.isTenantSysAdmin()
+        || PrincipalContextUtils.hasPolicy(policy);
   }
 
   public boolean hasAnyPolicy(String... policies) {
-    return isTenantSysAdmin() || PrincipalContextUtils.hasAnyPolicy(policies);
+    return PrincipalContextUtils.isTenantSysAdmin()
+        || PrincipalContextUtils.hasAnyPolicy(policies);
   }
 
   /**
    * The system administrator has all permissions including TOP.
    */
   public boolean hasToPolicy(String policy) {
-    return !isOpMultiTenant() || isOpClient() || isOpSysAdmin()
+    return !PrincipalContextUtils.isOpMultiTenant() || isOpClient()
+        || PrincipalContextUtils.isOpSysAdmin()
         || PrincipalContextUtils.hasToRole(policy);
   }
 
@@ -57,7 +50,8 @@ public class PrincipalPermissionService {
    * The system administrator has all permissions including TOP.
    */
   public boolean hasAnyToPolicy(String... policies) {
-    return !isOpMultiTenant() || isOpClient() || isOpSysAdmin()
+    return !PrincipalContextUtils.isOpMultiTenant() || isOpClient()
+        || PrincipalContextUtils.isOpSysAdmin()
         || PrincipalContextUtils.hasAnyToRole(policies);
   }
 
@@ -77,8 +71,10 @@ public class PrincipalPermissionService {
    * Not multi-tenant operation, ensuring cloud service security. Only us.
    */
   public boolean isCloudTenantSecurity() {
-    return getApplicationInfo().isPrivateEdition() ||
-        (getApplicationInfo().isCloudServiceEdition() && getOptTenantId().equals(OWNER_TENANT_ID));
+    ApplicationInfo app = getApplicationInfo();
+    return app.isPrivateEdition()
+        || (app.isCloudServiceEdition()
+        && Objects.equals(getOptTenantId(), OWNER_TENANT_ID));
   }
 
   /**
@@ -87,7 +83,7 @@ public class PrincipalPermissionService {
    */
   public boolean checkCloudTenantOperationSecurity(Long ownerTenantId) {
     ApplicationInfo app = getApplicationInfo();
-    return app.isPrivateEdition() || (app.isCloudServiceEdition()
-        && getOptTenantId().equals(ownerTenantId));
+    return app.isPrivateEdition()
+        || (app.isCloudServiceEdition() && Objects.equals(getOptTenantId(), ownerTenantId));
   }
 }

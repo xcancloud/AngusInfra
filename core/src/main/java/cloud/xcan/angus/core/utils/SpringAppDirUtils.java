@@ -11,7 +11,7 @@ import org.springframework.boot.system.ApplicationHome;
  * When the home.dir environment variable is not set, the root default path is the current project
  * workspace directory
  */
-public class SpringAppDirUtils extends AppDirUtils {
+public final class SpringAppDirUtils extends AppDirUtils {
 
   @Override
   public String getHomeDir() {

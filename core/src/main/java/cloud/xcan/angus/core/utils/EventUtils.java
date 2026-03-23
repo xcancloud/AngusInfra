@@ -9,24 +9,18 @@ import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.List;
 import java.util.Map;
 
-public class EventUtils {
+public final class EventUtils {
+
+  private EventUtils() {
+  }
 
   public static EventContent assembleExceptionEvent(String type, String code, String message,
       ExceptionLevel level, String eKey, Object cause) {
     Principal principal = PrincipalContext.get();
-    return EventContent.newBuilder()
+    String causeText = cause == null ? null : String.valueOf(cause);
+    return fillPrincipal(EventContent.newBuilder(), principal)
         .type(type).code(code).description(message)
-        .clientId(principal.getClientId())
-        .serviceCode(principal.getServiceCode())
-        .serviceName(principal.getServiceName())
-        .instanceId(principal.getInstanceId())
-        .requestId(principal.getRequestId())
-        .method(principal.getMethod()).uri(principal.getUri())
-        .tenantId(principal.getTenantId())
-        .tenantName(principal.getTenantName())
-        .userId(principal.getUserId())
-        .fullName(principal.getFullName())
-        .eKey(eKey).level(level).cause(cause.toString())
+        .eKey(eKey).level(level).cause(causeText)
         .build();
   }
 
@@ -34,17 +28,9 @@ public class EventUtils {
       String message, String targetType, String targetId, String targetName,
       List<NoticeType> noticeTypes, ReceiveObjectType receiveObjectType,
       List<Long> receiveObjectIds) {
-    Principal principal = PrincipalContext.get();
-    return EventContent.newBuilder()
+    return fillPrincipal(EventContent.newBuilder(), PrincipalContext.get())
         .type(type).code(code).description(message)
-        .clientId(principal.getClientId()).appCode(appCode)
-        .serviceCode(principal.getServiceCode())
-        .serviceName(principal.getServiceName())
-        .instanceId(principal.getInstanceId())
-        .requestId(principal.getRequestId()).method(principal.getMethod()).uri(principal.getUri())
-        .tenantId(principal.getTenantId()).tenantName(principal.getTenantName())
-        .userId(principal.getUserId()).fullName(principal.getFullName())
-        //.eKey(eKey).level(level).cause(cause.toString())
+        .appCode(appCode)
         .targetId(targetId).targetName(targetName).targetType(targetType)
         .noticeTypes(noticeTypes).receiveObjectType(receiveObjectType)
         .receiveObjectIds(receiveObjectIds)
@@ -55,17 +41,9 @@ public class EventUtils {
       String message, String targetType, String targetId, String targetName,
       List<NoticeType> noticeTypes, ReceiveObjectType receiveObjectType,
       List<Long> receiveObjectIds, List<String> topPolicyCode, Map<String, String> templateParams) {
-    Principal principal = PrincipalContext.get();
-    return EventContent.newBuilder()
+    return fillPrincipal(EventContent.newBuilder(), PrincipalContext.get())
         .type(type).code(code).description(message)
-        .clientId(principal.getClientId()).appCode(appCode)
-        .serviceCode(principal.getServiceCode())
-        .serviceName(principal.getServiceName())
-        .instanceId(principal.getInstanceId())
-        .requestId(principal.getRequestId()).method(principal.getMethod()).uri(principal.getUri())
-        .tenantId(principal.getTenantId()).tenantName(principal.getTenantName())
-        .userId(principal.getUserId()).fullName(principal.getFullName())
-        //.eKey(eKey).level(level).cause(cause.toString())
+        .appCode(appCode)
         .targetId(targetId).targetName(targetName).targetType(targetType)
         .noticeTypes(noticeTypes).receiveObjectType(receiveObjectType)
         .receiveObjectIds(receiveObjectIds).topPolicyCode(topPolicyCode)
@@ -77,20 +55,29 @@ public class EventUtils {
       Principal principal, String code, String message, String targetType, String targetId,
       String targetName, List<NoticeType> noticeTypes, ReceiveObjectType receiveObjectType,
       List<Long> receiveObjectIds, List<String> topPolicyCode, Map<String, String> templateParams) {
-    return EventContent.newBuilder()
+    return fillPrincipal(EventContent.newBuilder(), principal)
         .type(type).code(code).description(message)
-        .clientId(principal.getClientId()).appCode(appCode)
-        .serviceCode(principal.getServiceCode())
-        .serviceName(principal.getServiceName())
-        .instanceId(principal.getInstanceId())
-        .requestId(principal.getRequestId()).method(principal.getMethod()).uri(principal.getUri())
-        .tenantId(principal.getTenantId()).tenantName(principal.getTenantName())
-        .userId(principal.getUserId()).fullName(principal.getFullName())
-        //.eKey(eKey).level(level).cause(cause.toString())
+        .appCode(appCode)
         .targetId(targetId).targetName(targetName).targetType(targetType)
         .noticeTypes(noticeTypes).receiveObjectType(receiveObjectType)
         .receiveObjectIds(receiveObjectIds).topPolicyCode(topPolicyCode)
         .templateParams(templateParams)
         .build();
+  }
+
+  private static EventContent.Builder fillPrincipal(EventContent.Builder builder,
+      Principal principal) {
+    return builder
+        .clientId(principal.getClientId())
+        .serviceCode(principal.getServiceCode())
+        .serviceName(principal.getServiceName())
+        .instanceId(principal.getInstanceId())
+        .requestId(principal.getRequestId())
+        .method(principal.getMethod())
+        .uri(principal.getUri())
+        .tenantId(principal.getTenantId())
+        .tenantName(principal.getTenantName())
+        .userId(principal.getUserId())
+        .fullName(principal.getFullName());
   }
 }

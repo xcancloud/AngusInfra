@@ -2,7 +2,6 @@ package cloud.xcan.angus.job.service;
 
 import cloud.xcan.angus.job.executor.JobExecutor;
 import cloud.xcan.angus.job.executor.JobExecutorRegistry;
-import java.util.Collections;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,8 +15,9 @@ import org.springframework.stereotype.Component;
  * external callers cannot reference arbitrary ApplicationContext beans by fabricating a name
  * (CWE-470 mitigation).
  *
- * <p>The map is wrapped in an unmodifiable view so that post-construction
- * modifications are impossible.
+ * <p>The map is copied and wrapped so callers cannot widen the registry by mutating the
+ * {@code Map} instance passed into the constructor (an unmodifiable view alone would still reflect
+ * changes to a mutable backing map).
  */
 @Slf4j
 @Component
@@ -26,9 +26,9 @@ public class DefaultJobExecutorRegistry implements JobExecutorRegistry {
   private final Map<String, JobExecutor> executors;
 
   public DefaultJobExecutorRegistry(Map<String, JobExecutor> executors) {
-    this.executors = Collections.unmodifiableMap(executors);
+    this.executors = Map.copyOf(executors);
     log.info("JobExecutorRegistry initialised with {} executor(s): {}",
-        executors.size(), executors.keySet());
+        this.executors.size(), this.executors.keySet());
   }
 
   /**

@@ -127,8 +127,10 @@ public class JobSchedulerService {
 
       // Update next execution time using Spring's CronExpression (no Quartz needed).
       updateNextExecuteTime(job);
-      job.setStatus(JobStatus.READY);
-      job.setRetryCount(0);
+      if (job.getStatus() != JobStatus.FAILED) {
+        job.setStatus(JobStatus.READY);
+        job.setRetryCount(0);
+      }
 
     } catch (Exception e) {
       log.error("Job execution failed: {}", job.getJobName(), e);

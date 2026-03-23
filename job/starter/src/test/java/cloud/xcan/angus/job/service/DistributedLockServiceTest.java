@@ -3,6 +3,7 @@ package cloud.xcan.angus.job.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +37,7 @@ class DistributedLockServiceTest {
 
   @BeforeEach
   void setUp() {
-    when(properties.getLockTimeoutSeconds()).thenReturn(30);
+    lenient().when(properties.getLockTimeoutSeconds()).thenReturn(30);
   }
 
   // ---------------------------------------------------------------------------
@@ -117,6 +118,59 @@ class DistributedLockServiceTest {
     lockService.unlock("key1", "node-B", "uuid-123");
 
     verify(lockRepository, never()).deleteById(any());
+  }
+
+  @Test
+  @DisplayName("tryLock two-arg delegates default timeout from properties")
+  void tryLock_defaultTimeoutOverload() {
+    when(lockRepository.deleteExpiredLockByKey(eq("k"), any())).thenReturn(0);
+    when(lockRepository.saveAndFlush(any())).thenAnswer(inv -> inv.getArgument(0));
+
+    String v = lockService.tryLock("k", "owner");
+
+    assertThat(v).isNotNull();
+  }
+
+  @Test
+  @DisplayName("tryLock returns null on unexpected exception")
+  void tryLock_unexpectedException() {
+    when(lockRepository.deleteExpiredLockByKey(any(), any()))
+        .thenThrow(new RuntimeException("db down"));
+
+    assertThat(lockService.tryLock("k", "o", 10)).isNull();
+  }
+
+  @Test
+  @DisplayName("renewLock extends expiry when owner and value match")
+  void renewLock_success() {
+    DistributedLock lock = new DistributedLock();
+    lock.setLockKey("k");
+    lock.setOwner("node");
+    lock.setLockValue("uuid");
+    when(lockRepository.findById("k")).thenReturn(Optional.of(lock));
+    when(lockRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+
+    assertThat(lockService.renewLock("k", "node", "uuid", 120)).isTrue();
+  }
+
+  @Test
+  @DisplayName("renewLock returns false when lock missing or mismatch")
+  void renewLock_failure() {
+    when(lockRepository.findById("k")).thenReturn(Optional.empty());
+    assertThat(lockService.renewLock("k", "n", "v", 10)).isFalse();
+
+    DistributedLock lock = new DistributedLock();
+    lock.setOwner("a");
+    lock.setLockValue("b");
+    when(lockRepository.findById("k2")).thenReturn(Optional.of(lock));
+    assertThat(lockService.renewLock("k2", "wrong", "b", 10)).isFalse();
+  }
+
+  @Test
+  @DisplayName("unlock swallows persistence errors")
+  void unlock_exceptionSwallowed() {
+    when(lockRepository.findById("k")).thenThrow(new RuntimeException("db"));
+    lockService.unlock("k", "o", "v");
   }
 
   @Test

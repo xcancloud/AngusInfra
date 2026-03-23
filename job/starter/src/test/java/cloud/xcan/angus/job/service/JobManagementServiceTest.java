@@ -3,11 +3,14 @@ package cloud.xcan.angus.job.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import cloud.xcan.angus.job.entity.JobExecutionLog;
 import cloud.xcan.angus.job.entity.ScheduledJob;
+import cloud.xcan.angus.job.enums.ExecutionStatus;
 import cloud.xcan.angus.job.enums.JobStatus;
 import cloud.xcan.angus.job.enums.JobType;
 import cloud.xcan.angus.job.model.CreateJobRequest;
@@ -17,6 +20,8 @@ import cloud.xcan.angus.job.repository.JobShardRepository;
 import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,6 +29,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class JobManagementServiceTest {
@@ -64,6 +73,22 @@ class JobManagementServiceTest {
   }
 
   @Test
+  @DisplayName("createJob throws IllegalStateException on unique constraint violation")
+  void createJob_onDataIntegrityViolation() {
+    CreateJobRequest req = new CreateJobRequest();
+    req.setJobName("Dup");
+    req.setJobGroup("G1");
+    req.setCronExpression("0 * * * * *");
+    req.setBeanName("exec");
+    req.setJobType(JobType.SIMPLE);
+    when(jobRepository.save(any())).thenThrow(new DataIntegrityViolationException("uk"));
+
+    assertThatThrownBy(() -> service.createJob(req))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("Dup");
+  }
+
+  @Test
   @DisplayName("createJob throws IllegalArgumentException on invalid cron")
   void createJob_invalidCron() {
     CreateJobRequest req = new CreateJobRequest();
@@ -89,6 +114,66 @@ class JobManagementServiceTest {
     assertThatThrownBy(() -> service.getJob(99L))
         .isInstanceOf(EntityNotFoundException.class)
         .hasMessageContaining("99");
+  }
+
+  @Test
+  @DisplayName("getJob returns entity when present")
+  void getJob_found() {
+    ScheduledJob job = readyJob(7L);
+    when(jobRepository.findById(7L)).thenReturn(Optional.of(job));
+    assertThat(service.getJob(7L)).isSameAs(job);
+  }
+
+  @Test
+  @DisplayName("listJobs delegates to repository")
+  void listJobs() {
+    Pageable p = PageRequest.of(0, 10);
+    when(jobRepository.findAll(p))
+        .thenReturn(new PageImpl<>(List.of(readyJob(1L))));
+    assertThat(service.listJobs(p).getContent()).hasSize(1);
+  }
+
+  @Test
+  @DisplayName("getJobExecutionHistory delegates to repository")
+  void getJobExecutionHistory() {
+    Pageable p = PageRequest.of(0, 5);
+    when(executionLogRepository.findByJobIdOrderByStartTimeDesc(1L, p))
+        .thenReturn(new PageImpl<>(List.of()));
+    assertThat(service.getJobExecutionHistory(1L, p).getContent()).isEmpty();
+  }
+
+  @Test
+  @DisplayName("getJobStatistics aggregates recent logs")
+  void getJobStatistics() {
+    JobExecutionLog ok = new JobExecutionLog();
+    ok.setStatus(ExecutionStatus.SUCCESS);
+    ok.setExecutionTime(100L);
+    JobExecutionLog fail = new JobExecutionLog();
+    fail.setStatus(ExecutionStatus.FAILURE);
+    fail.setExecutionTime(50L);
+    when(executionLogRepository.findByJobIdOrderByStartTimeDesc(eq(8L), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of(ok, fail)));
+
+    Map<String, Object> stats = service.getJobStatistics(8L);
+
+    assertThat(stats.get("totalExecutions")).isEqualTo(2);
+    assertThat(stats.get("successCount")).isEqualTo(1L);
+    assertThat(stats.get("failureCount")).isEqualTo(1L);
+    assertThat((Double) stats.get("successRate")).isEqualTo(50.0);
+    assertThat((Double) stats.get("avgExecutionTime")).isEqualTo(75.0);
+  }
+
+  @Test
+  @DisplayName("getJobStatistics returns zeros when no logs")
+  void getJobStatistics_empty() {
+    when(executionLogRepository.findByJobIdOrderByStartTimeDesc(eq(9L), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of()));
+
+    Map<String, Object> stats = service.getJobStatistics(9L);
+
+    assertThat(stats.get("totalExecutions")).isEqualTo(0);
+    assertThat(stats.get("successRate")).isEqualTo(0.0);
+    assertThat((Double) stats.get("avgExecutionTime")).isEqualTo(0.0);
   }
 
   // ---------------------------------------------------------------------------
@@ -174,7 +259,7 @@ class JobManagementServiceTest {
   }
 
   // ---------------------------------------------------------------------------
-  // deleteJob — cascade
+  // deleteJob - cascade
   // ---------------------------------------------------------------------------
 
   @Test

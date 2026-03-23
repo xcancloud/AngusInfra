@@ -9,6 +9,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Collections;
+
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +54,19 @@ public class CacheManagementControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value("E1"))
         .andExpect(jsonPath("$.message").value("Key not found"));
+  }
+
+  @Test
+  void testGet_blankKey_returnsBadRequest() throws Exception {
+    mockMvc.perform(get("/api/v1/cache/%20"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  void testGet_keyTooLong_returnsBadRequest() throws Exception {
+    String longKey = "k".repeat(257);
+    mockMvc.perform(get("/api/v1/cache/" + longKey))
+        .andExpect(status().isBadRequest());
   }
 
   // ── PUT /{key} ───────────────────────────────────────────────────────────────

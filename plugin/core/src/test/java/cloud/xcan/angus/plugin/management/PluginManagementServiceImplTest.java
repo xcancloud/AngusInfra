@@ -67,6 +67,13 @@ public class PluginManagementServiceImplTest {
   }
 
   @Test
+  void testRemoveSuccess() throws PluginException {
+    when(pluginManager.removePlugin("ok", false)).thenReturn(true);
+    service.remove("ok", false);
+    verify(pluginManager, times(1)).removePlugin("ok", false);
+  }
+
+  @Test
   void testListAndGetDelegation() {
     PluginInfo a = new PluginInfo();
     a.setId("a");

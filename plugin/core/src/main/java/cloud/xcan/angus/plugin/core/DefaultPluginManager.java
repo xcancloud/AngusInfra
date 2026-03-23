@@ -462,8 +462,15 @@ public class DefaultPluginManager implements PluginManager {
         Path pluginPath = wrapper.getPluginPath();
         if (pluginPath != null) {
           try {
+            // Only remove jars created by JpaPluginStore (Files.createTempFile); do not delete
+            // plugins living under e.g. junit @TempDir/.../plugins — those paths also sit under
+            // java.io.tmpdir and would break reload/remove flows.
+            String name = pluginPath.getFileName().toString();
+            boolean jpaSpillFile =
+                (name.startsWith("plugin-") || name.startsWith("plugin-store-")) && name.endsWith(".jar");
             Path tmpDir = Path.of(System.getProperty("java.io.tmpdir", ""));
-            if (!tmpDir.toString().isEmpty() && pluginPath.startsWith(tmpDir)) {
+            if (jpaSpillFile && !tmpDir.toString().isEmpty()
+                && pluginPath.normalize().startsWith(tmpDir.normalize())) {
               Files.deleteIfExists(pluginPath);
             }
           } catch (Exception e) {

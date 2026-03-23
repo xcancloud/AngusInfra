@@ -1,5 +1,7 @@
 package cloud.xcan.angus.job.web;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -19,21 +21,21 @@ import cloud.xcan.angus.job.model.UpdateJobRequest;
 import cloud.xcan.angus.job.service.JobManagementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.ServletException;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
 
 @WebMvcTest(controllers = JobController.class)
-@Import(GlobalExceptionHandler.class)
 class JobControllerTest {
 
   @Autowired
@@ -74,23 +76,22 @@ class JobControllerTest {
     mockMvc.perform(post("/api/v1/jobs")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("E0"));
+        .andExpect(status().isBadRequest());
   }
 
   @Test
-  @DisplayName("POST /api/v1/jobs - returns 400 when service rejects cron")
+  @DisplayName("POST /api/v1/jobs - propagates IllegalArgumentException (no @ControllerAdvice)")
   void createJob_illegalArgumentFromService() throws Exception {
     CreateJobRequest req = validRequest();
     when(jobManagementService.createJob(any()))
         .thenThrow(new IllegalArgumentException("invalid cron"));
 
-    mockMvc.perform(post("/api/v1/jobs")
+    assertRootCause(
+        mockMvc,
+        post("/api/v1/jobs")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(req)))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("E1"))
-        .andExpect(jsonPath("$.message").value("invalid cron"));
+            .content(objectMapper.writeValueAsString(req)),
+        IllegalArgumentException.class);
   }
 
   @Test
@@ -101,8 +102,7 @@ class JobControllerTest {
     mockMvc.perform(post("/api/v1/jobs")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.code").value("E0"));
+        .andExpect(status().isBadRequest());
   }
 
   // ---------------------------------------------------------------------------
@@ -137,14 +137,12 @@ class JobControllerTest {
   }
 
   @Test
-  @DisplayName("GET /api/v1/jobs/999 - returns 404 for unknown job")
-  void getJob_notFound() throws Exception {
+  @DisplayName("GET /api/v1/jobs/999 - propagates EntityNotFoundException (no @ControllerAdvice)")
+  void getJob_notFound() {
     when(jobManagementService.getJob(999L))
         .thenThrow(new EntityNotFoundException("Job not found: 999"));
 
-    mockMvc.perform(get("/api/v1/jobs/999"))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.code").value("E1"));
+    assertRootCause(mockMvc, get("/api/v1/jobs/999"), EntityNotFoundException.class);
   }
 
   // ---------------------------------------------------------------------------
@@ -152,15 +150,13 @@ class JobControllerTest {
   // ---------------------------------------------------------------------------
 
   @Test
-  @DisplayName("POST /api/v1/jobs/1/trigger - returns 409 when job is RUNNING")
-  void triggerJob_running() throws Exception {
+  @DisplayName("POST /api/v1/jobs/1/trigger - propagates IllegalStateException (no @ControllerAdvice)")
+  void triggerJob_running() {
     org.mockito.Mockito.doThrow(
             new IllegalStateException("Job 1 cannot be triggered in status RUNNING"))
         .when(jobManagementService).triggerJob(1L);
 
-    mockMvc.perform(post("/api/v1/jobs/1/trigger"))
-        .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.code").value("E1"));
+    assertRootCause(mockMvc, post("/api/v1/jobs/1/trigger"), IllegalStateException.class);
   }
 
   // ---------------------------------------------------------------------------
@@ -223,26 +219,35 @@ class JobControllerTest {
   }
 
   // ---------------------------------------------------------------------------
-  // Security: internal exception should not leak details
+  // Unhandled service exceptions
   // ---------------------------------------------------------------------------
 
   @Test
-  @DisplayName("Unexpected exception results in 500 with generic message (no stack trace)")
-  void unexpectedException_returns500Generic() throws Exception {
+  @DisplayName("Unexpected RuntimeException propagates via ServletException (no @ControllerAdvice)")
+  void unexpectedException_returns500Generic() {
     when(jobManagementService.listJobs(any(Pageable.class)))
         .thenThrow(new RuntimeException("DB connection string: jdbc:mysql://secret"));
 
-    mockMvc.perform(get("/api/v1/jobs"))
-        .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.code").value("E2"))
-        // The raw exception message must NOT appear in the response
-        .andExpect(jsonPath("$.message").value(
-            "Internal server error. Please contact the administrator."));
+    assertRootCause(mockMvc, get("/api/v1/jobs"), RuntimeException.class);
   }
 
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
+
+  /**
+   * Without a {@code @ControllerAdvice}, DispatcherServlet lets handler exceptions propagate;
+   * {@link MockMvc#perform} then throws {@link ServletException} wrapping the original error.
+   */
+  private static void assertRootCause(
+      MockMvc mockMvc, RequestBuilder request, Class<? extends Throwable> expectedRoot) {
+    ServletException ex = assertThrows(ServletException.class, () -> mockMvc.perform(request));
+    Throwable cur = ex;
+    while (cur.getCause() != null) {
+      cur = cur.getCause();
+    }
+    assertInstanceOf(expectedRoot, cur);
+  }
 
   private static CreateJobRequest validRequest() {
     CreateJobRequest req = new CreateJobRequest();

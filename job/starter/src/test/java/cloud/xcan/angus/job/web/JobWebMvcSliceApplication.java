@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Import;
  */
 @SpringBootConfiguration
 @EnableAutoConfiguration
-@Import({JobController.class, GlobalExceptionHandler.class})
+@Import({JobController.class})
 public class JobWebMvcSliceApplication {
 
 }

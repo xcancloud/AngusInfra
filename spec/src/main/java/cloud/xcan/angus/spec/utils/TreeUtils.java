@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class TreeUtils {
+public final class TreeUtils {
 
   private TreeUtils() { /* no instance */ }
 

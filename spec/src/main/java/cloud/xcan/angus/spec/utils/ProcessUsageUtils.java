@@ -14,7 +14,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.ToLongFunction;
 
-public class ProcessUsageUtils {
+public final class ProcessUsageUtils {
+
+  private ProcessUsageUtils() {
+  }
 
   private static final OperatingSystemMXBean operatingSystemBean =
       ManagementFactory.getOperatingSystemMXBean();

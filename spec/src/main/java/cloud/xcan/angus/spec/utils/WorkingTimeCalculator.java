@@ -8,10 +8,16 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
-public class WorkingTimeCalculator {
+public final class WorkingTimeCalculator {
+
+  private WorkingTimeCalculator() {
+  }
 
   public static BigDecimal calcWorkingHours(LocalDateTime start, LocalDateTime end) {
+    Objects.requireNonNull(start, "start");
+    Objects.requireNonNull(end, "end");
     if (end.isBefore(start)) {
       throw new IllegalArgumentException("The end time must be after the start time");
     }
@@ -38,6 +44,8 @@ public class WorkingTimeCalculator {
   }
 
   public static long calcWorkingDays(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    Objects.requireNonNull(startDateTime, "startDateTime");
+    Objects.requireNonNull(endDateTime, "endDateTime");
     LocalDate startDate = startDateTime.toLocalDate();
     LocalDate endDate = endDateTime.toLocalDate();
 
@@ -55,26 +63,31 @@ public class WorkingTimeCalculator {
   }
 
   public static boolean isWorkingDay(LocalDate date) {
+    Objects.requireNonNull(date, "date");
     DayOfWeek day = date.getDayOfWeek();
     return day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY;
   }
 
   public static boolean isToday(LocalDateTime dateTime) {
+    Objects.requireNonNull(dateTime, "dateTime");
     LocalDateTime now = LocalDateTime.now();
     return dateTime.toLocalDate().isEqual(now.toLocalDate());
   }
 
   public static boolean isLast24Hour(LocalDateTime dateTime) {
+    Objects.requireNonNull(dateTime, "dateTime");
     LocalDateTime now = LocalDateTime.now();
     return dateTime.isAfter(now.minusHours(24));
   }
 
   public static boolean isLastWeek(LocalDateTime dateTime) {
+    Objects.requireNonNull(dateTime, "dateTime");
     LocalDateTime now = LocalDateTime.now();
     return dateTime.isAfter(now.minusDays(7));
   }
 
   public static boolean isLastMonth(LocalDateTime dateTime) {
+    Objects.requireNonNull(dateTime, "dateTime");
     LocalDateTime now = LocalDateTime.now();
     return dateTime.isAfter(now.minusMonths(1));
   }

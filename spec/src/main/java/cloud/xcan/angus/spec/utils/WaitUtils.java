@@ -1,6 +1,10 @@
 package cloud.xcan.angus.spec.utils;
 
 
+/**
+ * Coordinates a boolean flag with {@link Object#wait(long)} / {@link Object#notifyAll()} for
+ * simple handoff between threads. Waits are bounded by a wall-clock timeout.
+ */
 public class WaitUtils {
 
   private boolean status = false;
@@ -8,13 +12,17 @@ public class WaitUtils {
 
   public void waitForStatus(boolean expectedStatus, long timeoutMillis)
       throws InterruptedException {
+    if (timeoutMillis <= 0) {
+      return;
+    }
     synchronized (lock) {
-      long startTime = System.currentTimeMillis();
-      long elapsedTime = 0;
-
-      while (status != expectedStatus && elapsedTime < timeoutMillis) {
-        lock.wait(timeoutMillis - elapsedTime);
-        elapsedTime = System.currentTimeMillis() - startTime;
+      long deadline = System.currentTimeMillis() + timeoutMillis;
+      while (status != expectedStatus) {
+        long remaining = deadline - System.currentTimeMillis();
+        if (remaining <= 0) {
+          break;
+        }
+        lock.wait(remaining);
       }
     }
   }

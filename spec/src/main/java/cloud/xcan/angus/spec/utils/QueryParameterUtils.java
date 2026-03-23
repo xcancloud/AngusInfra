@@ -8,7 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class QueryParameterUtils {
+public final class QueryParameterUtils {
 
   private QueryParameterUtils() {
     /* no instance */
@@ -97,7 +97,7 @@ public class QueryParameterUtils {
     if (needsDecode) {
       try {
         key = URLDecoder.decode(newQueryString.substring(startPos, equalPos), encoding);
-      } catch (UnsupportedEncodingException var7) {
+      } catch (UnsupportedEncodingException ignored) {
         key = newQueryString.substring(startPos, equalPos);
       }
     } else {

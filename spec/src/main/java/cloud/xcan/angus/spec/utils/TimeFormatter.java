@@ -1,9 +1,14 @@
 package cloud.xcan.angus.spec.utils;
 
+import java.util.Locale;
+
 /**
  * 时间格式化工具类 将毫秒值格式化为人类可读的时间字符串，支持多种精度和格式
  */
-public class TimeFormatter {
+public final class TimeFormatter {
+
+  private TimeFormatter() {
+  }
 
   // 时间单位常量
   private static final long MILLIS_PER_SECOND = 1000;
@@ -252,19 +257,19 @@ public class TimeFormatter {
         if (showDays || showHours) {
           // 显示小时格式：HH:MM:SS（将天数转换为小时）
           long totalHours = days * 24 + hours;
-          result.append(String.format("%02d:%02d:%02d", totalHours, minutes, seconds));
+          result.append(String.format(Locale.ROOT, "%02d:%02d:%02d", totalHours, minutes, seconds));
           if (showMillis) {
-            result.append(".").append(String.format("%03d", millis));
+            result.append(".").append(String.format(Locale.ROOT, "%03d", millis));
           }
         } else if (showMinutes || showSeconds) {
           // 显示分钟格式：MM:SS（即使分钟为0也显示）
-          result.append(String.format("%02d:%02d", minutes, seconds));
+          result.append(String.format(Locale.ROOT, "%02d:%02d", minutes, seconds));
           if (showMillis) {
-            result.append(".").append(String.format("%03d", millis));
+            result.append(".").append(String.format(Locale.ROOT, "%03d", millis));
           }
         } else if (showMillis) {
           // 只有毫秒：00:00.000
-          result.append("00:00.").append(String.format("%03d", millis));
+          result.append("00:00.").append(String.format(Locale.ROOT, "%03d", millis));
         }
         break;
     }

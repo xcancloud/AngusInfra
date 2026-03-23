@@ -1,6 +1,5 @@
 package cloud.xcan.angus.spec.utils;
 
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static java.lang.String.format;
 
 import java.util.Map;
@@ -19,12 +18,7 @@ public final class RegexpUtils {
 
   public static Pattern getPattern(String regexp) {
     try {
-      Pattern pattern = COMPILED_PATTERNS.get(regexp);
-      if (isNull(pattern)) {
-        pattern = Pattern.compile(regexp);
-        COMPILED_PATTERNS.put(regexp, pattern);
-      }
-      return pattern;
+      return COMPILED_PATTERNS.computeIfAbsent(regexp, Pattern::compile);
     } catch (Exception e) {
       throw new RuntimeException(format("Error when getting a pattern [%s] from cache", regexp), e);
     }
@@ -56,7 +50,10 @@ public final class RegexpUtils {
    * String does not match.
    */
   public static boolean wildcardMatch(String text, String pattern) {
-    if (pattern.length() > 0 && pattern.charAt(0) == '^') {
+    if (text == null || pattern == null) {
+      return text == pattern;
+    }
+    if (!pattern.isEmpty() && pattern.charAt(0) == '^') {
       return !wildcardMatch(text, pattern.substring(1));
     }
     return text.matches(pattern.replace("?", ".?").replace("*", ".*?"));

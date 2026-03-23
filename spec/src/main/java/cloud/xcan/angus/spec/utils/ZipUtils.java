@@ -2,9 +2,11 @@ package cloud.xcan.angus.spec.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -13,20 +15,14 @@ import org.slf4j.LoggerFactory;
 
 public final class ZipUtils {
 
-  public ZipUtils() {
-  }
-
   private static final Logger log = LoggerFactory.getLogger(ZipUtils.class);
 
-  /**
-   * Holds the destination directory. File will be zipped into the destination directory.
-   */
   private File destination;
 
-  /**
-   * Holds path to compressed file.
-   */
   private File[] source;
+
+  public ZipUtils() {
+  }
 
   public ZipUtils(File[] source, File destination) {
     this.source = source;
@@ -50,35 +46,46 @@ public final class ZipUtils {
   }
 
   /**
-   * Compress the content of zip file ({@code source}) to destination directory. If destination
-   * directory already exists it will be deleted before.
+   * Writes a zip archive to {@code destination} (a file path, typically {@code .zip}). Existing
+   * regular files at that path are replaced; if {@code destination} is a directory it is removed
+   * first.
    */
   public void compress() throws IOException {
+    Objects.requireNonNull(destination, "destination");
+    File[] files = Objects.requireNonNull(source, "source");
     log.debug("Compress content of {} to {}", getFilenames(), destination);
 
-    // delete destination directory if exists
-    if (destination.exists() && destination.isDirectory()) {
-      FileUtils.deleteRecursive(destination.toPath());
-    }
-    FileOutputStream fos = new FileOutputStream(destination);
-    ZipOutputStream zipOut = new ZipOutputStream(fos);
-    for (File fileToZip : source) {
-      FileInputStream fis = new FileInputStream(fileToZip);
-      ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
-      zipOut.putNextEntry(zipEntry);
-      byte[] bytes = new byte[4096];
-      int length;
-      while ((length = fis.read(bytes)) >= 0) {
-        zipOut.write(bytes, 0, length);
+    if (destination.exists()) {
+      if (destination.isDirectory()) {
+        FileUtils.deleteRecursive(destination.toPath());
+      } else {
+        Files.deleteIfExists(destination.toPath());
       }
-      fis.close();
     }
-    zipOut.close();
-    fos.close();
+
+    try (OutputStream fos = Files.newOutputStream(destination.toPath());
+        ZipOutputStream zipOut = new ZipOutputStream(fos)) {
+      for (File fileToZip : files) {
+        if (fileToZip == null || !fileToZip.isFile()) {
+          continue;
+        }
+        try (FileInputStream fis = new FileInputStream(fileToZip)) {
+          ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+          zipOut.putNextEntry(zipEntry);
+          byte[] bytes = new byte[4096];
+          int length;
+          while ((length = fis.read(bytes)) >= 0) {
+            zipOut.write(bytes, 0, length);
+          }
+          zipOut.closeEntry();
+        }
+      }
+    }
   }
 
   private String getFilenames() {
     return this.source == null ? ""
-        : Arrays.stream(this.source).map(File::getName).collect(Collectors.joining());
+        : Arrays.stream(this.source).filter(Objects::nonNull).map(File::getName)
+            .collect(Collectors.joining(", "));
   }
 }

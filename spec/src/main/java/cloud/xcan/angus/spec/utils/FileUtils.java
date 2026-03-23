@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -81,7 +82,13 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   }
 
   private static String readJarUriAsString(String jarUri, String encoding) throws IOException {
-    try (InputStream in = new URI(jarUri).toURL().openStream()) {
+    final URI uri;
+    try {
+      uri = new URI(jarUri);
+    } catch (URISyntaxException e) {
+      throw new IOException("Invalid jar URI: " + jarUri, e);
+    }
+    try (InputStream in = uri.toURL().openStream()) {
       return IOUtils.toString(in, Charset.forName(encoding));
     }
   }

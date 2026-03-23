@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.charset.Charset;
 
@@ -87,13 +86,7 @@ public final class StreamUtils {
   public static String copyToString(ByteArrayOutputStream baos, Charset charset) {
     Assert.assertNotNull(baos, "No ByteArrayOutputStream specified");
     Assert.assertNotNull(charset, "No Charset specified");
-    try {
-      // Can be replaced with toString(Charset) call in Java 10+
-      return baos.toString(charset.name());
-    } catch (UnsupportedEncodingException ex) {
-      // Should never happen
-      throw new IllegalArgumentException("Invalid charset name: " + charset, ex);
-    }
+    return baos.toString(charset);
   }
 
   /**
@@ -266,9 +259,9 @@ public final class StreamUtils {
     }
 
     @Override
-    public void write(byte[] b, int off, int let) throws IOException {
+    public void write(byte[] b, int off, int len) throws IOException {
       // It is critical that we override this method for performance
-      this.out.write(b, off, let);
+      this.out.write(b, off, len);
     }
 
     @Override

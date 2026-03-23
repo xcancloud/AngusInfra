@@ -2,7 +2,6 @@ package cloud.xcan.angus.spec.utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CircularList implements ReadDynamicValue {
@@ -10,7 +9,8 @@ public class CircularList implements ReadDynamicValue {
   private List<String> dataList;
   private boolean restartFromBeginning;
   private int currentIndex;
-  private final ReentrantReadWriteLock readWriteLock;
+  /** Not final: {@link #clone()} must install a fresh lock for the copy. */
+  private ReentrantReadWriteLock readWriteLock;
 
   public static final String END_CHARS = "EOF";
 

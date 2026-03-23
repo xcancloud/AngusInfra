@@ -2,9 +2,12 @@ package cloud.xcan.angus.spec.utils;
 
 import java.util.regex.Pattern;
 
-public class UrlEnvVariableChecker {
+public final class UrlEnvVariableChecker {
 
   private static final Pattern ENV_VAR_PATTERN = Pattern.compile("\\{([^}]+)\\}");
+
+  private UrlEnvVariableChecker() {
+  }
 
   public static boolean containsEnvVariable(String url) {
     if (url == null || url.isEmpty()) {

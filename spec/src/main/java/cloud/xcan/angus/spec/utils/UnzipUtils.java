@@ -1,9 +1,11 @@
 package cloud.xcan.angus.spec.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import org.slf4j.Logger;
@@ -11,20 +13,14 @@ import org.slf4j.LoggerFactory;
 
 public final class UnzipUtils {
 
-  public UnzipUtils() {
-  }
-
   private static final Logger log = LoggerFactory.getLogger(UnzipUtils.class);
 
-  /**
-   * Holds the destination directory. File will be unzipped into the destination directory.
-   */
   private File destination;
 
-  /**
-   * Holds path to zip file.
-   */
   private File source;
+
+  public UnzipUtils() {
+  }
 
   public UnzipUtils(File source, File destination) {
     this.source = source;
@@ -54,40 +50,36 @@ public final class UnzipUtils {
   public void extract() throws IOException {
     log.debug("Extract content of {} to {}", source, destination);
 
-    // delete destination directory if exists
     if (destination.exists() && destination.isDirectory()) {
       FileUtils.deleteRecursive(destination.toPath());
     }
 
-    try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(source))) {
+    Path destDir = destination.toPath().toAbsolutePath().normalize();
+    Files.createDirectories(destDir);
+
+    try (InputStream fin = Files.newInputStream(source.toPath());
+        ZipInputStream zipInputStream = new ZipInputStream(fin)) {
       ZipEntry zipEntry;
+      byte[] buffer = new byte[4096];
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
-        File file = new File(destination, zipEntry.getName());
-
-        // create intermediary directories - sometimes zip don't add them
-        File dir = new File(file.getParent());
-
-        mkdirsOrThrow(dir);
+        Path outPath = destDir.resolve(zipEntry.getName()).normalize();
+        if (!outPath.startsWith(destDir)) {
+          throw new IOException("Zip entry outside destination: " + zipEntry.getName());
+        }
 
         if (zipEntry.isDirectory()) {
-          mkdirsOrThrow(file);
+          Files.createDirectories(outPath);
         } else {
-          byte[] buffer = new byte[4096];
-          int length;
-          try (FileOutputStream fos = new FileOutputStream(file)) {
+          Files.createDirectories(outPath.getParent());
+          try (OutputStream fos = Files.newOutputStream(outPath)) {
+            int length;
             while ((length = zipInputStream.read(buffer)) >= 0) {
               fos.write(buffer, 0, length);
             }
           }
         }
+        zipInputStream.closeEntry();
       }
     }
   }
-
-  private static void mkdirsOrThrow(File dir) throws IOException {
-    if (!dir.exists() && !dir.mkdirs()) {
-      throw new IOException("Failed to create directory " + dir);
-    }
-  }
-
 }

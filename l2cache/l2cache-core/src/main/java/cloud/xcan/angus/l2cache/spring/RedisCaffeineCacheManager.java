@@ -185,10 +185,10 @@ public class RedisCaffeineCacheManager implements CacheManager, CacheManagerClea
       log.debug("Configured Caffeine maximumSize: {}", caffeineConfig.getMaximumSize());
     }
 
-    // Configure refresh after write for background refresh
+    // refreshAfterWrite only applies to LoadingCache; L1 here is a manual Cache (values from Redis).
     if (caffeineConfig.getRefreshAfterWrite() > 0) {
-      cacheBuilder.refreshAfterWrite(caffeineConfig.getRefreshAfterWrite(), TimeUnit.SECONDS);
-      log.debug("Configured Caffeine refreshAfterWrite: {} seconds",
+      log.debug(
+          "Ignoring refreshAfterWrite ({} s): not supported without a CacheLoader on this cache type",
           caffeineConfig.getRefreshAfterWrite());
     }
 

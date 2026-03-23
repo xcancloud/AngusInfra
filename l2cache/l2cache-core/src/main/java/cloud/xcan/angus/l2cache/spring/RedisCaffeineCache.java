@@ -292,7 +292,8 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
     // Only apply penetration protection if configured for this cache
     if (penetrationExpires.containsKey(cacheKey)) {
-      long expire = getPenetrationExpire();
+      Long configured = penetrationExpires.get(cacheKey);
+      long expire = configured != null ? configured : getPenetrationExpire();
       // Store empty value with shorter TTL to prevent cache penetration
       redisService.set(cacheKey, storeValue, expire, TimeUnit.MILLISECONDS);
 
@@ -602,18 +603,19 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Checks if L1 cache is enabled for a specific cache key. This allows fine-grained control over
-   * which keys use L1 cache.
+   * Checks if L1 cache is enabled for a specific Redis cache key. This allows fine-grained control
+   * over which keys use L1 cache. The argument is the fully qualified key (same as {@link #getKey}
+   * output), not the logical entry key.
    * </p>
    *
-   * @param key the cache key to check
+   * @param cacheKey the tenant-aware Redis key to check
    * @return true if L1 cache is enabled for this specific key
    */
-  private boolean isL1OpenByKey(String key) {
+  private boolean isL1OpenByKey(String cacheKey) {
     if (composite.isL1Manual()) {
       Set<String> l1ManualKeySet = composite.getL1ManualKeySet();
       return !CollectionUtils.isEmpty(l1ManualKeySet)
-          && l1ManualKeySet.contains(getKey(key));
+          && l1ManualKeySet.contains(cacheKey);
     }
     return false;
   }

@@ -14,10 +14,23 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 public class QueueAutoConfigurationTest {
 
+  /**
+   * Sliced context omits full Boot auto-config; enable declarative transactions so
+   * {@code @Modifying} repository methods and {@link cloud.xcan.angus.queue.starter.adapter.JpaRepositoryAdapter}
+   * {@code @Transactional} work when schedulers run.
+   */
+  @Configuration
+  @EnableTransactionManagement
+  static class TestTransactionConfiguration {
+  }
+
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+      .withUserConfiguration(TestTransactionConfiguration.class)
       .withConfiguration(AutoConfigurations.of(
           DataSourceAutoConfiguration.class,
           HibernateJpaAutoConfiguration.class,
@@ -29,9 +42,9 @@ public class QueueAutoConfigurationTest {
           "spring.datasource.driverClassName=org.h2.Driver",
           "spring.datasource.username=sa",
           "spring.datasource.password=",
-          // Disable DDL actions to avoid schema validation
-          "spring.jpa.hibernate.ddl-auto=none",
-          "spring.jpa.properties.hibernate.hbm2ddl.auto=none",
+          // Create schema so scheduled tasks against mq_message / dead_letter do not fail
+          "spring.jpa.hibernate.ddl-auto=create-drop",
+          "spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop",
           // Queue properties
           "angus.queue.scheduling.enabled=true",
           "angus.queue.partitions=4",
@@ -48,7 +61,7 @@ public class QueueAutoConfigurationTest {
       assertThat(ctx).hasSingleBean(AuditLogger.class);
       assertThat(ctx).hasSingleBean(LeaseReaperScheduler.class);
       assertThat(ctx).hasSingleBean(DeadLetterMoverScheduler.class);
-      assertThat(ctx).hasSingleBean(DlqSoftDeletePurgerScheduler.class);
+      assertThat(ctx).doesNotHaveBean(DlqSoftDeletePurgerScheduler.class);
     });
   }
 
@@ -59,6 +72,7 @@ public class QueueAutoConfigurationTest {
         .run(ctx -> {
           assertThat(ctx).hasSingleBean(QueueAdminService.class);
           assertThat(ctx.getBean(QueueAdminService.class)).isNotNull();
+          assertThat(ctx).hasSingleBean(DlqSoftDeletePurgerScheduler.class);
         });
   }
 }

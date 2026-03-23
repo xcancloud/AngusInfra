@@ -1,13 +1,16 @@
 package cloud.xcan.angus.queue.core.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.startsWith;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
@@ -83,6 +86,36 @@ class DefaultQueueAdminServiceTest {
     int n = svc.purgeDeadLetters("t1");
     assertEquals(4, n);
     verify(logger).adminAction(eq("purgeDLQ"), eq("t1"), eq(4), eq(""));
+  }
+
+  @Test
+  void topicStatsWithoutAuditLogger() {
+    RepositoryAdapter plain = mock(RepositoryAdapter.class);
+    when(plain.countByStatus("x")).thenReturn(List.of());
+    when(plain.deadLetterCountByTopic("x")).thenReturn(0L);
+    when(plain.readyCountPerPartition("x")).thenReturn(List.of());
+    DefaultQueueAdminService svc = new DefaultQueueAdminService(plain);
+    Map<String, Object> stats = svc.topicStats("x");
+    assertNotNull(stats.get("statusCounts"));
+    verifyNoInteractions(logger);
+  }
+
+  @Test
+  void replayFromDeadLetterReturnsZeroWhenEmpty() {
+    when(adapter.findDeadLettersByTopicLimit("t1", 5)).thenReturn(List.of());
+    assertEquals(0, service.replayFromDeadLetter("t1", 5));
+    verify(adapter, never()).saveRecoveredMessages(any());
+    verify(logger).adminAction(eq("replayDLQ"), eq("t1"), eq(0), startsWith("limit="));
+  }
+
+  @Test
+  void purgeDeadLettersHardDeleteWhenSoftEnabledButAdapterNotSupporting() {
+    RepositoryAdapter plain = mock(RepositoryAdapter.class);
+    DefaultQueueAdminService svc = new DefaultQueueAdminService(plain, logger, true);
+    when(plain.purgeDeadLettersByTopic("t1")).thenReturn(2);
+    assertEquals(2, svc.purgeDeadLetters("t1"));
+    verify(plain).purgeDeadLettersByTopic("t1");
+    verify(logger).adminAction(eq("purgeDLQ"), eq("t1"), eq(2), eq(""));
   }
 
   @Test

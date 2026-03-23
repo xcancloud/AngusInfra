@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -64,6 +66,18 @@ class QueueControllerTest {
             .content("{\"topic\":\"t1\",\"payload\":\"p\"}"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.id", is(123)));
+  }
+
+  @Test
+  void pollReturnsEmptyWhenNoMessagesLeased() throws Exception {
+    when(queueService.lease(anyString(), anyList(), anyString(), anyInt(), anyInt()))
+        .thenReturn(0);
+    mvc.perform(post("/api/v1/queue/poll")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content("{\"topic\":\"t1\",\"owner\":\"o\"}"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data", hasSize(0)));
+    verify(queueService, never()).listLeasedByOwner(anyString(), anyInt());
   }
 
   @Test

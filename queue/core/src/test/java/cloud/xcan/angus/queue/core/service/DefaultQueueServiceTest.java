@@ -8,7 +8,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.argThat;
 
+import cloud.xcan.angus.queue.core.model.LeaseMessages;
 import cloud.xcan.angus.queue.core.model.MessageData;
 import cloud.xcan.angus.queue.core.model.SendMessage;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
@@ -88,6 +90,49 @@ class DefaultQueueServiceTest {
     int n = service.moveExceededAttemptsToDeadLetter(50);
     assertEquals(7, n);
     verify(adapter).moveExceededToDeadLetter(eq(50));
+  }
+
+  @Test
+  void ackReturnsZeroWhenNull() {
+    assertEquals(0, service.ack(null));
+    verify(adapter, never()).ackBatch(any());
+  }
+
+  @Test
+  void nackReturnsZeroWhenNull() {
+    assertEquals(0, service.nack(null, 5));
+    verify(adapter, never()).nackBatch(any(), anyInt());
+  }
+
+  @Test
+  void sendSendMessageDefaultDelegatesToAdapter() {
+    when(adapter.saveMessage(any(SendMessage.class))).thenReturn(7L);
+    SendMessage req = SendMessage.builder()
+        .topic("t")
+        .payload("body")
+        .priority(2)
+        .maxAttempts(9)
+        .numPartitions(4)
+        .build();
+    assertEquals(7L, service.send(req));
+    verify(adapter).saveMessage(argThat(m ->
+        "t".equals(m.getTopic())
+            && "body".equals(m.getPayload())
+            && m.getPriority() == 2
+            && m.getMaxAttempts() == 9
+            && m.getNumPartitions() == 4));
+  }
+
+  @Test
+  void leaseLeaseMessagesDefaultUsesNullSafeDefaults() {
+    when(adapter.leaseBatch(any(), any(), any(), anyInt(), anyInt())).thenReturn(1);
+    LeaseMessages lm = LeaseMessages.builder()
+        .topic("t")
+        .partitions(List.of(0, 1))
+        .owner("o")
+        .build();
+    assertEquals(1, service.lease(lm));
+    verify(adapter).leaseBatch(eq("t"), eq(List.of(0, 1)), eq("o"), eq(30), eq(100));
   }
 }
 

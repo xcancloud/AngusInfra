@@ -10,14 +10,17 @@ public abstract class GenericStringValidator<T extends Annotation> implements
 
   protected T annotation;
 
+  private Function<String, Boolean> condition;
+
   @Override
   public void initialize(T constraintAnnotation) {
     this.annotation = constraintAnnotation;
+    this.condition = condition();
   }
 
   @Override
   public boolean isValid(String value, ConstraintValidatorContext context) {
-    return condition().apply(value);
+    return condition.apply(value);
   }
 
   public abstract Function<String, Boolean> condition();

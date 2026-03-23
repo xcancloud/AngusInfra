@@ -1,5 +1,6 @@
 package cloud.xcan.angus.web;
 
+import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.boot.ApplicationBanner;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.filter.GlobalProperties;

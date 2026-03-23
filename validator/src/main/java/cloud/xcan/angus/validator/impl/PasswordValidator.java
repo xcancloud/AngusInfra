@@ -3,33 +3,43 @@ package cloud.xcan.angus.validator.impl;
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLowerCase;
 import static java.lang.Character.isUpperCase;
-import static java.util.stream.Collectors.toSet;
 
 import cloud.xcan.angus.validator.Password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 public class PasswordValidator implements ConstraintValidator<Password, String> {
 
-  public final static Set<Character> SPECIAL_CHARS = "`-=[];',./~!@#$%^&*()_+{}:\"<>?".chars()
-      .mapToObj(i -> (char) i).collect(toSet());
+  private static final String SPECIAL_CHAR_SOURCE = "`-=[];',./~!@#$%^&*()_+{}:\"<>?";
+  private static final boolean[] SPECIAL_CHAR_ASCII = new boolean[128];
+
+  static {
+    for (int i = 0; i < SPECIAL_CHAR_SOURCE.length(); i++) {
+      char c = SPECIAL_CHAR_SOURCE.charAt(i);
+      if (c < 128) {
+        SPECIAL_CHAR_ASCII[c] = true;
+      }
+    }
+  }
 
   private Password annotation;
 
+  private static boolean isAllowedSpecialChar(char c) {
+    return c < 128 && SPECIAL_CHAR_ASCII[c];
+  }
+
   private static double calcRepeatRate(String value) {
-    StringBuilder noRepeat = new StringBuilder();
-    List<Character> list = new ArrayList<>();
-    char[] cs = value.toCharArray();
-    for (char c : cs) {
-      if (!list.contains(c)) {
-        noRepeat.append(c);
-        list.add(c);
-      }
+    int len = value.length();
+    if (len <= 1) {
+      return 0;
     }
-    return 1 - ((double) noRepeat.length() / value.length());
+    Set<Character> distinct = new HashSet<>(Math.min(len, 256));
+    for (int i = 0; i < len; i++) {
+      distinct.add(value.charAt(i));
+    }
+    return 1 - ((double) distinct.size() / len);
   }
 
   @Override
@@ -43,7 +53,7 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
       return annotation.allowNull();
     }
 
-    if (value.length() < annotation.minSize() || value.length() >= annotation.maxSize()) {
+    if (value.length() < annotation.minSize() || value.length() > annotation.maxSize()) {
       return false;
     }
 
@@ -58,43 +68,46 @@ public class PasswordValidator implements ConstraintValidator<Password, String> 
   }
 
   private int calcTypesNum(String value) {
-    int typesNum = 0;
     boolean hasUpperCase = false;
     boolean hasLowerCase = false;
     boolean hasDigits = false;
     boolean hasSpecialChar = false;
-    boolean isSupportChar = false;
 
-    for (int i = 0; i < value.length(); ++i) {
+    for (int i = 0; i < value.length(); i++) {
       char chr = value.charAt(i);
-      if (annotation.allowUpperCase() && !hasUpperCase && isUpperCase(chr)) {
-        hasUpperCase = true;
-        typesNum++;
-      } else if (annotation.allowLowerCase() && !hasLowerCase && isLowerCase(chr)) {
-        hasLowerCase = true;
-        typesNum++;
-      } else if (annotation.allowDigits() && !hasDigits && isDigit(chr)) {
-        hasDigits = true;
-        typesNum++;
-      } else if (annotation.allowSpecialChar() && !hasSpecialChar && SPECIAL_CHARS.contains(chr)) {
-        hasSpecialChar = true;
-        typesNum++;
-      }
-
+      boolean supported = false;
       if (annotation.allowUpperCase() && isUpperCase(chr)) {
-        isSupportChar = true;
-      } else if (annotation.allowLowerCase() && isLowerCase(chr)) {
-        isSupportChar = true;
-      } else if (annotation.allowDigits() && isDigit(chr)) {
-        isSupportChar = true;
-      } else if (annotation.allowSpecialChar() && SPECIAL_CHARS.contains(chr)) {
-        isSupportChar = true;
+        hasUpperCase = true;
+        supported = true;
       }
-
-      if (!isSupportChar) {
+      if (annotation.allowLowerCase() && isLowerCase(chr)) {
+        hasLowerCase = true;
+        supported = true;
+      }
+      if (annotation.allowDigits() && isDigit(chr)) {
+        hasDigits = true;
+        supported = true;
+      }
+      if (annotation.allowSpecialChar() && isAllowedSpecialChar(chr)) {
+        hasSpecialChar = true;
+        supported = true;
+      }
+      if (!supported) {
         return -1;
       }
-      isSupportChar = false;
+    }
+    int typesNum = 0;
+    if (hasUpperCase) {
+      typesNum++;
+    }
+    if (hasLowerCase) {
+      typesNum++;
+    }
+    if (hasDigits) {
+      typesNum++;
+    }
+    if (hasSpecialChar) {
+      typesNum++;
     }
     return typesNum;
   }

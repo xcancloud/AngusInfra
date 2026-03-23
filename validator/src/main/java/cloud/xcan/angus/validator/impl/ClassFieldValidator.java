@@ -9,11 +9,20 @@ import java.lang.reflect.Field;
 
 public class ClassFieldValidator implements ConstraintValidator<ClassField, String> {
 
-  private Class clz;
+  private String[] declaredFieldNames = new String[0];
 
   @Override
   public void initialize(ClassField constraintAnnotation) {
-    this.clz = constraintAnnotation.clz();
+    Class<?> clz = constraintAnnotation.clz();
+    Field[] clzFields = clz.getDeclaredFields();
+    if (isEmpty(clzFields)) {
+      declaredFieldNames = new String[0];
+    } else {
+      declaredFieldNames = new String[clzFields.length];
+      for (int i = 0; i < clzFields.length; i++) {
+        declaredFieldNames[i] = clzFields[i].getName();
+      }
+    }
   }
 
   @Override
@@ -21,13 +30,11 @@ public class ClassFieldValidator implements ConstraintValidator<ClassField, Stri
     if (isEmpty(input)) {
       return true;
     }
-
-    Field[] clzFields = clz.getDeclaredFields();
-    if (isEmpty(clzFields)) {
+    if (declaredFieldNames.length == 0) {
       return true;
     }
-    for (Field clzField : clzFields) {
-      if (input.equalsIgnoreCase(clzField.getName())) {
+    for (String name : declaredFieldNames) {
+      if (input.equalsIgnoreCase(name)) {
         return true;
       }
     }

@@ -37,6 +37,7 @@ public @interface Password {
 
   int minSize() default 6;
 
+  /** Maximum password length; {@code length() <= maxSize} is allowed. */
   int maxSize() default 50;
 
   String message() default "{xcan.validator.constraints.Password.message}";

@@ -3,10 +3,13 @@ package cloud.xcan.angus.cache.autoconfigure;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import cloud.xcan.angus.cache.CachePersistence;
+import cloud.xcan.angus.cache.autoconfigure.HybridCacheJpaBootstrapTest.JpaTestApplication;
 import cloud.xcan.angus.cache.entry.CacheEntry;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
@@ -22,9 +25,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     }
 )
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-@EntityScan(basePackageClasses = CacheEntry.class)
-@EnableJpaRepositories(basePackageClasses = SpringDataCacheEntryRepository.class)
-@Import(HybridCacheAutoConfiguration.class)
+@Import(JpaTestApplication.class)
 class HybridCacheJpaBootstrapTest {
 
   @Autowired
@@ -33,5 +34,14 @@ class HybridCacheJpaBootstrapTest {
   @Test
   void autoConfigurationSelectsSpringAdapterWhenJpaRepositoryAvailable() {
     assertThat(cachePersistence).isInstanceOf(SpringCachePersistenceAdapter.class);
+  }
+
+  @SpringBootConfiguration
+  @EnableAutoConfiguration
+  @EntityScan(basePackageClasses = CacheEntry.class)
+  @EnableJpaRepositories(basePackageClasses = SpringDataCacheEntryRepository.class)
+  @Import(HybridCacheAutoConfiguration.class)
+  static class JpaTestApplication {
+
   }
 }

@@ -7,7 +7,6 @@ import cloud.xcan.angus.cache.config.CacheProperties;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import cloud.xcan.angus.cache.web.CacheManagementController;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -19,25 +18,20 @@ import org.springframework.context.annotation.Configuration;
 public class HybridCacheAutoConfiguration {
 
   /**
-   * JPA-backed persistence adapter — registered when a {@link SpringDataCacheEntryRepository} bean
-   * is present (i.e. Spring Data JPA is on the classpath and a datasource is configured).
+   * Chooses persistence at <em>bean creation</em> time via {@link ObjectProvider}, so a
+   * {@link SpringDataCacheEntryRepository} registered by JPA (possibly after this configuration
+   * class is parsed) is still visible. Using {@code @ConditionalOnBean} on a separate method can
+   * miss the repository when this configuration is {@code @Import}ed next to
+   * {@code @EnableJpaRepositories}.
    */
   @Bean
-  @ConditionalOnBean(SpringDataCacheEntryRepository.class)
   @ConditionalOnMissingBean(CachePersistence.class)
   public CachePersistence cachePersistence(
       ObjectProvider<SpringDataCacheEntryRepository> repositoryProvider) {
-    return new SpringCachePersistenceAdapter(repositoryProvider.getIfAvailable());
-  }
-
-  /**
-   * Pure in-memory fallback persistence — used when no JPA repository is available. Data is not
-   * durable across restarts. Suitable for local/dev environments.
-   */
-  @Bean
-  @ConditionalOnMissingBean(CachePersistence.class)
-  public CachePersistence noOpCachePersistence() {
-    return new NoOpCachePersistence();
+    SpringDataCacheEntryRepository repository = repositoryProvider.getIfAvailable();
+    return repository != null
+        ? new SpringCachePersistenceAdapter(repository)
+        : new NoOpCachePersistence();
   }
 
   @Bean

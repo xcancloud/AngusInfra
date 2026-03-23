@@ -9,8 +9,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collections;
-
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +20,7 @@ import org.mockito.Mockito;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 public class CacheManagementControllerTest {
 
@@ -33,7 +32,11 @@ public class CacheManagementControllerTest {
   void setUp() {
     cache = Mockito.mock(IDistributedCache.class);
     CacheManagementController controller = new CacheManagementController(cache);
-    this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+    // Standalone MockMvc: use Spring's default handler so ResponseStatusException → HTTP status.
+    this.mockMvc = MockMvcBuilders.standaloneSetup(controller)
+        .setControllerAdvice(new ResponseEntityExceptionHandler() {
+        })
+        .build();
   }
 
   // ── GET /{key} ───────────────────────────────────────────────────────────────
@@ -58,14 +61,15 @@ public class CacheManagementControllerTest {
 
   @Test
   void testGet_blankKey_returnsBadRequest() throws Exception {
-    mockMvc.perform(get("/api/v1/cache/%20"))
+    // URI template expands and decodes the variable; raw "/.../%20" can bind as literal "%20".
+    mockMvc.perform(get("/api/v1/cache/{key}", "   "))
         .andExpect(status().isBadRequest());
   }
 
   @Test
   void testGet_keyTooLong_returnsBadRequest() throws Exception {
     String longKey = "k".repeat(257);
-    mockMvc.perform(get("/api/v1/cache/" + longKey))
+    mockMvc.perform(get("/api/v1/cache/{key}", longKey))
         .andExpect(status().isBadRequest());
   }
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ class CaffeineMemoryCacheTest {
 
   @Test
   void get_expiredEntry_returnsEmpty() throws InterruptedException {
-    LocalDateTime soon = LocalDateTime.now().plusMillis(80);
+    LocalDateTime soon = LocalDateTime.now().plus(80, ChronoUnit.MILLIS);
     cache.put("e", "v", soon);
     Thread.sleep(250);
     assertTrue(cache.get("e").isEmpty());
@@ -51,7 +52,7 @@ class CaffeineMemoryCacheTest {
 
   @Test
   void containsKey_expired_invalidates() throws InterruptedException {
-    LocalDateTime soon = LocalDateTime.now().plusMillis(80);
+    LocalDateTime soon = LocalDateTime.now().plus(80, ChronoUnit.MILLIS);
     cache.put("e2", "v", soon);
     Thread.sleep(250);
     assertFalse(cache.containsKey("e2"));

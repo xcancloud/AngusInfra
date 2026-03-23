@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.util.AopTestUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
@@ -48,8 +49,9 @@ class HybridCacheAutoConfigurationTest {
       assertThat(ctx).hasSingleBean(IDistributedCache.class);
       assertThat(ctx).hasSingleBean(CachePersistence.class);
       assertThat(ctx.getBean(CachePersistence.class)).isInstanceOf(NoOpCachePersistence.class);
-      assertThat(ctx.getBean(IDistributedCache.class)).isInstanceOf(
-          TransactionalDistributedCache.class);
+      Object cacheTarget =
+          AopTestUtils.getUltimateTargetObject(ctx.getBean(IDistributedCache.class));
+      assertThat(cacheTarget).isInstanceOf(TransactionalDistributedCache.class);
       assertThat(ctx).doesNotHaveBean(CacheManagementController.class);
     });
   }

@@ -4,7 +4,6 @@ import static cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventReposit
 import static cloud.xcan.angus.core.event.repository.MemoryAndRemoteEventRepository.DEFAULT_SEND_BUFFER_CAPACITY;
 import static org.springframework.boot.web.servlet.filter.OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER;
 
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.disruptor.DisruptorQueueFactory;
 import cloud.xcan.angus.core.disruptor.DisruptorQueueManager;
 import cloud.xcan.angus.core.event.AbstractEvent;
@@ -73,9 +72,8 @@ public class AuditLogAutoConfigurer {
   @Bean("commonEventRepository")
   public EventRepository<CommonEvent> commonEventRepository(
       CommonEventRemote commonEventRemote, ObjectMapper objectMapper) {
-    return new MemoryAndRemoteEventRepository(
-        new Str0(new long[]{0x43E344F47217DBBBL, 0x67D381BF2FF087A1L, 0xFF7F11CDE1A30240L})
-            .toString() /* => "CommonEvent" */,
+    return new MemoryAndRemoteEventRepository<CommonEvent>(
+        "CommonEvent",
         DEFAULT_MEMORY_CAPACITY, DEFAULT_SEND_BUFFER_CAPACITY, commonEventRemote, objectMapper);
   }
 
@@ -91,13 +89,8 @@ public class AuditLogAutoConfigurer {
   public DisruptorQueueManager<CommonEvent> commonEventDisruptorQueue(
       EventListener<CommonEvent> commonEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
-        new DefaultThreadFactory(new Str0(
-            new long[]{0x87DB4D15C070FC49L, 0x16D7F067641B3BC2L, 0xC036476A4FD9D470L,
-                0xCCC3AB1D042159FAL, 0x5B34EB5AD8D32143L})
-            .toString() /* => "xcanDisruptorQueueExceptionEvent" */
-            , Thread.NORM_PRIORITY),
-        commonEventListener
-    );
+        new DefaultThreadFactory("xcanDisruptorQueueExceptionEvent", Thread.NORM_PRIORITY),
+        commonEventListener);
   }
 
   @ConditionalOnMissingBean
@@ -118,9 +111,8 @@ public class AuditLogAutoConfigurer {
   //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
   public EventRepository<OperationEvent> operationEventRepository(
       OperationEventRemote operationEventRemote, ObjectMapper objectMapper) {
-    return new MemoryAndRemoteEventRepository(
-        new Str0(new long[]{0xBDBAAE78A503E417L, 0xF6CDE1141F4B0541L, 0x48DE689DB0B2C6E9L})
-            .toString() /* => "OperationEvent" */,
+    return new MemoryAndRemoteEventRepository<OperationEvent>(
+        "OperationEvent",
         DEFAULT_MEMORY_CAPACITY, DEFAULT_SEND_BUFFER_CAPACITY, operationEventRemote, objectMapper);
   }
 
@@ -138,13 +130,8 @@ public class AuditLogAutoConfigurer {
   public DisruptorQueueManager<OperationEvent> operationEventDisruptorQueue(
       EventListener<OperationEvent> operationEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
-        new DefaultThreadFactory(new Str0(
-            new long[]{0xC774A2E692120AB9L, 0x4C0995852B7B9E05L, 0xC58BE7578D121B70L,
-                0xE0355558E11FD33BL, 0xB640D47EDB07025AL})
-            .toString() /* => "xcanDisruptorQueueOperationEvent" */
-            , Thread.NORM_PRIORITY),
-        operationEventListener
-    );
+        new DefaultThreadFactory("xcanDisruptorQueueOperationEvent", Thread.NORM_PRIORITY),
+        operationEventListener);
   }
 
   @ConditionalOnMissingBean
@@ -165,9 +152,8 @@ public class AuditLogAutoConfigurer {
   //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
   public EventRepository<ApiLogEvent> apiLogEventRepository(ApiLogEventRemote apiLogEventRemote,
       ObjectMapper objectMapper) {
-    return new MemoryAndRemoteEventRepository(
-        new Str0(new long[]{0xCA18AEF2FB94E0C5L, 0x3ADDFB9A25AF31EAL, 0x1F7001D2AA0ED670L})
-            .toString() /* => "ApiLogEvent" */, DEFAULT_MEMORY_CAPACITY,
+    return new MemoryAndRemoteEventRepository<ApiLogEvent>(
+        "ApiLogEvent", DEFAULT_MEMORY_CAPACITY,
         DEFAULT_SEND_BUFFER_CAPACITY, apiLogEventRemote, objectMapper);
   }
 
@@ -185,13 +171,8 @@ public class AuditLogAutoConfigurer {
   public DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue(
       EventListener<ApiLogEvent> apiLogEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
-        new DefaultThreadFactory(new Str0(
-            new long[]{0x31D9C67CC1DFF1CDL, 0xA923DE3DF88AD876L, 0xF4EBDCB6350E9B18L,
-                0x84E382598DD15E56L, 0x5939553721A3B9B8L})
-            .toString() /* => "xcanDisruptorQueueApiLogEvent" */
-            , Thread.NORM_PRIORITY),
-        apiLogEventListener
-    );
+        new DefaultThreadFactory("xcanDisruptorQueueApiLogEvent", Thread.NORM_PRIORITY),
+        apiLogEventListener);
   }
 
   @Bean
@@ -200,10 +181,7 @@ public class AuditLogAutoConfigurer {
       ApiLogProperties apiLogProperties,
       DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue) {
     FilterRegistrationBean<ApiLogFilter> registrationBean = new FilterRegistrationBean<>();
-    registrationBean.setName(
-        new Str0(new long[]{0x6F3C1AE288BCA61DL, 0xD15E0620F78077FDL, 0xCF8300C088496E2EL})
-            .toString() /* => "apiLogFilter" */
-    );
+    registrationBean.setName("apiLogFilter");
     registrationBean.setFilter(new ApiLogFilter(apiLogProperties, apiLogEventDisruptorQueue));
     registrationBean.setDispatcherTypes(DispatcherType.REQUEST);
     registrationBean.addUrlPatterns(RESOURCES);

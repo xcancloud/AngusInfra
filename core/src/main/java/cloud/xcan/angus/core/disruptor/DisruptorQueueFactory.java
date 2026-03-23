@@ -25,11 +25,11 @@ public class DisruptorQueueFactory {
    * The message is processed by only one of the consumers.
    */
   public static <T> DisruptorQueueManager<T> createWorkPoolQueue(int queueSize,
-      boolean multiProducer, ThreadFactory threadFactory, EventListener<T>... consumers) {
+      boolean multiProducer, ThreadFactory threadFactory, EventListener<T> consumer) {
     Disruptor<EventObject<T>> disruptor = new Disruptor<>(
         new EventObjectFactory<>(), queueSize, threadFactory,
         multiProducer ? ProducerType.MULTI : ProducerType.SINGLE, new BlockingWaitStrategy());
-    disruptor.handleEventsWithWorkerPool(consumers);
+    disruptor.handleEventsWithWorkerPool(consumer);
     return new DisruptorQueueManager<>(disruptor);
   }
 
@@ -41,6 +41,7 @@ public class DisruptorQueueFactory {
    * <p>
    * Messages are processed by multiple consumers.
    */
+  @SafeVarargs
   public static <T> DisruptorQueueManager<T> createHandleEventsQueue(int queueSize,
       boolean multiProducer, ThreadFactory threadFactory, EventListener<T>... consumers) {
     Disruptor<EventObject<T>> disruptor = new Disruptor<>(

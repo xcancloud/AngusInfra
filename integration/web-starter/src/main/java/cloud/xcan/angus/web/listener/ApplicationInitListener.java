@@ -2,7 +2,6 @@ package cloud.xcan.angus.web.listener;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.app.AppBeanReadyInit;
 import cloud.xcan.angus.core.app.AppPropertiesRegisterInit;
 import cloud.xcan.angus.core.app.AppWorkspaceInit;
@@ -76,9 +75,7 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
     //      if (openedAppCache()) {
     //        // Note: Register the main application cache manager, must be initialized at the beginning.
     //        // Used by application initialization verification
-    //        registerBean(VerxRegister.class, new Str0(
-    //            new long[]{0x34CC9A19DE6ECD99L, 0x9D0E22B0DC98A9ADL, 0xB94135F40269A5C7L})
-    //            .toString() /* => "dCacheManager" */);
+    //        registerBean(VerxRegister.class, "dCacheManager");
     //
     //        // Verify the cache environment
     //        cacheManager().var();
@@ -104,13 +101,8 @@ public class ApplicationInitListener implements ApplicationListener<ApplicationS
     //    }
   }
 
-  private static final String IM = new Str0(
-      new long[]{0xED65BFA117257848L, 0xEE4E8C602956F9ACL, 0x9F21B20CFB43625DL, 0x61CA7D2783B23B54L,
-          0x89A44F3C38612F4FL, 0x84386D3F37D663L, 0x6A4392AFC8E0CB66L})
-      .toString()/* => "Application has expired or is invalid" */;
+  private static final String IM = "Application has expired or is invalid";
 
-  private static final String AM = new Str0(
-      new long[]{0xB1783D42F7D06A31L, 0x3DCF42D8DE825DBEL, 0xC44151429334E3D9L, 0xFD3394BFEC56B238L,
-          0x28D5FF91AC50F38DL}).toString() /* => "Application init exception" */;
+  private static final String AM = "Application init exception";
 
 }

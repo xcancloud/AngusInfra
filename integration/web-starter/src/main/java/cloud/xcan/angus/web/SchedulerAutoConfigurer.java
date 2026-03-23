@@ -1,6 +1,5 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.scheduled.SchedulerPropertis;
 import jakarta.annotation.Resource;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,9 +32,7 @@ public class SchedulerAutoConfigurer implements SchedulingConfigurer {
   public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
     ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
     threadPoolTaskScheduler.setPoolSize(propertis.getThreadPoolSize());
-    threadPoolTaskScheduler.setThreadNamePrefix(
-        new Str0(new long[]{0x6788F19143F55F35L, 0x47FD4ECB7A0921ABL, 0xAE1A4EA6C2D34405L})
-            .toString() /* => "Angus-Scheduler" */);
+    threadPoolTaskScheduler.setThreadNamePrefix("Angus-Scheduler");
     threadPoolTaskScheduler.initialize();
     taskRegistrar.setTaskScheduler(threadPoolTaskScheduler);
   }

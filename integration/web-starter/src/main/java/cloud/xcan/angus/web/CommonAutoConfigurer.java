@@ -1,6 +1,5 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.spring.boot.ApplicationBanner;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.spring.filter.GlobalProperties;
@@ -27,11 +26,7 @@ public class CommonAutoConfigurer implements ApplicationContextAware {
   private static ApplicationContext applicationContext;
 
   public CommonAutoConfigurer() {
-    log.info(new Str0(
-        new long[]{0x2F6882DAF2C7432EL, 0x72F11BBA53040BE8L, 0x93AF8A2C7B2C4EEBL,
-            0x84A9F35AAA5C0BAAL,
-            0xFCF62F11E9D7FEEDL, 0x7B5D8C4B9689046BL, 0xE7C2520ACB9F260BL})
-        .toString() /* => "Application common auto configuration is enabled" */);
+    log.info("Application common auto configuration is enabled");
   }
 
   @Bean

@@ -13,7 +13,10 @@ import lombok.experimental.Accessors;
 import org.hibernate.annotations.Filter;
 
 @MultiTenant
-@Filter(name = "xcanTenantScope", condition = "tenant_id = :tenantId")
+@Filter(
+    name = "xcanTenantScope",
+    deduceAliasInjectionPoints = false,
+    condition = "{alias}.tenant_id = :tenantId")
 @MappedSuperclass
 @Getter
 @Setter

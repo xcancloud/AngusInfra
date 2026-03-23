@@ -3,8 +3,6 @@ package cloud.xcan.angus.persistence.jpa.multitenancy;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenantCtrlByApiType;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isValidOptTenantId;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
-
 import cloud.xcan.angus.spec.experimental.MultiTenant;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
@@ -14,8 +12,8 @@ import org.hibernate.Session;
 /**
  * Binds Hibernate {@value TenantFilterNames#SCOPE} on the current persistence context session when
  * {@link Principal} flags and API type require automatic tenant scoping. JPA/HQL/Criteria queries
- * on {@link MultiTenant} mapped types then receive {@code AND tenant_id = :tenantId} at the SQL
- * generation layer (not via fragile string rewriting).
+ * on {@link MultiTenant} mapped types then receive an extra tenant-id SQL predicate (with correct
+ * table alias) at generation time (not via fragile string rewriting).
  */
 public final class TenantFilterApplicator {
 
@@ -26,9 +24,7 @@ public final class TenantFilterApplicator {
     if (principal == null) {
       return false;
     }
-    return principal.isMultiTenantCtrl()
-        && decideMultiTenantCtrlByApiType(principal)
-        && !isEmpty(TenantMetadata.getTenantTableNames());
+    return principal.isMultiTenantCtrl() && decideMultiTenantCtrlByApiType(principal);
   }
 
   /**
@@ -43,8 +39,10 @@ public final class TenantFilterApplicator {
     if (enabled != null) {
       session.disableFilter(TenantFilterNames.SCOPE);
     }
-    Principal principal = PrincipalContext.get();
-    if (!shouldApplyTenantFilter(principal)) {
+    // Use thread-local only: PrincipalContext#get() returns a non-persisted default Principal when
+    // unset, which would skip enabling the filter (apiType null → decideMultiTenantCtrlByApiType false).
+    Principal principal = PrincipalContext.threadLocal.get();
+    if (principal == null || !shouldApplyTenantFilter(principal)) {
       return;
     }
     Long tenantId = getOptTenantId(principal);

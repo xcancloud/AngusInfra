@@ -91,7 +91,6 @@
     <postgresql.version>42.7.5</postgresql.version>
 
     <slf4j.version>2.0.13</slf4j.version>
-    <logback.verison>1.5.6</logback.verison>
     <janino.version>3.1.4</janino.version>
     <lombok.version>1.18.36</lombok.version>
     <aspectjweaver.version>1.9.6</aspectjweaver.version>
@@ -270,17 +269,6 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
-      </dependency>
-      <!--  The SLF4J API implements. -->
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-classic</artifactId>
-        <version>${logback.verison}</version>
-      </dependency>
-      <dependency>
-        <groupId>ch.qos.logback</groupId>
-        <artifactId>logback-core</artifactId>
-        <version>${logback.verison}</version>
       </dependency>
       <dependency>
         <groupId>org.codehaus.janino</groupId>

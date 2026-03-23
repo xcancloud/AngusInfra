@@ -9,7 +9,10 @@ import jakarta.persistence.MappedSuperclass;
 import org.hibernate.annotations.Filter;
 
 @MultiTenant
-@Filter(name = "xcanTenantScope", condition = "tenant_id = :tenantId")
+@Filter(
+    name = "xcanTenantScope",
+    deduceAliasInjectionPoints = false,
+    condition = "{alias}.tenant_id = :tenantId")
 @MappedSuperclass
 @EntityListeners(TenantListener.class)
 public abstract class TenantAuditingEntity<T extends Entity<T, ID>, ID> extends

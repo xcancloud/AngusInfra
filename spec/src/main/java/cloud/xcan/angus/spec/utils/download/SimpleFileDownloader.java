@@ -28,7 +28,9 @@ import org.slf4j.LoggerFactory;
  */
 public final class SimpleFileDownloader implements FileDownloader {
 
-  /** Subdirectory under the application tmp root for downloader-created temp folders. */
+  /**
+   * Subdirectory under the application tmp root for downloader-created temp folders.
+   */
   public static final String TEMP_DIRECTORY = "angus-downloader";
 
   private static final int BUFFER_SIZE = 8192;

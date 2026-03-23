@@ -5,8 +5,8 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.hasOptTenantId;
 import static cloud.xcan.angus.spec.experimental.BizConstant.TENANT_ID_DB_KEY;
 
 import cloud.xcan.angus.spec.principal.PrincipalContext;
-import jakarta.persistence.EntityType;
 import jakarta.persistence.Query;
+import jakarta.persistence.metamodel.EntityType;
 
 /**
  * Native SQL bypasses Hibernate {@code @Filter}; when automatic tenant scoping is on, callers
@@ -41,7 +41,9 @@ public final class TenantNativeQuerySupport {
     return entityType != null && shouldAppendTenantPredicate(entityType.getJavaType());
   }
 
-  /** {@code AND alias.tenant_id = :xcanTenantId} (SQL fragment only). */
+  /**
+   * {@code AND alias.tenant_id = :xcanTenantId} (SQL fragment only).
+   */
   public static void appendQualifiedTenantClause(StringBuilder sql, String alias,
       Class<?> entityClass) {
     if (!shouldAppendTenantPredicate(entityClass)) {
@@ -51,7 +53,9 @@ public final class TenantNativeQuerySupport {
         .append(PARAM_NAME);
   }
 
-  /** {@code AND tenant_id = :xcanTenantId} without table prefix (SQL fragment only). */
+  /**
+   * {@code AND tenant_id = :xcanTenantId} without table prefix (SQL fragment only).
+   */
   public static void appendUnqualifiedTenantClause(StringBuilder sql, Class<?> entityClass) {
     if (!shouldAppendTenantPredicate(entityClass)) {
       return;

@@ -24,8 +24,8 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Cloud: ensure the app is registered for the tenant and within the licensed window. Private: ensure
- * license / expiry rules for the given {@link CheckAppNotExpired#appCode()}.
+ * Cloud: ensure the app is registered for the tenant and within the licensed window. Private:
+ * ensure license / expiry rules for the given {@link CheckAppNotExpired#appCode()}.
  *
  * @author XiaoLong Liu
  */

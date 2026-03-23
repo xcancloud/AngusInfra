@@ -6,7 +6,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Accepts files whose name ends with the given extension, case-insensitive (using {@link Locale#ROOT}).
+ * Accepts files whose name ends with the given extension, case-insensitive (using
+ * {@link Locale#ROOT}).
  */
 public class ExtensionFileFilter implements FileFilter {
 

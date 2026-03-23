@@ -224,6 +224,7 @@ public class CriteriaUtils {
     }
     List<SearchCriteria> criteria = find(filters, key);
     return isEmpty(criteria) ? null : criteria.stream()
+        .filter(c -> nonNull(c.getValue()))
         .map(c -> safeStringValue(c.getValue().toString())).collect(Collectors.toList());
   }
 
@@ -233,6 +234,7 @@ public class CriteriaUtils {
     }
     List<SearchCriteria> criteria = findAndRemove(filters, key);
     return isEmpty(criteria) ? null : criteria.stream()
+        .filter(c -> nonNull(c.getValue()))
         .map(c -> safeStringValue(c.getValue().toString())).collect(Collectors.toList());
   }
 
@@ -242,7 +244,9 @@ public class CriteriaUtils {
     if (isEmpty(criteria)) {
       return null;
     }
-    return criteria.stream().map(c -> safeStringValue(c.getValue().toString()))
+    return criteria.stream()
+        .filter(c -> nonNull(c.getValue()))
+        .map(c -> safeStringValue(c.getValue().toString()))
         .collect(Collectors.toList());
   }
 
@@ -252,7 +256,9 @@ public class CriteriaUtils {
     if (isEmpty(criteria)) {
       return null;
     }
-    return criteria.stream().map(c -> safeStringValue(c.getValue().toString()))
+    return criteria.stream()
+        .filter(c -> nonNull(c.getValue()))
+        .map(c -> safeStringValue(c.getValue().toString()))
         .collect(Collectors.toList());
   }
 
@@ -261,7 +267,7 @@ public class CriteriaUtils {
       return null;
     }
     for (SearchCriteria criteria : filters) {
-      if (key.equals(criteria.getKey())) {
+      if (key.equals(criteria.getKey()) && nonNull(criteria.getValue())) {
         return safeStringValue(criteria.getValue().toString());
       }
     }
@@ -294,7 +300,8 @@ public class CriteriaUtils {
       return null;
     }
     for (SearchCriteria criteria : filters) {
-      if (key.equals(criteria.getKey()) && op.equals(criteria.getOp())) {
+      if (key.equals(criteria.getKey()) && op.equals(criteria.getOp())
+          && nonNull(criteria.getValue())) {
         return safeStringValue(criteria.getValue().toString());
       }
     }
@@ -310,7 +317,7 @@ public class CriteriaUtils {
     List<SearchCriteria> removedCriteria = new ArrayList<>();
     for (SearchCriteria criteria : filters) {
       if (key.equals(criteria.getKey()) && op.equals(criteria.getOp())) {
-        if (isNull(first)) {
+        if (isNull(first) && nonNull(criteria.getValue())) {
           first = criteria.getValue().toString().replaceAll("\"", "");
         }
         removedCriteria.add(criteria);
@@ -326,7 +333,7 @@ public class CriteriaUtils {
     Set<String> values = new LinkedHashSet<>();
     if (isNotEmpty(filters) && isNotEmpty(key)) {
       List<SearchCriteria> criteria = find(filters, key, SearchOperation.IN);
-      if (isNotEmpty(filters)) {
+      if (isNotEmpty(criteria)) {
         for (SearchCriteria criteria0 : criteria) {
           if (nonNull(criteria0.getValue())) {
             parseInValues(values, criteria0);
@@ -355,12 +362,17 @@ public class CriteriaUtils {
     if (isNotEmpty(filters)) {
       List<SearchCriteria> criteria = find(filters, key, SearchOperation.IN);
       if (isNotEmpty(criteria)) {
-        if (criteria.get(0) instanceof Collection) {
-          return StringUtils.join(((Collection<?>) criteria.get(0)).toArray(), ",");
-        } else if (criteria.get(0).getClass().isArray()) {
-          return StringUtils.join(criteria.get(0), ",");
+        Object val = criteria.get(0).getValue();
+        if (val instanceof Collection<?>) {
+          return StringUtils.join(((Collection<?>) val).toArray(), ",");
         }
-        String sv = criteria.get(0).getValue().toString().replaceAll("\"", "");
+        if (nonNull(val) && val.getClass().isArray()) {
+          return StringUtils.join(val, ",");
+        }
+        if (isNull(val)) {
+          return null;
+        }
+        String sv = val.toString().replaceAll("\"", "");
         sv = StringUtils.removeStart(sv, "[");
         sv = StringUtils.removeEnd(sv, "]");
         return sv;
@@ -417,7 +429,7 @@ public class CriteriaUtils {
     List<String> values = new ArrayList<>();
     if (isNotEmpty(filters) && isNotEmpty(key)) {
       List<SearchCriteria> criteria = find(filters, key);
-      if (isNotEmpty(filters)) {
+      if (isNotEmpty(criteria)) {
         for (SearchCriteria criteria0 : criteria) {
           if (nonNull(criteria0.getValue()) && (criteria0.isMatchSearch())) {
             values.add(safeStringValue(criteria0.getValue().toString()));
@@ -504,7 +516,8 @@ public class CriteriaUtils {
       grantValue = grantValue.replaceAll("\"", "");
       if (grantValue.equalsIgnoreCase(permission)) {
         // Fix "%GRANT%" : Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
-        grantSql = " AND " + alias + ".auths LIKE CONCAT('%','" + permission + "','%')";
+        grantSql = " AND " + alias + ".auths LIKE CONCAT('%','"
+            + escapeSqlStringLiteral(permission) + "','%')";
       }
     }
     return grantSql;
@@ -516,7 +529,8 @@ public class CriteriaUtils {
     if (isNotEmpty(permissionValue)) {
       permissionValue = permissionValue.replaceAll("\"", "");
       // Fix "%GRANT%" : Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
-      permissionSql = " AND " + alias + ".auths LIKE CONCAT('%','" + permissionValue + "','%')";
+      permissionSql = " AND " + alias + ".auths LIKE CONCAT('%','"
+          + escapeSqlStringLiteral(permissionValue) + "','%')";
     }
     return permissionSql;
   }
@@ -525,7 +539,18 @@ public class CriteriaUtils {
     if (isEmpty(searchValue)) {
       return "";
     }
-    return " AND MATCH (" + alias + ".`name`) AGAINST ('" + searchValue + "' IN BOOLEAN MODE) ";
+    return " AND MATCH (" + alias + ".`name`) AGAINST ('"
+        + escapeSqlStringLiteral(searchValue) + "' IN BOOLEAN MODE) ";
+  }
+
+  /**
+   * Escapes single quotes for use inside SQL string literals ({@code '...'}).
+   */
+  private static String escapeSqlStringLiteral(String raw) {
+    if (raw == null) {
+      return "";
+    }
+    return raw.replace("'", "''");
   }
 
   public static String getInConditionValue(Collection<Long> ids) {

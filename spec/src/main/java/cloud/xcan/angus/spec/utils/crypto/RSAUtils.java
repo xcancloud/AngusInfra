@@ -42,7 +42,9 @@ public final class RSAUtils {
   private RSAUtils() {
   }
 
-  /** Default RSA modulus size in bits. */
+  /**
+   * Default RSA modulus size in bits.
+   */
   public static final int RSA_KEY_SIZE = 1024;
 
   /**

@@ -83,9 +83,11 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
   public List<T> getList(Set<SearchCriteria> criteria,
       Pageable pageable, Class<T> mainClz, Function<? super Object[], T> mapper,
       Object[] params, StringBuilder sql) {
-    Order order = pageable.getSort().get().findFirst().get();
-    sql.append(" ORDER BY ").append(camelToUnder(order.getProperty())).append(" ")
-        .append(order.getDirection());
+    if (pageable.getSort().isSorted()) {
+      Order order = pageable.getSort().iterator().next();
+      sql.append(" ORDER BY ").append(camelToUnder(order.getProperty())).append(" ")
+          .append(order.getDirection());
+    }
     if (Objects.nonNull(mapper)) {
       Query queryList = getEntityManager().createNativeQuery(
           sql.toString().replaceFirst("%s", getReturnFieldsCondition(criteria, params)));
@@ -138,38 +140,45 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
           continue;
         }
 
+        boolean isKeyword = "keyword".equalsIgnoreCase(criteria0.getKey());
         String columnName = null;
-        // If it is a full-text search based on keywords
-        if ("keyword".equalsIgnoreCase(criteria0.getKey())) {
-          criteria0.setOp(SearchOperation.MATCH);
-        } else {
-          // If it is a search based on field names
+        if (!isKeyword) {
           columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
           if (isEmpty(columnName)) {
             continue;
           }
         }
 
+        // Same as legacy setOp(MATCH) for keyword, but without mutating criteria0 (shared Set).
+        SearchOperation effective = criteria0.getOp();
+        if (isKeyword && !criteria0.isInOrNotSearch()) {
+          effective = SearchOperation.MATCH;
+        }
         String namingKey = criteria0.getOp().getValue() + criteria0.getKey();
-        if (criteria0.isGreaterThan()) {
+        boolean isMatchLikeOp =
+            effective.equals(SearchOperation.MATCH) || effective.equals(SearchOperation.MATCH_END)
+                || effective.equals(SearchOperation.NOT_MATCH) || effective.equals(
+                SearchOperation.NOT_MATCH_END);
+
+        if (effective.equals(SearchOperation.GREATER_THAN)) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" > :").append(namingKey);
-        } else if (criteria0.isLessThan()) {
+        } else if (effective.equals(SearchOperation.LESS_THAN)) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" < :").append(namingKey);
-        } else if (criteria0.isGreaterThanEqual()) {
+        } else if (effective.equals(SearchOperation.GREATER_THAN_EQUAL)) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" >= :").append(namingKey);
-        } else if (criteria0.isLessThanEqual()) {
+        } else if (effective.equals(SearchOperation.LESS_THAN_EQUAL)) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" <= :").append(namingKey);
-        } else if (criteria0.isEqual()) {
+        } else if (effective.equals(SearchOperation.EQUAL)) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" = :").append(namingKey);
-        } else if (criteria0.isNotEqual()) {
+        } else if (effective.equals(SearchOperation.NOT_EQUAL)) {
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" <> :").append(namingKey);
-        } else if (!hasSearch && (criteria0.isMatchSearch() || criteria0.isNotMatchSearch())) {
+        } else if (!hasSearch && isMatchLikeOp) {
           if (Objects.isNull(mode)) {
             mode = getSearchMode();
           }
@@ -188,40 +197,59 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
                 .append(strValue)/*.append("\"")*/ /* Note:: Postgres uses two single quotes */
                 .append(" IN BOOLEAN MODE)");
           } else {
+            String likeColumn = columnName;
+            if (isEmpty(likeColumn) && isNotEmpty(match)) {
+              likeColumn = getColumnName(entityManager, mainClz, match[0]);
+            }
+            if (isEmpty(likeColumn)) {
+              continue;
+            }
             String strValue = safeStringValue(criteria0.getValue().toString());
-            if (SearchOperation.MATCH.equals(criteria0.getOp())) {
+            if (SearchOperation.MATCH.equals(effective)) {
               sql.append(" AND ").append(alias).append(".")
-                  .append(columnName)
+                  .append(likeColumn)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" like \"%%").append(strValue).append("%%\"");
-            } else if (SearchOperation.MATCH_END.equals(criteria0.getOp())) {
+            } else if (SearchOperation.MATCH_END.equals(effective)) {
               sql.append(" AND ").append(alias).append(".")
-                  .append(columnName)
+                  .append(likeColumn)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" like \"").append(strValue).append("%%\"");
-            } else if (SearchOperation.NOT_MATCH.equals(criteria0.getOp())) {
+            } else if (SearchOperation.NOT_MATCH.equals(effective)) {
               sql.append(" AND ").append(alias).append(".")
-                  .append(columnName)
+                  .append(likeColumn)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" not like \"%%").append(strValue).append("%%\"");
-            } else if (SearchOperation.NOT_MATCH_END.equals(criteria0.getOp())) {
+            } else if (SearchOperation.NOT_MATCH_END.equals(effective)) {
               sql.append(" AND ").append(alias).append(".")
-                  .append(columnName)
+                  .append(likeColumn)
                   // Fix:: "%***%" -> "%%***%%": Conversion = '"'; nested exception is java.util.UnknownFormatConversionException: Conversion = '"'
                   .append(" not like \"").append(strValue).append("%%\"");
             }
           }
           hasSearch = true;
         } else if (criteria0.isIn()) {
+          if (isEmpty(columnName)) {
+            continue;
+          }
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" in :").append(namingKey);
         } else if (criteria0.isNotIn()) {
+          if (isEmpty(columnName)) {
+            continue;
+          }
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" not in :").append(namingKey);
         } else if (criteria0.isNull()) {
+          if (isEmpty(columnName)) {
+            continue;
+          }
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" IS NULL ");
         } else if (criteria0.isNotNull()) {
+          if (isEmpty(columnName)) {
+            continue;
+          }
           sql.append(" AND ").append(alias).append(".")
               .append(columnName).append(" IS NOT NULL ");
         }
@@ -262,15 +290,45 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         }
       } else {
         Field f = ReflectionUtils.getField(mainClz, criteria0.getKey());
+        if (f == null) {
+          throw new IllegalArgumentException(
+              "Unknown filter field for entity " + mainClz.getName() + ": " + criteria0.getKey());
+        }
         String strValue = safeStringValue(criteria0.getValue().toString());
         if (criteria0.getValue() instanceof Value) {
           query.setParameter(namingKey, ((Value) criteria0.getValue()).getValue());
         } else if (f.getType().isEnum()) {
-          Value<?>[] values = (Value<?>[]) f.getType().getEnumConstants();
-          for (Value<?> value : values) {
-            if (strValue.equalsIgnoreCase((String) value.getValue())) {
-              query.setParameter(namingKey, value.getValue());
+          Class<?> enumType = f.getType();
+          if (Value.class.isAssignableFrom(enumType)) {
+            Value<?>[] values = (Value<?>[]) enumType.getEnumConstants();
+            boolean matched = false;
+            for (Value<?> ev : values) {
+              if (strValue.equalsIgnoreCase((String) ev.getValue())) {
+                query.setParameter(namingKey, ev.getValue());
+                matched = true;
+                break;
+              }
             }
+            if (!matched) {
+              throw new IllegalArgumentException(
+                  "Unsupported enum value for field '" + criteria0.getKey() + "': " + strValue);
+            }
+          } else {
+            @SuppressWarnings({"rawtypes", "unchecked"})
+            Class<? extends Enum> enumClass = (Class<? extends Enum>) enumType;
+            Enum<?> constant;
+            try {
+              constant = Enum.valueOf(enumClass, strValue);
+            } catch (IllegalArgumentException ex) {
+              try {
+                constant = Enum.valueOf(enumClass, strValue.toUpperCase());
+              } catch (IllegalArgumentException ex2) {
+                throw new IllegalArgumentException(
+                    "Unsupported enum value for field '" + criteria0.getKey() + "': " + strValue,
+                    ex2);
+              }
+            }
+            query.setParameter(namingKey, constant);
           }
         } else if (criteria0.getValue() instanceof Boolean) {
           query.setParameter(namingKey, criteria0.getValue());

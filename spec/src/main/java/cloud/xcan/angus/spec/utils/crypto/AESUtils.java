@@ -24,7 +24,10 @@ public final class AESUtils {
 
   public static final String ALGORITHM = "AES";
   public static final String ALGORITHM_TRANSFORMATION = "AES/CBC/PKCS5Padding";
-  /** Legacy PRNG name used only when a non-null seed is supplied (stable derivation vs older releases). */
+  /**
+   * Legacy PRNG name used only when a non-null seed is supplied (stable derivation vs older
+   * releases).
+   */
   public static final String KEY_ALGORITHM = "SHA1PRNG";
   public static final int KEY_SIZE = 256;
 
@@ -118,7 +121,8 @@ public final class AESUtils {
       String content) {
     Objects.requireNonNull(content, "content");
     try {
-      IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(Charset.forName(DEFAULT_ENCODING)));
+      IvParameterSpec iv = new IvParameterSpec(
+          initVector.getBytes(Charset.forName(DEFAULT_ENCODING)));
       SecretKeySpec skeySpec = new SecretKeySpec(Base64Utils.decode(encryptKey), ALGORITHM);
 
       Cipher cipher = Cipher.getInstance(transformation);
@@ -136,7 +140,8 @@ public final class AESUtils {
       String content) {
     Objects.requireNonNull(content, "content");
     try {
-      IvParameterSpec iv = new IvParameterSpec(initVector.getBytes(Charset.forName(DEFAULT_ENCODING)));
+      IvParameterSpec iv = new IvParameterSpec(
+          initVector.getBytes(Charset.forName(DEFAULT_ENCODING)));
       SecretKeySpec skeySpec = new SecretKeySpec(Base64Utils.decode(decryptKey), ALGORITHM);
 
       Cipher cipher = Cipher.getInstance(transformation);

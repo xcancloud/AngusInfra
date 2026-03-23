@@ -1,6 +1,8 @@
 package cloud.xcan.angus.spec.utils.crypto;
 
-/** Unchecked exception for cryptographic operation failures. */
+/**
+ * Unchecked exception for cryptographic operation failures.
+ */
 public final class CryptoException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;

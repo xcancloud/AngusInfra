@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Per-thread (and child-thread inheritable) string-keyed context using {@link InheritableThreadLocal}.
+ * Per-thread (and child-thread inheritable) string-keyed context using
+ * {@link InheritableThreadLocal}.
  * <p>
  * Child threads receive the <strong>same map reference</strong> as the parent at creation time (JDK
  * default {@link InheritableThreadLocal} behavior). Do not mutate that map concurrently from parent
@@ -24,7 +25,9 @@ public final class ThreadContext {
     CONTEXT.set(Objects.requireNonNull(map, "map"));
   }
 
-  /** Creates a new {@link HashMap}, binds it to the current thread, and returns it. */
+  /**
+   * Creates a new {@link HashMap}, binds it to the current thread, and returns it.
+   */
   public static Map<String, Object> create() {
     Map<String, Object> map = new HashMap<>();
     CONTEXT.set(map);
@@ -80,7 +83,9 @@ public final class ThreadContext {
     }
   }
 
-  /** Removes the entire context map for this thread (including inherited binding). */
+  /**
+   * Removes the entire context map for this thread (including inherited binding).
+   */
   public static void remove() {
     CONTEXT.remove();
   }

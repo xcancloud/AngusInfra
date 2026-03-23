@@ -19,8 +19,8 @@ public class ValidatorUtils {
   private ValidatorUtils() { /* no instance */ }
 
   /**
-   * Local part allows a single character before {@code @} (e.g. {@code a@b.co}); domain ends with
-   * a 2+ letter TLD.
+   * Local part allows a single character before {@code @} (e.g. {@code a@b.co}); domain ends with a
+   * 2+ letter TLD.
    */
   public static final String REGEX_EMAIL =
       "^([a-z0-9A-Z]+[-|\\.]?)*[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";

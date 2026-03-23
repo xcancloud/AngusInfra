@@ -6,7 +6,9 @@ package cloud.xcan.angus.core.app;
  */
 public interface AppPropertiesRegister {
 
-  /** When {@code false}, {@link #register0()} skips {@link #register()}. */
+  /**
+   * When {@code false}, {@link #register0()} skips {@link #register()}.
+   */
   default boolean support() {
     return true;
   }

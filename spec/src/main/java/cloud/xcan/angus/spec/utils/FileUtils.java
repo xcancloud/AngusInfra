@@ -188,7 +188,8 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   public static List<String> readLines(String filePath, int startLine, int numLines)
       throws IOException {
     List<String> lines = new ArrayList<>();
-    try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
+    try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath),
+        StandardCharsets.UTF_8)) {
       int currentLine = 0;
       String line;
       while ((line = reader.readLine()) != null && currentLine < startLine + numLines) {
@@ -204,7 +205,8 @@ public final class FileUtils extends org.apache.commons.io.FileUtils {
   public static List<String> readLines(String filePath, int startPosition)
       throws IOException {
     List<String> lines = new ArrayList<>();
-    try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
+    try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath),
+        StandardCharsets.UTF_8)) {
       for (int i = 0; i < startPosition; i++) {
         reader.readLine();
       }

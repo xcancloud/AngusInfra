@@ -17,7 +17,8 @@ public final class Util {
   }
 
   /**
-   * MD5 digest of {@code input} as lowercase hex (32 chars). {@code null} input yields {@code null}.
+   * MD5 digest of {@code input} as lowercase hex (32 chars). {@code null} input yields
+   * {@code null}.
    */
   public static String md5(String input) {
     if (input == null) {

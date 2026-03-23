@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * AND-combines file filters: {@code true} only if every filter accepts the file. Evaluation stops at
- * the first {@code false}. An empty filter list yields {@code false}.
+ * AND-combines file filters: {@code true} only if every filter accepts the file. Evaluation stops
+ * at the first {@code false}. An empty filter list yields {@code false}.
  * <p>
  * This class is not thread-safe if the backing list is modified while {@link #accept(File)} runs on
  * another thread.

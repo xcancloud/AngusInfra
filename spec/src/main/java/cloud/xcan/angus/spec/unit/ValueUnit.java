@@ -12,6 +12,8 @@ public interface ValueUnit<V, U> extends Value<V> {
 
   U getUnit();
 
-  /** Compact, human-oriented representation (often rounded). */
+  /**
+   * Compact, human-oriented representation (often rounded).
+   */
   String toHumanString();
 }

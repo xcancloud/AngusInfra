@@ -15,7 +15,7 @@ public class AppPropertiesRegisterInit implements ApplicationInit {
   public void init() throws Exception {
     Map<String, AppPropertiesRegister> propertiesRegisters =
         Objects.requireNonNull(SpringContextHolder.getCtx(),
-            "ApplicationContext must be set before ApplicationInit")
+                "ApplicationContext must be set before ApplicationInit")
             .getBeansOfType(AppPropertiesRegister.class);
     if (isNotEmpty(propertiesRegisters)) {
       for (AppPropertiesRegister register : propertiesRegisters.values()) {

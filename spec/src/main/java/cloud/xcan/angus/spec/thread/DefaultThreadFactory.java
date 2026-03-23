@@ -32,7 +32,8 @@ public class DefaultThreadFactory implements ThreadFactory {
     Objects.requireNonNull(prefix, "prefix");
     if (priority < Thread.MIN_PRIORITY || priority > Thread.MAX_PRIORITY) {
       throw new IllegalArgumentException(
-          "priority must be in [" + Thread.MIN_PRIORITY + ", " + Thread.MAX_PRIORITY + "]: " + priority);
+          "priority must be in [" + Thread.MIN_PRIORITY + ", " + Thread.MAX_PRIORITY + "]: "
+              + priority);
     }
     this.namePrefix = prefix + POOL_NUM.getAndIncrement() + "-Thread-";
     this.daemon = daemon;

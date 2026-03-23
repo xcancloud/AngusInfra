@@ -14,7 +14,7 @@ public class AppBeanReadyInit implements ApplicationInit {
   @Override
   public void init() throws Exception {
     Map<String, AppBeanReady> beanReadyMap = Objects.requireNonNull(SpringContextHolder.getCtx(),
-        "ApplicationContext must be set before ApplicationInit")
+            "ApplicationContext must be set before ApplicationInit")
         .getBeansOfType(AppBeanReady.class);
     if (isNotEmpty(beanReadyMap)) {
       for (AppBeanReady register : beanReadyMap.values()) {

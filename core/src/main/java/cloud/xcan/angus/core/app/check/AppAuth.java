@@ -14,11 +14,15 @@ public interface AppAuth {
 
   String getVersion();
 
-  /** When non-null and in the future, the app is not yet open for use. */
+  /**
+   * When non-null and in the future, the app is not yet open for use.
+   */
   @Nullable
   LocalDateTime getOpenDate();
 
-  /** When non-null and in the past, the app license has expired. */
+  /**
+   * When non-null and in the past, the app license has expired.
+   */
   @Nullable
   LocalDateTime getExpirationDate();
 }

@@ -71,9 +71,9 @@ public abstract class CommCmd<T extends Entity<T, ID>, ID extends Serializable> 
   }
 
   /**
-   * Walks the superclass chain so subclasses of an intermediate base (e.g. {@code X extends
-   * BaseCmd&lt;E, I&gt;} and {@code BaseCmd extends CommCmd&lt;E, I&gt;}) still resolve entity/id
-   * types.
+   * Walks the superclass chain so subclasses of an intermediate base (e.g.
+   * {@code X extends BaseCmd&lt;E, I&gt;} and {@code BaseCmd extends CommCmd&lt;E, I&gt;}) still
+   * resolve entity/id types.
    */
   @Nullable
   private static ParameterizedType resolveCommCmdParameterizedType(Class<?> from) {

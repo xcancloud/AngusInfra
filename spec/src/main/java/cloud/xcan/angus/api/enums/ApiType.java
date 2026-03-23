@@ -17,8 +17,8 @@ public enum ApiType implements Value<String> {
           PUB_API, "/pubapi/", VIEW, "/view/", PUB_VIEW, "/pubview/");
 
   /**
-   * Prefix entries ordered by path length descending so that a longer path (e.g. {@code /openapi2p/})
-   * wins over a shorter shared prefix when both could match.
+   * Prefix entries ordered by path length descending so that a longer path (e.g.
+   * {@code /openapi2p/}) wins over a shorter shared prefix when both could match.
    */
   private static final List<Map.Entry<ApiType, String>> API_TYPE_PREFIXES_SORTED;
 

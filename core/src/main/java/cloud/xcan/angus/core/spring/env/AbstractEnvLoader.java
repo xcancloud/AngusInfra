@@ -59,8 +59,8 @@ import org.springframework.core.io.ResourceLoader;
  * highest-priority property source - Supports ${variable:default} syntax in application.yml
  * <p>
  * 4. <strong>Extension Mechanism</strong>: - Subclass {@link AbstractEnvLoader} and register as
- * {@link EnvironmentPostProcessor} for custom loading logic - Example use cases: loading
- * additional variables from database/remote config center.
+ * {@link EnvironmentPostProcessor} for custom loading logic - Example use cases: loading additional
+ * variables from database/remote config center.
  *
  * <h3>Usage Examples:</h3>
  * <pre class="code">

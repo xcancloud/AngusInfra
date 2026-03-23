@@ -11,7 +11,8 @@ import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Schedules {@link Runnable} tasks on a {@link DelayQueue} and executes them on a fixed pool when due.
+ * Schedules {@link Runnable} tasks on a {@link DelayQueue} and executes them on a fixed pool when
+ * due.
  */
 @Slf4j
 public class DelayOrderQueueManager {
@@ -37,7 +38,8 @@ public class DelayOrderQueueManager {
     Objects.requireNonNull(execThreadName, "execThreadName");
     Objects.requireNonNull(scheduleThreadName, "scheduleThreadName");
     this.executor = Executors.newFixedThreadPool(execThreads,
-        new DefaultThreadFactory(execThreadName, false, Math.min(NORM_PRIORITY + 1, Thread.MAX_PRIORITY)));
+        new DefaultThreadFactory(execThreadName, false,
+            Math.min(NORM_PRIORITY + 1, Thread.MAX_PRIORITY)));
     this.delayQueue = new DelayQueue<>();
     this.scheduleThread = Thread.ofPlatform().name(scheduleThreadName).start(this::scheduleLoop);
   }

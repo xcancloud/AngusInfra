@@ -20,7 +20,9 @@ public final class RateValue {
       DecimalFormatSymbols.getInstance(Locale.ROOT));
 
   private final double value;
-  /** {@code true} if the value was parsed from a string ending with {@code %}. */
+  /**
+   * {@code true} if the value was parsed from a string ending with {@code %}.
+   */
   private final boolean percentSuffix;
 
   public RateValue() {

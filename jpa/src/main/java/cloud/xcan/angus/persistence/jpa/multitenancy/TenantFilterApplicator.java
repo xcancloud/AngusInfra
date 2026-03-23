@@ -5,15 +5,16 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isValidOptTenantId;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 
+import cloud.xcan.angus.spec.experimental.MultiTenant;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
-import org.hibernate.Session;
 import org.hibernate.Filter;
+import org.hibernate.Session;
 
 /**
  * Binds Hibernate {@value TenantFilterNames#SCOPE} on the current persistence context session when
- * {@link Principal} flags and API type require automatic tenant scoping. JPA/HQL/Criteria queries on
- * {@link MultiTenant} mapped types then receive {@code AND tenant_id = :tenantId} at the SQL
+ * {@link Principal} flags and API type require automatic tenant scoping. JPA/HQL/Criteria queries
+ * on {@link MultiTenant} mapped types then receive {@code AND tenant_id = :tenantId} at the SQL
  * generation layer (not via fragile string rewriting).
  */
 public final class TenantFilterApplicator {

@@ -11,8 +11,8 @@ import lombok.ToString;
 
 /**
  * Marker subclass of {@link cloud.xcan.angus.remote.message.BizException} for flows where the
- * transaction should not roll back. The optional {@link #code} on this class is stored locally;
- * the parent still uses the standard remote business error key for messaging.
+ * transaction should not roll back. The optional {@link #code} on this class is stored locally; the
+ * parent still uses the standard remote business error key for messaging.
  */
 @Getter
 @ToString

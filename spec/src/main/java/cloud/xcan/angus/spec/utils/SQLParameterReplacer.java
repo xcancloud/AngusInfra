@@ -9,8 +9,8 @@ public final class SQLParameterReplacer {
   }
 
   /**
-   * Replaces {@code :name} tokens in {@code sql} with string values from {@code parameters}.
-   * Null map values are replaced with the literal {@code "null"}.
+   * Replaces {@code :name} tokens in {@code sql} with string values from {@code parameters}. Null
+   * map values are replaced with the literal {@code "null"}.
    */
   public static String replaceParameters(String sql, Map<String, ?> parameters) {
     Objects.requireNonNull(sql, "sql");

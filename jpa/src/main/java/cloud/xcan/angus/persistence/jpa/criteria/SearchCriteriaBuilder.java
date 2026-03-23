@@ -40,16 +40,17 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
   public static final List<String> EXCLUDED_FILTER_FIELDS = List.of(
       "pageNo", "pageSize", "orderBy", "orderSort", "filters", "fullTextSearch");
 
-  public static Map<String, Field[]> DTO_FIELDS = new ConcurrentHashMap<>();
-  public static Map<String, List<String>> DTO_NAMES = new ConcurrentHashMap<>();
-  public static Map<String, Set<String>> DTO_IDS = new ConcurrentHashMap<>();
+  private static final Map<String, Field[]> DTO_FIELDS = new ConcurrentHashMap<>();
+  private static final Map<String, List<String>> DTO_NAMES = new ConcurrentHashMap<>();
+  private static final Map<String, Set<String>> DTO_IDS = new ConcurrentHashMap<>();
 
-  public static Map<String, Set<String>> SUB_TABLE_FIELDS = new ConcurrentHashMap<>();
-  public static Map<String, Set<String>> RANGE_SEARCH_FIELDS = new ConcurrentHashMap<>();
+  private static final Map<String, Set<String>> SUB_TABLE_FIELDS = new ConcurrentHashMap<>();
+  private static final Map<String, Set<String>> RANGE_SEARCH_FIELDS = new ConcurrentHashMap<>();
   // Fix: match index field must be ordered  Map<String, Set<String>> -> Map<String, LinkedHashSet<String>>
-  public static Map<String, LinkedHashSet<String>> MATCH_SEARCH_FIELDS = new ConcurrentHashMap<>();
-  public static Map<String, Set<String>> ORDER_BY_FIELDS = new ConcurrentHashMap<>();
-  public static Map<String, Set<String>> IN_AND_NOT_FIELDS = new ConcurrentHashMap<>();
+  private static final Map<String, LinkedHashSet<String>> MATCH_SEARCH_FIELDS =
+      new ConcurrentHashMap<>();
+  private static final Map<String, Set<String>> ORDER_BY_FIELDS = new ConcurrentHashMap<>();
+  private static final Map<String, Set<String>> IN_AND_NOT_FIELDS = new ConcurrentHashMap<>();
 
   private final T dto;
   private final String key;
@@ -187,6 +188,14 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
     Set<String> orderByFields = ORDER_BY_FIELDS.get(key);
     Set<String> idsFields = DTO_IDS.get(key);
 
+    if (StringUtils.isNotBlank(dto.getOrderBy())) {
+      if ((!DEFAULT_ORDER_BY.equalsIgnoreCase(dto.getOrderBy()) && isNotEmpty(orderByFields)
+          && !orderByFields.contains(dto.getOrderBy()))) {
+        throw ProtocolException.of(UNSUPPORTED_ORDER_BY_T, UNSUPPORTED_ORDER_BY_KEY,
+            new Object[]{dto.getOrderBy()});
+      }
+    }
+
     List<SearchCriteria> removedCriterias = new ArrayList<>();
     for (SearchCriteria criteria : filters) {
       // Delete empty parameters
@@ -227,14 +236,6 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
           throw ProtocolException
               .of(UNSUPPORTED_NOT_FILTER_T, UNSUPPORTED_NOT_FILTER_KEY,
                   new Object[]{criteria.getKey()});
-        }
-      }
-      // Check orderBy field
-      if (StringUtils.isNotBlank(dto.getOrderBy())) {
-        if ((!DEFAULT_ORDER_BY.equalsIgnoreCase(dto.getOrderBy()) &&
-            isNotEmpty(orderByFields) && !orderByFields.contains(dto.getOrderBy()))) {
-          throw ProtocolException.of(UNSUPPORTED_ORDER_BY_T, UNSUPPORTED_ORDER_BY_KEY,
-              new Object[]{dto.getOrderBy()});
         }
       }
     }

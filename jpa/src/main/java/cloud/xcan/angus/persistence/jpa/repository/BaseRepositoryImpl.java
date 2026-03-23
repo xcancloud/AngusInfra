@@ -13,9 +13,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.data.support.PageableExecutionUtils.getPage;
 
 import cloud.xcan.angus.core.biz.ResourceName;
-import cloud.xcan.angus.persistence.jpa.multitenancy.TenantNativeQuerySupport;
 import cloud.xcan.angus.core.jpa.criteria.GenericSpecification;
 import cloud.xcan.angus.core.utils.BeanFieldUtils;
+import cloud.xcan.angus.persistence.jpa.multitenancy.TenantNativeQuerySupport;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

@@ -33,7 +33,7 @@ public class LocalTrustStoreSSLSocketFactory extends SSLSocketFactory {
   /**
    * Loads a truststore from the given path (no keystore password).
    *
-   * @param truststore path to the keystore file
+   * @param truststore   path to the keystore file
    * @param keyStoreType keystore type, for example {@code "JKS"} or {@code "PKCS12"}
    */
   public LocalTrustStoreSSLSocketFactory(Path truststore, String keyStoreType) {

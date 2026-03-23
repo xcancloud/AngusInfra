@@ -27,8 +27,8 @@ public final class CharsetUtils {
   }
 
   /**
-   * Like {@link #lookup(String)} but throws when the name is unknown; returns {@code null} only when
-   * {@code name} is {@code null}.
+   * Like {@link #lookup(String)} but throws when the name is unknown; returns {@code null} only
+   * when {@code name} is {@code null}.
    */
   public static Charset get(final String name) throws UnsupportedEncodingException {
     if (name == null) {

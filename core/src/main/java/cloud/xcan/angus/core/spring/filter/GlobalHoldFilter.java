@@ -82,7 +82,9 @@ public class GlobalHoldFilter implements Filter {
   public static final Cache<String, LocationInfo> LOCATION_INFO_CACHE =
       CaffeineCacheUtils.createCache("LOCATION_INFO_CACHE");
 
-  /** Last request time per user id (reference for throttling / auditing). */
+  /**
+   * Last request time per user id (reference for throttling / auditing).
+   */
   public static final Map<Long, LocalDateTime> USER_REQUEST_TIME = new ConcurrentHashMap<>();
 
 

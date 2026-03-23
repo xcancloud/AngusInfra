@@ -35,8 +35,8 @@ public abstract class Clock {
   }
 
   /**
-   * Default implementation: {@link System#nanoTime()} for {@link #getTick()}, {@link System#currentTimeMillis()}
-   * for {@link #getTime()}.
+   * Default implementation: {@link System#nanoTime()} for {@link #getTick()},
+   * {@link System#currentTimeMillis()} for {@link #getTime()}.
    */
   public static final class UserTimeClock extends Clock {
 

@@ -33,9 +33,9 @@ public final class TimeLine {
   }
 
   /**
-   * Appends pre-recorded points. {@code points} must be a flat sequence of {@code [name, timeMs, ...]}
-   * with even length; each {@code time} must be a {@link Number} (epoch millis), matching
-   * {@link TimePoint#TimePoint(String, long)}.
+   * Appends pre-recorded points. {@code points} must be a flat sequence of
+   * {@code [name, timeMs, ...]} with even length; each {@code time} must be a {@link Number} (epoch
+   * millis), matching {@link TimePoint#TimePoint(String, long)}.
    */
   public void addTimePoints(Object[] points) {
     if (points == null || points.length == 0) {
@@ -90,7 +90,9 @@ public final class TimeLine {
     return this;
   }
 
-  /** Clears all points and resets the cursor; safe to reuse this instance. */
+  /**
+   * Clears all points and resets the cursor; safe to reuse this instance.
+   */
   public void clean() {
     root.next = null;
     current = root;

@@ -7,7 +7,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Objects;
 
-/** SHA-256 helpers (e.g. token fingerprinting). */
+/**
+ * SHA-256 helpers (e.g. token fingerprinting).
+ */
 public final class SHAUtils {
 
   private static final HexFormat HEX = HexFormat.of();
@@ -15,7 +17,9 @@ public final class SHAUtils {
   private SHAUtils() {
   }
 
-  /** SHA-256 hash of {@code token} as lowercase hex. */
+  /**
+   * SHA-256 hash of {@code token} as lowercase hex.
+   */
   public static String hashToken(String token) {
     Objects.requireNonNull(token, "token");
     try {

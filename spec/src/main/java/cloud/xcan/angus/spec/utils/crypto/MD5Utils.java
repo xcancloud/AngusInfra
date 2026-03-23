@@ -11,7 +11,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Objects;
 
-/** MD5 digests (legacy / non-cryptographic checksums only). */
+/**
+ * MD5 digests (legacy / non-cryptographic checksums only).
+ */
 public final class MD5Utils {
 
   private static final HexFormat HEX = HexFormat.of();

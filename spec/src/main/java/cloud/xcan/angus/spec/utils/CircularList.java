@@ -9,7 +9,9 @@ public class CircularList implements ReadDynamicValue {
   private List<String> dataList;
   private boolean restartFromBeginning;
   private int currentIndex;
-  /** Not final: {@link #clone()} must install a fresh lock for the copy. */
+  /**
+   * Not final: {@link #clone()} must install a fresh lock for the copy.
+   */
   private ReentrantReadWriteLock readWriteLock;
 
   public static final String END_CHARS = "EOF";

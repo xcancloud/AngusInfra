@@ -109,8 +109,8 @@ public class ConfigurableApplicationAndEnvLoader extends AbstractEnvLoader {
 
   /**
    * If {@code website} is set, returns it with an {@code http://} prefix when missing; otherwise
-   * {@code http://{host}:{port}}. A value starting with {@code "http"} (including {@code https})
-   * is left unchanged.
+   * {@code http://{host}:{port}}. A value starting with {@code "http"} (including {@code https}) is
+   * left unchanged.
    */
   private static String resolveWebsiteUrl(String website, String host, int port) {
     if (isNotBlank(website)) {

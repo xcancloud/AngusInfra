@@ -11,7 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Immutable duration as a (value, {@link ShortTimeUnit}) pair; conversions normalize to milliseconds.
+ * Immutable duration as a (value, {@link ShortTimeUnit}) pair; conversions normalize to
+ * milliseconds.
  *
  * @see org.openjdk.jmh.runner.options.TimeValue (conceptual analogue)
  */
@@ -100,12 +101,16 @@ public final class TimeValue implements ValueUnit<Long, ShortTimeUnit>, Comparab
     };
   }
 
-  /** Same as {@link #formatMilliseconds()} (legacy name). */
+  /**
+   * Same as {@link #formatMilliseconds()} (legacy name).
+   */
   public String formatMilliSecond() {
     return formatMilliseconds();
   }
 
-  /** Returns total milliseconds plus the {@code ms} suffix, e.g. {@code "1500ms"}. */
+  /**
+   * Returns total milliseconds plus the {@code ms} suffix, e.g. {@code "1500ms"}.
+   */
   public String formatMilliseconds() {
     return toMilliSecond() + ShortTimeUnit.Millisecond.getSuffix();
   }

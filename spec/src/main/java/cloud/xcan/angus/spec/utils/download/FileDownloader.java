@@ -1,5 +1,6 @@
 package cloud.xcan.angus.spec.utils.download;
 
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Map;

@@ -39,18 +39,24 @@ public final class ManualClock extends Clock {
     ticksInNanos += TimeUnit.HOURS.toNanos(hours);
   }
 
-  /** Advances the tick by the given duration (nanosecond precision). */
+  /**
+   * Advances the tick by the given duration (nanosecond precision).
+   */
   public synchronized void add(Duration duration) {
     Objects.requireNonNull(duration, "duration");
     ticksInNanos += duration.toNanos();
   }
 
-  /** Sets the absolute tick in nanoseconds (same basis as {@link #getTick()}). */
+  /**
+   * Sets the absolute tick in nanoseconds (same basis as {@link #getTick()}).
+   */
   public synchronized void setNanos(long nanos) {
     ticksInNanos = nanos;
   }
 
-  /** Restores the tick to the initial value passed to the constructor. */
+  /**
+   * Restores the tick to the initial value passed to the constructor.
+   */
   public synchronized void reset() {
     ticksInNanos = initialTicksInNanos;
   }

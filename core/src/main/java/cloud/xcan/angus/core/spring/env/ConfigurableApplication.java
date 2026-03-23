@@ -10,5 +10,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @FunctionalInterface
 public interface ConfigurableApplication {
 
-  void doConfigureApplication(ConfigurableEnvironment environment, Properties envs) throws Exception;
+  void doConfigureApplication(ConfigurableEnvironment environment, Properties envs)
+      throws Exception;
 }

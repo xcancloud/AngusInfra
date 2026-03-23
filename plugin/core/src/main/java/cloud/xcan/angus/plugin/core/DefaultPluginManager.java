@@ -467,7 +467,8 @@ public class DefaultPluginManager implements PluginManager {
             // java.io.tmpdir and would break reload/remove flows.
             String name = pluginPath.getFileName().toString();
             boolean jpaSpillFile =
-                (name.startsWith("plugin-") || name.startsWith("plugin-store-")) && name.endsWith(".jar");
+                (name.startsWith("plugin-") || name.startsWith("plugin-store-")) && name.endsWith(
+                    ".jar");
             Path tmpDir = Path.of(System.getProperty("java.io.tmpdir", ""));
             if (jpaSpillFile && !tmpDir.toString().isEmpty()
                 && pluginPath.normalize().startsWith(tmpDir.normalize())) {

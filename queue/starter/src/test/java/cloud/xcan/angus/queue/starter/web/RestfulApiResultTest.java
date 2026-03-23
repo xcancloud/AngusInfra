@@ -77,7 +77,8 @@ class RestfulApiResultTest {
     RestfulApiResult<String> badCode = new RestfulApiResult<>("  ", "m", "d", null);
     assertThrows(IllegalStateException.class, badCode::validate);
 
-    RestfulApiResult<String> badTs = new RestfulApiResult<>(RestfulApiResult.OK_CODE, "m", "d", null);
+    RestfulApiResult<String> badTs = new RestfulApiResult<>(RestfulApiResult.OK_CODE, "m", "d",
+        null);
     badTs.setTimestamp(null);
     assertThrows(IllegalStateException.class, badTs::validate);
   }

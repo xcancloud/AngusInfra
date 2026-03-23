@@ -8,7 +8,8 @@ class Slf4jAuditLoggerTest {
   @BeforeAll
   static void enableSlf4jSimple() {
     System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "info");
-    System.setProperty("org.slf4j.simpleLogger.log.cloud.xcan.angus.queue.core.service.Slf4jAuditLogger",
+    System.setProperty(
+        "org.slf4j.simpleLogger.log.cloud.xcan.angus.queue.core.service.Slf4jAuditLogger",
         "info");
   }
 

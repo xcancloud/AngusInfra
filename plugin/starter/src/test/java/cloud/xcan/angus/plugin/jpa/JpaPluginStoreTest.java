@@ -60,5 +60,6 @@ class JpaPluginStoreTest {
   @EntityScan(basePackageClasses = PluginEntity.class)
   @EnableJpaRepositories(basePackageClasses = PluginRepository.class)
   static class TestJpaApplication {
+
   }
 }

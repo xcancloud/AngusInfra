@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -566,15 +567,41 @@ public class CoreUtils {
     }
   }
 
+  /**
+   * True when this class is loaded from a JAR (e.g. {@code java -jar}, dependency inside a fat
+   * JAR). False for IDE / Maven Surefire ({@code target/classes} or {@code test-classes}).
+   */
   public static boolean runAtJar() {
+    URL loc;
     try {
-      Class.forName("com.intellij.rt.execution.application.AppMainV2");
+      java.security.CodeSource cs = CoreUtils.class.getProtectionDomain().getCodeSource();
+      if (cs == null) {
+        return false;
+      }
+      loc = cs.getLocation();
+    } catch (SecurityException e) {
       return false;
-    } catch (ClassNotFoundException ignored) {
-      // return Objects.equals(Objects.requireNonNull(
-      //    Objects.requireNonNull(ClassUtils.getDefaultClassLoader()).getResource(""))
-      //      .getProtocol(), "jar");
+    }
+    if (loc == null) {
+      return false;
+    }
+    String protocol = loc.getProtocol();
+    if ("jar".equals(protocol) || "nested".equals(protocol)) {
       return true;
     }
+    if ("file".equals(protocol)) {
+      String path = loc.getPath();
+      if (path == null) {
+        return false;
+      }
+      int bang = path.indexOf('!');
+      if (bang > 0) {
+        path = path.substring(0, bang);
+      }
+      int slash = path.lastIndexOf('/');
+      String name = slash >= 0 ? path.substring(slash + 1) : path;
+      return name.toLowerCase(Locale.ROOT).endsWith(".jar");
+    }
+    return false;
   }
 }

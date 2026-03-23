@@ -21,12 +21,14 @@ public class QueueAutoConfigurationTest {
 
   /**
    * Sliced context omits full Boot auto-config; enable declarative transactions so
-   * {@code @Modifying} repository methods and {@link cloud.xcan.angus.queue.starter.adapter.JpaRepositoryAdapter}
-   * {@code @Transactional} work when schedulers run.
+   * {@code @Modifying} repository methods and
+   * {@link cloud.xcan.angus.queue.starter.adapter.JpaRepositoryAdapter} {@code @Transactional} work
+   * when schedulers run.
    */
   @Configuration
   @EnableTransactionManagement
   static class TestTransactionConfiguration {
+
   }
 
   private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

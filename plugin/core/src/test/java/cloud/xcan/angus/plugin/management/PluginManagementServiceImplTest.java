@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 import cloud.xcan.angus.plugin.api.PluginManager;
 import cloud.xcan.angus.plugin.exception.PluginException;
 import cloud.xcan.angus.plugin.model.PluginInfo;
+import cloud.xcan.angus.plugin.model.PluginState;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,9 +95,11 @@ public class PluginManagementServiceImplTest {
     PluginInfo a = new PluginInfo();
     a.setId("a");
     a.setEndpointCount(2);
+    a.setState(PluginState.STARTED);
     PluginInfo b = new PluginInfo();
     b.setId("b");
     b.setEndpointCount(0);
+    b.setState(PluginState.STOPPED);
     when(pluginManager.getAllPlugins()).thenReturn(Arrays.asList(a, b));
 
     PluginStats stats = service.stats();

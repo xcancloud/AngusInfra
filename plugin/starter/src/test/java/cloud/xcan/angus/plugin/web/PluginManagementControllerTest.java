@@ -35,7 +35,8 @@ public class PluginManagementControllerTest {
     service = Mockito.mock(PluginManagementService.class);
     pluginProperties = Mockito.mock(PluginProperties.class);
     when(pluginProperties.getMaxUploadSize()).thenReturn(1024L);
-    PluginManagementController controller = new PluginManagementController(service, pluginProperties);
+    PluginManagementController controller = new PluginManagementController(service,
+        pluginProperties);
     this.mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
   }
 

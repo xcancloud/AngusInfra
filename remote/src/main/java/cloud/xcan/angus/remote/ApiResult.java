@@ -165,7 +165,7 @@ public class ApiResult<T> implements Serializable {
     this.message = message; // Allow null messages
     this.data = data; // Allow null data
     this.timestamp = System.currentTimeMillis();
-    this.extensions = extensions != null ? new HashMap<>(extensions) : new HashMap<>();
+    this.extensions = extensions != null ? new HashMap<>(extensions) : null;
   }
 
   // Static factory methods for success responses
@@ -519,28 +519,26 @@ public class ApiResult<T> implements Serializable {
 
   /**
    * <p>
-   * Custom setter for the ext field that ensures the map is never null.
+   * Sets extension metadata. Pass {@code null} to clear extensions (lazy: no map until used).
    * </p>
    *
-   * @param extensions the extension metadata map
+   * @param extensions the extension metadata map, or null to clear
    * @return this ApiResult instance for method chaining
    */
   public ApiResult<T> setExtensions(Map<String, Object> extensions) {
-    this.extensions = extensions != null ? new HashMap<>(extensions) : new HashMap<>();
+    this.extensions = extensions != null ? new HashMap<>(extensions) : null;
     return this;
   }
 
   /**
    * <p>
-   * Gets the extension metadata map, ensuring it's never null.
+   * Returns the extension metadata map. Null until {@link #setExtensions} or {@link #addExtension}
+   * materializes it.
    * </p>
    *
-   * @return the extension metadata map, never null
+   * @return the extension map, or null if none has been set
    */
   public Map<String, Object> getExtensions() {
-    if (this.extensions == null) {
-      this.extensions = new HashMap<>();
-    }
     return this.extensions;
   }
 }

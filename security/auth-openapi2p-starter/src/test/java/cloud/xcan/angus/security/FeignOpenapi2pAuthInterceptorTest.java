@@ -1,10 +1,8 @@
 package cloud.xcan.angus.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.security.config.Openapi2pAuthProperties;
@@ -34,9 +32,6 @@ class FeignOpenapi2pAuthInterceptorTest {
   @Mock
   private ConfigurableEnvironment environment;
 
-  @Mock
-  private RequestTemplate template;
-
   private TokenStore tokenStore;
 
   private FeignOpenapi2pAuthInterceptor interceptor;
@@ -60,23 +55,26 @@ class FeignOpenapi2pAuthInterceptorTest {
     @Test
     @DisplayName("skips non-matching paths without adding header")
     void skipsNonMatchingPath() {
-      when(template.path()).thenReturn("/api/users");
       when(properties.shouldIntercept("/api/users")).thenReturn(false);
+
+      RequestTemplate template = new RequestTemplate();
+      template.uri("/api/users");
 
       interceptor.apply(template);
 
-      verify(template, never()).header(anyString(), anyString());
+      assertThat(template.headers()).doesNotContainKey("Authorization");
     }
 
     @Test
-    @DisplayName("skips when shouldIntercept returns false for null path")
-    void skipsNullPath() {
-      when(template.path()).thenReturn(null);
-      when(properties.shouldIntercept(null)).thenReturn(false);
+    @DisplayName("skips when path is unset/empty and shouldIntercept is false")
+    void skipsUnsetPath() {
+      lenient().when(properties.shouldIntercept(nullable(String.class))).thenReturn(false);
+
+      RequestTemplate template = new RequestTemplate();
 
       interceptor.apply(template);
 
-      verify(template, never()).header(anyString(), anyString());
+      assertThat(template.headers()).doesNotContainKey("Authorization");
     }
   }
 

@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import cloud.xcan.angus.security.authentication.CustomOAuth2TokenIntrospectionAuthenticationProvider;
 import cloud.xcan.angus.security.authentication.service.CustomJdbcOAuth2AuthorizationService;
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
@@ -38,10 +37,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT,
-    classes = {
-        OAuth2AuthorizationServerAutoConfigurer.class,
-        CustomOAuth2TokenIntrospectionAuthenticationProvider.class,
-    }
+    classes = OAuth2AuthorizationServerTestApplication.class
 )
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

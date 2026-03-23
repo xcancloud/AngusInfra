@@ -5,6 +5,7 @@ import cloud.xcan.angus.queue.core.model.MessageData;
 import cloud.xcan.angus.queue.core.model.SendMessage;
 import cloud.xcan.angus.queue.core.service.QueueService;
 import cloud.xcan.angus.queue.starter.autoconfigure.QueueProperties;
+import cloud.xcan.angus.remote.ApiLocaleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -41,7 +42,7 @@ public class QueueController {
       requestBody = @RequestBody(required = true, description = "Send request payload",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = SendRequest.class))))
   @PostMapping("/send")
-  public RestfulApiResult<SendResponse> send(
+  public ApiLocaleResult<SendResponse> send(
       @Valid @org.springframework.web.bind.annotation.RequestBody SendRequest req) {
     SendMessage request = SendMessage.builder()
         .topic(req.getTopic())
@@ -55,14 +56,14 @@ public class QueueController {
         .numPartitions(properties.getPartitions())
         .build();
     Long id = queueService.send(request);
-    return RestfulApiResult.success(new SendResponse(id));
+    return ApiLocaleResult.success(new SendResponse(id));
   }
 
   @Operation(operationId = "pollMessages", summary = "Poll messages with lease", description = "Lease READY messages and return the leased messages for the given owner.",
       requestBody = @RequestBody(required = true, description = "Poll request payload",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = PollRequest.class))))
   @PostMapping("/poll")
-  public RestfulApiResult<List<MessageData>> poll(
+  public ApiLocaleResult<List<MessageData>> poll(
       @Valid @org.springframework.web.bind.annotation.RequestBody PollRequest req) {
     List<Integer> partitions = (req.getPartitions() == null || req.getPartitions().isEmpty())
         ? java.util.stream.IntStream.range(0, properties.getPartitions()).boxed().toList()
@@ -78,34 +79,34 @@ public class QueueController {
             .build()
     );
     if (leased == 0) {
-      return RestfulApiResult.success(List.of());
+      return ApiLocaleResult.success(List.of());
     }
     // Use pollBatch as the upper bound: the just-leased count may under-count if the owner had
     // pre-existing leases, causing listLeasedByOwner to return old messages instead of new ones.
     int listLimit = Optional.ofNullable(req.getLimit()).orElse(properties.getPollBatch());
-    return RestfulApiResult.success(queueService.listLeasedByOwner(req.getOwner(), listLimit));
+    return ApiLocaleResult.success(queueService.listLeasedByOwner(req.getOwner(), listLimit));
   }
 
   @Operation(operationId = "ackMessages", summary = "Acknowledge messages", description = "Mark messages as DONE.",
       requestBody = @RequestBody(required = true, description = "Ack request",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = IdsRequest.class))))
   @PostMapping("/ack")
-  public RestfulApiResult<AckResponse> ack(
+  public ApiLocaleResult<AckResponse> ack(
       @Valid @org.springframework.web.bind.annotation.RequestBody IdsRequest req) {
     List<Long> ids = req.toIdList();
     int n = queueService.ack(ids);
-    return RestfulApiResult.success(new AckResponse(n));
+    return ApiLocaleResult.success(new AckResponse(n));
   }
 
   @Operation(operationId = "nackMessages", summary = "Negative acknowledge (nack) messages", description = "Return messages to READY with backoff seconds.",
       requestBody = @RequestBody(required = true, description = "Nack request",
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = NackRequest.class))))
   @PostMapping("/nack")
-  public RestfulApiResult<NackResponse> nack(
+  public ApiLocaleResult<NackResponse> nack(
       @Valid @org.springframework.web.bind.annotation.RequestBody NackRequest req) {
     List<Long> ids = req.toIdList();
     int n = queueService.nack(ids, Optional.ofNullable(req.getBackoffSeconds()).orElse(5));
-    return RestfulApiResult.success(new NackResponse(n));
+    return ApiLocaleResult.success(new NackResponse(n));
   }
 
   // ===== DTOs =====

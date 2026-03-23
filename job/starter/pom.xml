@@ -18,10 +18,15 @@
   </description>
 
   <dependencies>
-    <!-- Depend on job core(api) -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.job-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.remote</artifactId>
       <version>${project.version}</version>
     </dependency>
 

@@ -19,6 +19,12 @@
   </description>
 
   <dependencies>
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.remote</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
     <!-- Depend on plugin core(api) -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>

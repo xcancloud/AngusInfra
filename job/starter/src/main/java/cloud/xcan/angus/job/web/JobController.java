@@ -5,6 +5,7 @@ import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.model.UpdateJobRequest;
 import cloud.xcan.angus.job.service.JobManagementService;
+import cloud.xcan.angus.remote.ApiLocaleResult;
 import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,75 +41,64 @@ public class JobController {
 
   private final JobManagementService jobManagementService;
 
-  // ---------------------------------------------------------------------------
-  // CRUD
-  // ---------------------------------------------------------------------------
-
   @PostMapping
-  public ResponseEntity<ScheduledJob> createJob(@Valid @RequestBody CreateJobRequest request) {
-    return ResponseEntity.ok(jobManagementService.createJob(request));
+  public ApiLocaleResult<ScheduledJob> createJob(@Valid @RequestBody CreateJobRequest request) {
+    return ApiLocaleResult.success(jobManagementService.createJob(request));
   }
 
   @GetMapping
-  public ResponseEntity<Page<ScheduledJob>> listJobs(
+  public ApiLocaleResult<Page<ScheduledJob>> listJobs(
       @PageableDefault(size = 20, sort = "createTime", direction = Sort.Direction.DESC)
       Pageable pageable) {
-    return ResponseEntity.ok(jobManagementService.listJobs(pageable));
+    return ApiLocaleResult.success(jobManagementService.listJobs(pageable));
   }
 
   @GetMapping("/{jobId}")
-  public ResponseEntity<ScheduledJob> getJob(@PathVariable Long jobId) {
-    return ResponseEntity.ok(jobManagementService.getJob(jobId));
+  public ApiLocaleResult<ScheduledJob> getJob(@PathVariable Long jobId) {
+    return ApiLocaleResult.success(jobManagementService.getJob(jobId));
   }
 
   @PutMapping("/{jobId}")
-  public ResponseEntity<ScheduledJob> updateJob(
+  public ApiLocaleResult<ScheduledJob> updateJob(
       @PathVariable Long jobId,
       @Valid @RequestBody UpdateJobRequest request) {
-    return ResponseEntity.ok(jobManagementService.updateJob(jobId, request));
+    return ApiLocaleResult.success(jobManagementService.updateJob(jobId, request));
   }
 
   @DeleteMapping("/{jobId}")
-  public ResponseEntity<Void> deleteJob(@PathVariable Long jobId) {
+  public ApiLocaleResult<Void> deleteJob(@PathVariable Long jobId) {
     jobManagementService.deleteJob(jobId);
-    return ResponseEntity.noContent().build();
+    return new ApiLocaleResult<>();
   }
 
-  // ---------------------------------------------------------------------------
-  // Operational controls
-  // ---------------------------------------------------------------------------
-
   @PostMapping("/{jobId}/pause")
-  public ResponseEntity<Void> pauseJob(@PathVariable Long jobId) {
+  public ApiLocaleResult<Void> pauseJob(@PathVariable Long jobId) {
     jobManagementService.pauseJob(jobId);
-    return ResponseEntity.noContent().build();
+    return new ApiLocaleResult<>();
   }
 
   @PostMapping("/{jobId}/resume")
-  public ResponseEntity<Void> resumeJob(@PathVariable Long jobId) {
+  public ApiLocaleResult<Void> resumeJob(@PathVariable Long jobId) {
     jobManagementService.resumeJob(jobId);
-    return ResponseEntity.noContent().build();
+    return new ApiLocaleResult<>();
   }
 
   @PostMapping("/{jobId}/trigger")
-  public ResponseEntity<Void> triggerJob(@PathVariable Long jobId) {
+  public ApiLocaleResult<Void> triggerJob(@PathVariable Long jobId) {
     jobManagementService.triggerJob(jobId);
-    return ResponseEntity.noContent().build();
+    return new ApiLocaleResult<>();
   }
 
-  // ---------------------------------------------------------------------------
-  // History and statistics (paginated)
-  // ---------------------------------------------------------------------------
-
   @GetMapping("/{jobId}/executions")
-  public ResponseEntity<Page<JobExecutionLog>> getExecutionHistory(
+  public ApiLocaleResult<Page<JobExecutionLog>> getExecutionHistory(
       @PathVariable Long jobId,
       @PageableDefault(size = 20) Pageable pageable) {
-    return ResponseEntity.ok(jobManagementService.getJobExecutionHistory(jobId, pageable));
+    return ApiLocaleResult.success(
+        jobManagementService.getJobExecutionHistory(jobId, pageable));
   }
 
   @GetMapping("/{jobId}/statistics")
-  public ResponseEntity<Map<String, Object>> getStatistics(@PathVariable Long jobId) {
-    return ResponseEntity.ok(jobManagementService.getJobStatistics(jobId));
+  public ApiLocaleResult<Map<String, Object>> getStatistics(@PathVariable Long jobId) {
+    return ApiLocaleResult.success(jobManagementService.getJobStatistics(jobId));
   }
 }

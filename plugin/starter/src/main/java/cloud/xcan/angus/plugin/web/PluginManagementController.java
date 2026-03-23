@@ -1,13 +1,13 @@
 package cloud.xcan.angus.plugin.web;
 
-import static cloud.xcan.angus.plugin.api.RestfulApiResult.SYSTEM_ERROR_CODE;
+import static cloud.xcan.angus.remote.ApiConstant.ECode.SYSTEM_ERROR_CODE;
 
-import cloud.xcan.angus.plugin.api.RestfulApiResult;
 import cloud.xcan.angus.plugin.autoconfigure.PluginProperties;
 import cloud.xcan.angus.plugin.exception.PluginException;
 import cloud.xcan.angus.plugin.management.PluginManagementService;
 import cloud.xcan.angus.plugin.management.PluginStats;
 import cloud.xcan.angus.plugin.model.PluginInfo;
+import cloud.xcan.angus.remote.ApiLocaleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
@@ -42,19 +42,20 @@ public class PluginManagementController {
       description = "Upload plugin jar and install it into the configured store.")
   @PostMapping(value = "/install", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseStatus(HttpStatus.OK)
-  public RestfulApiResult<PluginInfo> install(
+  public ApiLocaleResult<PluginInfo> install(
       @Parameter(description = "Plugin identifier", required = true) @RequestParam("pluginId") String pluginId,
       @Parameter(description = "Plugin jar file", required = true) @RequestParam("file") MultipartFile file) {
     try {
       // Validate upload size
       if (file.getSize() > pluginProperties.getMaxUploadSize()) {
-        return RestfulApiResult.error(SYSTEM_ERROR_CODE, "File size exceeds maximum allowed: " +
-            pluginProperties.getMaxUploadSize() + " bytes");
+        return ApiLocaleResult.error(SYSTEM_ERROR_CODE,
+            "File size exceeds maximum allowed: " + pluginProperties.getMaxUploadSize() + " bytes",
+            null);
       }
       PluginInfo pluginInfo = managementService.install(pluginId, file.getBytes());
-      return RestfulApiResult.success(pluginInfo);
+      return ApiLocaleResult.success(pluginInfo);
     } catch (Exception e) {
-      return RestfulApiResult.error(SYSTEM_ERROR_CODE, e.getMessage());
+      return ApiLocaleResult.error(SYSTEM_ERROR_CODE, e.getMessage(), null);
     }
   }
 
@@ -62,29 +63,29 @@ public class PluginManagementController {
       description = "Unload and optionally remove a plugin from store")
   @DeleteMapping("/{pluginId}")
   @ResponseStatus(HttpStatus.OK)
-  public RestfulApiResult<?> remove(
+  public ApiLocaleResult<?> remove(
       @Parameter(description = "Plugin identifier", required = true) @PathVariable String pluginId,
       @Parameter(description = "Also remove from store", required = false)
       @RequestParam(required = false, defaultValue = "true") boolean removeFromStore) {
     try {
       managementService.remove(pluginId, removeFromStore);
     } catch (PluginException e) {
-      return RestfulApiResult.error(SYSTEM_ERROR_CODE, e.getMessage());
+      return ApiLocaleResult.error(SYSTEM_ERROR_CODE, e.getMessage(), null);
     }
-    return RestfulApiResult.success();
+    return ApiLocaleResult.success();
   }
 
   @Operation(operationId = "getPlugin", summary = "Get plugin details",
       description = "Get detailed information for a plugin by its id")
   @GetMapping("/{pluginId}")
   @ResponseStatus(HttpStatus.OK)
-  public RestfulApiResult<PluginInfo> getPlugin(
+  public ApiLocaleResult<PluginInfo> getPlugin(
       @Parameter(description = "Plugin identifier", required = true) @PathVariable String pluginId) {
     PluginInfo info = managementService.getPlugin(pluginId);
     if (info == null) {
-      return RestfulApiResult.error(SYSTEM_ERROR_CODE, "plugin not found");
+      return ApiLocaleResult.error(SYSTEM_ERROR_CODE, "plugin not found", null);
     }
-    return RestfulApiResult.success(info);
+    return ApiLocaleResult.success(info);
   }
 
 
@@ -92,16 +93,16 @@ public class PluginManagementController {
       description = "List all installed/loaded plugins")
   @GetMapping("/list")
   @ResponseStatus(HttpStatus.OK)
-  public RestfulApiResult<List<PluginInfo>> list() {
+  public ApiLocaleResult<List<PluginInfo>> list() {
     List<PluginInfo> list = managementService.listPlugins();
-    return RestfulApiResult.success(list);
+    return ApiLocaleResult.success(list);
   }
 
   @Operation(operationId = "getPluginStats", summary = "Get plugin system statistics",
       description = "Returns total plugin count, active plugins and number of REST endpoints")
   @GetMapping("/stats")
   @ResponseStatus(HttpStatus.OK)
-  public RestfulApiResult<PluginStats> stats() {
-    return RestfulApiResult.success(managementService.stats());
+  public ApiLocaleResult<PluginStats> stats() {
+    return ApiLocaleResult.success(managementService.stats());
   }
 }

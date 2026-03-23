@@ -25,13 +25,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest
+@WebMvcTest(controllers = JobController.class)
+@Import(GlobalExceptionHandler.class)
 class JobControllerTest {
 
   @Autowired
@@ -58,8 +60,9 @@ class JobControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.jobName").value("DailyReport"));
+        .andExpect(jsonPath("$.code").value("S"))
+        .andExpect(jsonPath("$.data.id").value(1))
+        .andExpect(jsonPath("$.data.jobName").value("DailyReport"));
   }
 
   @Test
@@ -72,7 +75,7 @@ class JobControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.success").value(false));
+        .andExpect(jsonPath("$.code").value("E0"));
   }
 
   @Test
@@ -86,7 +89,7 @@ class JobControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value("E1"))
         .andExpect(jsonPath("$.message").value("invalid cron"));
   }
 
@@ -98,7 +101,8 @@ class JobControllerTest {
     mockMvc.perform(post("/api/v1/jobs")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code").value("E0"));
   }
 
   // ---------------------------------------------------------------------------
@@ -113,8 +117,9 @@ class JobControllerTest {
 
     mockMvc.perform(get("/api/v1/jobs"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content").isArray())
-        .andExpect(jsonPath("$.content[0].jobName").value("Job1"));
+        .andExpect(jsonPath("$.code").value("S"))
+        .andExpect(jsonPath("$.data.content").isArray())
+        .andExpect(jsonPath("$.data.content[0].jobName").value("Job1"));
   }
 
   // ---------------------------------------------------------------------------
@@ -128,7 +133,7 @@ class JobControllerTest {
 
     mockMvc.perform(get("/api/v1/jobs/1"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.jobName").value("One"));
+        .andExpect(jsonPath("$.data.jobName").value("One"));
   }
 
   @Test
@@ -139,7 +144,7 @@ class JobControllerTest {
 
     mockMvc.perform(get("/api/v1/jobs/999"))
         .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.success").value(false));
+        .andExpect(jsonPath("$.code").value("E1"));
   }
 
   // ---------------------------------------------------------------------------
@@ -155,7 +160,7 @@ class JobControllerTest {
 
     mockMvc.perform(post("/api/v1/jobs/1/trigger"))
         .andExpect(status().isConflict())
-        .andExpect(jsonPath("$.success").value(false));
+        .andExpect(jsonPath("$.code").value("E1"));
   }
 
   // ---------------------------------------------------------------------------
@@ -176,14 +181,18 @@ class JobControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.jobName").value("U"));
+        .andExpect(jsonPath("$.data.jobName").value("U"));
   }
 
   @Test
-  @DisplayName("POST pause / resume - 204")
+  @DisplayName("POST pause / resume - 200 wrapped success")
   void pauseAndResume() throws Exception {
-    mockMvc.perform(post("/api/v1/jobs/1/pause")).andExpect(status().isNoContent());
-    mockMvc.perform(post("/api/v1/jobs/1/resume")).andExpect(status().isNoContent());
+    mockMvc.perform(post("/api/v1/jobs/1/pause"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value("S"));
+    mockMvc.perform(post("/api/v1/jobs/1/resume"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value("S"));
     verify(jobManagementService).pauseJob(1L);
     verify(jobManagementService).resumeJob(1L);
   }
@@ -198,17 +207,18 @@ class JobControllerTest {
 
     mockMvc.perform(get("/api/v1/jobs/1/executions"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content").isArray());
+        .andExpect(jsonPath("$.data.content").isArray());
     mockMvc.perform(get("/api/v1/jobs/1/statistics"))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.totalExecutions").value(0));
+        .andExpect(jsonPath("$.data.totalExecutions").value(0));
   }
 
   @Test
-  @DisplayName("DELETE /api/v1/jobs/1 - returns 204")
+  @DisplayName("DELETE /api/v1/jobs/1 - returns 200 wrapped success")
   void deleteJob_success() throws Exception {
     mockMvc.perform(delete("/api/v1/jobs/1"))
-        .andExpect(status().isNoContent());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value("S"));
     verify(jobManagementService).deleteJob(1L);
   }
 
@@ -224,7 +234,7 @@ class JobControllerTest {
 
     mockMvc.perform(get("/api/v1/jobs"))
         .andExpect(status().isInternalServerError())
-        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value("E2"))
         // The raw exception message must NOT appear in the response
         .andExpect(jsonPath("$.message").value(
             "Internal server error. Please contact the administrator."));

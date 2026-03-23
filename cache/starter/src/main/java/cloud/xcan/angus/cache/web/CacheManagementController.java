@@ -1,7 +1,10 @@
 package cloud.xcan.angus.cache.web;
 
+import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_CODE;
+
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
+import cloud.xcan.angus.remote.ApiLocaleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -58,8 +61,8 @@ public class CacheManagementController {
 
   @Operation(operationId = "getCacheStats", summary = "Get cache statistics", description = "Returns aggregated cache metrics such as total entries, expired entries, memory size, hits, misses and hit rate.")
   @GetMapping("/stats")
-  public RestfulApiResult<CacheStats> stats() {
-    return RestfulApiResult.success(cache.getStats());
+  public ApiLocaleResult<CacheStats> stats() {
+    return ApiLocaleResult.success(cache.getStats());
   }
 
   @Operation(operationId = "getCacheValue", summary = "Get cache value by key", description = "Retrieve the value for the given cache key. Returns a business error in wrapper when the key does not exist.",
@@ -68,80 +71,79 @@ public class CacheManagementController {
           @ApiResponse(responseCode = "200", description = "Key not found, returned as business error in wrapper")
       })
   @GetMapping("/{key}")
-  public RestfulApiResult<CacheValueResponse> get(
+  public ApiLocaleResult<CacheValueResponse> get(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key) {
     validateKey(key);
     return cache.get(key)
-        .map(v -> RestfulApiResult.success(new CacheValueResponse(key, v)))
-        .orElseGet(
-            () -> RestfulApiResult.error(RestfulApiResult.BUSINESS_ERROR_CODE, "Key not found"));
+        .map(v -> ApiLocaleResult.success(new CacheValueResponse(key, v)))
+        .orElseGet(() -> ApiLocaleResult.error(BUSINESS_ERROR_CODE, "Key not found", null));
   }
 
   @Operation(operationId = "setCacheValue", summary = "Set cache value for a key", description = "Set or update the value for a cache key. Provide optional ttlSeconds for expiration.",
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "value and optional ttlSeconds", required = true,
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = SetCacheRequest.class))))
   @PutMapping("/{key}")
-  public RestfulApiResult<?> set(
+  public ApiLocaleResult<?> set(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key,
       @Valid @RequestBody SetCacheRequest body) {
     validateKey(key);
     cache.set(key, body.getValue(), body.getTtlSeconds());
-    return RestfulApiResult.success();
+    return ApiLocaleResult.success();
   }
 
   @Operation(operationId = "deleteCacheKey", summary = "Delete cache key", description = "Delete a cache entry by key. If the key does not exist, the operation is idempotent and returns success in wrapper.",
       responses = {
           @ApiResponse(responseCode = "200", description = "Deleted or not present (wrapped)")})
   @DeleteMapping("/{key}")
-  public RestfulApiResult<?> delete(
+  public ApiLocaleResult<?> delete(
       @Parameter(description = "Cache key", required = true) @PathVariable("key") String key) {
     validateKey(key);
     cache.delete(key);
-    return RestfulApiResult.success();
+    return ApiLocaleResult.success();
   }
 
   @Operation(operationId = "existsCacheKey", summary = "Check if cache key exists", description = "Return whether the given cache key exists and is not expired.")
   @GetMapping("/{key}/exists")
-  public RestfulApiResult<ExistsResponse> exists(@PathVariable("key") String key) {
+  public ApiLocaleResult<ExistsResponse> exists(@PathVariable("key") String key) {
     validateKey(key);
-    return RestfulApiResult.success(new ExistsResponse(key, cache.exists(key)));
+    return ApiLocaleResult.success(new ExistsResponse(key, cache.exists(key)));
   }
 
   @Operation(operationId = "getCacheTTL", summary = "Get TTL for a cache key", description = "Return TTL (seconds) for a key: -1 = no expiration, -2 = not found.",
       responses = {
           @ApiResponse(responseCode = "200", description = "TTL returned in wrapper")})
   @GetMapping("/{key}/ttl")
-  public RestfulApiResult<TTLResponse> ttl(@PathVariable("key") String key) {
+  public ApiLocaleResult<TTLResponse> ttl(@PathVariable("key") String key) {
     validateKey(key);
-    return RestfulApiResult.success(new TTLResponse(key, cache.getTTL(key)));
+    return ApiLocaleResult.success(new TTLResponse(key, cache.getTTL(key)));
   }
 
   @Operation(operationId = "expireCacheKey", summary = "Set expiration (TTL) for an existing key", description = "Set a new TTL (in seconds) for an existing cache key.",
       requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "ttlSeconds body", required = true,
           content = @Content(mediaType = "application/json", schema = @Schema(implementation = ExpireRequest.class))))
   @PostMapping("/{key}/expire")
-  public RestfulApiResult<ExpireResponse> expire(@PathVariable("key") String key,
+  public ApiLocaleResult<ExpireResponse> expire(@PathVariable("key") String key,
       @Valid @RequestBody ExpireRequest body) {
     validateKey(key);
     boolean ok = cache.expire(key, body.getTtlSeconds());
     if (!ok) {
-      return RestfulApiResult.error(RestfulApiResult.BUSINESS_ERROR_CODE, "Key not found");
+      return ApiLocaleResult.error(BUSINESS_ERROR_CODE, "Key not found", null);
     }
-    return RestfulApiResult.success(new ExpireResponse(key, true));
+    return ApiLocaleResult.success(new ExpireResponse(key, true));
   }
 
   @Operation(operationId = "clearCache", summary = "Clear all cache entries", description = "Clear both in-memory and persistent cache entries.")
   @PostMapping("/clear")
-  public RestfulApiResult<?> clear() {
+  public ApiLocaleResult<?> clear() {
     cache.clear();
-    return RestfulApiResult.success();
+    return ApiLocaleResult.success();
   }
 
   @Operation(operationId = "cleanupExpiredEntries", summary = "Cleanup expired entries from persistence", description = "Delete expired entries from the persistent store and return number deleted.")
   @PostMapping("/cleanup")
-  public RestfulApiResult<CleanupResponse> cleanup() {
+  public ApiLocaleResult<CleanupResponse> cleanup() {
     int deleted = cache.cleanupExpiredEntries();
-    return RestfulApiResult.success(new CleanupResponse(deleted));
+    return ApiLocaleResult.success(new CleanupResponse(deleted));
   }
 
   @Data

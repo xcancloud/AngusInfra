@@ -88,6 +88,7 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
 
   @Override
   public String getId(String bizKey, Long tenantId) {
+    checkTenantIdParam(tenantId);
     String generatorKey = getGeneratorKey(bizKey, tenantId);
     IdConfig idConfig = checkAndGetIdConfig(bizKey, tenantId, generatorKey);
     Format format = idConfig.getFormat();
@@ -140,7 +141,6 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
   public IdConfig checkAndGetIdConfig(String bizKey, Long tenantId, String generatorKey) {
     checkBizKeyParam(bizKey);
     IdConfig idConfig = initAndGetIdConfig(bizKey, generatorKey, tenantId);
-    checkRedisInstanceParam(idConfig, distributedIncrAssigner);
     checkIdConfig(idConfig, tenantId);
     return idConfig;
   }
@@ -150,27 +150,33 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
     if (Objects.nonNull(idConfig)) {
       return idConfig;
     }
-    IdConfig idConfigDB = configIdAssigner.retrieveFromIdConfig(bizKey, tenantId);
-    if (!Objects.isNull(idConfigDB)) {
-      return assignAndInitIdSegment(generatorKey, idConfigDB);
-    } else {
-      if (BidGenerator.GLOBAL_TENANT_ID.equals(tenantId)) {
-        throw new IdGenerateException(
-            "Configuration bizKey: " + bizKey + " tenantId: -1 not found");
+    synchronized (monitor) {
+      idConfig = idConfigMap.get(generatorKey);
+      if (Objects.nonNull(idConfig)) {
+        return idConfig;
+      }
+      IdConfig idConfigDB = configIdAssigner.retrieveFromIdConfig(bizKey, tenantId);
+      if (!Objects.isNull(idConfigDB)) {
+        return assignAndInitIdSegment(generatorKey, idConfigDB);
       } else {
-        IdConfig idConfigTemplateDB = configIdAssigner
-            .retrieveFromIdConfig(bizKey, BidGenerator.GLOBAL_TENANT_ID);
-        if (Objects.isNull(idConfigTemplateDB)) {
+        if (BidGenerator.GLOBAL_TENANT_ID.equals(tenantId)) {
           throw new IdGenerateException(
               "Configuration bizKey: " + bizKey + " tenantId: -1 not found");
-        }
-        if (Scope.TENANT.equals(idConfigTemplateDB.getScope())) {
-          idConfigDB = buildIdConfig(idConfigTemplateDB, tenantId);
-          idConfigDB = configIdAssigner.saveAndAssignSegment(idConfigDB);
-          return assignAndInitIdSegment(generatorKey, idConfigDB);
         } else {
-          throw new IdGenerateException(
-              "When the scope is PLATFORM, tenantId must be equal to -1");
+          IdConfig idConfigTemplateDB = configIdAssigner
+              .retrieveFromIdConfig(bizKey, BidGenerator.GLOBAL_TENANT_ID);
+          if (Objects.isNull(idConfigTemplateDB)) {
+            throw new IdGenerateException(
+                "Configuration bizKey: " + bizKey + " tenantId: -1 not found");
+          }
+          if (Scope.TENANT.equals(idConfigTemplateDB.getScope())) {
+            idConfigDB = buildIdConfig(idConfigTemplateDB, tenantId);
+            idConfigDB = configIdAssigner.saveAndAssignSegment(idConfigDB);
+            return assignAndInitIdSegment(generatorKey, idConfigDB);
+          } else {
+            throw new IdGenerateException(
+                "When the scope is PLATFORM, tenantId must be equal to -1");
+          }
         }
       }
     }
@@ -193,13 +199,14 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
 
   private String getSequence(String generatorKey, IdConfig idConfig) {
     Integer length = idConfig.getSeqLength();
-    Long sequence;
-    sequence = idAtomicMap.get(generatorKey).incrementAndGet();
-    if (sequence > idConfig.getMaxId()) {
-      assignAndSetIdSegment(generatorKey, idConfig, sequence);
-      return getSequence(generatorKey, idConfig);
+    for (; ; ) {
+      long sequence = idAtomicMap.get(generatorKey).incrementAndGet();
+      if (sequence > idConfig.getMaxId()) {
+        assignAndSetIdSegment(generatorKey, idConfig);
+        continue;
+      }
+      return checkAndFormatSequence(idConfig, length, sequence);
     }
-    return checkAndFormatSequence(idConfig, length, sequence);
   }
 
   private List<String> getSequences(String generatorKey, IdConfig idConfig, int batchNum,
@@ -216,7 +223,7 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
           return sequences;
         }
       } else {
-        assignAndSetIdSegment(generatorKey, idConfig, sequence);
+        assignAndSetIdSegment(generatorKey, idConfig);
         return getSequences(generatorKey, idConfig, batchNum, batchNum - sequences.size(),
             sequences);
       }
@@ -225,6 +232,7 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
   }
 
   private IdConfig assignAndInitIdSegment(String generatorKey, IdConfig idConfig) {
+    checkRedisInstanceParam(idConfig, distributedIncrAssigner);
     long maxId;
     if (Mode.REDIS.equals(idConfig.getMode())) {
       maxId = distributedIncrAssigner.incr(generatorKey, idConfig.getStep());
@@ -240,21 +248,29 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
     return idConfig;
   }
 
-  private void assignAndSetIdSegment(String generatorKey, IdConfig idConfig, Long sequence) {
-    Long maxId;
-    if (Mode.REDIS.equals(idConfig.getMode())) {
-      maxId = distributedIncrAssigner.incr(generatorKey, idConfig.getStep());
-    } else {
-      maxId = configIdAssigner
-          .assignSegmentByParam(idConfig.getStep(), idConfig.getBizKey(), idConfig.getTenantId());
-    }
-    // At this time, if multiple threads are allocated at the same time, a continuous adjustment (jump) segment will occur.
+  /**
+   * Extends the local segment when the counter exceeds {@link IdConfig#getMaxId()}. All work is
+   * done under {@link #monitor}: only one thread fetches a new segment; others see the updated
+   * range and retry via {@link #getSequence}.
+   */
+  private void assignAndSetIdSegment(String generatorKey, IdConfig idConfig) {
     synchronized (monitor) {
-      while (!idAtomicMap.get(generatorKey).compareAndSet(sequence,
-          maxId - idConfig.getStep())) {
-        break;
+      AtomicLong atomic = idAtomicMap.get(generatorKey);
+      // Counter can race ahead while assignSegmentByParam runs — fetch until maxId covers it
+      while (atomic.get() > idConfig.getMaxId()) {
+        Long maxId;
+        if (Mode.REDIS.equals(idConfig.getMode())) {
+          checkRedisInstanceParam(idConfig, distributedIncrAssigner);
+          maxId = distributedIncrAssigner.incr(generatorKey, idConfig.getStep());
+        } else {
+          maxId = configIdAssigner
+              .assignSegmentByParam(idConfig.getStep(), idConfig.getBizKey(),
+                  idConfig.getTenantId());
+        }
+        long newStart = maxId - idConfig.getStep();
+        idConfig.setMaxId(maxId);
+        atomic.set(Math.max(atomic.get(), newStart));
       }
-      idConfig.setMaxId(maxId);
     }
   }
 

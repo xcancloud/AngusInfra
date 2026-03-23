@@ -140,16 +140,17 @@ public class CachedUidGenerator extends DefaultUidGenerator implements Disposabl
       this.rejectedPutBufferHandler = new RejectedPutBufferPolicies.BlockPolicy();
       LOGGER.info("Using default BlockPolicy for rejected put buffer requests");
     }
-    this.ringBuffer.setRejectedPutHandler(rejectedPutBufferHandler);
 
     if (rejectedTakeBufferHandler != null) {
       this.ringBuffer.setRejectedTakeHandler(rejectedTakeBufferHandler);
     }
 
-    // fill in all slots of the RingBuffer
+    // Synchronous bootstrap: no consumer threads yet — BlockPolicy would wait forever on full ring
+    this.ringBuffer.setRejectedPutHandler(new RejectedPutBufferPolicies.DiscardPolicy());
+    LOGGER.info("Bootstrap ring fill uses DiscardPolicy until bufferPaddingExecutor.start()");
     bufferPaddingExecutor.paddingBuffer();
+    this.ringBuffer.setRejectedPutHandler(rejectedPutBufferHandler);
 
-    // start buffer padding threads
     bufferPaddingExecutor.start();
   }
 

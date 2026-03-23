@@ -147,20 +147,22 @@ public class BufferPaddingExecutor {
       return;
     }
 
-    // fill the rest slots until to catch the cursor
-    boolean isFullRingBuffer = false;
-    while (!isFullRingBuffer) {
-      List<Long> uidList = uidProvider.provide(lastSecond.incrementAndGet());
-      for (Long uid : uidList) {
-        isFullRingBuffer = !ringBuffer.put(uid);
-        if (isFullRingBuffer) {
-          break;
+    try {
+      // fill the rest slots until to catch the cursor
+      boolean isFullRingBuffer = false;
+      while (!isFullRingBuffer) {
+        List<Long> uidList = uidProvider.provide(lastSecond.incrementAndGet());
+        for (Long uid : uidList) {
+          isFullRingBuffer = !ringBuffer.put(uid);
+          if (isFullRingBuffer) {
+            break;
+          }
         }
       }
+    } finally {
+      // must clear if provide() or put() throws, or subsequent async padding never runs
+      running.compareAndSet(true, false);
     }
-
-    // not running now
-    running.compareAndSet(true, false);
     // LOGGER.info("End to padding buffer lastSecond:{}. {}", lastSecond.get(), ringBuffer);
   }
 

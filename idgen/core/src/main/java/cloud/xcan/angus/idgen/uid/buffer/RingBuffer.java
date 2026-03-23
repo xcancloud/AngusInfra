@@ -105,34 +105,27 @@ public class RingBuffer {
    *
    * @return false means that the buffer is full, apply {@link RejectedPutBufferHandler}
    */
-  public synchronized boolean put(long uid) {
-    long currentTail = tail.get();
-    long currentCursor = cursor.get();
+  public boolean put(long uid) {
+    synchronized (this) {
+      long currentTail = tail.get();
+      long currentCursor = cursor.get();
 
-    // tail catches the cursor, means that you can't put any cause of RingBuffer is full
-    long distance = currentTail - (currentCursor == START_POINT ? 0 : currentCursor);
-    if (distance == bufferSize - 1) {
-      rejectedPutHandler.rejectPutBuffer(this, uid);
-      return false;
+      // tail catches the cursor, means that you can't put any cause of RingBuffer is full
+      long distance = currentTail - (currentCursor == START_POINT ? 0 : currentCursor);
+      if (distance != bufferSize - 1) {
+        int nextTailIndex = calSlotIndex(currentTail + 1);
+        if (flags[nextTailIndex].get() == CAN_PUT_FLAG) {
+          slots[nextTailIndex] = uid;
+          flags[nextTailIndex].set(CAN_TAKE_FLAG);
+          tail.incrementAndGet();
+          // take can't consume until tail is published (tail.incrementAndGet)
+          return true;
+        }
+      }
     }
-
-    // 1. pre-check whether the flag is CAN_PUT_FLAG
-    int nextTailIndex = calSlotIndex(currentTail + 1);
-    if (flags[nextTailIndex].get() != CAN_PUT_FLAG) {
-      rejectedPutHandler.rejectPutBuffer(this, uid);
-      return false;
-    }
-
-    // 2. put UID in the next slot
-    // 3. update next slot' flag to CAN_TAKE_FLAG
-    // 4. publish tail with sequence increase by one
-    slots[nextTailIndex] = uid;
-    flags[nextTailIndex].set(CAN_TAKE_FLAG);
-    tail.incrementAndGet();
-
-    // The atomicity of operations above, guarantees by 'synchronized'. In another word,
-    // the take operation can't consume the UID we just put, until the tail is published(tail.incrementAndGet())
-    return true;
+    // Outside synchronized: BlockPolicy may sleep while consumers take()
+    rejectedPutHandler.rejectPutBuffer(this, uid);
+    return false;
   }
 
   /**

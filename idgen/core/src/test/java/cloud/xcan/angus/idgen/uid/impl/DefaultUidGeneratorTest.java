@@ -32,7 +32,8 @@ class DefaultUidGeneratorTest {
     generator.setTimeBits(28);
     generator.setWorkerBits(22);
     generator.setSeqBits(13);
-    generator.setEpochStr("2016-05-20");
+    // 28-bit delta seconds is ~8.5 years; 2016-05-20 is exhausted by 2026 — use default-era epoch.
+    generator.setEpochStr("2021-01-01");
 
     mockAssigner = mock(InstanceIdAssigner.class);
     when(mockAssigner.assignInstanceIdByEnv()).thenReturn(1L);
@@ -96,8 +97,11 @@ class DefaultUidGeneratorTest {
     String parsed = generator.parseUID(uid);
 
     assertThat(parsed).isNotEmpty();
-    assertThat(parsed).contains("UID=").contains("Timestamp=").contains("WorkerId=").contains(
-        "Sequence=");
+    assertThat(parsed)
+        .contains("\"UID\"")
+        .contains("\"datetime\"")
+        .contains("\"instanceId\"")
+        .contains("\"sequence\"");
   }
 
   @Test

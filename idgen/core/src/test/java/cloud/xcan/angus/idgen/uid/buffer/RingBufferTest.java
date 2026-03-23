@@ -1,6 +1,7 @@
 package cloud.xcan.angus.idgen.uid.buffer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,6 +24,7 @@ class RingBufferTest {
   @BeforeEach
   void setUp() {
     ringBuffer = new RingBuffer(1024, 50);
+    ringBuffer.setBufferPaddingExecutor(mock(BufferPaddingExecutor.class));
   }
 
   @Test
@@ -66,6 +69,9 @@ class RingBufferTest {
     Object lock = new Object();
     AtomicInteger putCount = new AtomicInteger(0);
     AtomicInteger takeCount = new AtomicInteger(0);
+    // Producers may fail puts when the ring is full; consumers must stop after that many takes,
+    // not after putThreads * itemsPerThread (which would deadlock).
+    AtomicInteger takeTarget = new AtomicInteger(-1);
 
     // Producer threads
     for (int i = 0; i < putThreads; i++) {
@@ -87,32 +93,33 @@ class RingBufferTest {
     for (int i = 0; i < takeThreads; i++) {
       executor.submit(() -> {
         try {
-          while (takeCount.get() < putThreads * itemsPerThread) {
+          while (takeTarget.get() < 0 || takeCount.get() < takeTarget.get()) {
             try {
               long value = ringBuffer.take();
               synchronized (lock) {
                 takenValues.add(value);
               }
               takeCount.incrementAndGet();
-            } catch (Exception ignored) {
-              // Wait for more items
-              Thread.sleep(10);
+            } catch (RuntimeException e) {
+              Thread.sleep(1);
             }
           }
-        } catch (InterruptedException ignored) {
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
         } finally {
           takeDone.countDown();
         }
       });
     }
 
-    putDone.await();
-    takeDone.await();
+    assertThat(putDone.await(60, TimeUnit.SECONDS)).isTrue();
+    takeTarget.set(putCount.get());
+    assertThat(takeDone.await(60, TimeUnit.SECONDS)).isTrue();
     executor.shutdown();
+    assertThat(executor.awaitTermination(30, TimeUnit.SECONDS)).isTrue();
 
     assertThat(putCount.get()).isGreaterThan(0);
-    assertThat(takenValues).hasSizeGreaterThanOrEqualTo(
-        Math.min(putCount.get(), putThreads * itemsPerThread));
+    assertThat(takenValues).hasSize(putCount.get());
   }
 
   @Test

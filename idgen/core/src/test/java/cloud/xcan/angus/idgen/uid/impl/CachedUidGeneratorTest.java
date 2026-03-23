@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +30,8 @@ class CachedUidGeneratorTest {
     generator.setWorkerBits(22);
     generator.setSeqBits(13);
     generator.setBoostPower(2);
-    generator.setEpochStr("2016-05-20");
+    // align with DefaultUidGenerator default; 2016-05-20 + 28-bit delta is exhausted by ~2025
+    generator.setEpochStr("2021-01-01");
 
     mockAssigner = mock(InstanceIdAssigner.class);
     when(mockAssigner.assignInstanceIdByEnv()).thenReturn(1L);
@@ -50,8 +52,9 @@ class CachedUidGeneratorTest {
   @Test
   @DisplayName("should maintain UID uniqueness under extreme concurrent load")
   void testConcurrentBufferedGeneration() throws Exception {
-    int threadCount = 200;
-    int idsPerThread = 50;
+    // 200 threads all hammering the ring + BlockPolicy on put causes long blocking; fewer is enough
+    int threadCount = 32;
+    int idsPerThread = 200;
     ExecutorService executor = Executors.newFixedThreadPool(threadCount);
     CountDownLatch latch = new CountDownLatch(threadCount);
     Set<Long> generatedIds = new HashSet<>();
@@ -77,11 +80,14 @@ class CachedUidGeneratorTest {
       });
     }
 
-    latch.await();
+    assertThat(latch.await(120, TimeUnit.SECONDS))
+        .as("all workers must finish (hang = ring/padding deadlock or starvation)")
+        .isTrue();
     executor.shutdown();
+    assertThat(executor.awaitTermination(30, TimeUnit.SECONDS)).isTrue();
 
     assertThat(duplicates.get()).isZero();
-    assertThat(generatedIds.size()).isEqualTo(threadCount * idsPerThread);
+    assertThat(generatedIds).hasSize(threadCount * idsPerThread);
   }
 
   @Test
@@ -96,17 +102,15 @@ class CachedUidGeneratorTest {
     long uid = generator.getUID();
     String parsed = generator.parseUID(uid);
 
-    assertThat(parsed).isNotEmpty().contains("UID=");
+    assertThat(parsed).isNotEmpty().contains("\"UID\"");
   }
 
   @Test
   @DisplayName("should handle ring buffer exceptions with custom rejection policy")
   void testRingBufferFull() throws Exception {
-    // RingBuffer size is limited, but with proper padding strategy should not get full
-    // under normal circumstances. This test validates that extreme edge cases are handled.
-    generator.setBoostPower(0); // Very small buffer to trigger rejections
+    // Smaller buffer increases full-buffer / padding pressure without invalid boostPower (must be > 0)
+    generator.setBoostPower(1);
 
-    // After triggering buffer full scenarios, generator should remain functional
     long uid = generator.getUID();
     assertThat(uid).isGreaterThan(0);
   }

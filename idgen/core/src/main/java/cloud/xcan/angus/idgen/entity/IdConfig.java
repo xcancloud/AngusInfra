@@ -93,7 +93,7 @@ public class IdConfig implements Serializable {
    * value is the redis storage value.
    */
   @Column(name = "max_id")
-  private Long maxId;
+  private volatile Long maxId;
 
   /**
    * The length of the segment or the maximum number of cache IDs.

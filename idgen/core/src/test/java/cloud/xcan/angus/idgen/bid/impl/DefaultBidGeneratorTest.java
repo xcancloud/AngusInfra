@@ -197,7 +197,7 @@ class DefaultBidGeneratorTest {
     executor.shutdown();
 
     assertThat(duplicates.get()).isZero();
-    assertThat(generatedIds).hasSizeGreaterThan(threadCount * idsPerThread / 2);
+    assertThat(generatedIds).hasSize(threadCount * idsPerThread);
   }
 
   @Test

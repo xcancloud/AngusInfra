@@ -40,6 +40,7 @@ mvn -pl cache -am clean install
 示例 Maven 依赖：
 
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.cache-starter</artifactId>

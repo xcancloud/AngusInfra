@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  *
  * <p>Spring automatically injects all beans that implement {@link JobExecutor}
  * into the {@code Map<String, JobExecutor>} constructor parameter, keyed by their Spring bean name.
- *  This means the registry only ever contains executors that were explicitly declared as beans —
+ * This means the registry only ever contains executors that were explicitly declared as beans —
  * external callers cannot reference arbitrary ApplicationContext beans by fabricating a name
  * (CWE-470 mitigation).
  *

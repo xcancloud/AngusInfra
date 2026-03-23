@@ -13,8 +13,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * Spring Boot auto-configuration for the Job scheduler module.
  *
  * <p>Registers the shared thread pools used by
- * {@link cloud.xcan.angus.job.service.JobSchedulerService}.
- * All thread counts are driven by {@link JobProperties} instead of being hard-coded.
+ * {@link cloud.xcan.angus.job.service.JobSchedulerService}. All thread counts are driven by
+ * {@link JobProperties} instead of being hard-coded.
  *
  * <p>The {@code @EnableScheduling} annotation activates Spring's scheduling
  * infrastructure so that {@code @Scheduled} methods on

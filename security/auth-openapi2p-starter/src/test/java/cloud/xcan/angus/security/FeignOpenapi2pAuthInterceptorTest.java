@@ -12,7 +12,6 @@ import cloud.xcan.angus.security.model.cache.LocalTokenStore;
 import cloud.xcan.angus.security.model.cache.TokenStore;
 import cloud.xcan.angus.security.remote.ClientSignOpenapi2pRemote;
 import feign.RequestTemplate;
-import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

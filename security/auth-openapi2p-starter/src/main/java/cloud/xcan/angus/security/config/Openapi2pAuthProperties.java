@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * OAuth2 OpenAPI 2P (Private) Authentication Configuration Properties
- *
+ * <p>
  * This configuration class provides externalized configuration for the Feign interceptor used for
  * OpenAPI 2P (private) authentication with the OAuth2 token server.
- *
+ * <p>
  * Configuration properties:
  * <pre>
  * xcan:
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
  *       request-path-prefix: /openapi2p
  *       token-cache-interval: 15m
  * </pre>
- *
+ * <p>
  * Environment Variables:
  * <ul>
  *   <li>OAUTH2_OPENAPI2P_CLIENT_ID: OAuth2 client ID for OpenAPI 2P</li>
@@ -46,7 +46,7 @@ public class Openapi2pAuthProperties {
   /**
    * Request path prefix that triggers OpenAPI 2P token injection. If a request path starts with
    * this prefix, the Authorization header will be added.
-   *
+   * <p>
    * Default: "/openapi2p"
    */
   private String requestPathPrefix = DEFAULT_OPENAPI2P_PATH_PREFIX;
@@ -54,28 +54,27 @@ public class Openapi2pAuthProperties {
   /**
    * Token cache validity period. Once the token is obtained, it will be cached and reused for this
    * duration. When this period expires, a new token will be requested.
-   *
+   * <p>
    * Default: 15 minutes
    */
   private Duration tokenCacheInterval = Duration.ofMinutes(15);
 
   /**
    * Token cache storage type.
-   *
-   * - LOCAL: In-memory cache using volatile fields (default, single-instance)
-   * - DISTRIBUTED: Distributed cache using IDistributedCache (multi-instance)
-   *
-   * When set to DISTRIBUTED, requires xcan-angusinfra.cache module on the classpath
-   * and a configured IDistributedCache bean.
-   *
+   * <p>
+   * - LOCAL: In-memory cache using volatile fields (default, single-instance) - DISTRIBUTED:
+   * Distributed cache using IDistributedCache (multi-instance)
+   * <p>
+   * When set to DISTRIBUTED, requires xcan-angusinfra.cache module on the classpath and a
+   * configured IDistributedCache bean.
+   * <p>
    * Default: LOCAL
    */
   private CacheType cacheType = CacheType.LOCAL;
 
   /**
-   * Cache key for storing the token in distributed cache.
-   * Only used when cacheType is DISTRIBUTED.
-   *
+   * Cache key for storing the token in distributed cache. Only used when cacheType is DISTRIBUTED.
+   * <p>
    * Default: "auth:openapi2p:token"
    */
   private String cacheKey = "auth:openapi2p:token";
@@ -86,19 +85,19 @@ public class Openapi2pAuthProperties {
 
   /**
    * OAuth2 OpenAPI 2P client ID environment variable name.
-   *
+   * <p>
    * IMPORTANT: Provide via environment variables to keep credentials secure.
-   *
+   * <p>
    * Example: OAUTH2_OPENAPI2P_CLIENT_ID=openapi2p-service
    */
   public static final String CLIENT_ID_ENV_PROPERTY = "OAUTH2_OPENAPI2P_CLIENT_ID";
 
   /**
    * OAuth2 OpenAPI 2P client secret environment variable name.
-   *
+   * <p>
    * IMPORTANT: Provide via environment variables in production. NEVER hardcode in configuration
    * files.
-   *
+   * <p>
    * Example: OAUTH2_OPENAPI2P_CLIENT_SECRET=secret-key-here
    */
   public static final String CLIENT_SECRET_ENV_PROPERTY = "OAUTH2_OPENAPI2P_CLIENT_SECRET";

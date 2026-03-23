@@ -60,7 +60,8 @@ class DefaultBidGeneratorTest {
   @DisplayName("should generate sequential IDs for business key")
   void testSimpleIdGeneration() {
     IdConfig config = createTestConfig("ORDER", BidGenerator.GLOBAL_TENANT_ID, Format.SEQ);
-    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(
+        mockConfigAssigner.retrieveFromIdConfig("ORDER", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     String id1 = bidGenerator.getId("ORDER");
@@ -108,7 +109,8 @@ class DefaultBidGeneratorTest {
     IdConfig config = createTestConfig("PRODUCT", BidGenerator.GLOBAL_TENANT_ID,
         Format.PREFIX_SEQ);
     config.setPrefix("PROD_");
-    when(mockConfigAssigner.retrieveFromIdConfig("PRODUCT", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(mockConfigAssigner.retrieveFromIdConfig("PRODUCT",
+        BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     String id = bidGenerator.getId("PRODUCT");
@@ -122,7 +124,8 @@ class DefaultBidGeneratorTest {
     IdConfig config = createTestConfig("INVOICE", BidGenerator.GLOBAL_TENANT_ID,
         Format.DATE_SEQ);
     config.setDateFormat(DateFormat.YYYYMMDD);
-    when(mockConfigAssigner.retrieveFromIdConfig("INVOICE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(mockConfigAssigner.retrieveFromIdConfig("INVOICE",
+        BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     String id = bidGenerator.getId("INVOICE");
@@ -161,7 +164,8 @@ class DefaultBidGeneratorTest {
   @DisplayName("should handle concurrent generation for same bizKey")
   void testConcurrentSameBizKey() throws Exception {
     IdConfig config = createTestConfig("TRADE", BidGenerator.GLOBAL_TENANT_ID, Format.SEQ);
-    when(mockConfigAssigner.retrieveFromIdConfig("TRADE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(
+        mockConfigAssigner.retrieveFromIdConfig("TRADE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     int threadCount = 50;

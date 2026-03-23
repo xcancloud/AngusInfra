@@ -37,10 +37,11 @@ high performance for UID generation, use `CachedUidGenerator`.
 #### 1. Add Dependency
 
 ```xml
+
 <dependency>
-   <groupId>cloud.xcan.angus</groupId>
-   <artifactId>xcan-angusinfra.idgen-starter</artifactId>
-   <version>3.0.0</version>
+  <groupId>cloud.xcan.angus</groupId>
+  <artifactId>xcan-angusinfra.idgen-starter</artifactId>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -58,20 +59,24 @@ Run the SQL script to import the `instance` table. The script is as follows:
 
 ```sql
 -- idgen-schema.sql
-DROP DATABASE IF EXISTS `xxxx`;
-CREATE DATABASE `xxxx`;
-USE `xxxx`;
+DROP
+DATABASE IF EXISTS `xxxx`;
+CREATE
+DATABASE `xxxx`;
+USE
+`xxxx`;
 DROP TABLE IF EXISTS `xxxxx`.`instance`;
-CREATE TABLE `xxxxx`.`instance` (
-  `pk` varchar(40) NOT NULL,
-  `id` bigint(21) NOT NULL,
-  `host` varchar(160) NOT NULL DEFAULT '',
-  `port` varchar(40) NOT NULL DEFAULT '',
-  `instance_type` varchar(40) NOT NULL DEFAULT '',
-  `create_date` datetime NOT NULL,
-  `modified_date` datetime NOT NULL,
-  PRIMARY KEY (`pk`),
-  UNIQUE KEY `uidx_host_port` (`host`,`port`) USING BTREE
+CREATE TABLE `xxxxx`.`instance`
+(
+    `pk`            varchar(40)  NOT NULL,
+    `id`            bigint(21) NOT NULL,
+    `host`          varchar(160) NOT NULL DEFAULT '',
+    `port`          varchar(40)  NOT NULL DEFAULT '',
+    `instance_type` varchar(40)  NOT NULL DEFAULT '',
+    `create_date`   datetime     NOT NULL,
+    `modified_date` datetime     NOT NULL,
+    PRIMARY KEY (`pk`),
+    UNIQUE KEY `uidx_host_port` (`host`,`port`) USING BTREE
 ) ENGINE=InnoDB;
 ```
 
@@ -80,7 +85,7 @@ CREATE TABLE `xxxxx`.`instance` (
 ```yaml
 # Specify the JPA entity path for the `instance` entity
 xcan.datasource.extra.entityPackages[0]=cloud.xcan.angus.idgen.entity
-# Specify the path to the `instance` script. If the table does not exist, the script will automatically run when the application starts.
+  # Specify the path to the `instance` script. If the table does not exist, the script will automatically run when the application starts.
 xcan.datasource.mysql.schema[0]=mysql/idgen-schema.sql
 ```
 
@@ -89,6 +94,7 @@ xcan.datasource.mysql.schema[0]=mysql/idgen-schema.sql
 - Business Layer (application)
 
 ```java
+
 @Resource
 protected CachedUidGenerator uidGenerator;
 ```
@@ -113,10 +119,11 @@ segmentation and pre-segmentation.
 #### 1. Add Dependency
 
 ```xml
+
 <dependency>
-   <groupId>cloud.xcan.angus</groupId>
-   <artifactId>xcan-angusinfra.idgen-starter</artifactId>
-   <version>3.0.0</version>
+  <groupId>cloud.xcan.angus</groupId>
+  <artifactId>xcan-angusinfra.idgen-starter</artifactId>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -172,8 +179,10 @@ Refer to: `sample_library` or `AngusTester` configuration.
 
 ```sql
 -- SEQ format + Redis mode + unique across the platform
-INSERT INTO `id_config`(`pk`, `biz_key`, `format`, `prefix`, `date_format`, `seq_length`, `mode`, `scope`, `tenant_id`, `max_id`, `step`, `create_date`, `modified_date`) 
-  VALUES ('620d069a-c074-4b0e-9576-da2ed48092b2', 'biKey1002', 'SEQ', '', '', 8, 'REDIS', 'PLATFORM', -1, 0, 10000, '2021-09-03 19:01:40', '2021-09-03 19:01:40');
+INSERT INTO `id_config`(`pk`, `biz_key`, `format`, `prefix`, `date_format`, `seq_length`, `mode`,
+                        `scope`, `tenant_id`, `max_id`, `step`, `create_date`, `modified_date`)
+VALUES ('620d069a-c074-4b0e-9576-da2ed48092b2', 'biKey1002', 'SEQ', '', '', 8, 'REDIS', 'PLATFORM',
+        -1, 0, 10000, '2021-09-03 19:01:40', '2021-09-03 19:01:40');
 ```
 
 #### 5. BidGenerator Injection Example
@@ -181,6 +190,7 @@ INSERT INTO `id_config`(`pk`, `biz_key`, `format`, `prefix`, `date_format`, `seq
 - Business Layer (application)
 
 ```java
+
 @Resource
 BidGenerator bidGenerator;
 ```
@@ -188,7 +198,7 @@ BidGenerator bidGenerator;
 - Facade Layer (facade)
 
 ```java
-BidGenerator bidGenerator = (BidGenerator)SpringContextHolder.getBean("bidGenerator");
+BidGenerator bidGenerator = (BidGenerator) SpringContextHolder.getBean("bidGenerator");
 ```
 
 #### 6. BidGenerator API Usage Example

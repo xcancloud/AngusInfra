@@ -31,6 +31,7 @@
 #### 1. Add Dependency
 
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>

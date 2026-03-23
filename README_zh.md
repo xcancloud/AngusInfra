@@ -32,21 +32,21 @@
 
 ### **核心模块**
 
-| 模块         | 说明                                                    |  
-|------------|-------------------------------------------------------|  
-| **`spec`** | 公共规范库，定义全局通用模型（DTO/枚举/错误码）、接口契约及跨模块通信协议               |  
-| **`core`** | 核心聚合模块 — 重新导出以下所有子模块以保持向后兼容。新项目建议按需依赖独立子模块以获得更精简的依赖  |  
+| 模块         | 说明                                                  |  
+|------------|-----------------------------------------------------|  
+| **`spec`** | 公共规范库，定义全局通用模型（DTO/枚举/错误码）、接口契约及跨模块通信协议             |  
+| **`core`** | 核心聚合模块 — 重新导出以下所有子模块以保持向后兼容。新项目建议按需依赖独立子模块以获得更精简的依赖 |  
 
 #### Core 子模块
 
-| 模块                                | 说明                                                     |  
-|-----------------------------------|--------------------------------------------------------|  
-| **`core-base`**                   | 核心业务逻辑、异常处理、事件收集、多租户处理、Spring 扩展及工具类                    |  
-| **`persistence-jdbc-starter`**    | Spring Data JDBC 集成，支持多租户、批量操作及转换器工具                     |  
-| **`persistence-jpa-starter`**     | Spring Data JPA 集成，包含通用 Repository、Specification 构建器及审计支持 |  
-| **`feign-starter`**   | Spring Cloud OpenFeign 声明式 HTTP 客户端集成，含编解码及错误处理          |  
-| **`jackson-customizer`**          | Jackson JSON 序列化定制，提供标准 ObjectMapper 配置及自定义序列化器           |  
-| **`observability-starter`**       | 日志、指标及数据导出工具，服务于应用可观测性                                  |  
+| 模块                             | 说明                                                        |  
+|--------------------------------|-----------------------------------------------------------|  
+| **`core-base`**                | 核心业务逻辑、异常处理、事件收集、多租户处理、Spring 扩展及工具类                      |  
+| **`persistence-jdbc-starter`** | Spring Data JDBC 集成，支持多租户、批量操作及转换器工具                      |  
+| **`persistence-jpa-starter`**  | Spring Data JPA 集成，包含通用 Repository、Specification 构建器及审计支持 |  
+| **`feign-starter`**            | Spring Cloud OpenFeign 声明式 HTTP 客户端集成，含编解码及错误处理           |  
+| **`jackson-customizer`**       | Jackson JSON 序列化定制，提供标准 ObjectMapper 配置及自定义序列化器           |  
+| **`observability-starter`**    | 日志、指标及数据导出工具，服务于应用可观测性                                    |  
 
 ### **数据层模块**
 

@@ -22,8 +22,8 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 /**
- * {@link RingBuffer}：{@code take()} 会触发 {@link BufferPaddingExecutor#asyncPadding()}，必须注入
- * padding 执行器，否则会 NPE。
+ * {@link RingBuffer}：{@code take()} 会触发 {@link BufferPaddingExecutor#asyncPadding()}，必须注入 padding
+ * 执行器，否则会 NPE。
  * <p>
  * 运行示例：
  * <pre>

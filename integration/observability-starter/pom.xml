@@ -1,140 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.integration</artifactId>
-        <version>3.0.0</version>
-    </parent>
+  <parent>
+    <groupId>cloud.xcan.angus</groupId>
+    <artifactId>xcan-angusinfra.integration</artifactId>
+    <version>3.0.0</version>
+  </parent>
 
-    <artifactId>xcan-angusinfra.observability-starter</artifactId>
-    <packaging>jar</packaging>
+  <artifactId>xcan-angusinfra.observability-starter</artifactId>
+  <packaging>jar</packaging>
 
-    <name>Angus Infrastructure - Observability Starter</name>
-    <description>Observability module for logging, metrics, tracing, and exporting</description>
+  <name>Angus Infrastructure - Observability Starter</name>
+  <description>Observability module for logging, metrics, tracing, and exporting</description>
 
-    <dependencies>
-        <!-- Core Base Dependency -->
-        <dependency>
-            <groupId>cloud.xcan.angus</groupId>
-            <artifactId>xcan-angusinfra.core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+  <dependencies>
+    <!-- Core Base Dependency -->
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
-        <!-- Spring Boot Actuator (健康检查、指标暴露) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
+    <!-- Spring Boot Actuator (健康检查、指标暴露) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
 
-        <!--        &lt;!&ndash; Micrometer Core (指标收集) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.micrometer</groupId>-->
-        <!--            <artifactId>micrometer-core</artifactId>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Micrometer Core (指标收集) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.micrometer</groupId>-->
+    <!--            <artifactId>micrometer-core</artifactId>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; Micrometer Prometheus (Prometheus 指标导出) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.micrometer</groupId>-->
-        <!--            <artifactId>micrometer-registry-prometheus</artifactId>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Micrometer Prometheus (Prometheus 指标导出) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.micrometer</groupId>-->
+    <!--            <artifactId>micrometer-registry-prometheus</artifactId>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; Micrometer Tracing (分布式链路追踪) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.micrometer</groupId>-->
-        <!--            <artifactId>micrometer-tracing</artifactId>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Micrometer Tracing (分布式链路追踪) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.micrometer</groupId>-->
+    <!--            <artifactId>micrometer-tracing</artifactId>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; Micrometer Tracing Bridge (OpenTelemetry) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.micrometer</groupId>-->
-        <!--            <artifactId>micrometer-tracing-bridge-otel</artifactId>-->
-        <!--            <optional>true</optional>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Micrometer Tracing Bridge (OpenTelemetry) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.micrometer</groupId>-->
+    <!--            <artifactId>micrometer-tracing-bridge-otel</artifactId>-->
+    <!--            <optional>true</optional>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; OpenTelemetry Exporter (OTLP) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.opentelemetry</groupId>-->
-        <!--            <artifactId>opentelemetry-exporter-otlp</artifactId>-->
-        <!--            <optional>true</optional>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; OpenTelemetry Exporter (OTLP) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.opentelemetry</groupId>-->
+    <!--            <artifactId>opentelemetry-exporter-otlp</artifactId>-->
+    <!--            <optional>true</optional>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; Zipkin Reporter (Zipkin 链路追踪) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.zipkin.reporter2</groupId>-->
-        <!--            <artifactId>zipkin-reporter-brave</artifactId>-->
-        <!--            <optional>true</optional>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Zipkin Reporter (Zipkin 链路追踪) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>io.zipkin.reporter2</groupId>-->
+    <!--            <artifactId>zipkin-reporter-brave</artifactId>-->
+    <!--            <optional>true</optional>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; Logstash Encoder (结构化日志) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>net.logstash.logback</groupId>-->
-        <!--            <artifactId>logstash-logback-encoder</artifactId>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Logstash Encoder (结构化日志) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>net.logstash.logback</groupId>-->
+    <!--            <artifactId>logstash-logback-encoder</artifactId>-->
+    <!--        </dependency>-->
 
-        <!-- Logback (日志框架) -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-        </dependency>
+    <!-- Logback (日志框架) -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+    </dependency>
 
-        <!-- SLF4J API -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+    <!-- SLF4J API -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
 
-        <!-- MDC 增强（Mapped Diagnostic Context） -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
+    <!-- MDC 增强（Mapped Diagnostic Context） -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
 
-        <!--        &lt;!&ndash; Apache POI (Excel 导出) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.apache.poi</groupId>-->
-        <!--            <artifactId>poi-ooxml</artifactId>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; Apache POI (Excel 导出) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>org.apache.poi</groupId>-->
+    <!--            <artifactId>poi-ooxml</artifactId>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; OpenCSV (CSV 导出) &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.opencsv</groupId>-->
-        <!--            <artifactId>opencsv</artifactId>-->
-        <!--            <optional>true</optional>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; OpenCSV (CSV 导出) &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>com.opencsv</groupId>-->
+    <!--            <artifactId>opencsv</artifactId>-->
+    <!--            <optional>true</optional>-->
+    <!--        </dependency>-->
 
-        <!--        &lt;!&ndash; PDF 导出（iText，可选） &ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.itextpdf</groupId>-->
-        <!--            <artifactId>itextpdf</artifactId>-->
-        <!--            <version>5.5.13.3</version>-->
-        <!--            <optional>true</optional>-->
-        <!--        </dependency>-->
+    <!--        &lt;!&ndash; PDF 导出（iText，可选） &ndash;&gt;-->
+    <!--        <dependency>-->
+    <!--            <groupId>com.itextpdf</groupId>-->
+    <!--            <artifactId>itextpdf</artifactId>-->
+    <!--            <version>5.5.13.3</version>-->
+    <!--            <optional>true</optional>-->
+    <!--        </dependency>-->
 
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <scope>compile</scope>
-        </dependency>
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <scope>compile</scope>
+    </dependency>
 
-        <!-- Spring Boot Test (test scope) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <!-- Spring Boot Test (test scope) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

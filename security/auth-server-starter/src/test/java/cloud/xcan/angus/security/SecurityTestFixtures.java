@@ -360,7 +360,8 @@ public class SecurityTestFixtures {
 
       if (!isPublic) {
         String secret = clientSecret != null ? clientSecret : "default-secret";
-        b.clientSecret(secret).clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
+        b.clientSecret(secret)
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
       } else {
         b.clientAuthenticationMethod(ClientAuthenticationMethod.NONE);
       }

@@ -1,6 +1,7 @@
 package cloud.xcan.angus.idgen.uid.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -114,11 +115,18 @@ class DefaultUidGeneratorTest {
   }
 
   @Test
-  @DisplayName("should throw IdGenerateException on generation failure")
+  @DisplayName("should throw IdGenerateException when timestamp delta exceeds configured bits")
   void testGenerationException() throws Exception {
-    generator.setInstanceId(generator.getBitsAllocator().getMaxWorkerId() + 1);
+    DefaultUidGenerator exhausted = new DefaultUidGenerator();
+    exhausted.setTimeBits(28);
+    exhausted.setWorkerBits(22);
+    exhausted.setSeqBits(13);
+    exhausted.setEpochStr("1970-01-01");
+    exhausted.setInstanceIdAssigner(mockAssigner);
+    exhausted.afterPropertiesSet();
 
-    assertThatThrownBy(() -> generator.getUID()).isInstanceOf(IdGenerateException.class);
+    assertThatThrownBy(() -> exhausted.getUID()).isInstanceOf(IdGenerateException.class)
+        .hasMessageContaining("Timestamp bits is exhausted");
   }
 
   @Test
@@ -127,12 +135,12 @@ class DefaultUidGeneratorTest {
     InstanceInfo mockInfo = mock(InstanceInfo.class);
     when(mockInfo.getHost()).thenReturn("127.0.0.1");
     when(mockInfo.getPort()).thenReturn("8080");
-    when(mockInfo.getInstanceType()).thenReturn(InstanceType.STANDARD);
+    when(mockInfo.getInstanceType()).thenReturn(InstanceType.HOST);
 
     DefaultUidGenerator gen = new DefaultUidGenerator();
     gen.setInstanceInfo(mockInfo);
     gen.setInstanceIdAssigner(mockAssigner);
 
-    assertThatThrownBy(gen::afterPropertiesSet).doesNotThrow();
+    assertThatCode(gen::afterPropertiesSet).doesNotThrowAnyException();
   }
 }

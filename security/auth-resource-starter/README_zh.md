@@ -25,7 +25,6 @@
 #### 1. 引入依赖
 
 ```xml
-
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>

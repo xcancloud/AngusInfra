@@ -2,11 +2,14 @@ package cloud.xcan.angus.idgen.bid.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.idgen.BidGenerator;
 import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
+import cloud.xcan.angus.idgen.bid.DateFormat;
 import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.Format;
 import cloud.xcan.angus.idgen.bid.Mode;
@@ -19,6 +22,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,12 +33,16 @@ class DefaultBidGeneratorTest {
   private DefaultBidGenerator bidGenerator;
   private ConfigIdAssigner mockConfigAssigner;
   private DistributedIncrAssigner mockIncrAssigner;
+  private final AtomicLong nextAssignMaxId = new AtomicLong(0L);
 
   @BeforeEach
   void setUp() {
     mockConfigAssigner = mock(ConfigIdAssigner.class);
     mockIncrAssigner = mock(DistributedIncrAssigner.class);
     bidGenerator = new DefaultBidGenerator(mockConfigAssigner, mockIncrAssigner);
+    nextAssignMaxId.set(0L);
+    when(mockConfigAssigner.assignSegmentByParam(anyLong(), anyString(), anyLong()))
+        .thenAnswer(invocation -> nextAssignMaxId.addAndGet(50_000L));
   }
 
   private IdConfig createTestConfig(String bizKey, Long tenantId, Format format) {
@@ -44,7 +52,7 @@ class DefaultBidGeneratorTest {
     config.setFormat(format);
     config.setSeqLength(6);
     config.setStep(1000L);
-    config.setMode(Mode.MEMORY);
+    config.setMode(Mode.DB);
     return config;
   }
 
@@ -52,7 +60,7 @@ class DefaultBidGeneratorTest {
   @DisplayName("should generate sequential IDs for business key")
   void testSimpleIdGeneration() {
     IdConfig config = createTestConfig("ORDER", BidGenerator.GLOBAL_TENANT_ID, Format.SEQ);
-    when(mockConfigAssigner.getIdConfig("ORDER", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     String id1 = bidGenerator.getId("ORDER");
@@ -72,8 +80,8 @@ class DefaultBidGeneratorTest {
     IdConfig config1 = createTestConfig("ORDER", 1L, Format.SEQ);
     IdConfig config2 = createTestConfig("ORDER", 2L, Format.SEQ);
 
-    when(mockConfigAssigner.getIdConfig("ORDER", 1L)).thenReturn(config1);
-    when(mockConfigAssigner.getIdConfig("ORDER", 2L)).thenReturn(config2);
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", 1L)).thenReturn(config1);
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", 2L)).thenReturn(config2);
 
     String idTenant1 = bidGenerator.getId("ORDER", 1L);
     String idTenant2 = bidGenerator.getId("ORDER", 2L);
@@ -85,7 +93,7 @@ class DefaultBidGeneratorTest {
   @DisplayName("should batch generate IDs correctly")
   void testBatchGeneration() {
     IdConfig config = createTestConfig("USER", BidGenerator.GLOBAL_TENANT_ID, Format.SEQ);
-    when(mockConfigAssigner.getIdConfig("USER", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(mockConfigAssigner.retrieveFromIdConfig("USER", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     List<String> ids = bidGenerator.getIds("USER", 100);
@@ -100,7 +108,7 @@ class DefaultBidGeneratorTest {
     IdConfig config = createTestConfig("PRODUCT", BidGenerator.GLOBAL_TENANT_ID,
         Format.PREFIX_SEQ);
     config.setPrefix("PROD_");
-    when(mockConfigAssigner.getIdConfig("PRODUCT", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(mockConfigAssigner.retrieveFromIdConfig("PRODUCT", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     String id = bidGenerator.getId("PRODUCT");
@@ -113,18 +121,8 @@ class DefaultBidGeneratorTest {
   void testDateFormatGeneration() {
     IdConfig config = createTestConfig("INVOICE", BidGenerator.GLOBAL_TENANT_ID,
         Format.DATE_SEQ);
-    config.setDateFormat(new java.time.format.DateTimeFormatter() {
-      @Override
-      public String format(java.time.temporal.TemporalAccessor temporal) {
-        return java.time.LocalDate.now().toString().replace("-", "");
-      }
-
-      @Override
-      public java.time.format.DateTimeFormatter withLocale(java.util.Locale locale) {
-        return this;
-      }
-    });
-    when(mockConfigAssigner.getIdConfig("INVOICE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    config.setDateFormat(DateFormat.YYYYMMDD);
+    when(mockConfigAssigner.retrieveFromIdConfig("INVOICE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     String id = bidGenerator.getId("INVOICE");
@@ -153,7 +151,7 @@ class DefaultBidGeneratorTest {
   @DisplayName("should throw exception for invalid tenantId")
   void testInvalidTenantId() {
     IdConfig config = createTestConfig("ORDER", -2L, Format.SEQ);
-    when(mockConfigAssigner.getIdConfig("ORDER", -2L)).thenReturn(config);
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", -2L)).thenReturn(config);
 
     assertThatThrownBy(() -> bidGenerator.getId("ORDER", -2L)).isInstanceOf(
         IdGenerateException.class).hasMessageContaining("tenantId");
@@ -163,7 +161,7 @@ class DefaultBidGeneratorTest {
   @DisplayName("should handle concurrent generation for same bizKey")
   void testConcurrentSameBizKey() throws Exception {
     IdConfig config = createTestConfig("TRADE", BidGenerator.GLOBAL_TENANT_ID, Format.SEQ);
-    when(mockConfigAssigner.getIdConfig("TRADE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
+    when(mockConfigAssigner.retrieveFromIdConfig("TRADE", BidGenerator.GLOBAL_TENANT_ID)).thenReturn(
         config);
 
     int threadCount = 50;
@@ -205,9 +203,9 @@ class DefaultBidGeneratorTest {
     IdConfig config2 = createTestConfig("ORDER", 2L, Format.SEQ);
     IdConfig config3 = createTestConfig("ORDER", 3L, Format.SEQ);
 
-    when(mockConfigAssigner.getIdConfig("ORDER", 1L)).thenReturn(config1);
-    when(mockConfigAssigner.getIdConfig("ORDER", 2L)).thenReturn(config2);
-    when(mockConfigAssigner.getIdConfig("ORDER", 3L)).thenReturn(config3);
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", 1L)).thenReturn(config1);
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", 2L)).thenReturn(config2);
+    when(mockConfigAssigner.retrieveFromIdConfig("ORDER", 3L)).thenReturn(config3);
 
     ExecutorService executor = Executors.newFixedThreadPool(30);
     CountDownLatch latch = new CountDownLatch(30);

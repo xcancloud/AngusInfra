@@ -12,8 +12,11 @@ import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.angus.security.repository.JdbcRegisteredClientRepository;
 import cloud.xcan.angus.security.repository.JdbcUserDetailsRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -216,11 +219,15 @@ public abstract class BaseSecurityTest {
    * Creates a test registered client (OAuth2 client)
    */
   protected CustomOAuth2RegisteredClient createTestRegisteredClient() {
-    CustomOAuth2RegisteredClient client = new CustomOAuth2RegisteredClient();
-    client.setClientId(TEST_CLIENT_ID);
-    client.setClientSecret(passwordEncoder.encode(TEST_CLIENT_SECRET));
-    client.setClientName("Test Client");
-    return client;
+    return CustomOAuth2RegisteredClient.with(TEST_CLIENT_ID)
+        .clientId(TEST_CLIENT_ID)
+        .clientSecret(passwordEncoder.encode(TEST_CLIENT_SECRET))
+        .clientName("Test Client")
+        .clientIdIssuedAt(Instant.now())
+        .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+        .authorizationGrantType(AuthorizationGrantType.PASSWORD)
+        .scope("openid")
+        .build();
   }
 
   /**
@@ -230,7 +237,7 @@ public abstract class BaseSecurityTest {
     CustomOAuth2User user = new CustomOAuth2User();
     user.setUsername(TEST_USERNAME);
     user.setPassword(passwordEncoder.encode(TEST_PASSWORD));
-    user.setId(1L);
+    user.setId("1");
     user.setTenantId(TEST_TENANT_ID);
     user.setEnabled(true);
     user.setAccountNonExpired(true);

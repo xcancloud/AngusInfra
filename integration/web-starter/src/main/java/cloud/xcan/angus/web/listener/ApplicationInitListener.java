@@ -1,6 +1,11 @@
 package cloud.xcan.angus.web.listener;
 
+import static cloud.xcan.angus.core.spring.SpringContextHolder.getCtx;
+import static cloud.xcan.angus.core.spring.SpringContextHolder.registerBean;
+import static cloud.xcan.angus.core.utils.CoreUtils.runAtJar;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AppCache.openedAppCache;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
+import static java.lang.System.exit;
 
 import cloud.xcan.angus.api.obf.Str0;
 import cloud.xcan.angus.core.app.AppBeanReadyInit;
@@ -14,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;

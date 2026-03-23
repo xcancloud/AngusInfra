@@ -1,6 +1,6 @@
 package cloud.xcan.angus.remote.benchmark;
 
-import cloud.xcan.angus.remote.result.ApiResult;
+import cloud.xcan.angus.remote.ApiResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +41,8 @@ public class ApiResponseBenchmark {
   public void setup() throws IOException {
     objectMapper = new ObjectMapper();
 
-    // 简单结果对象
-    simpleResult = ApiResult.ok("Hello World");
+    // 简单结果对象（避免与 success(String message) 重载冲突，data 为 String 时用构造器）
+    simpleResult = new ApiResult<>("Hello World");
 
     // 复杂结果对象（包含嵌套对象）
     UserDTO user = new UserDTO();
@@ -51,7 +51,7 @@ public class ApiResponseBenchmark {
     user.setEmail("john@example.com");
     user.setAge(30);
     user.setActive(true);
-    complexResult = ApiResult.ok(user);
+    complexResult = ApiResult.success(user);
 
     // 列表结果对象
     List<UserDTO> users = new ArrayList<>();
@@ -64,7 +64,7 @@ public class ApiResponseBenchmark {
       u.setActive(i % 2 == 0);
       users.add(u);
     }
-    listResult = ApiResult.ok(users);
+    listResult = ApiResult.success(users);
 
     // 预先序列化JSON
     simpleJson = objectMapper.writeValueAsString(simpleResult);
@@ -138,7 +138,7 @@ public class ApiResponseBenchmark {
       user.setEmail(String.format("user_%d@example.com", i));
       user.setAge(20 + i);
       user.setActive(i % 2 == 0);
-      ApiResult<UserDTO> result = ApiResult.ok(user);
+      ApiResult<UserDTO> result = ApiResult.success(user);
       results.add(objectMapper.writeValueAsString(result));
     }
     return results;

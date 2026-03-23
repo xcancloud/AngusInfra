@@ -1,161 +1,133 @@
 package cloud.xcan.angus.idgen.benchmark;
 
-import cloud.xcan.angus.idgen.DefaultBidGenerator;
-import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import cloud.xcan.angus.idgen.BidGenerator;
+import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
+import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
+import cloud.xcan.angus.idgen.bid.Format;
+import cloud.xcan.angus.idgen.bid.Mode;
+import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
+import cloud.xcan.angus.idgen.entity.IdConfig;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.TearDown;
+import org.openjdk.jmh.annotations.Threads;
+import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 /**
- * BID（业务ID）生成性能基准测试
+ * 业务 ID（BID）生成：基于当前 {@link DefaultBidGenerator} API（{@code getId(bizKey, tenantId)} +
+ * {@link ConfigIdAssigner} / {@link DistributedIncrAssigner}）。
  * <p>
- * 测试以下场景： 1. 单个业务key的ID生成 2. 多个业务key（10个租户）的并发生成 3. 批量ID生成（步长配置）
- * <p>
- * 目标吞吐量：≥200K ops/sec（单租户）
- * <p>
- * 运行方式： mvn exec:java -Dexec.mainClass="cloud.xcan.angus.idgen.benchmark.BidGeneratorBenchmark"
+ * 运行示例：
+ * <pre>
+ *   mvn -pl idgen/starter test-compile exec:java \
+ *     -Dexec.classpathScope=test \
+ *     -Dexec.mainClass=org.openjdk.jmh.Main \
+ *     -Dexec.args="cloud.xcan.angus.idgen.benchmark.BidGeneratorBenchmark"
+ * </pre>
  */
 @State(Scope.Benchmark)
 @Fork(1)
 @Warmup(iterations = 3, time = 1)
 @Measurement(iterations = 5, time = 2)
-@BenchmarkMode(Mode.Throughput)
+@BenchmarkMode(org.openjdk.jmh.annotations.Mode.Throughput)
 @OutputTimeUnit(java.util.concurrent.TimeUnit.SECONDS)
 public class BidGeneratorBenchmark {
 
-  private DefaultBidGenerator bidGenerator;
-  private ExecutorService executorService;
-  private static final int NUM_THREADS = 10;
   private static final int NUM_TENANTS = 10;
-  private static final String[] TENANT_IDS = IntStream.range(0, NUM_TENANTS)
-      .mapToObj(i -> String.format("tenant_%d", i))
-      .toArray(String[]::new);
-  private static final String[] BIZ_KEYS = IntStream.range(0, 5)
-      .mapToObj(i -> String.format("ORDER_SEQ_%d", i))
-      .toArray(String[]::new);
+  private static final Long[] TENANT_IDS =
+      IntStream.range(0, NUM_TENANTS).mapToObj(Long::valueOf).toArray(Long[]::new);
+  private static final String[] BIZ_KEYS =
+      IntStream.range(0, 5).mapToObj(i -> "ORDER_SEQ_" + i).toArray(String[]::new);
+
+  private DefaultBidGenerator bidGenerator;
+  private final AtomicLong nextAssignMaxId = new AtomicLong(0L);
 
   @Setup
   public void setup() {
-    bidGenerator = new DefaultBidGenerator();
-    bidGenerator.setMaxStep(1000000L);
-    bidGenerator.setMaxBatchNum(10000L);
-    bidGenerator.setMaxSeqLength(40L);
-    bidGenerator.setInitialMapCapacity(512);
+    ConfigIdAssigner config = mock(ConfigIdAssigner.class);
+    DistributedIncrAssigner incr = mock(DistributedIncrAssigner.class);
 
-    executorService = Executors.newFixedThreadPool(NUM_THREADS);
+    when(config.retrieveFromIdConfig(anyString(), anyLong())).thenAnswer(inv -> {
+      String bizKey = inv.getArgument(0);
+      Long tenantId = inv.getArgument(1);
+      return idConfig(bizKey, tenantId, Format.SEQ);
+    });
+    when(config.assignSegmentByParam(anyLong(), anyString(), anyLong()))
+        .thenAnswer(inv -> nextAssignMaxId.addAndGet(50_000L));
+
+    nextAssignMaxId.set(0L);
+    bidGenerator = new DefaultBidGenerator(config, incr, 512);
+  }
+
+  private static IdConfig idConfig(String bizKey, Long tenantId, Format format) {
+    IdConfig config = new IdConfig();
+    config.setBizKey(bizKey);
+    config.setTenantId(tenantId);
+    config.setFormat(format);
+    config.setSeqLength(6);
+    config.setStep(1000L);
+    config.setMode(Mode.DB);
+    return config;
   }
 
   @TearDown
   public void tearDown() {
-    if (executorService != null && !executorService.isShutdown()) {
-      executorService.shutdown();
-      try {
-        if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
-          executorService.shutdownNow();
-        }
-      } catch (InterruptedException e) {
-        executorService.shutdownNow();
-        Thread.currentThread().interrupt();
-      }
-    }
+    bidGenerator = null;
   }
 
-  /**
-   * 单租户单业务线程ID生成基准测试
-   */
   @Benchmark
   public String singleTenantSingleBizKey() {
-    return bidGenerator.nextId("tenant_0", "ORDER_SEQ_0");
+    return bidGenerator.getId("ORDER_SEQ_0", BidGenerator.GLOBAL_TENANT_ID);
   }
 
-  /**
-   * 单租户多业务线程并发生成（5个不同的业务线程）
-   */
   @Benchmark
-  public String singleTenantMultiBizKeys() {
-    String tenantId = "tenant_0";
-    // Round-robin选择业务线程
-    int bizIndex = (int) ((System.nanoTime() / 1000) % BIZ_KEYS.length);
-    return bidGenerator.nextId(tenantId, BIZ_KEYS[bizIndex]);
+  public String singleTenantRoundRobinBizKeys() {
+    int idx = (int) ((System.nanoTime() >>> 10) % BIZ_KEYS.length);
+    return bidGenerator.getId(BIZ_KEYS[idx], BidGenerator.GLOBAL_TENANT_ID);
   }
 
-  /**
-   * 多租户并发生成（轮流访问10个租户）
-   */
   @Benchmark
-  public String multiTenantConcurrent() {
-    int tenantIndex = (int) ((System.nanoTime() / 1000) % NUM_TENANTS);
-    int bizIndex = (int) ((System.nanoTime() / 1000 / NUM_TENANTS) % BIZ_KEYS.length);
-    return bidGenerator.nextId(TENANT_IDS[tenantIndex], BIZ_KEYS[bizIndex]);
+  public String multiTenantRoundRobin() {
+    int t = (int) ((System.nanoTime() >>> 10) % NUM_TENANTS);
+    int b = (int) ((System.nanoTime() >>> 14) % BIZ_KEYS.length);
+    return bidGenerator.getId(BIZ_KEYS[b], TENANT_IDS[t]);
   }
 
-  /**
-   * 多线程并发生成（NumThreads个线程，每个线程处理多个租户）
-   */
   @Benchmark
-  public void multiThreadMultiTenant() throws InterruptedException {
-    CountDownLatch latch = new CountDownLatch(NUM_THREADS);
-    for (int threadId = 0; threadId < NUM_THREADS; threadId++) {
-      final int tid = threadId;
-      executorService.submit(() -> {
-        try {
-          for (int i = 0; i < 20; i++) {
-            int tenantIdx = (tid + i) % NUM_TENANTS;
-            int bizIdx = i % BIZ_KEYS.length;
-            bidGenerator.nextId(TENANT_IDS[tenantIdx], BIZ_KEYS[bizIdx]);
-          }
-        } finally {
-          latch.countDown();
-        }
-      });
-    }
-    latch.await();
+  public List<String> batchTenIds() {
+    return bidGenerator.getIds("ORDER_SEQ_0", 10, BidGenerator.GLOBAL_TENANT_ID);
   }
 
-  /**
-   * 批量ID获取（一次获取10个ID） 获取格式示例：seq_1, seq_2, ..., seq_10
-   */
   @Benchmark
-  public String batchIdGeneration() {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < 10; i++) {
-      String bid = bidGenerator.nextId("tenant_0", "ORDER_SEQ_0");
-      if (i > 0) {
-        sb.append(",");
-      }
-      sb.append(bid);
-    }
-    return sb.toString();
+  @Threads(4)
+  public String fourThreadsGlobalTenant() {
+    return bidGenerator.getId("ORDER_SEQ_0", BidGenerator.GLOBAL_TENANT_ID);
   }
 
-  /**
-   * 验证ID唯一性（采样检查：生成100个ID）
-   */
-  @Benchmark
-  public Set<String> validateUniqueness() {
-    return IntStream.range(0, 100)
-        .mapToObj(i -> bidGenerator.nextId("tenant_0", "ORDER_SEQ_0"))
-        .collect(Collectors.toSet());
-  }
-
-  /**
-   * 运行所有基准测试
-   */
   public static void main(String[] args) throws RunnerException {
     Options opt = new OptionsBuilder()
         .include(BidGeneratorBenchmark.class.getSimpleName())
         .result("benchmark_bid.json")
         .resultFormat(org.openjdk.jmh.results.format.ResultFormatType.JSON)
         .build();
-
     new Runner(opt).run();
   }
 }

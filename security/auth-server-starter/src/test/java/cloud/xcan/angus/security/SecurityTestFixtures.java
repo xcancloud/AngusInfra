@@ -5,6 +5,7 @@ import cloud.xcan.angus.security.model.CustomOAuth2User;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -343,48 +344,56 @@ public class SecurityTestFixtures {
     }
 
     public CustomOAuth2RegisteredClient build() {
-      CustomOAuth2RegisteredClient client = new CustomOAuth2RegisteredClient();
-      client.setClientId(clientId);
-      if (!isPublic) {
-        client.setClientSecret(clientSecret);
+      if (clientId == null || clientId.isBlank()) {
+        throw new IllegalStateException("clientId is required");
       }
-      client.setClientName(clientName);
-      client.setClientIdIssuedAt(Instant.now());
+      if (grantTypes.contains(AuthorizationGrantType.AUTHORIZATION_CODE) && redirectUri == null) {
+        throw new IllegalStateException(
+            "redirectUri is required when using authorization_code grant");
+      }
+
+      CustomOAuth2RegisteredClient.Builder b =
+          CustomOAuth2RegisteredClient.with(clientId)
+              .clientId(clientId)
+              .clientIdIssuedAt(Instant.now())
+              .clientName(clientName != null ? clientName : clientId);
+
+      if (!isPublic) {
+        String secret = clientSecret != null ? clientSecret : "default-secret";
+        b.clientSecret(secret).clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
+      } else {
+        b.clientAuthenticationMethod(ClientAuthenticationMethod.NONE);
+      }
 
       if (grantTypes.isEmpty()) {
-        client.getAuthorizationGrantTypes().add(AuthorizationGrantType.PASSWORD);
+        b.authorizationGrantType(AuthorizationGrantType.PASSWORD);
       } else {
-        client.getAuthorizationGrantTypes().addAll(grantTypes);
+        grantTypes.forEach(b::authorizationGrantType);
       }
 
       if (scopes.isEmpty()) {
-        client.getScopes().add("openid");
-        client.getScopes().add("profile");
+        b.scope("openid").scope("profile");
       } else {
-        client.getScopes().addAll(scopes);
+        scopes.forEach(b::scope);
       }
 
       if (redirectUri != null) {
-        client.getRedirectUris().add(redirectUri);
+        b.redirectUri(redirectUri);
       }
 
-      client.getClientAuthenticationMethods().add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
-
-      // Set default token settings (15 minutes access token, 30 days refresh token)
       TokenSettings tokenSettings = TokenSettings.builder()
           .accessTokenTimeToLive(java.time.Duration.ofMinutes(15))
           .refreshTokenTimeToLive(java.time.Duration.ofDays(30))
           .reuseRefreshTokens(true)
           .build();
-      client.setTokenSettings(tokenSettings);
+      b.tokenSettings(tokenSettings);
 
-      // Set default client settings
       ClientSettings clientSettings = ClientSettings.builder()
           .requireAuthorizationConsent(false)
           .build();
-      client.setClientSettings(clientSettings);
+      b.clientSettings(clientSettings);
 
-      return client;
+      return b.build();
     }
   }
 
@@ -464,7 +473,7 @@ public class SecurityTestFixtures {
       CustomOAuth2User user = new CustomOAuth2User();
       user.setUsername(username);
       user.setPassword(password != null ? password : "default-password");
-      user.setId(id != null ? id : 1L);
+      user.setId(id != null ? String.valueOf(id) : "1");
       user.setTenantId(tenantId != null ? tenantId : "default-tenant");
       user.setEmail(email);
       user.setMobile(mobile);
@@ -473,10 +482,11 @@ public class SecurityTestFixtures {
       user.setAccountNonLocked(accountNonLocked);
       user.setCredentialsNonExpired(credentialsNonExpired);
 
-      if (authorities.isEmpty()) {
-        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+      HashSet<GrantedAuthority> granted = new HashSet<>(authorities);
+      if (granted.isEmpty()) {
+        granted.add(new SimpleGrantedAuthority("ROLE_USER"));
       }
-      user.setAuthorities(authorities);
+      user.setAuthorities(granted);
 
       return user;
     }

@@ -1,6 +1,7 @@
 package cloud.xcan.angus.idgen.uid.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -85,10 +86,8 @@ class CachedUidGeneratorTest {
 
   @Test
   @DisplayName("should cleanup resources on destroy")
-  void testDestroy() throws Exception {
-    generator.destroy();
-    // Should not throw exception
-    assertThat(generator.getBufferPaddingExecutor()).isNotNull();
+  void testDestroy() {
+    assertThatCode(() -> generator.destroy()).doesNotThrowAnyException();
   }
 
   @Test

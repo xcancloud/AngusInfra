@@ -18,7 +18,12 @@ public class ValidatorUtils {
 
   private ValidatorUtils() { /* no instance */ }
 
-  public static final String REGEX_EMAIL = "^([a-z0-9A-Z]+[-|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
+  /**
+   * Local part allows a single character before {@code @} (e.g. {@code a@b.co}); domain ends with
+   * a 2+ letter TLD.
+   */
+  public static final String REGEX_EMAIL =
+      "^([a-z0-9A-Z]+[-|\\.]?)*[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
 
   /**
    * Chinese characters (1-9 Chinese characters) {1,9} SimpleSource interval

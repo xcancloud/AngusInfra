@@ -24,6 +24,12 @@ public final class NettySslUtils {
       String keyPassword, String keyStoreResource, String keyStoreType, String keyStorePassword,
       String trustStoreResource, String trustStoreType, String trustStorePassword)
       throws SSLException {
+    if (isEmpty(keyStoreResource)) {
+      throw new IllegalArgumentException("keyStoreResource must not be empty");
+    }
+    if (isEmpty(trustStoreResource)) {
+      throw new IllegalArgumentException("trustStoreResource must not be empty");
+    }
     SslContextBuilder sslBuilder = SslContextBuilder
         .forServer(getKeyManagerFactory(keyStoreType, keyStoreResource,
             keyPassword, keyStorePassword))

@@ -16,7 +16,7 @@ class ReflectionTest {
     Reflections reflections = new Reflections("cloud.xcan");
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(EndpointRegister.class);
     assertFalse(classes.isEmpty(),
-        () -> "No @EndpointRegister types under package cloud.xcan (classpath / reflections scan)");
+        () -> "Expected at least one @EndpointRegister type under package cloud.xcan on test classpath");
   }
 
   @Test

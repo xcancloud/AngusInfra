@@ -176,7 +176,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
     if (!register.multiTenantAutoCtrlWhenOpClient() || hasRealOptTenantId()) {
       return " AND tenant_id = " + getOptTenantId();
     }
-    // Close TenantInterceptor tenantId condition
+    // Intentionally omit tenant_id predicate (op client without opt tenant)
     setMultiTenantCtrl(false);
     return "";
   }

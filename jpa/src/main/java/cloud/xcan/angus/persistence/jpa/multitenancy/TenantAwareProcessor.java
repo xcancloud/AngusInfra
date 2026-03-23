@@ -11,45 +11,44 @@ import java.util.function.Supplier;
 public class TenantAwareProcessor {
 
   public void run(Runnable runnable, Long currentTenantId) {
-    boolean isMultiTenantCtrl = isMultiTenantCtrl();
-    long realTenantId = getOptTenantId();
-    if (isMultiTenantCtrl) {
-      PrincipalContext.get().setMultiTenantCtrl(false);
-      if (nonNull(currentTenantId)) {
-        PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
+    boolean wasMultiTenantCtrl = isMultiTenantCtrl();
+    Long previousOptTenantId = getOptTenantId();
+    try {
+      if (wasMultiTenantCtrl) {
+        PrincipalContext.get().setMultiTenantCtrl(false);
+        if (nonNull(currentTenantId)) {
+          PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
+        }
       }
-    }
-
-    runnable.run();
-
-    if (isMultiTenantCtrl) {
-      PrincipalContext.get().setMultiTenantCtrl(true);
-      if (nonNull(currentTenantId)) {
-        PrincipalContext.get().setOptTenantId(realTenantId);
+      runnable.run();
+    } finally {
+      if (wasMultiTenantCtrl) {
+        PrincipalContext.get().setMultiTenantCtrl(true);
+        if (nonNull(currentTenantId)) {
+          PrincipalContext.get().setOptTenantId(previousOptTenantId);
+        }
       }
     }
   }
 
   public <R> R call(Supplier<R> supplier, Long currentTenantId) {
-    boolean isMultiTenantCtrl = isMultiTenantCtrl();
-    long realTenantId = getOptTenantId();
-    if (isMultiTenantCtrl) {
-      PrincipalContext.get().setMultiTenantCtrl(false);
-      if (nonNull(currentTenantId)) {
-        PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
+    boolean wasMultiTenantCtrl = isMultiTenantCtrl();
+    Long previousOptTenantId = getOptTenantId();
+    try {
+      if (wasMultiTenantCtrl) {
+        PrincipalContext.get().setMultiTenantCtrl(false);
+        if (nonNull(currentTenantId)) {
+          PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
+        }
+      }
+      return supplier.get();
+    } finally {
+      if (wasMultiTenantCtrl) {
+        PrincipalContext.get().setMultiTenantCtrl(true);
+        if (nonNull(currentTenantId)) {
+          PrincipalContext.get().setOptTenantId(previousOptTenantId);
+        }
       }
     }
-
-    R result = supplier.get();
-
-    if (isMultiTenantCtrl) {
-      PrincipalContext.get().setMultiTenantCtrl(true);
-      if (nonNull(currentTenantId)) {
-        PrincipalContext.get().setOptTenantId(realTenantId);
-      }
-    }
-    return result;
   }
-
-
 }

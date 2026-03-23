@@ -6,8 +6,10 @@ import cloud.xcan.angus.spec.experimental.MultiTenant;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
+import org.hibernate.annotations.Filter;
 
 @MultiTenant
+@Filter(name = "xcanTenantScope", condition = "tenant_id = :tenantId")
 @MappedSuperclass
 @EntityListeners(TenantListener.class)
 public abstract class TenantAuditingEntity<T extends Entity<T, ID>, ID> extends

@@ -13,6 +13,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.data.support.PageableExecutionUtils.getPage;
 
 import cloud.xcan.angus.core.biz.ResourceName;
+import cloud.xcan.angus.persistence.jpa.multitenancy.TenantNativeQuerySupport;
 import cloud.xcan.angus.core.jpa.criteria.GenericSpecification;
 import cloud.xcan.angus.core.utils.BeanFieldUtils;
 import cloud.xcan.angus.remote.search.SearchCriteria;
@@ -138,7 +139,9 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     EntityType<T> entityType = entityManager.getMetamodel().entity(jpaEntityInfo.getJavaType());
 
     StringBuilder sql = getSingleNameResultSql(tableName, entityType);
+    TenantNativeQuerySupport.appendUnqualifiedTenantClause(sql, jpaEntityInfo.getJavaType());
     Query query = entityManager.createNativeQuery(sql.toString());
+    TenantNativeQuerySupport.bindTenantParameterIfNeeded(query, jpaEntityInfo.getJavaType());
     query.setParameter("id", id);
     return (String) query.getSingleResult();
   }
@@ -150,7 +153,9 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     EntityType<T> entityType = entityManager.getMetamodel().entity(jpaEntityInfo.getJavaType());
 
     StringBuilder sql = getNameResultSql(tableName, entityType);
+    TenantNativeQuerySupport.appendUnqualifiedTenantClause(sql, jpaEntityInfo.getJavaType());
     Query query = entityManager.createNativeQuery(sql.toString());
+    TenantNativeQuerySupport.bindTenantParameterIfNeeded(query, jpaEntityInfo.getJavaType());
     query.setParameter("ids", ids);
     return (List<String>) query.getResultList();
   }
@@ -158,8 +163,11 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
   @Override
   public List<ID> findIdByIdIn(Collection<ID> ids) {
     String tableName = getTableName(entityManager, jpaEntityInfo.getJavaType());
-    String sql = "SELECT id FROM " + tableName + " WHERE id IN :ids";
-    Query query = entityManager.createNativeQuery(sql);
+    StringBuilder sql = new StringBuilder(
+        "SELECT id FROM ").append(tableName).append(" WHERE id IN :ids");
+    TenantNativeQuerySupport.appendUnqualifiedTenantClause(sql, jpaEntityInfo.getJavaType());
+    Query query = entityManager.createNativeQuery(sql.toString());
+    TenantNativeQuerySupport.bindTenantParameterIfNeeded(query, jpaEntityInfo.getJavaType());
     query.setParameter("ids", ids);
     return (List<ID>) query.getResultList();
   }

@@ -1,6 +1,5 @@
 package cloud.xcan.angus.persistence.jpa.repository;
 
-import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
 import static cloud.xcan.angus.persistence.jpa.JpaMetadataUtils.getColumnName;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
@@ -13,7 +12,7 @@ import static cloud.xcan.angus.spec.utils.StringUtils.camelToUnder;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.biz.ProtocolAssert;
-import cloud.xcan.angus.persistence.jpa.interceptor.TenantInterceptor;
+import cloud.xcan.angus.persistence.jpa.multitenancy.TenantNativeQuerySupport;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
 import cloud.xcan.angus.spec.experimental.Value;
@@ -95,6 +94,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       if (!CollectionUtils.isEmpty(criteria)) {
         setQueryParameter(queryList, criteria, mainClz);
       }
+      TenantNativeQuerySupport.bindTenantParameterIfNeeded(queryList, mainClz);
       List<Object[]> result = (List<Object[]>) queryList.getResultList();
       if (isEmpty(result)) {
         return Collections.emptyList();
@@ -108,6 +108,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (!CollectionUtils.isEmpty(criteria)) {
       setQueryParameter(queryList, criteria, mainClz);
     }
+    TenantNativeQuerySupport.bindTenantParameterIfNeeded(queryList, mainClz);
     return (List<T>) queryList.getResultList();
   }
 
@@ -118,6 +119,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (!CollectionUtils.isEmpty(criteria)) {
       setQueryParameter(queryCount, criteria, mainClz);
     }
+    TenantNativeQuerySupport.bindTenantParameterIfNeeded(queryCount, mainClz);
     Object count = queryCount.getSingleResult();
     if (count instanceof BigInteger) {
       return ((BigInteger) count).longValue();
@@ -228,13 +230,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (notDeleted && hasDeletedField(mainClz)) {
       sql.append(" AND ").append(alias).append(".deleted = 0");
     }
-    if (!isMultiTenantCtrl() || TenantInterceptor.TENANT_TABLES.isEmpty()) {
-      return sql;
-    }
-    // Fix:: Non multi tenant tables are included and duplicate with TenantInterceptor
-    // if (PrincipalContext.isOpSysAdmin() && hasOptTenantId()) {
-    //  sql.append(" AND ").append(alias).append(".tenant_id = ").append(getOptTenantId());
-    // }
+    TenantNativeQuerySupport.appendQualifiedTenantClause(sql, alias, mainClz);
     return sql;
   }
 

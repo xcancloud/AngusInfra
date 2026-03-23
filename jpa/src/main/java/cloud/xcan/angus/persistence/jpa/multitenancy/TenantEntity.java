@@ -10,8 +10,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.Filter;
 
 @MultiTenant
+@Filter(name = "xcanTenantScope", condition = "tenant_id = :tenantId")
 @MappedSuperclass
 @Getter
 @Setter

@@ -17,6 +17,7 @@
 
   <modules>
     <module>feign-starter</module>
+    <module>jpa-starter</module>
     <module>observability-starter</module>
     <module>web-starter</module>
     <module>oas3-starter</module>

@@ -28,7 +28,6 @@
     <!-- Core Module Refactoring: New Sub-modules -->
     <module>core</module>
     <module>jdbc</module>
-    <module>jpa</module>
     <module>cache</module>
     <module>job</module>
     <module>queue</module>

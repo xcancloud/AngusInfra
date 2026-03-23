@@ -36,17 +36,17 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.jpa</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.plugin-core</artifactId>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.plugin-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.jpa-starter</artifactId>
     </dependency>
 
     <dependency>

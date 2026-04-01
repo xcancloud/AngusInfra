@@ -4,18 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.autoconfigure.HybridCacheJpaBootstrapTest.JpaTestApplication;
-import cloud.xcan.angus.cache.entry.CacheEntry;
-import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @DataJpaTest(
     properties = {
@@ -38,9 +35,7 @@ class HybridCacheJpaBootstrapTest {
 
   @SpringBootConfiguration
   @EnableAutoConfiguration
-  @EntityScan(basePackageClasses = CacheEntry.class)
-  @EnableJpaRepositories(basePackageClasses = SpringDataCacheEntryRepository.class)
-  @Import(HybridCacheAutoConfiguration.class)
+  @ImportAutoConfiguration(HybridCacheAutoConfiguration.class)
   static class JpaTestApplication {
 
   }

@@ -271,13 +271,20 @@ angus:
 
 3. 配置数据源（JPA entity 扫描 + DDL 初始化）：
 
+脚本文件位置：
+
+- `idgen/core/src/main/resources/schema/mysql/idgen-schema.sql`
+- `idgen/core/src/main/resources/schema/postgres/idgen-schema.sql`
+
 ```yaml
-xcan:
+angus:
   datasource:
     extra:
       entityPackages[0]: cloud.xcan.angus.idgen.entity
     mysql:
-      schema[0]: mysql/idgen-schema.sql   # 应用启动时若表不存在则自动执行
+      schema[0]: schema/mysql/idgen-schema.sql   # 应用启动时若表不存在则自动执行
+    postgresql:
+      schema[0]: schema/postgres/idgen-schema.sql
 ```
 
 ### 6.2 场景一：使用 UidGenerator 生成 64 位分布式 ID

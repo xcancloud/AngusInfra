@@ -214,7 +214,10 @@ Shard entity. Key fields:
 
 ## 4. Database Schema
 
-The module uses four tables. The initialization script is at `starter/src/main/resources/db/schema.sql`.
+The module uses four tables. Initialization scripts are centralized in core:
+
+- MySQL: `job/core/src/main/resources/schema/mysql/job-schema.sql`
+- PostgreSQL: `job/core/src/main/resources/schema/postgres/job-schema.sql`
 
 ### 4.1 scheduled_job
 
@@ -331,7 +334,8 @@ For a standard Spring Boot application, add the starter:
 
 Run the schema script:
 
-- `job/starter/src/main/resources/db/schema.sql`
+- MySQL: `job/core/src/main/resources/schema/mysql/job-schema.sql`
+- PostgreSQL: `job/core/src/main/resources/schema/postgres/job-schema.sql`
 
 Or use Spring SQL initialization:
 
@@ -340,7 +344,17 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:db/schema.sql
+      schema-locations: classpath:schema/mysql/job-schema.sql
+```
+
+For PostgreSQL, switch to:
+
+```yaml
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/postgres/job-schema.sql
 ```
 
 ### 6.3 Enable Configuration

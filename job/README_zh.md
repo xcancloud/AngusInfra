@@ -218,7 +218,10 @@ core
 
 ## 4. 数据表设计
 
-模块当前使用四张表，初始化脚本位于 `starter/src/main/resources/db/schema.sql`。
+模块当前使用四张表，初始化脚本统一放在 core 模块：
+
+- MySQL：`job/core/src/main/resources/schema/mysql/job-schema.sql`
+- PostgreSQL：`job/core/src/main/resources/schema/postgres/job-schema.sql`
 
 ### 4.1 scheduled_job
 
@@ -337,7 +340,8 @@ angus:
 
 执行脚本：
 
-- `job/starter/src/main/resources/db/schema.sql`
+- MySQL：`job/core/src/main/resources/schema/mysql/job-schema.sql`
+- PostgreSQL：`job/core/src/main/resources/schema/postgres/job-schema.sql`
 
 如果应用统一使用 Spring SQL 初始化机制，可以这样配置：
 
@@ -346,7 +350,17 @@ spring:
   sql:
     init:
       mode: always
-      schema-locations: classpath:db/schema.sql
+      schema-locations: classpath:schema/mysql/job-schema.sql
+```
+
+PostgreSQL 场景改为：
+
+```yaml
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/postgres/job-schema.sql
 ```
 
 ### 6.3 开启配置

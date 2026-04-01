@@ -367,21 +367,8 @@ public class YourApplication {
 
 **数据库手动建表（生产推荐）：**
 
-```sql
-CREATE TABLE IF NOT EXISTS angus_cache_entries (
-    id          BIGINT       NOT NULL AUTO_INCREMENT,
-    cache_key   VARCHAR(256) NOT NULL,
-    cache_value LONGTEXT,
-    created_at  DATETIME     NOT NULL,
-    updated_at  DATETIME     NOT NULL,
-    expire_at   DATETIME,
-    ttl_seconds BIGINT,
-    is_expired  BOOLEAN      NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id),
-    UNIQUE INDEX idx_cache_key (cache_key),
-    INDEX idx_expire_time (expire_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-```
+- MySQL：`cache/core/src/main/resources/schema/mysql/cache-schema.sql`
+- PostgreSQL：`cache/core/src/main/resources/schema/postgres/cache-schema.sql`
 
 **步骤 4：** 注入使用（与纯内存模式代码完全一致，接口不变）
 

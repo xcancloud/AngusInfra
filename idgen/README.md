@@ -272,13 +272,20 @@ angus:
 
 **Step 3** — Configure data source (JPA entity scan + DDL auto-init):
 
+Script files are located at:
+
+- `idgen/core/src/main/resources/schema/mysql/idgen-schema.sql`
+- `idgen/core/src/main/resources/schema/postgres/idgen-schema.sql`
+
 ```yaml
-xcan:
+angus:
   datasource:
     extra:
       entityPackages[0]: cloud.xcan.angus.idgen.entity
     mysql:
-      schema[0]: mysql/idgen-schema.sql   # Auto-executes on startup if tables are missing
+      schema[0]: schema/mysql/idgen-schema.sql   # Auto-executes on startup if tables are missing
+    postgresql:
+      schema[0]: schema/postgres/idgen-schema.sql
 ```
 
 ### 6.2 Scenario 1: Generate a 64-bit Distributed ID (UidGenerator)

@@ -38,7 +38,6 @@ public class CaffeineMemoryCache {
   }
 
   private final Cache<String, CacheItem> cache;
-  private final long maxSize;
 
   /**
    * @param maxSize                maximum number of entries held in memory (LRU eviction)
@@ -47,7 +46,6 @@ public class CaffeineMemoryCache {
    *                               parameter is no longer used in the Caffeine builder
    */
   public CaffeineMemoryCache(long maxSize, long cleanupIntervalSeconds) {
-    this.maxSize = maxSize;
     this.cache = Caffeine.newBuilder()
         .maximumSize(maxSize)
         .expireAfter(new Expiry<String, CacheItem>() {

@@ -29,7 +29,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@Entity(name = "instance")
+@Entity(name = "angus_instance")
 @GenericGenerator(name = "idgen-uuid", strategy = "org.hibernate.id.UUIDGenerator")
 public class Instance implements InstanceInfo {
 

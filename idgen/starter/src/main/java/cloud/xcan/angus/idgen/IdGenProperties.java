@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  */
 @Component
-@ConfigurationProperties(prefix = "xcan.idgen")
+@ConfigurationProperties(prefix = "angus.idgen")
 @Getter
 @Setter
 public class IdGenProperties {

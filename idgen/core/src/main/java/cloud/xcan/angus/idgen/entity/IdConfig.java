@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
-@Entity(name = "id_config")
+@Entity(name = "angus_id_config")
 @GenericGenerator(name = "idgen-uuid", strategy = "org.hibernate.id.UUIDGenerator")
 public class IdConfig implements Serializable {
 

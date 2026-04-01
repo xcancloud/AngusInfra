@@ -1,5 +1,5 @@
--- DROP TABLE IF EXISTS instance;
-CREATE TABLE instance
+-- DROP TABLE IF EXISTS angus_instance;
+CREATE TABLE angus_instance
 (
     pk            varchar(40)  NOT NULL,
     id            bigint       NOT NULL,
@@ -12,8 +12,8 @@ CREATE TABLE instance
     CONSTRAINT uidx_host_port UNIQUE (host, port)
 );
 
--- DROP TABLE IF EXISTS id_config;
-CREATE TABLE id_config
+-- DROP TABLE IF EXISTS angus_id_config;
+CREATE TABLE angus_id_config
 (
     pk            varchar(40) NOT NULL,
     biz_key       varchar(80) NOT NULL,
@@ -31,4 +31,4 @@ CREATE TABLE id_config
     PRIMARY KEY (pk),
     CONSTRAINT uidx_biz_key_tenant_id UNIQUE (biz_key, tenant_id)
 );
-CREATE INDEX uidx_tenant_id ON id_config (tenant_id);
+CREATE INDEX uidx_tenant_id ON angus_id_config (tenant_id);

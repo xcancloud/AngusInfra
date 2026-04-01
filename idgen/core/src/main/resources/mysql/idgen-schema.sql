@@ -1,5 +1,5 @@
--- DROP TABLE IF EXISTS `instance`;
-CREATE TABLE `instance`
+-- DROP TABLE IF EXISTS `angus_instance`;
+CREATE TABLE `angus_instance`
 (
     `pk`            varchar(40)  NOT NULL,
     `id`            bigint(21) NOT NULL,
@@ -13,8 +13,8 @@ CREATE TABLE `instance`
 ) ENGINE = InnoDB;
 
 
--- DROP TABLE IF EXISTS `id_config`;
-CREATE TABLE `id_config`
+-- DROP TABLE IF EXISTS `angus_id_config`;
+CREATE TABLE `angus_id_config`
 (
     `pk`            varchar(40) NOT NULL,
     `biz_key`       varchar(80) NOT NULL,

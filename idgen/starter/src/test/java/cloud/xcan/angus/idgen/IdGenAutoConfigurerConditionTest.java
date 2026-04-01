@@ -16,7 +16,7 @@ class IdGenAutoConfigurerConditionTest {
     ConditionContext ctx = mock(ConditionContext.class);
     Environment env = mock(Environment.class);
     when(ctx.getEnvironment()).thenReturn(env);
-    when(env.getProperty("xcan.idgen.enabled")).thenReturn("true");
+    when(env.getProperty("angus.idgen.enabled")).thenReturn("true");
 
     boolean matches = new IdGenAutoConfigurer.CoreCondition().matches(ctx,
         mock(AnnotatedTypeMetadata.class));
@@ -29,12 +29,12 @@ class IdGenAutoConfigurerConditionTest {
     ConditionContext ctx = mock(ConditionContext.class);
     Environment env = mock(Environment.class);
     when(ctx.getEnvironment()).thenReturn(env);
-    when(env.getProperty("xcan.idgen.enabled")).thenReturn("false");
+    when(env.getProperty("angus.idgen.enabled")).thenReturn("false");
 
     assertThat(new IdGenAutoConfigurer.CoreCondition().matches(ctx,
         mock(AnnotatedTypeMetadata.class))).isFalse();
 
-    when(env.getProperty("xcan.idgen.enabled")).thenReturn(null);
+    when(env.getProperty("angus.idgen.enabled")).thenReturn(null);
     assertThat(new IdGenAutoConfigurer.CoreCondition().matches(ctx,
         mock(AnnotatedTypeMetadata.class))).isFalse();
   }

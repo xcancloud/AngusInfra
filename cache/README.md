@@ -41,9 +41,9 @@ and a persistent backing store. It is designed to provide:
 
 The module uses a two-level (L1 + L2) hybrid cache strategy:
 
-| Level | Implementation | Characteristics |
-|-------|---------------|-----------------|
-| L1 (memory) | Caffeine | Sub-millisecond reads, LRU eviction, per-entry TTL, built-in stats |
+| Level            | Implementation                                 | Characteristics                                                       |
+|------------------|------------------------------------------------|-----------------------------------------------------------------------|
+| L1 (memory)      | Caffeine                                       | Sub-millisecond reads, LRU eviction, per-entry TTL, built-in stats    |
 | L2 (persistence) | Spring Data JPA / `ConcurrentHashMap` fallback | Cross-instance sharing, durable across restarts, batch expiry cleanup |
 
 **Read path:** L1 hit → return immediately. L1 miss → query L2 → if valid, warm L1 then return.
@@ -66,6 +66,7 @@ mvn -pl cache -am clean install
 Example Maven dependency:
 
 ```xml
+
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.cache-starter</artifactId>
@@ -76,21 +77,23 @@ Example Maven dependency:
 ### 3. Inject and use
 
 ```java
+
 @Service
 public class MyService {
-    private final IDistributedCache cache;
 
-    public MyService(IDistributedCache cache) {
-        this.cache = cache;
-    }
+  private final IDistributedCache cache;
 
-    public String get(String key) {
-        return cache.get(key).orElseGet(() -> {
-            String value = loadFromDatabase(key);
-            cache.set(key, value, 300L); // cache for 5 minutes
-            return value;
-        });
-    }
+  public MyService(IDistributedCache cache) {
+    this.cache = cache;
+  }
+
+  public String get(String key) {
+    return cache.get(key).orElseGet(() -> {
+      String value = loadFromDatabase(key);
+      cache.set(key, value, 300L); // cache for 5 minutes
+      return value;
+    });
+  }
 }
 ```
 
@@ -170,17 +173,17 @@ The management controller is available under `/api/v1/cache` (requires
 > **Security notice:** These endpoints can read, write, and clear all cached data. Always protect
 > them with authentication before enabling in non-local environments.
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/cache/stats` | Aggregated stats: entry counts, hit rate, memory size, etc. |
-| `GET` | `/api/v1/cache/{key}` | Get value; returns business-error wrapper when key is not found |
-| `PUT` | `/api/v1/cache/{key}` | Set value. Body: `{"value":"…","ttlSeconds":60}` |
-| `DELETE` | `/api/v1/cache/{key}` | Delete a key (idempotent) |
-| `GET` | `/api/v1/cache/{key}/exists` | Check if key exists and is not expired |
-| `GET` | `/api/v1/cache/{key}/ttl` | TTL in seconds: -1 = no expiry, -2 = not found |
-| `POST` | `/api/v1/cache/{key}/expire` | Set TTL for existing key. Body: `{"ttlSeconds":120}` |
-| `POST` | `/api/v1/cache/clear` | Clear all entries (memory + persistence) |
-| `POST` | `/api/v1/cache/cleanup` | Delete expired entries from persistence; returns deleted count |
+| Method   | Path                         | Description                                                     |
+|----------|------------------------------|-----------------------------------------------------------------|
+| `GET`    | `/api/v1/cache/stats`        | Aggregated stats: entry counts, hit rate, memory size, etc.     |
+| `GET`    | `/api/v1/cache/{key}`        | Get value; returns business-error wrapper when key is not found |
+| `PUT`    | `/api/v1/cache/{key}`        | Set value. Body: `{"value":"…","ttlSeconds":60}`                |
+| `DELETE` | `/api/v1/cache/{key}`        | Delete a key (idempotent)                                       |
+| `GET`    | `/api/v1/cache/{key}/exists` | Check if key exists and is not expired                          |
+| `GET`    | `/api/v1/cache/{key}/ttl`    | TTL in seconds: -1 = no expiry, -2 = not found                  |
+| `POST`   | `/api/v1/cache/{key}/expire` | Set TTL for existing key. Body: `{"ttlSeconds":120}`            |
+| `POST`   | `/api/v1/cache/clear`        | Clear all entries (memory + persistence)                        |
+| `POST`   | `/api/v1/cache/cleanup`      | Delete expired entries from persistence; returns deleted count  |
 
 Key constraints: must not be blank, max 256 characters (HTTP 400 otherwise).
 
@@ -199,9 +202,10 @@ as a Spring bean. The `@ConditionalOnMissingBean(CachePersistence.class)` guard 
 auto-configuration ensures your bean takes precedence with zero conflicts:
 
 ```java
+
 @Component
 public class RedisCachePersistence implements CachePersistence {
-    // implement all methods ...
+  // implement all methods ...
 }
 ```
 
@@ -210,10 +214,11 @@ public class RedisCachePersistence implements CachePersistence {
 In JPA mode, schedule periodic cleanup to prevent unbounded table growth:
 
 ```java
+
 @Scheduled(fixedRate = 3_600_000) // every hour
 public void cleanup() {
-    int deleted = cache.cleanupExpiredEntries();
-    log.info("Cache cleanup: deleted {} expired entries", deleted);
+  int deleted = cache.cleanupExpiredEntries();
+  log.info("Cache cleanup: deleted {} expired entries", deleted);
 }
 ```
 

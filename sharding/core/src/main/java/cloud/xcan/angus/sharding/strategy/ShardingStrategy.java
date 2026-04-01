@@ -1,8 +1,8 @@
 package cloud.xcan.angus.sharding.strategy;
 
 /**
- * Strategy interface for computing the database shard index and table secondary index
- * from a given shard key value.
+ * Strategy interface for computing the database shard index and table secondary index from a given
+ * shard key value.
  *
  * <p>Implementations should be stateless and thread-safe.
  */
@@ -20,9 +20,10 @@ public interface ShardingStrategy {
   /**
    * Compute the table secondary index for the given key.
    *
-   * @param tableKey       the table key value
+   * @param tableKey        the table key value
    * @param shardTableCount total number of table shards
-   * @return a value in {@code [0, shardTableCount)}, or {@code -1} if secondary indexing is disabled
+   * @return a value in {@code [0, shardTableCount)}, or {@code -1} if secondary indexing is
+   * disabled
    */
   int computeTableIndex(long tableKey, int shardTableCount);
 }

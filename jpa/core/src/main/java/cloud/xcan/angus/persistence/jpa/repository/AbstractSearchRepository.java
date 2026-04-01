@@ -1,6 +1,5 @@
 package cloud.xcan.angus.persistence.jpa.repository;
 
-import static cloud.xcan.angus.persistence.jpa.JpaMetadataUtils.getColumnName;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_KEY;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.UNSUPPORTED_FILTER_FIELD_T2;
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
@@ -12,6 +11,7 @@ import static cloud.xcan.angus.spec.utils.StringUtils.camelToUnder;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.biz.ProtocolAssert;
+import cloud.xcan.angus.persistence.jpa.JpaMetadataUtils;
 import cloud.xcan.angus.persistence.jpa.multitenancy.TenantNativeQuerySupport;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import cloud.xcan.angus.remote.search.SearchOperation;
@@ -143,7 +143,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
         boolean isKeyword = "keyword".equalsIgnoreCase(criteria0.getKey());
         String columnName = null;
         if (!isKeyword) {
-          columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
+          columnName = JpaMetadataUtils.getColumnName(entityManager, mainClz, criteria0.getKey());
           if (isEmpty(columnName)) {
             continue;
           }
@@ -199,7 +199,7 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
           } else {
             String likeColumn = columnName;
             if (isEmpty(likeColumn) && isNotEmpty(match)) {
-              likeColumn = getColumnName(entityManager, mainClz, match[0]);
+              likeColumn = JpaMetadataUtils.getColumnName(entityManager, mainClz, match[0]);
             }
             if (isEmpty(likeColumn)) {
               continue;
@@ -267,7 +267,8 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
       if (criteria0.isIgnoreFields() || criteria0.isNotValidCriteria()) {
         continue;
       }
-      String columnName = getColumnName(entityManager, mainClz, criteria0.getKey());
+      String columnName = JpaMetadataUtils.getColumnName(entityManager, mainClz,
+          criteria0.getKey());
       if (isEmpty(columnName)) {
         continue;
       }
@@ -361,7 +362,8 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (isNotEmpty(match)) {
       StringBuilder sb = new StringBuilder();
       for (int i = 0; i < match.length; i++) {
-        sb.append(alias).append(".").append(getColumnName(entityManager, mainClz, match[i]));
+        sb.append(alias).append(".").append(
+            JpaMetadataUtils.getColumnName(entityManager, mainClz, match[i]));
         if (i != match.length - 1) {
           sb.append(",");
         }
@@ -374,12 +376,12 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     if (isNotEmpty(fields)) {
       return fields;
     }
-    return getColumnName(entityManager, mainClz, criteria0.getKey());
+    return JpaMetadataUtils.getColumnName(entityManager, mainClz, criteria0.getKey());
   }
 
   public boolean hasDeletedField(Class<T> mainClz) {
     try {
-      String name = getColumnName(entityManager, mainClz, "deleted");
+      String name = JpaMetadataUtils.getColumnName(entityManager, mainClz, "deleted");
       return isNotEmpty(name);
     } catch (Exception e) {
       return false;

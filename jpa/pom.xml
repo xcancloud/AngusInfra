@@ -11,11 +11,10 @@
     <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-angusinfra.cache</artifactId>
-  <name>AngusInfra :: Cache</name>
-  <version>3.0.0</version>
+  <artifactId>xcan-angusinfra.jpa</artifactId>
+  <name>AngusInfra :: JPA</name>
   <packaging>pom</packaging>
-  <description>Implementation of Two-Level Cache with Memory and Database.</description>
+  <description>A expansion library for Spring and JPA.</description>
 
   <modules>
     <module>core</module>

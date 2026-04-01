@@ -2,22 +2,24 @@
 
 ## 一、模块概述
 
-`queue` 模块是 AngusInfra 基础设施框架提供的**数据库驱动的持久化消息队列**组件。它不依赖 Kafka、RabbitMQ 等外部中间件，而是将关系型数据库（JPA）作为消息存储后端，提供类 SQS 的租约式消费语义，适用于已有数据库且不愿引入额外中间件的场景。
+`queue` 模块是 AngusInfra 基础设施框架提供的**数据库驱动的持久化消息队列**组件。它不依赖
+Kafka、RabbitMQ 等外部中间件，而是将关系型数据库（JPA）作为消息存储后端，提供类 SQS
+的租约式消费语义，适用于已有数据库且不愿引入额外中间件的场景。
 
 ### 核心能力
 
-| 能力 | 说明 |
-|------|------|
-| **多 Topic** | 每个 topic 独立管理，互不干扰 |
-| **分区** | 每个 topic 支持可配置分区（默认 8），保证相同 key 路由到同一分区 |
-| **优先级** | 消息支持整数优先级，高优先级消息优先被租约 |
-| **延迟消息** | 通过 `visibleAt` 字段支持定时/延迟投递 |
-| **租约式消费** | 消费者租约消息（至少一次语义），租约超时自动回收 |
-| **ACK / NACK** | 处理成功 ACK 标记完成，失败 NACK 带退避时间重新入队 |
-| **死信队列（DLQ）** | 超过最大重试次数的消息自动转移到 DLQ，支持重放和清除 |
-| **软删除 DLQ** | 可选软删除模式，按保留天数定期物理清除 |
-| **幂等 Key** | 可选的去重 key，防止重复投递 |
-| **审计日志** | 管理操作自动记录审计日志（可自定义实现） |
+| 能力             | 说明                                      |
+|----------------|-----------------------------------------|
+| **多 Topic**    | 每个 topic 独立管理，互不干扰                      |
+| **分区**         | 每个 topic 支持可配置分区（默认 8），保证相同 key 路由到同一分区 |
+| **优先级**        | 消息支持整数优先级，高优先级消息优先被租约                   |
+| **延迟消息**       | 通过 `visibleAt` 字段支持定时/延迟投递              |
+| **租约式消费**      | 消费者租约消息（至少一次语义），租约超时自动回收                |
+| **ACK / NACK** | 处理成功 ACK 标记完成，失败 NACK 带退避时间重新入队         |
+| **死信队列（DLQ）**  | 超过最大重试次数的消息自动转移到 DLQ，支持重放和清除            |
+| **软删除 DLQ**    | 可选软删除模式，按保留天数定期物理清除                     |
+| **幂等 Key**     | 可选的去重 key，防止重复投递                        |
+| **审计日志**       | 管理操作自动记录审计日志（可自定义实现）                    |
 
 ---
 
@@ -212,26 +214,27 @@ public interface RepositoryAdapter {
 
 **`angus_mq_message`** — 主消息表
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `id` | BIGINT AUTO_INCREMENT | 主键 |
-| `topic` | VARCHAR(128) | 消息主题 |
-| `partition_id` | INT | 分区 ID |
-| `priority` | INT | 优先级（越大越优先，默认 0） |
-| `payload` | JSON | 消息体 |
-| `headers` | JSON | 消息头（可选） |
-| `status` | TINYINT | 0=READY, 1=LEASED, 2=DONE |
-| `visible_at` | TIMESTAMP | 可见时间（支持延迟消息） |
-| `lease_until` | TIMESTAMP | 租约到期时间 |
-| `lease_owner` | VARCHAR(128) | 持有租约的消费者标识 |
-| `attempts` | INT | 已尝试消费次数 |
-| `max_attempts` | INT | 最大重试次数（默认 16） |
-| `idempotency_key` | VARCHAR(256) | 幂等 key（可选） |
-| `created_at` | TIMESTAMP | 创建时间 |
-| `updated_at` | TIMESTAMP | 更新时间 |
-| `version` | BIGINT | 乐观锁版本号 |
+| 字段                | 类型                    | 说明                        |
+|-------------------|-----------------------|---------------------------|
+| `id`              | BIGINT AUTO_INCREMENT | 主键                        |
+| `topic`           | VARCHAR(128)          | 消息主题                      |
+| `partition_id`    | INT                   | 分区 ID                     |
+| `priority`        | INT                   | 优先级（越大越优先，默认 0）           |
+| `payload`         | JSON                  | 消息体                       |
+| `headers`         | JSON                  | 消息头（可选）                   |
+| `status`          | TINYINT               | 0=READY, 1=LEASED, 2=DONE |
+| `visible_at`      | TIMESTAMP             | 可见时间（支持延迟消息）              |
+| `lease_until`     | TIMESTAMP             | 租约到期时间                    |
+| `lease_owner`     | VARCHAR(128)          | 持有租约的消费者标识                |
+| `attempts`        | INT                   | 已尝试消费次数                   |
+| `max_attempts`    | INT                   | 最大重试次数（默认 16）             |
+| `idempotency_key` | VARCHAR(256)          | 幂等 key（可选）                |
+| `created_at`      | TIMESTAMP             | 创建时间                      |
+| `updated_at`      | TIMESTAMP             | 更新时间                      |
+| `version`         | BIGINT                | 乐观锁版本号                    |
 
 索引：
+
 - `idx_mq_msg_topic_status_visible`（topic, status, visible_at）— 租约查询核心索引
 - `idx_mq_msg_status_lease_until`（status, lease_until）— 租约回收查询
 - `idx_mq_msg_lease_owner`（lease_owner）— 按 owner 查询已租约消息
@@ -239,29 +242,30 @@ public interface RepositoryAdapter {
 
 **`angus_mq_dead_letter`** — 死信队列表
 
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| `id` | BIGINT AUTO_INCREMENT | 主键 |
-| `topic` | VARCHAR(128) | 消息主题 |
-| `partition_id` | INT | 分区 ID |
-| `payload` | JSON | 消息体 |
-| `headers` | JSON | 消息头 |
-| `attempts` | INT | 进入 DLQ 时的尝试次数 |
-| `reason` | VARCHAR(256) | 进入 DLQ 的原因 |
-| `created_at` | TIMESTAMP | 创建时间 |
-| `deleted_at` | TIMESTAMP | 软删除时间（NULL 表示未删除） |
+| 字段             | 类型                    | 说明                |
+|----------------|-----------------------|-------------------|
+| `id`           | BIGINT AUTO_INCREMENT | 主键                |
+| `topic`        | VARCHAR(128)          | 消息主题              |
+| `partition_id` | INT                   | 分区 ID             |
+| `payload`      | JSON                  | 消息体               |
+| `headers`      | JSON                  | 消息头               |
+| `attempts`     | INT                   | 进入 DLQ 时的尝试次数     |
+| `reason`       | VARCHAR(256)          | 进入 DLQ 的原因        |
+| `created_at`   | TIMESTAMP             | 创建时间              |
+| `deleted_at`   | TIMESTAMP             | 软删除时间（NULL 表示未删除） |
 
 索引：
+
 - `idx_mq_dlq_topic`（topic）— topic 级查询
 - `idx_mq_dlq_deleted_at`（deleted_at）— 软删除记录定期清理
 
 ### 3.5 后台调度器
 
-| 调度器 | 默认间隔 | 配置项 | 功能 |
-|--------|---------|--------|------|
-| `LeaseReaperScheduler` | 3 秒 | `angus.queue.reclaim-interval-ms` | 将超时 LEASED 消息回收为 READY |
-| `DeadLetterMoverScheduler` | 5 秒 | `angus.queue.dead-letter-move-interval-ms` | 将超出 maxAttempts 的消息移入 DLQ |
-| `DlqSoftDeletePurgerScheduler` | 10 分钟 | `angus.queue.admin.purge-interval-ms` | 物理删除超出保留期的软删除 DLQ 记录 |
+| 调度器                            | 默认间隔  | 配置项                                        | 功能                        |
+|--------------------------------|-------|--------------------------------------------|---------------------------|
+| `LeaseReaperScheduler`         | 3 秒   | `angus.queue.reclaim-interval-ms`          | 将超时 LEASED 消息回收为 READY    |
+| `DeadLetterMoverScheduler`     | 5 秒   | `angus.queue.dead-letter-move-interval-ms` | 将超出 maxAttempts 的消息移入 DLQ |
+| `DlqSoftDeletePurgerScheduler` | 10 分钟 | `angus.queue.admin.purge-interval-ms`      | 物理删除超出保留期的软删除 DLQ 记录      |
 
 ### 3.6 自动配置条件装配
 
@@ -318,11 +322,11 @@ angus:
 
 ### 5.1 队列操作 API（`/api/v1/queue`）
 
-| Method | Path | 说明 |
-|--------|------|------|
-| `POST` | `/api/v1/queue/send` | 发送消息到指定 topic |
-| `POST` | `/api/v1/queue/poll` | 租约消息（READY → LEASED），返回已持有消息列表 |
-| `POST` | `/api/v1/queue/ack` | 确认消息处理成功（LEASED → DONE） |
+| Method | Path                 | 说明                                   |
+|--------|----------------------|--------------------------------------|
+| `POST` | `/api/v1/queue/send` | 发送消息到指定 topic                        |
+| `POST` | `/api/v1/queue/poll` | 租约消息（READY → LEASED），返回已持有消息列表       |
+| `POST` | `/api/v1/queue/ack`  | 确认消息处理成功（LEASED → DONE）              |
 | `POST` | `/api/v1/queue/nack` | 拒绝消息并退避重入（LEASED → READY，attempts+1） |
 
 **发送消息（send）请求体：**
@@ -366,13 +370,13 @@ angus:
 
 ### 5.2 管理 API（`/api/v1/queue/admin`）
 
-| Method | Path | 说明 |
-|--------|------|------|
-| `GET` | `/api/v1/queue/admin/stats?topic=<t>` | 获取 topic 统计（状态分布、DLQ 数、每分区 READY 数） |
-| `POST` | `/api/v1/queue/admin/reclaim?limit=500` | 手动触发超时租约回收 |
-| `DELETE` | `/api/v1/queue/admin/purge/done?topic=<t>&before=<iso>` | 清除指定时间前的 DONE 消息 |
-| `DELETE` | `/api/v1/queue/admin/purge/dlq?topic=<t>` | 清除 DLQ 消息（硬/软由配置决定） |
-| `POST` | `/api/v1/queue/admin/dlq/replay?topic=<t>&limit=100` | 从 DLQ 重放消息回主队列 |
+| Method   | Path                                                    | 说明                                  |
+|----------|---------------------------------------------------------|-------------------------------------|
+| `GET`    | `/api/v1/queue/admin/stats?topic=<t>`                   | 获取 topic 统计（状态分布、DLQ 数、每分区 READY 数） |
+| `POST`   | `/api/v1/queue/admin/reclaim?limit=500`                 | 手动触发超时租约回收                          |
+| `DELETE` | `/api/v1/queue/admin/purge/done?topic=<t>&before=<iso>` | 清除指定时间前的 DONE 消息                    |
+| `DELETE` | `/api/v1/queue/admin/purge/dlq?topic=<t>`               | 清除 DLQ 消息（硬/软由配置决定）                 |
+| `POST`   | `/api/v1/queue/admin/dlq/replay?topic=<t>&limit=100`    | 从 DLQ 重放消息回主队列                      |
 
 ---
 
@@ -524,7 +528,9 @@ angus:
       purge-interval-ms: 3600000 # 每小时扫描一次
 ```
 
-软删除模式下，`purgeDeadLetters()` 只将 DLQ 记录的 `deleted_at` 设为当前时间，不立即物理删除；`DlqSoftDeletePurgerScheduler` 定期清理超出保留期的记录，适合需要短暂留存 DLQ 记录用于排查问题的场景。
+软删除模式下，`purgeDeadLetters()` 只将 DLQ 记录的 `deleted_at`
+设为当前时间，不立即物理删除；`DlqSoftDeletePurgerScheduler` 定期清理超出保留期的记录，适合需要短暂留存
+DLQ 记录用于排查问题的场景。
 
 ### 6.7 场景：自定义持久化适配器
 
@@ -543,7 +549,8 @@ public class MyCustomRepositoryAdapter implements RepositoryAdapter {
 }
 ```
 
-自动配置中的 `@ConditionalOnMissingBean(RepositoryAdapter.class)` 确保自定义实现优先于默认 `JpaRepositoryAdapter`。
+自动配置中的 `@ConditionalOnMissingBean(RepositoryAdapter.class)`
+确保自定义实现优先于默认 `JpaRepositoryAdapter`。
 
 ### 6.8 场景：自定义审计日志
 
@@ -588,19 +595,26 @@ queueService.lease("order-events", List.of(4, 5, 6, 7), "node-1", 60, 100);
 
 **Q: 消息会重复消费吗？**
 
-A: 使用 `lease` 租约模式是**至少一次（at-least-once）**语义。如果消费者在 ACK 之前崩溃，`LeaseReaper` 会在租约超时后将消息重置为 READY，下次会被重新消费。建议消费者实现幂等处理，或发送时设置 `idempotencyKey`。
+A: 使用 `lease` 租约模式是**至少一次（at-least-once）**语义。如果消费者在 ACK 之前崩溃，`LeaseReaper`
+会在租约超时后将消息重置为
+READY，下次会被重新消费。建议消费者实现幂等处理，或发送时设置 `idempotencyKey`。
 
 **Q: 如何调整租约超时时间？**
 
-A: 全局默认通过 `angus.queue.lease-seconds` 设置；也可以在每次 poll 的请求中单独指定 `leaseSeconds` 覆盖全局值。
+A: 全局默认通过 `angus.queue.lease-seconds` 设置；也可以在每次 poll 的请求中单独指定 `leaseSeconds`
+覆盖全局值。
 
 **Q: DLQ 中的消息如何重放？**
 
-A: 调用 `POST /api/v1/queue/admin/dlq/replay?topic=<t>&limit=100`，或直接调用 `QueueAdminService.replayFromDeadLetter(topic, limit)`。重放会将 DLQ 中的消息重新插入主队列（READY 状态），原 DLQ 记录被删除。
+A: 调用 `POST /api/v1/queue/admin/dlq/replay?topic=<t>&limit=100`
+，或直接调用 `QueueAdminService.replayFromDeadLetter(topic, limit)`。重放会将 DLQ 中的消息重新插入主队列（READY
+状态），原 DLQ 记录被删除。
 
 **Q: 调度器会影响应用性能吗？**
 
-A: 调度器使用独立的 `ThreadPoolTaskScheduler`（默认 4 线程），不占用业务线程池。每次调度批量数量通过 `reclaim-batch` / `dead-letter-move-batch` 限制，可根据数据量调整。如需完全禁用调度器（自行管理），设置 `angus.queue.scheduling.enabled=false`。
+A: 调度器使用独立的 `ThreadPoolTaskScheduler`（默认 4
+线程），不占用业务线程池。每次调度批量数量通过 `reclaim-batch` / `dead-letter-move-batch`
+限制，可根据数据量调整。如需完全禁用调度器（自行管理），设置 `angus.queue.scheduling.enabled=false`。
 
 ---
 

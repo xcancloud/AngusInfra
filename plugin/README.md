@@ -2,7 +2,10 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-> The AngusInfra Plugin module provides a lightweight Java plugin framework for dynamically loading external plugin JARs into a host Spring Boot application at runtime. It offers plugin descriptor parsing, isolated class loading, lifecycle management, a per-plugin runtime context, dynamic REST endpoint registration, and a management API.
+> The AngusInfra Plugin module provides a lightweight Java plugin framework for dynamically loading
+> external plugin JARs into a host Spring Boot application at runtime. It offers plugin descriptor
+> parsing, isolated class loading, lifecycle management, a per-plugin runtime context, dynamic REST
+> endpoint registration, and a management API.
 
 ## Module Layout
 

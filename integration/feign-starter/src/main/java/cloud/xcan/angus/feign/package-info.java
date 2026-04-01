@@ -100,7 +100,6 @@
  * <h2>与其他模块的关系</h2>
  * <ul>
  *   <li><b>依赖 core-base</b>: 使用 BizTemplate、异常处理、工具类</li>
- *   <li><b>可选依赖 jackson-customizer</b>: 自定义 JSON 序列化规则</li>
  *   <li><b>可选依赖 observability-starter</b>: 日志、指标、链路追踪</li>
  * </ul>
  *

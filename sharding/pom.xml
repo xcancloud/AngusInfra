@@ -15,7 +15,9 @@
   <name>AngusInfra :: Sharding</name>
   <version>3.0.0</version>
   <packaging>pom</packaging>
-  <description>Multi-tenant database sharding framework based on Spring Data JPA with dynamic routing, table splitting, and automatic schema management.</description>
+  <description>Multi-tenant database sharding framework based on Spring Data JPA with dynamic
+    routing, table splitting, and automatic schema management.
+  </description>
 
   <modules>
     <module>core</module>

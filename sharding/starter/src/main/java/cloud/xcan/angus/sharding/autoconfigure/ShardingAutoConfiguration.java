@@ -1,16 +1,22 @@
 package cloud.xcan.angus.sharding.autoconfigure;
 
+import cloud.xcan.angus.sharding.autoconfigure.registry.InMemoryShardTableRegistry;
+import cloud.xcan.angus.sharding.autoconfigure.registry.JdbcShardTableRegistry;
+import cloud.xcan.angus.sharding.autoconfigure.resolver.DefaultShardKeyResolver;
 import cloud.xcan.angus.sharding.config.HikariShardingProperties;
 import cloud.xcan.angus.sharding.config.ShardingProperties;
 import cloud.xcan.angus.sharding.context.ShardContext;
+import cloud.xcan.angus.sharding.resolver.ShardKeyResolver;
 import cloud.xcan.angus.sharding.strategy.ModuloShardingStrategy;
 import cloud.xcan.angus.sharding.strategy.ShardingStrategy;
 import cloud.xcan.angus.sharding.table.ShardTableManager;
+import cloud.xcan.angus.sharding.table.ShardTableRegistry;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
@@ -36,8 +42,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Auto-configuration for the Angus Sharding framework.
  *
  * <p>Creates a routing data source that distributes queries across multiple shard databases,
- * configures JPA for the sharded entities, and wires up the AOP aspect for automatic shard
- * context resolution.
+ * configures JPA for the sharded entities, and wires up the AOP aspect for automatic shard context
+ * resolution.
  *
  * <p>Activated by the property {@code angus.sharding.enabled=true}.
  */
@@ -133,22 +139,62 @@ public class ShardingAutoConfiguration {
     return interceptor;
   }
 
+  // ── ShardKeyResolver chain ───────────────────────────────────────────────
+
   @Bean
-  public ShardingAspect shardingAspect(ShardingProperties props, ShardingStrategy strategy) {
-    return new ShardingAspect(props, strategy);
+  @ConditionalOnMissingBean(DefaultShardKeyResolver.class)
+  public DefaultShardKeyResolver defaultShardKeyResolver() {
+    return new DefaultShardKeyResolver();
   }
+
+  @Bean
+  public ShardingAspect shardingAspect(ShardingProperties props, ShardingStrategy strategy,
+      List<ShardKeyResolver> resolvers) {
+    return new ShardingAspect(props, strategy, resolvers);
+  }
+
+  // ── ShardTableRegistry ───────────────────────────────────────────────────
+
+  /**
+   * Registers an in-memory registry when no durable alternative is present and the JDBC registry
+   * is not explicitly requested.
+   */
+  @Bean
+  @ConditionalOnMissingBean(ShardTableRegistry.class)
+  @ConditionalOnProperty(prefix = "angus.sharding", name = "table-registry-enabled",
+      havingValue = "false", matchIfMissing = true)
+  public ShardTableRegistry inMemoryShardTableRegistry() {
+    return new InMemoryShardTableRegistry();
+  }
+
+  /**
+   * Registers a JDBC-backed registry when {@code angus.sharding.table-registry-enabled=true}.
+   */
+  @Bean
+  @ConditionalOnMissingBean(ShardTableRegistry.class)
+  @ConditionalOnProperty(prefix = "angus.sharding", name = "table-registry-enabled",
+      havingValue = "true")
+  public ShardTableRegistry jdbcShardTableRegistry(ShardingProperties props,
+      DataSource primaryDataSource) {
+    log.info("Activating JDBC shard table registry on table '{}'.", props.getTableRegistryTable());
+    return new JdbcShardTableRegistry(primaryDataSource, props.getTableRegistryTable());
+  }
+
+  // ── ShardTableManager ────────────────────────────────────────────────────
 
   @Bean
   @ConditionalOnMissingBean(ShardTableManager.class)
   @ConditionalOnBean(name = ROUTING_DATASOURCE)
   public ShardTableManager shardTableManager(
       @Qualifier(ROUTING_DATASOURCE) DataSource routingDataSource,
-      ShardingProperties props, ShardingTableInterceptor interceptor) {
+      ShardingProperties props, ShardingTableInterceptor interceptor,
+      ShardTableRegistry registry) {
     SqlTemplateTableManager manager = new SqlTemplateTableManager(
         routingDataSource,
         props.getSchemaPath(),
         props.getTemplateTableNames() != null
-            ? Arrays.asList(props.getTemplateTableNames()) : null);
+            ? Arrays.asList(props.getTemplateTableNames()) : null,
+        registry);
     interceptor.setTableManager(manager);
     return manager;
   }

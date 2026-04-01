@@ -1,10 +1,8 @@
 package cloud.xcan.angus.web;
 
-import cloud.xcan.angus.l2cache.L2CacheAutoConfigurer;
 import cloud.xcan.angus.lettucex.config.LettuceConnectionConfiguration;
 import cloud.xcan.angus.lettucex.config.RedisProperties;
 import cloud.xcan.angus.lettucex.util.RedisService;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,9 +24,10 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  *
  * @author XiaoLong Liu
  */
+@Deprecated // Use cache module
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisOperations.class)
-@AutoConfigureBefore(L2CacheAutoConfigurer.class)
+//@AutoConfigureBefore(L2CacheAutoConfigurer.class)
 @EnableConfigurationProperties(RedisProperties.class)
 @Import({LettuceConnectionConfiguration.class})
 @ConditionalOnProperty(name = "angus.redis.enabled", havingValue = "true", matchIfMissing = false)

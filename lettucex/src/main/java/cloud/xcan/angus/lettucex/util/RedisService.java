@@ -28,10 +28,10 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
  * </p>
  *
  * <p>
- * Supported Redis data types: - String: Basic key-value operations with expiration multitenancy - Hash:
- * Field-value operations for structured data - List: Ordered collection operations with blocking
- * multitenancy - Set: Unordered collection operations with set algebra - ZSet: Sorted set operations
- * with score-based ordering
+ * Supported Redis data types: - String: Basic key-value operations with expiration multitenancy -
+ * Hash: Field-value operations for structured data - List: Ordered collection operations with
+ * blocking multitenancy - Set: Unordered collection operations with set algebra - ZSet: Sorted set
+ * operations with score-based ordering
  * </p>
  *
  * <p>

@@ -40,44 +40,44 @@ build scalable, secure, and maintainable server-side applications more efficient
 
 ## **Core Modules**
 
-| Module     | Description                                                                                                                                         |
-|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| Module     | Description                                                                                                                                          |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **`spec`** | Public specifications library defining global common models (DTOs/enums/error codes), interface contracts, and cross-module communication protocols. |
-| **`core`** | Core base library providing fundamental utilities, exception handling, multi-tenancy support, business templates, and Spring extensions.              |
-| **`jdbc`** | Spring Data JDBC integration library with multi-tenant support, batch operations, and converter utilities.                                           |
+| **`core`** | Core base library providing fundamental utilities, exception handling, multi-tenancy support, business templates, and Spring extensions.             |
 
 ### **Data Layer Modules**
 
-| Module           | Description                                                                                                                                                        |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **`datasource`** | Datasource extension library offering multi-tenant dynamic datasource configuration, basic sharding strategies, and read-write separation based on Spring JPA.     |
+| Module             | Description                                                                                                                                                        |
+|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`jpa-starter`**  | Spring Data JPA integration starter providing multi-tenant dynamic datasource configuration, generic repositories, Specification builders, and audit support.      |
+| **`sharding`**     | Production-ready multi-tenant database sharding framework with dynamic routing DataSource, SQL table-name rewriting, pluggable shard-key resolution, and automatic schema management. Supports modulo and consistent-hash strategies, in-memory/JDBC/JPA table registry, and a clean SPI model. See [sharding/README.md](sharding/README.md). |
 | **`cache`**      | Two-level cache library combining in-memory (Caffeine) and database (JPA) persistence, with management REST API and Spring Boot auto-configuration.                |
 | **`l2cache`**    | Two-level cache library integrating Redis + Caffeine for high-performance caching, supporting distributed consistency and cache penetration prevention strategies. |
 | **`lettucex`**   | Redis enhancement library standardizing Lettuce configurations and providing business extension utilities.                                                         |
 
 ### **Distributed Infrastructure**
 
-| Module      | Description                                                                                                                                                          |
-|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **`idgen`** | Distributed ID generator supporting Snowflake-variant UidGenerator, custom business ID (BidGenerator), and caching strategies.                                       |
-| **`job`**   | Database-driven distributed task scheduling framework with SIMPLE, SHARDING, and MAP_REDUCE execution models, distributed locking, and management REST API.          |
-| **`queue`** | Database-backed message queue implementing lease-based SQS-style semantics with partitioning, dead-letter support, lifecycle management, and REST API.               |
+| Module      | Description                                                                                                                                                 |
+|-------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`idgen`** | Distributed ID generator supporting Snowflake-variant UidGenerator, custom business ID (BidGenerator), and caching strategies.                              |
+| **`job`**   | Database-driven distributed task scheduling framework with SIMPLE, SHARDING, and MAP_REDUCE execution models, distributed locking, and management REST API. |
+| **`queue`** | Database-backed message queue implementing lease-based SQS-style semantics with partitioning, dead-letter support, lifecycle management, and REST API.      |
 
 ### **Plugin Framework**
 
-| Module       | Description                                                                                                                                    |
-|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| Module       | Description                                                                                                                                           |
+|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **`plugin`** | Extensible plugin framework with dynamic class loading, lifecycle management, and hot-plugging support (includes api, core, and starter sub-modules). |
 
 ### **Security & Authentication**
 
-| Module                                | Description                                                                                                          |
-|---------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| **`security/auth-resource-model`**    | Authorization persistence resource models and DTOs for resource authentication.                                      |
-| **`security/auth-server-starter`**    | OAuth2 authorization server with automated token issuance, key management, and authorization endpoint configuration. |
+| Module                                | Description                                                                                                           |
+|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| **`security/auth-resource-model`**    | Authorization persistence resource models and DTOs for resource authentication.                                       |
+| **`security/auth-server-starter`**    | OAuth2 authorization server with automated token issuance, key management, and authorization endpoint configuration.  |
 | **`security/auth-resource-starter`**  | OAuth2 resource server supporting password and client credentials grant types for resource access authorization.      |
 | **`security/auth-openapi2p-starter`** | Private API authentication module (OAuth2 client credentials) for standardized SaaS private deployment authorization. |
-| **`security/auth-innerapi-starter`**  | Internal service authentication module (OAuth2 client credentials) for secure inter-service communication.           |
+| **`security/auth-innerapi-starter`**  | Internal service authentication module (OAuth2 client credentials) for secure inter-service communication.            |
 
 ### **SpringBoot Rapid Integration**
 
@@ -85,24 +85,24 @@ build scalable, secure, and maintainable server-side applications more efficient
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | **`integration/web-starter`**           | RESTful API development toolkit with auto-configured unified response formats, global exception handling, and CORS policies. |
 | **`integration/oas3-starter`**          | OpenAPI 3.x support with automated API documentation generation and Swagger UI integration.                                  |
-| **`integration/jpa-starter`**           | Spring Data JPA integration with generic repositories, specification builders, and audit support.                             |
-| **`integration/feign-starter`**         | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.                       |
-| **`integration/observability-starter`** | Logging, metrics, and data export utilities for application observability.                                                    |
+| **`integration/jpa-starter`**           | Spring Data JPA integration with generic repositories, specification builders, and audit support.                            |
+| **`integration/feign-starter`**         | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.                      |
+| **`integration/observability-starter`** | Logging, metrics, and data export utilities for application observability.                                                   |
 
 ### **Development Toolchain**
 
 | Module          | Description                                                                                                           |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------|
-| **`validator`** | Enhanced validation library with annotation-based rules and custom validator templates.                                |
+| **`validator`** | Enhanced validation library with annotation-based rules and custom validator templates.                               |
 | **`remote`**    | OpenFeign-based remote call library with DTO/VO/TO definitions, unified response formats, and multi-language support. |
-| **`bom`**       | Bill of Materials (BOM) for centralized dependency version management and conflict resolution.                         |
+| **`bom`**       | Bill of Materials (BOM) for centralized dependency version management and conflict resolution.                        |
 
 ### **Architecture Governance**
 
 | Module       | Description                                                                                         |
 |--------------|-----------------------------------------------------------------------------------------------------|
-| **`parent`** | Maven parent POM defining global build configurations, plugin management, and profile strategies.    |
-| **`docs`**   | Documentation repository including architecture design, module guides, and quickstart instructions.  |  
+| **`parent`** | Maven parent POM defining global build configurations, plugin management, and profile strategies.   |
+| **`docs`**   | Documentation repository including architecture design, module guides, and quickstart instructions. |  
 
 ## Use Cases
 

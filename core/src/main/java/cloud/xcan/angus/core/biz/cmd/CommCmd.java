@@ -7,7 +7,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_RESOURCE_ID
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_TEXT_SEARCH_COLUMN;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.angus.core.jpa.repository.BaseRepository;
+import cloud.xcan.angus.core.biz.BaseRepository;
 import cloud.xcan.angus.core.utils.CoreUtils;
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import cloud.xcan.angus.remote.message.http.ResourceNotFound;

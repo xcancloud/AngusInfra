@@ -1,9 +1,9 @@
-package cloud.xcan.angus.jpa;
+package cloud.xcan.angus.persistence.jpa;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static org.springframework.util.StringUtils.toStringArray;
 
-import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
+import cloud.xcan.angus.persistence.config.DataSourceExtraProperties;
 import jakarta.persistence.EntityManagerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;

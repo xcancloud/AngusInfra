@@ -27,9 +27,9 @@ ID Generator — idgen Module
 
 The idgen module provides two categories of ID generators:
 
-| Generator | Output Type | Use Cases |
-|-----------|-------------|-----------|
-| **UidGenerator** | 64-bit `long`, Snowflake-variant | Database PKs, distributed trace IDs, high-throughput internal IDs |
+| Generator        | Output Type                            | Use Cases                                                                  |
+|------------------|----------------------------------------|----------------------------------------------------------------------------|
+| **UidGenerator** | 64-bit `long`, Snowflake-variant       | Database PKs, distributed trace IDs, high-throughput internal IDs          |
 | **BidGenerator** | Readable `String`, configurable format | Order numbers, contract codes, ticket IDs, any human-facing business codes |
 
 Both are integrated as a Spring Boot Starter and activated by `angus.idgen.enabled=true`.
@@ -50,19 +50,27 @@ Both are integrated as a Spring Boot Starter and activated by `angus.idgen.enabl
 
 - **sign (1 bit)**: Always 0, ensuring the generated ID is a positive number.
 - **deltaSeconds (28 bit default)**: Seconds since the epoch (`2016-05-20`), covering ~8.7 years.
-- **workerId (22 bit default)**: Instance ID assigned from the auto-increment `id` column in the `angus_instance` table, supporting up to ~4M instances.
-- **sequence (13 bit default)**: Per-second sequence counter, up to 8192 IDs per second per instance.
+- **workerId (22 bit default)**: Instance ID assigned from the auto-increment `id` column in
+  the `angus_instance` table, supporting up to ~4M instances.
+- **sequence (13 bit default)**: Per-second sequence counter, up to 8192 IDs per second per
+  instance.
 
 > All bit widths are configurable; the sum of the three segments must equal 63.
 
-**DefaultUidGenerator**: Synchronous generation under `synchronized nextId()`. No extra memory overhead. Suitable for low-concurrency or strict ordering requirements.
+**DefaultUidGenerator**: Synchronous generation under `synchronized nextId()`. No extra memory
+overhead. Suitable for low-concurrency or strict ordering requirements.
 
 **CachedUidGenerator**: Extends `DefaultUidGenerator` with a RingBuffer pre-generation mechanism:
-- Pre-fills the RingBuffer at startup (default capacity: `(maxSequence+1) << boostPower` ≈ 32,768 slots).
-- Consumer threads take UIDs from the buffer head; a background thread asynchronously refills when the remaining slots drop below `paddingFactor%` (default 50%).
+
+- Pre-fills the RingBuffer at startup (default capacity: `(maxSequence+1) << boostPower` ≈ 32,768
+  slots).
+- Consumer threads take UIDs from the buffer head; a background thread asynchronously refills when
+  the remaining slots drop below `paddingFactor%` (default 50%).
 - A scheduled refill (default every 5 minutes) prevents exhaustion during low-traffic periods.
-- Falls back to synchronous generation (`super.nextId()`) if the RingBuffer is exhausted — no exception thrown.
-- Uses `PaddedAtomicLong` (Cache Line alignment) to eliminate false sharing. Achieves up to **6 million QPS** on a single instance.
+- Falls back to synchronous generation (`super.nextId()`) if the RingBuffer is exhausted — no
+  exception thrown.
+- Uses `PaddedAtomicLong` (Cache Line alignment) to eliminate false sharing. Achieves up to **6
+  million QPS** on a single instance.
 
 ### 2.2 BidGenerator (Business ID)
 
@@ -82,10 +90,14 @@ Both are integrated as a Spring Boot Starter and activated by `angus.idgen.enabl
               └─────────────┘                        └─────────────────┘
 ```
 
-- **DB mode**: Reads `maxId` + `step` from `id_config`, maintains an in-memory `AtomicLong` counter, re-fetches a new segment when exhausted. Double-checked locking (DCL) ensures concurrent safety.
-- **Redis mode**: Uses `INCRBY` for atomic increments. No local counter; suitable for multi-instance deployments with strict consistency requirements.
+- **DB mode**: Reads `maxId` + `step` from `id_config`, maintains an in-memory `AtomicLong` counter,
+  re-fetches a new segment when exhausted. Double-checked locking (DCL) ensures concurrent safety.
+- **Redis mode**: Uses `INCRBY` for atomic increments. No local counter; suitable for multi-instance
+  deployments with strict consistency requirements.
 - **PLATFORM scope**: All tenants share one number space (`tenantId = -1`).
-- **TENANT scope**: Each tenant has an independent number space. On the first call for a new tenant, the generator automatically clones the template row (`tenantId=-1`) into a new tenant-specific row.
+- **TENANT scope**: Each tenant has an independent number space. On the first call for a new tenant,
+  the generator automatically clones the template row (`tenantId=-1`) into a new tenant-specific
+  row.
 
 ---
 
@@ -93,58 +105,58 @@ Both are integrated as a Spring Boot Starter and activated by `angus.idgen.enabl
 
 ### 3.1 UidGenerator Family
 
-| Class / Interface | Description |
-|-------------------|-------------|
-| `UidGenerator` | Interface: `getUID() → long`, `parseUID(long) → String` |
-| `BitsAllocator` | Bit manipulation utility encapsulating shifts and masks for each segment |
-| `DefaultUidGenerator` | Synchronous Snowflake implementation; handles clock rollback and sequence overflow |
-| `CachedUidGenerator` | Extends `DefaultUidGenerator`; adds RingBuffer + `BufferPaddingExecutor` |
-| `RingBuffer` | Array-based lock-free ring buffer; `tail`/`cursor` are `PaddedAtomicLong` |
-| `BufferPaddingExecutor` | Manages async RingBuffer refill via thread pool and scheduled tasks |
-| `InstanceIdAssigner` | SPI: `assignInstanceIdByEnv()` and `assignInstanceIdByParam()` |
+| Class / Interface              | Description                                                                                                                               |
+|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|
+| `UidGenerator`                 | Interface: `getUID() → long`, `parseUID(long) → String`                                                                                   |
+| `BitsAllocator`                | Bit manipulation utility encapsulating shifts and masks for each segment                                                                  |
+| `DefaultUidGenerator`          | Synchronous Snowflake implementation; handles clock rollback and sequence overflow                                                        |
+| `CachedUidGenerator`           | Extends `DefaultUidGenerator`; adds RingBuffer + `BufferPaddingExecutor`                                                                  |
+| `RingBuffer`                   | Array-based lock-free ring buffer; `tail`/`cursor` are `PaddedAtomicLong`                                                                 |
+| `BufferPaddingExecutor`        | Manages async RingBuffer refill via thread pool and scheduled tasks                                                                       |
+| `InstanceIdAssigner`           | SPI: `assignInstanceIdByEnv()` and `assignInstanceIdByParam()`                                                                            |
 | `DisposableInstanceIdAssigner` | Default impl: reads `HOST`/`HTTP_PORT`/`RUNTIME_ENV` env vars, inserts to `angus_instance` table, returns auto-increment `id` as workerId |
 
 ### 3.2 BidGenerator Family
 
-| Class / Interface | Description |
-|-------------------|-------------|
-| `BidGenerator` | Interface: `getId` / `getIds` with optional `tenantId` overloads |
-| `AbstractBidGenerator` | Abstract base: assembles formatted output (PREFIX + DATE + SEQ combinations) |
-| `DefaultBidGenerator` | Default impl: `ConcurrentHashMap` in-memory cache + DCL initialization |
-| `ConfigIdAssigner` | SPI: reads/writes `angus_id_config` table and allocates segments |
-| `DistributedIncrAssigner` | SPI: wraps Redis `INCRBY` atomic increment |
+| Class / Interface         | Description                                                                  |
+|---------------------------|------------------------------------------------------------------------------|
+| `BidGenerator`            | Interface: `getId` / `getIds` with optional `tenantId` overloads             |
+| `AbstractBidGenerator`    | Abstract base: assembles formatted output (PREFIX + DATE + SEQ combinations) |
+| `DefaultBidGenerator`     | Default impl: `ConcurrentHashMap` in-memory cache + DCL initialization       |
+| `ConfigIdAssigner`        | SPI: reads/writes `angus_id_config` table and allocates segments             |
+| `DistributedIncrAssigner` | SPI: wraps Redis `INCRBY` atomic increment                                   |
 
 ### 3.3 Enumerations
 
 #### Format (Code Format)
 
-| Value | Output Example | Description |
-|-------|----------------|-------------|
-| `SEQ` | `00000001` | Sequence number only |
-| `PREFIX_SEQ` | `ORD00000001` | Prefix + sequence |
-| `DATE_SEQ` | `2024090100000001` | Date + sequence |
+| Value             | Output Example        | Description              |
+|-------------------|-----------------------|--------------------------|
+| `SEQ`             | `00000001`            | Sequence number only     |
+| `PREFIX_SEQ`      | `ORD00000001`         | Prefix + sequence        |
+| `DATE_SEQ`        | `2024090100000001`    | Date + sequence          |
 | `PREFIX_DATE_SEQ` | `ORD2024090100000001` | Prefix + date + sequence |
 
 #### Mode (Generation Mode)
 
-| Value | Description |
-|-------|-------------|
-| `DB` | Segment fetched from `id_config.max_id` + `step`; local `AtomicLong` consumes the segment |
-| `REDIS` | Each call uses Redis `INCRBY` atomically; no local segment cache |
+| Value   | Description                                                                               |
+|---------|-------------------------------------------------------------------------------------------|
+| `DB`    | Segment fetched from `id_config.max_id` + `step`; local `AtomicLong` consumes the segment |
+| `REDIS` | Each call uses Redis `INCRBY` atomically; no local segment cache                          |
 
 #### Scope (Uniqueness Scope)
 
-| Value | Behavior |
-|-------|----------|
-| `PLATFORM` | All callers share the `tenantId=-1` config row; platform-wide uniqueness |
-| `TENANT` | First call for a new tenant clones the template row (`tenantId=-1`) into a tenant-specific row |
+| Value      | Behavior                                                                                       |
+|------------|------------------------------------------------------------------------------------------------|
+| `PLATFORM` | All callers share the `tenantId=-1` config row; platform-wide uniqueness                       |
+| `TENANT`   | First call for a new tenant clones the template row (`tenantId=-1`) into a tenant-specific row |
 
 #### DateFormat
 
-| Value | Example |
-|-------|---------|
-| `YYYY` | `2024` |
-| `YYYYMM` | `202409` |
+| Value      | Example    |
+|------------|------------|
+| `YYYY`     | `2024`     |
+| `YYYYMM`   | `202409`   |
 | `YYYYMMDD` | `20240901` |
 
 ---
@@ -168,6 +180,7 @@ CREATE TABLE `angus_instance` (
 ```
 
 **Field Notes**:
+
 - `id`: Auto-increment long, used as the Snowflake `workerId`. Must not exceed `2^workerBits - 1`.
 - `host` + `port`: Unique constraint ensures the same instance reuses its `workerId` on restart.
 - Environment variable mapping: `HOST` → host, `HTTP_PORT` → port, `RUNTIME_ENV` → instance_type.
@@ -195,9 +208,12 @@ CREATE TABLE `angus_id_config` (
 ```
 
 **Key Constraints**:
+
 - `(biz_key, tenant_id)` unique index: Under TENANT scope, each tenant has its own row.
-- `max_id`: DB mode records the upper bound of the currently allocated segment; updated via `UPDATE ... SET max_id = max_id + step` on each fetch.
-- `step` recommended range: 1,000–10,000. Too small → frequent I/O; too large → wasted IDs on restart.
+- `max_id`: DB mode records the upper bound of the currently allocated segment; updated
+  via `UPDATE ... SET max_id = max_id + step` on each fetch.
+- `step` recommended range: 1,000–10,000. Too small → frequent I/O; too large → wasted IDs on
+  restart.
 
 ---
 
@@ -235,16 +251,16 @@ xcan:
 
 ### Configuration Properties
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `uid.timeBits` | 28 | Seconds precision; 28 bits ≈ 8.7 years from epoch |
-| `uid.workerBits` | 22 | `timeBits + workerBits + seqBits` must equal 63 |
-| `uid.seqBits` | 13 | Max IDs per second per instance = `2^seqBits` |
-| `uid.epochStr` | 2016-05-20 | Changing this requires resetting the `angus_instance` table |
-| `cached.boostPower` | 2 | At `boostPower=2`: RingBuffer ≈ 32,768 slots ≈ 256 KB RAM |
-| `cached.paddingFactor` | 50 | 50% means async fill starts when half the buffer is consumed |
-| `cached.scheduleInterval` | 300 | Prevents buffer exhaustion during sustained low-traffic periods |
-| `bid.initialMapCapacity` | 512 | Set to the approximate number of distinct `bizKey` values |
+| Property                  | Default    | Description                                                     |
+|---------------------------|------------|-----------------------------------------------------------------|
+| `uid.timeBits`            | 28         | Seconds precision; 28 bits ≈ 8.7 years from epoch               |
+| `uid.workerBits`          | 22         | `timeBits + workerBits + seqBits` must equal 63                 |
+| `uid.seqBits`             | 13         | Max IDs per second per instance = `2^seqBits`                   |
+| `uid.epochStr`            | 2016-05-20 | Changing this requires resetting the `angus_instance` table     |
+| `cached.boostPower`       | 2          | At `boostPower=2`: RingBuffer ≈ 32,768 slots ≈ 256 KB RAM       |
+| `cached.paddingFactor`    | 50         | 50% means async fill starts when half the buffer is consumed    |
+| `cached.scheduleInterval` | 300        | Prevents buffer exhaustion during sustained low-traffic periods |
+| `bid.initialMapCapacity`  | 512        | Set to the approximate number of distinct `bizKey` values       |
 
 ---
 
@@ -290,7 +306,8 @@ angus:
 
 ### 6.2 Scenario 1: Generate a 64-bit Distributed ID (UidGenerator)
 
-Suitable for database primary keys, distributed trace IDs, and any scenario requiring high-throughput unique numeric IDs.
+Suitable for database primary keys, distributed trace IDs, and any scenario requiring
+high-throughput unique numeric IDs.
 
 **Inject in service layer**:
 
@@ -368,7 +385,8 @@ public class OrderService {
 
 ### 6.4 Scenario 3: Generate a Business ID — Redis Mode
 
-Suitable for multi-instance deployments that require strong consistency without local segment caching.
+Suitable for multi-instance deployments that require strong consistency without local segment
+caching.
 
 **Enable Redis**:
 
@@ -400,7 +418,8 @@ String invoiceNo = bidGenerator.getId("invoice");
 
 ### 6.5 Scenario 4: Multi-Tenant Business IDs (TENANT Scope)
 
-Each tenant's sequence is independent. Tenant-specific rows are auto-cloned from the template on first use.
+Each tenant's sequence is independent. Tenant-specific rows are auto-cloned from the template on
+first use.
 
 **Insert template row** (`tenantId = -1`):
 
@@ -433,7 +452,8 @@ List<String> ticketNos = bidGenerator.getIds("ticket", 50, 1001L);
 
 ### 6.7 Custom WorkerId Assigner (Optional)
 
-The default `DisposableInstanceIdAssigner` assigns workerId via the `angus_instance` table. Override it with a custom implementation (e.g., ZooKeeper-based):
+The default `DisposableInstanceIdAssigner` assigns workerId via the `angus_instance` table. Override
+it with a custom implementation (e.g., ZooKeeper-based):
 
 ```java
 @Bean
@@ -454,18 +474,19 @@ public InstanceIdAssigner myInstanceIdAssigner() {
 }
 ```
 
-> Because the framework uses `@ConditionalOnMissingBean`, a user-defined bean automatically replaces the default implementation.
+> Because the framework uses `@ConditionalOnMissingBean`, a user-defined bean automatically replaces
+> the default implementation.
 
 ---
 
 ## 7. Performance
 
-| Generator | Mode | Single-Instance QPS | Notes |
-|-----------|------|---------------------|-------|
-| `DefaultUidGenerator` | Synchronous | ~500K | `synchronized nextId()`; bounded by clock tick |
-| `CachedUidGenerator` | RingBuffer | **~6M** | Lock-free consume; produce/consume parallelized |
-| `BidGenerator` | DB (step=5000) | ~100K–500K | Depends on segment size and DB latency |
-| `BidGenerator` | Redis | ~200K–1M | One `INCRBY` per call; depends on Redis latency |
+| Generator             | Mode           | Single-Instance QPS | Notes                                           |
+|-----------------------|----------------|---------------------|-------------------------------------------------|
+| `DefaultUidGenerator` | Synchronous    | ~500K               | `synchronized nextId()`; bounded by clock tick  |
+| `CachedUidGenerator`  | RingBuffer     | **~6M**             | Lock-free consume; produce/consume parallelized |
+| `BidGenerator`        | DB (step=5000) | ~100K–500K          | Depends on segment size and DB latency          |
+| `BidGenerator`        | Redis          | ~200K–1M            | One `INCRBY` per call; depends on Redis latency |
 
 - [UidGenerator Performance Details](performance/UIDPerformance.md)
 - [BidGenerator Performance Details](performance/BIDPerformance.md)
@@ -474,11 +495,19 @@ public InstanceIdAssigner myInstanceIdAssigner() {
 
 ## 8. Important Notes
 
-1. **Bit allocation is immutable at runtime**: Changing `timeBits`/`workerBits`/`seqBits` after go-live corrupts existing ID parsing and requires full data migration.
-2. **Epoch change risk**: Modifying `epochStr` causes ID generation to restart from a reduced delta value, potentially overlapping with historical IDs.
-3. **`angus_instance` table unique constraint**: The same `host:port` reuses its workerId on restart. A new deployment address generates a new row.
-4. **`CachedUidGenerator` memory**: At `boostPower=2`, the RingBuffer occupies ~256 KB (`32,768 × 8 bytes`). Adjust for your environment.
-5. **BidGenerator segment loss**: In-memory segments are lost on crash or restart, causing gaps in IDs. This is expected behavior.
-6. **TENANT scope first-call latency**: The first call for a new tenant triggers one DB write to clone the template row. Subsequent calls use the cached config.
-7. **`angus_id_config` table auto-created**: Controlled by `xcan.datasource.mysql.schema` configuration; no manual DDL required.
-8. **Never manually update `max_id`**: Direct modification under concurrent use can cause duplicate IDs.
+1. **Bit allocation is immutable at runtime**: Changing `timeBits`/`workerBits`/`seqBits` after
+   go-live corrupts existing ID parsing and requires full data migration.
+2. **Epoch change risk**: Modifying `epochStr` causes ID generation to restart from a reduced delta
+   value, potentially overlapping with historical IDs.
+3. **`angus_instance` table unique constraint**: The same `host:port` reuses its workerId on
+   restart. A new deployment address generates a new row.
+4. **`CachedUidGenerator` memory**: At `boostPower=2`, the RingBuffer occupies ~256
+   KB (`32,768 × 8 bytes`). Adjust for your environment.
+5. **BidGenerator segment loss**: In-memory segments are lost on crash or restart, causing gaps in
+   IDs. This is expected behavior.
+6. **TENANT scope first-call latency**: The first call for a new tenant triggers one DB write to
+   clone the template row. Subsequent calls use the cached config.
+7. **`angus_id_config` table auto-created**: Controlled by `xcan.datasource.mysql.schema`
+   configuration; no manual DDL required.
+8. **Never manually update `max_id`**: Direct modification under concurrent use can cause duplicate
+   IDs.

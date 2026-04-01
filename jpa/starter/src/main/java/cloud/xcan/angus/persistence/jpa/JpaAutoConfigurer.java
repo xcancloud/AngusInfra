@@ -1,14 +1,13 @@
-package cloud.xcan.angus.web;
+package cloud.xcan.angus.persistence.jpa;
 
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
 import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
-import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
-import cloud.xcan.angus.datasource.config.DataSourceProperties;
-import cloud.xcan.angus.datasource.config.HikariProperties;
-import cloud.xcan.angus.persistence.jpa.HibernateJpaConfiguration;
+import cloud.xcan.angus.persistence.config.DataSourceExtraProperties;
+import cloud.xcan.angus.persistence.config.DataSourceProperties;
+import cloud.xcan.angus.persistence.config.HikariProperties;
 import cloud.xcan.angus.persistence.jpa.repository.SimpleSummaryRepository;
 import cloud.xcan.angus.persistence.jpa.repository.SummaryRepository;
 import com.zaxxer.hikari.HikariConfig;
@@ -22,8 +21,7 @@ import org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl;
 import org.hibernate.boot.model.naming.PhysicalNamingStrategy;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -33,7 +31,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
@@ -47,12 +44,11 @@ import org.springframework.util.CollectionUtils;
  *
  * @author XiaoLong Liu
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass({LocalContainerEntityManagerFactoryBean.class, EntityManager.class,
     SessionImplementor.class})
 @EnableConfigurationProperties({JpaProperties.class, DataSourceExtraProperties.class,
     HikariProperties.class})
-@AutoConfigureAfter({DataSourceAutoConfiguration.class})
 @Import(HibernateJpaConfiguration.class)
 @ConditionalOnProperty(name = "angus.datasource.enabled", havingValue = "true")
 public class JpaAutoConfigurer {

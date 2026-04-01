@@ -2,7 +2,9 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-> The AngusInfra Job module is a database-driven distributed job scheduling framework for Spring Boot applications. It provides job definition, distributed locking, parallel sharding, MapReduce execution, execution logging, and a REST management API.
+> The AngusInfra Job module is a database-driven distributed job scheduling framework for Spring
+> Boot applications. It provides job definition, distributed locking, parallel sharding, MapReduce
+> execution, execution logging, and a REST management API.
 
 ---
 
@@ -23,15 +25,17 @@
 
 The job module consists of two sub-modules:
 
-- `xcan-angusinfra.job-core` — Defines the job SPI, entities, enums, request models, and configuration model.
-- `xcan-angusinfra.job-starter` — Provides Spring Boot auto-configuration, the scheduler, distributed lock service, health monitor, JPA repositories, and REST management endpoints.
+- `xcan-angusinfra.job-core` — Defines the job SPI, entities, enums, request models, and
+  configuration model.
+- `xcan-angusinfra.job-starter` — Provides Spring Boot auto-configuration, the scheduler,
+  distributed lock service, health monitor, JPA repositories, and REST management endpoints.
 
 Three job types are supported:
 
-| Type | Enum | Description |
-|------|------|-------------|
-| Simple job | `SIMPLE` | Single executor runs sequentially once |
-| Sharding job | `SHARDING` | Splits one job into multiple shards executed in parallel |
+| Type          | Enum         | Description                                               |
+|---------------|--------------|-----------------------------------------------------------|
+| Simple job    | `SIMPLE`     | Single executor runs sequentially once                    |
+| Sharding job  | `SHARDING`   | Splits one job into multiple shards executed in parallel  |
 | MapReduce job | `MAP_REDUCE` | Parallel map phase, then a single-node reduce aggregation |
 
 Core capabilities:
@@ -106,9 +110,11 @@ Release distributed_lock
 1. Delete any expired lock records for the target `lock_key`.
 2. Insert a new lock record.
 3. `lock_key` is the primary key — only one node succeeds when multiple nodes insert concurrently.
-4. On release, both `owner` and `lockValue` are validated to prevent accidentally removing another node's lock.
+4. On release, both `owner` and `lockValue` are validated to prevent accidentally removing another
+   node's lock.
 
-This design eliminates the TOCTOU race window of a check-then-insert approach, ensuring only one node executes a given job in a multi-instance deployment.
+This design eliminates the TOCTOU race window of a check-then-insert approach, ensuring only one
+node executes a given job in a multi-instance deployment.
 
 ### 2.4 Three Execution Models
 
@@ -116,7 +122,8 @@ This design eliminates the TOCTOU race window of a check-then-insert approach, e
 
 - Executed via `JobExecutor#execute(JobContext)`.
 - Each execution produces one `job_execution_log` record.
-- Suitable for serial tasks such as daily report generation, cache refresh, and single-table cleanup.
+- Suitable for serial tasks such as daily report generation, cache refresh, and single-table
+  cleanup.
 
 #### SHARDING
 
@@ -147,14 +154,16 @@ This design eliminates the TOCTOU race window of a check-then-insert approach, e
 
 ### 3.2 Executor SPI
 
-| Interface | Purpose |
-|-----------|---------|
-| `JobExecutor` | Entry point for simple jobs — defines `execute(JobContext)` |
-| `ShardingJobExecutor` | Sharding job interface — defines `executeSharding(...)` |
-| `MapReduceJobExecutor` | MapReduce interface — defines `map(...)` and `reduce(...)` |
-| `JobExecutorRegistry` | Executor registry — looks up executors by Spring bean name |
+| Interface              | Purpose                                                     |
+|------------------------|-------------------------------------------------------------|
+| `JobExecutor`          | Entry point for simple jobs — defines `execute(JobContext)` |
+| `ShardingJobExecutor`  | Sharding job interface — defines `executeSharding(...)`     |
+| `MapReduceJobExecutor` | MapReduce interface — defines `map(...)` and `reduce(...)`  |
+| `JobExecutorRegistry`  | Executor registry — looks up executors by Spring bean name  |
 
-`DefaultJobExecutorRegistry` collects all `JobExecutor` Spring beans into an immutable `Map<String, JobExecutor>`. The `beanName` in the job definition must exactly match the Spring bean name.
+`DefaultJobExecutorRegistry` collects all `JobExecutor` Spring beans into an
+immutable `Map<String, JobExecutor>`. The `beanName` in the job definition must exactly match the
+Spring bean name.
 
 ### 3.3 Job Model
 
@@ -302,17 +311,17 @@ angus:
     max-jobs-per-scan: 100
 ```
 
-| Property | Default | Description |
-|----------|---------|-------------|
-| `scan-interval-ms` | `1000` | Fixed interval (ms) for scanning due jobs |
-| `lock-timeout-seconds` | `300` | Distributed lock timeout; should exceed most job execution durations |
-| `executor-core-pool-size` | `10` | Executor thread pool core size |
-| `executor-max-pool-size` | `50` | Executor thread pool maximum size |
-| `executor-queue-capacity` | `1000` | Executor thread pool queue capacity |
-| `scheduler-pool-size` | `5` | Spring `@Scheduled` scheduler thread count |
-| `retry-backoff-minutes` | `5` | Delay in minutes before retrying a failed job |
-| `timeout-threshold-minutes` | `30` | Timeout threshold for health monitor detection |
-| `max-jobs-per-scan` | `100` | Maximum jobs loaded per scan cycle (prevents overload) |
+| Property                    | Default | Description                                                          |
+|-----------------------------|---------|----------------------------------------------------------------------|
+| `scan-interval-ms`          | `1000`  | Fixed interval (ms) for scanning due jobs                            |
+| `lock-timeout-seconds`      | `300`   | Distributed lock timeout; should exceed most job execution durations |
+| `executor-core-pool-size`   | `10`    | Executor thread pool core size                                       |
+| `executor-max-pool-size`    | `50`    | Executor thread pool maximum size                                    |
+| `executor-queue-capacity`   | `1000`  | Executor thread pool queue capacity                                  |
+| `scheduler-pool-size`       | `5`     | Spring `@Scheduled` scheduler thread count                           |
+| `retry-backoff-minutes`     | `5`     | Delay in minutes before retrying a failed job                        |
+| `timeout-threshold-minutes` | `30`    | Timeout threshold for health monitor detection                       |
+| `max-jobs-per-scan`         | `100`   | Maximum jobs loaded per scan cycle (prevents overload)               |
 
 ---
 
@@ -368,7 +377,8 @@ angus:
     executor-max-pool-size: 50
 ```
 
-> The module is loaded via `AutoConfiguration.imports`; you do **not** need to add `@EnableScheduling` manually.
+> The module is loaded via `AutoConfiguration.imports`; you do **not** need to
+> add `@EnableScheduling` manually.
 
 ### 6.4 Scenario 1 — Simple Job (SIMPLE)
 
@@ -410,7 +420,8 @@ Create job request example:
 
 ### 6.5 Scenario 2 — Sharding Job (SHARDING)
 
-Suitable for batch scanning, partitioned table inspection, sharded synchronization, and other naturally parallelizable tasks.
+Suitable for batch scanning, partitioned table inspection, sharded synchronization, and other
+naturally parallelizable tasks.
 
 ```java
 import cloud.xcan.angus.job.executor.ShardingJobExecutor;
@@ -456,7 +467,8 @@ Create job request example:
 
 ### 6.6 Scenario 3 — MapReduce Job (MAP_REDUCE)
 
-Suitable for parallel computation followed by aggregation — e.g., log aggregation, statistics rollup, batch scoring.
+Suitable for parallel computation followed by aggregation — e.g., log aggregation, statistics
+rollup, batch scoring.
 
 ```java
 import cloud.xcan.angus.job.executor.MapReduceJobExecutor;
@@ -507,18 +519,18 @@ Create job request example:
 
 Controller prefix: `/api/v1/jobs`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/v1/jobs` | Create a job |
-| `GET` | `/api/v1/jobs` | Paginated job list |
-| `GET` | `/api/v1/jobs/{jobId}` | Get job detail |
-| `PUT` | `/api/v1/jobs/{jobId}` | Update job name, cron, description |
-| `DELETE` | `/api/v1/jobs/{jobId}` | Delete a job and its shards/logs |
-| `POST` | `/api/v1/jobs/{jobId}/pause` | Pause a job |
-| `POST` | `/api/v1/jobs/{jobId}/resume` | Resume a job |
-| `POST` | `/api/v1/jobs/{jobId}/trigger` | Trigger a job immediately |
-| `GET` | `/api/v1/jobs/{jobId}/executions` | Execution history |
-| `GET` | `/api/v1/jobs/{jobId}/statistics` | Job statistics |
+| Method   | Path                              | Description                        |
+|----------|-----------------------------------|------------------------------------|
+| `POST`   | `/api/v1/jobs`                    | Create a job                       |
+| `GET`    | `/api/v1/jobs`                    | Paginated job list                 |
+| `GET`    | `/api/v1/jobs/{jobId}`            | Get job detail                     |
+| `PUT`    | `/api/v1/jobs/{jobId}`            | Update job name, cron, description |
+| `DELETE` | `/api/v1/jobs/{jobId}`            | Delete a job and its shards/logs   |
+| `POST`   | `/api/v1/jobs/{jobId}/pause`      | Pause a job                        |
+| `POST`   | `/api/v1/jobs/{jobId}/resume`     | Resume a job                       |
+| `POST`   | `/api/v1/jobs/{jobId}/trigger`    | Trigger a job immediately          |
+| `GET`    | `/api/v1/jobs/{jobId}/executions` | Execution history                  |
+| `GET`    | `/api/v1/jobs/{jobId}/statistics` | Job statistics                     |
 
 Statistics response fields include:
 
@@ -570,17 +582,26 @@ Only the following fields may be updated:
 - `cronExpression`
 - `description`
 
-Runtime state fields (`status`, `lastExecuteTime`, `nextExecuteTime`, `retryCount`, etc.) are managed by the framework and cannot be directly modified via the update API.
+Runtime state fields (`status`, `lastExecuteTime`, `nextExecuteTime`, `retryCount`, etc.) are
+managed by the framework and cannot be directly modified via the update API.
 
 ---
 
 ## 8. Notes
 
-1. `beanName` must exactly match the Spring bean name of the executor. If the bean cannot be found, a "No JobExecutor registered" exception will be thrown at execution time.
+1. `beanName` must exactly match the Spring bean name of the executor. If the bean cannot be found,
+   a "No JobExecutor registered" exception will be thrown at execution time.
 2. `cronExpression` uses the Spring 6-part cron parser — not Quartz's 7-part extended format.
-3. `trigger` only applies to jobs in `READY` or `PAUSED` status. Jobs in `RUNNING` or `FAILED` status cannot be triggered directly.
-4. Both sharding and MapReduce jobs delete previous-round shards before creating new ones. The `job_shard` table reflects the current/most-recent execution round, not a permanent history.
-5. Any shard failure causes the entire `SHARDING` or `MAP_REDUCE` job to enter its failure handling flow.
-6. If `lock-timeout-seconds` is set too low, a long-running job may have its lock re-acquired by another node before completion. Set this conservatively based on maximum expected execution time.
-7. `max-jobs-per-scan` prevents a backlog of overdue jobs from flooding the thread pool at once. Do not blindly increase this for high-volume scenarios.
-8. `ExecutionStatus.TIMEOUT` is primarily a monitoring semantic. The health monitor detects long-running `RUNNING` records and logs a warning, but does not forcibly interrupt the business thread.
+3. `trigger` only applies to jobs in `READY` or `PAUSED` status. Jobs in `RUNNING` or `FAILED`
+   status cannot be triggered directly.
+4. Both sharding and MapReduce jobs delete previous-round shards before creating new ones.
+   The `job_shard` table reflects the current/most-recent execution round, not a permanent history.
+5. Any shard failure causes the entire `SHARDING` or `MAP_REDUCE` job to enter its failure handling
+   flow.
+6. If `lock-timeout-seconds` is set too low, a long-running job may have its lock re-acquired by
+   another node before completion. Set this conservatively based on maximum expected execution time.
+7. `max-jobs-per-scan` prevents a backlog of overdue jobs from flooding the thread pool at once. Do
+   not blindly increase this for high-volume scenarios.
+8. `ExecutionStatus.TIMEOUT` is primarily a monitoring semantic. The health monitor detects
+   long-running `RUNNING` records and logs a warning, but does not forcibly interrupt the business
+   thread.

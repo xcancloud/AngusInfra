@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.jpa.entity.projection;
+package cloud.xcan.angus.persistence.jpa.entity.projection;
 
 /**
  * Used to project(projection) id and num fields when returning from a query.

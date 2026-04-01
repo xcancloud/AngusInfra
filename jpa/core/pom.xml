@@ -6,13 +6,12 @@
 
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-angusinfra.parent</artifactId>
+    <artifactId>xcan-angusinfra.jpa</artifactId>
     <version>3.0.0</version>
-    <relativePath>../parent</relativePath>
   </parent>
 
-  <artifactId>xcan-angusinfra.jdbc</artifactId>
-  <name>AngusInfra :: JDBC Utils</name>
+  <artifactId>xcan-angusinfra.jpa-core</artifactId>
+  <name>AngusInfra :: JPA and JDBC Utils</name>
   <packaging>jar</packaging>
   <description>Spring Data JDBC integration utils for Angus projects.</description>
 
@@ -35,6 +34,12 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Lombok -->

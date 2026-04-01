@@ -185,7 +185,6 @@ cloud.xcan.angus.core.feign/
 ## 与其他模块的关系
 
 - **依赖 core-base**: 使用 BizTemplate、异常处理、工具类
-- **可选依赖 jackson-customizer**: 自定义 JSON 序列化规则
 - **可选依赖 observability-starter**: 日志、指标、链路追踪
 
 ## 最佳实践

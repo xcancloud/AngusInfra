@@ -1,4 +1,4 @@
-package cloud.xcan.angus.jpa;
+package cloud.xcan.angus.persistence.jpa;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static org.springframework.util.StringUtils.toStringArray;

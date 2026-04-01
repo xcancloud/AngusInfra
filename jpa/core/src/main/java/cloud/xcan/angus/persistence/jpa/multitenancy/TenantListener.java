@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.jpa.multitenancy;
+package cloud.xcan.angus.persistence.jpa.multitenancy;
 
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenantCtrlByApiType;

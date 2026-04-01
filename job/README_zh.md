@@ -1,7 +1,8 @@
 Job 模块
 ==========================
 
-> 说明：AngusInfra Job 是一个基于数据库驱动的分布式任务调度模块，面向 Spring Boot 应用提供任务定义、分布式锁、并行分片、MapReduce、执行日志和运维管理接口。
+> 说明：AngusInfra Job 是一个基于数据库驱动的分布式任务调度模块，面向 Spring Boot
+> 应用提供任务定义、分布式锁、并行分片、MapReduce、执行日志和运维管理接口。
 
 ---
 
@@ -23,14 +24,15 @@ Job 模块
 job 模块由 `core` 与 `starter` 两部分组成：
 
 - `xcan-angusinfra.job-core`：定义任务 SPI、实体、枚举、请求模型和配置模型。
-- `xcan-angusinfra.job-starter`：提供 Spring Boot 自动装配、调度器、分布式锁服务、健康监控、JPA Repository 与 REST 管理接口。
+- `xcan-angusinfra.job-starter`：提供 Spring Boot 自动装配、调度器、分布式锁服务、健康监控、JPA
+  Repository 与 REST 管理接口。
 
 模块当前支持三种任务类型：
 
-| 类型 | 枚举 | 说明 |
-|------|------|------|
-| 简单任务 | `SIMPLE` | 单执行器串行执行一次 |
-| 分片任务 | `SHARDING` | 同一任务拆成多个 shard 并行执行 |
+| 类型           | 枚举           | 说明                     |
+|--------------|--------------|------------------------|
+| 简单任务         | `SIMPLE`     | 单执行器串行执行一次             |
+| 分片任务         | `SHARDING`   | 同一任务拆成多个 shard 并行执行    |
 | MapReduce 任务 | `MAP_REDUCE` | 先并行 map，再单节点 reduce 汇总 |
 
 核心能力包括：
@@ -151,14 +153,15 @@ core
 
 ### 3.2 执行器 SPI
 
-| 接口 | 作用 |
-|------|------|
-| `JobExecutor` | 普通任务统一入口，定义 `execute(JobContext)` |
-| `ShardingJobExecutor` | 分片任务接口，定义 `executeSharding(...)` |
+| 接口                     | 作用                                         |
+|------------------------|--------------------------------------------|
+| `JobExecutor`          | 普通任务统一入口，定义 `execute(JobContext)`          |
+| `ShardingJobExecutor`  | 分片任务接口，定义 `executeSharding(...)`           |
 | `MapReduceJobExecutor` | MapReduce 接口，定义 `map(...)` 与 `reduce(...)` |
-| `JobExecutorRegistry` | 执行器注册表，按 Spring Bean 名获取执行器 |
+| `JobExecutorRegistry`  | 执行器注册表，按 Spring Bean 名获取执行器                |
 
-`DefaultJobExecutorRegistry` 会将所有实现 `JobExecutor` 的 Spring Bean 收集到不可变 `Map<String, JobExecutor>` 中，因此任务定义里的 `beanName` 必须与 Spring Bean 名完全一致。
+`DefaultJobExecutorRegistry` 会将所有实现 `JobExecutor` 的 Spring Bean
+收集到不可变 `Map<String, JobExecutor>` 中，因此任务定义里的 `beanName` 必须与 Spring Bean 名完全一致。
 
 ### 3.3 任务模型
 
@@ -308,17 +311,17 @@ angus:
 
 配置说明：
 
-| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| `scan-interval-ms` | 1000 | 扫描到期任务的固定间隔 |
-| `lock-timeout-seconds` | 300 | 分布式锁超时时间，建议大于大多数任务执行时长 |
-| `executor-core-pool-size` | 10 | 执行线程池核心线程数 |
-| `executor-max-pool-size` | 50 | 执行线程池最大线程数 |
-| `executor-queue-capacity` | 1000 | 执行线程池队列容量 |
-| `scheduler-pool-size` | 5 | Spring `@Scheduled` 调度线程数 |
-| `retry-backoff-minutes` | 5 | 失败后的延迟重试分钟数 |
-| `timeout-threshold-minutes` | 30 | 监控中判定超时的阈值 |
-| `max-jobs-per-scan` | 100 | 单次扫描最多加载任务数，防止过载 |
+| 配置项                         | 默认值  | 说明                        |
+|-----------------------------|------|---------------------------|
+| `scan-interval-ms`          | 1000 | 扫描到期任务的固定间隔               |
+| `lock-timeout-seconds`      | 300  | 分布式锁超时时间，建议大于大多数任务执行时长    |
+| `executor-core-pool-size`   | 10   | 执行线程池核心线程数                |
+| `executor-max-pool-size`    | 50   | 执行线程池最大线程数                |
+| `executor-queue-capacity`   | 1000 | 执行线程池队列容量                 |
+| `scheduler-pool-size`       | 5    | Spring `@Scheduled` 调度线程数 |
+| `retry-backoff-minutes`     | 5    | 失败后的延迟重试分钟数               |
+| `timeout-threshold-minutes` | 30   | 监控中判定超时的阈值                |
+| `max-jobs-per-scan`         | 100  | 单次扫描最多加载任务数，防止过载          |
 
 ---
 
@@ -515,18 +518,18 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 
 主要接口：
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `POST` | `/api/v1/jobs` | 创建任务 |
-| `GET` | `/api/v1/jobs` | 分页查询任务 |
-| `GET` | `/api/v1/jobs/{jobId}` | 查询任务详情 |
-| `PUT` | `/api/v1/jobs/{jobId}` | 更新任务名称、cron、描述 |
-| `DELETE` | `/api/v1/jobs/{jobId}` | 删除任务及其 shard/日志 |
-| `POST` | `/api/v1/jobs/{jobId}/pause` | 暂停任务 |
-| `POST` | `/api/v1/jobs/{jobId}/resume` | 恢复任务 |
-| `POST` | `/api/v1/jobs/{jobId}/trigger` | 立即触发一次 |
-| `GET` | `/api/v1/jobs/{jobId}/executions` | 查看执行历史 |
-| `GET` | `/api/v1/jobs/{jobId}/statistics` | 查看统计信息 |
+| 方法       | 路径                                | 说明              |
+|----------|-----------------------------------|-----------------|
+| `POST`   | `/api/v1/jobs`                    | 创建任务            |
+| `GET`    | `/api/v1/jobs`                    | 分页查询任务          |
+| `GET`    | `/api/v1/jobs/{jobId}`            | 查询任务详情          |
+| `PUT`    | `/api/v1/jobs/{jobId}`            | 更新任务名称、cron、描述  |
+| `DELETE` | `/api/v1/jobs/{jobId}`            | 删除任务及其 shard/日志 |
+| `POST`   | `/api/v1/jobs/{jobId}/pause`      | 暂停任务            |
+| `POST`   | `/api/v1/jobs/{jobId}/resume`     | 恢复任务            |
+| `POST`   | `/api/v1/jobs/{jobId}/trigger`    | 立即触发一次          |
+| `GET`    | `/api/v1/jobs/{jobId}/executions` | 查看执行历史          |
+| `GET`    | `/api/v1/jobs/{jobId}/statistics` | 查看统计信息          |
 
 统计接口返回的典型字段：
 
@@ -584,11 +587,14 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 
 ## 8. 注意事项
 
-1. `beanName` 必须与 Spring 容器中的执行器 Bean 名完全一致，否则执行时会抛出 “No JobExecutor registered” 异常。
+1. `beanName` 必须与 Spring 容器中的执行器 Bean 名完全一致，否则执行时会抛出 “No JobExecutor
+   registered” 异常。
 2. `cronExpression` 使用 Spring 的 6 段表达式解析器，不是 Quartz 的 7 段扩展格式。
 3. `trigger` 只能触发 `READY` 或 `PAUSED` 任务，`RUNNING` 和 `FAILED` 状态不能直接触发。
-4. 分片任务与 MapReduce 任务都会先删除上一轮遗留 shard 再创建新 shard，因此 `job_shard` 表表达的是“当前/最近一次运行态”，不是永久历史。
+4. 分片任务与 MapReduce 任务都会先删除上一轮遗留 shard 再创建新 shard，因此 `job_shard`
+   表表达的是“当前/最近一次运行态”，不是永久历史。
 5. 任一 shard 失败会导致整个 SHARDING / MAP_REDUCE 任务进入失败处理流程。
 6. 锁超时时间 `lock-timeout-seconds` 过小会造成长任务尚未执行完成就被其他节点重新抢到，生产环境要按最大执行时长保守设置。
 7. `max-jobs-per-scan` 用于防止积压任务一次性灌满线程池；大批量任务场景不要盲目调大。
-8. `ExecutionStatus.TIMEOUT` 目前主要用于监控语义，源码中的健康监控会识别长时间 `RUNNING` 记录并报警，但不会自动强制中断业务线程。
+8. `ExecutionStatus.TIMEOUT` 目前主要用于监控语义，源码中的健康监控会识别长时间 `RUNNING`
+   记录并报警，但不会自动强制中断业务线程。

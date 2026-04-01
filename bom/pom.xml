@@ -40,25 +40,25 @@
       <!-- Core Sub-Modules -->
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.jdbc</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.lettucex</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.datasource</artifactId>
+        <artifactId>xcan-angusinfra.validator</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.validator</artifactId>
+        <artifactId>xcan-angusinfra.cache-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.cache-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
@@ -88,19 +88,55 @@
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.job-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.job-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.queue-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.queue-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.jpa-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.jpa-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.feign-starter</artifactId>
+        <artifactId>xcan-angusinfra.sharding-core</artifactId>
         <version>${project.version}</version>
       </dependency>
 
+       <dependency>
+        <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.sharding-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency> 
+
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.jackson-customizer</artifactId>
+        <artifactId>xcan-angusinfra.feign-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 

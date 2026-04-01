@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.jpa.criteria;
+package cloud.xcan.angus.persistence.jpa.criteria;
 
 import static cloud.xcan.angus.core.biz.ProtocolAssert.assertNotNull;
 import static cloud.xcan.angus.remote.message.ProtocolException.M.PARAM_FORMAT_ERROR_KEY;

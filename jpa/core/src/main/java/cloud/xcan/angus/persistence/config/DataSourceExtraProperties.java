@@ -1,4 +1,4 @@
-package cloud.xcan.angus.datasource.config;
+package cloud.xcan.angus.persistence.config;
 
 import cloud.xcan.angus.api.enums.SupportedDbType;
 import lombok.Getter;

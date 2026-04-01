@@ -17,8 +17,8 @@ import org.springframework.core.type.filter.AnnotationTypeFilter;
 
 /**
  * Hibernate {@link StatementInspector} that rewrites table names in SQL statements for sharded
- * tables. Detects entities annotated with {@link ShardedTable} and replaces their table names
- * with the tenant-specific sharded table name.
+ * tables. Detects entities annotated with {@link ShardedTable} and replaces their table names with
+ * the tenant-specific sharded table name.
  */
 @Slf4j
 public class ShardingTableInterceptor implements StatementInspector {
@@ -33,7 +33,8 @@ public class ShardingTableInterceptor implements StatementInspector {
   }
 
   /**
-   * Scan packages for {@link ShardedTable}-annotated entity classes and register their table names.
+   * Scan packages for {@link ShardedTable}-annotated entity classes and register their table
+   * names.
    */
   public void scanAndRegister(String... packages) {
     ClassPathScanningCandidateComponentProvider scanner =

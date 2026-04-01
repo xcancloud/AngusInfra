@@ -10,7 +10,7 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.jpa.criteria.GenericSpecification;
-import cloud.xcan.angus.core.jpa.multitenancy.TenantEntity;
+import cloud.xcan.angus.persistence.jpa.entity.TenantEntity;
 import cloud.xcan.angus.core.tester.infra.metricsds.MetricsDataSourceContextHolder.Shard;
 import cloud.xcan.angus.core.tester.infra.metricsds.config.MetricsDataSourceProperties;
 import cloud.xcan.angus.remote.search.SearchCriteria;

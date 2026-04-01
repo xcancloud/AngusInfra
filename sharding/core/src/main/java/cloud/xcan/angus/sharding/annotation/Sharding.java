@@ -17,14 +17,14 @@ import java.lang.annotation.Target;
 public @interface Sharding {
 
   /**
-   * The field name used to resolve the database shard index.
-   * Defaults to empty, meaning the framework will look for the first {@code Long} argument.
+   * The field name used to resolve the database shard index. Defaults to empty, meaning the
+   * framework will look for the first {@code Long} argument.
    */
   String shardKey() default "";
 
   /**
-   * The field name used to resolve the table secondary index.
-   * Defaults to empty, meaning table sharding uses the same key as {@link #shardKey()}.
+   * The field name used to resolve the table secondary index. Defaults to empty, meaning table
+   * sharding uses the same key as {@link #shardKey()}.
    */
   String tableKey() default "";
 }

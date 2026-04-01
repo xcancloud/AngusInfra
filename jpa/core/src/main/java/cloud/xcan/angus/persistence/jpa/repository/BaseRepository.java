@@ -1,6 +1,6 @@
-package cloud.xcan.angus.core.jpa.repository;
+package cloud.xcan.angus.persistence.jpa.repository;
 
-import cloud.xcan.angus.core.jpa.criteria.GenericSpecification;
+import cloud.xcan.angus.persistence.jpa.criteria.GenericSpecification;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import java.util.Collection;
 import java.util.List;
@@ -13,7 +13,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 
 @NoRepositoryBean
-public interface BaseRepository<T, ID> extends JpaRepository<T, ID>, JpaSpecificationExecutor<T> {
+public interface BaseRepository<T, ID> extends
+    JpaRepository<T, ID>, JpaSpecificationExecutor<T>,
+    cloud.xcan.angus.core.biz.BaseRepository<T, ID> {
 
   Iterable<T> batchInsert(Iterable<T> var1);
 

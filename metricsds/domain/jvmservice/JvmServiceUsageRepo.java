@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.tester.infra.metricsds.domain.jvmservice;
 
-import cloud.xcan.angus.core.jpa.repository.BaseRepository;
+import cloud.xcan.angus.persistence.jpa.repository.BaseRepository;
 import cloud.xcan.angus.core.tester.infra.metricsds.Sharding;
 import java.util.Collection;
 import java.util.Set;

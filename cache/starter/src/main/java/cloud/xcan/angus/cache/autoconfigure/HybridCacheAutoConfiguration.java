@@ -32,6 +32,7 @@ public class HybridCacheAutoConfiguration {
   @EntityScan(basePackageClasses = CacheEntry.class)
   @EnableJpaRepositories(basePackageClasses = SpringDataCacheEntryRepository.class)
   static class CacheJpaRepositoryConfiguration {
+
   }
 
   /**

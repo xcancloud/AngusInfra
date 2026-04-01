@@ -1,6 +1,6 @@
 package cloud.xcan.angus.persistence.jpa.multitenancy.it;
 
-import cloud.xcan.angus.core.jpa.entity.TenantEntity;
+import cloud.xcan.angus.persistence.jpa.entity.TenantEntity;
 import cloud.xcan.angus.persistence.jpa.multitenancy.TenantJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EntityScan(basePackageClasses = {TenantEntity.class, MtItDepartment.class})
 @EnableJpaRepositories(basePackageClasses = MtItDepartmentRepository.class)
-@Import(TenantJpaAutoConfiguration.class)
+@Import({TenantJpaAutoConfiguration.class, MultitenancyItDataSourceConfiguration.class})
 public class MultitenancyItTestApplication {
 
 }

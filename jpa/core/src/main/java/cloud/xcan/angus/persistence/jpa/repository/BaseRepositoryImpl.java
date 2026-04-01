@@ -1,8 +1,6 @@
 package cloud.xcan.angus.persistence.jpa.repository;
 
 import static cloud.xcan.angus.core.utils.CoreUtils.getAnnotationFieldName;
-import static cloud.xcan.angus.persistence.jpa.JpaMetadataUtils.getTableName;
-import static cloud.xcan.angus.persistence.jpa.JpaMetadataUtils.hasAttribute;
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
 import static cloud.xcan.angus.spec.experimental.BizConstant.DEFAULT_RESOURCE_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.MAX_BATCH_SIZE;
@@ -13,8 +11,9 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.data.support.PageableExecutionUtils.getPage;
 
 import cloud.xcan.angus.core.biz.ResourceName;
-import cloud.xcan.angus.core.jpa.criteria.GenericSpecification;
 import cloud.xcan.angus.core.utils.BeanFieldUtils;
+import cloud.xcan.angus.persistence.jpa.JpaMetadataUtils;
+import cloud.xcan.angus.persistence.jpa.criteria.GenericSpecification;
 import cloud.xcan.angus.persistence.jpa.multitenancy.TenantNativeQuerySupport;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import jakarta.persistence.EntityManager;
@@ -135,7 +134,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
   @Override
   public String findNameById(ID id) {
-    String tableName = getTableName(entityManager, jpaEntityInfo.getJavaType());
+    String tableName = JpaMetadataUtils.getTableName(entityManager, jpaEntityInfo.getJavaType());
     EntityType<T> entityType = entityManager.getMetamodel().entity(jpaEntityInfo.getJavaType());
 
     StringBuilder sql = getSingleNameResultSql(tableName, entityType);
@@ -149,7 +148,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
   @Override
   public List<String> findNameByIdIn(Collection<ID> ids) {
-    String tableName = getTableName(entityManager, jpaEntityInfo.getJavaType());
+    String tableName = JpaMetadataUtils.getTableName(entityManager, jpaEntityInfo.getJavaType());
     EntityType<T> entityType = entityManager.getMetamodel().entity(jpaEntityInfo.getJavaType());
 
     StringBuilder sql = getNameResultSql(tableName, entityType);
@@ -162,7 +161,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
 
   @Override
   public List<ID> findIdByIdIn(Collection<ID> ids) {
-    String tableName = getTableName(entityManager, jpaEntityInfo.getJavaType());
+    String tableName = JpaMetadataUtils.getTableName(entityManager, jpaEntityInfo.getJavaType());
     StringBuilder sql = new StringBuilder(
         "SELECT id FROM ").append(tableName).append(" WHERE id IN :ids");
     TenantNativeQuerySupport.appendUnqualifiedTenantClause(sql, jpaEntityInfo.getJavaType());
@@ -334,7 +333,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     if (isNotEmpty(resourceName)) {
       sql.append("SELECT ").append(resourceName).append(" FROM ")
           .append(tableName).append(" WHERE id = :id");
-    } else if (hasAttribute(entityType, DEFAULT_RESOURCE_NAME)) {
+    } else if (JpaMetadataUtils.hasAttribute(entityType, DEFAULT_RESOURCE_NAME)) {
       sql.append("SELECT name FROM ").append(tableName).append(" WHERE id = :id");
     } else {
       throw new IllegalStateException("The resource name was not found in the entity:"
@@ -348,7 +347,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     if (isNotEmpty(resourceName)) {
       sql.append("SELECT ").append(resourceName).append(" FROM ")
           .append(tableName).append(" WHERE id in :ids");
-    } else if (hasAttribute(entityType, DEFAULT_RESOURCE_NAME)) {
+    } else if (JpaMetadataUtils.hasAttribute(entityType, DEFAULT_RESOURCE_NAME)) {
       sql.append("SELECT name FROM ").append(tableName).append(" WHERE id in :ids");
     } else {
       throw new IllegalStateException("The resource name was not found in the entity:"

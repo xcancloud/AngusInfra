@@ -442,8 +442,8 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
    * @return a UserBuilder that automatically encodes the password with the default PasswordEncoder
    * @deprecated Using this method is not considered safe for production, but is acceptable for
    * demos and getting started. For production purposes, ensure the password is encoded externally.
-   * See the method Javadoc for additional details. There are no plans to remove this multitenancy. It is
-   * deprecated to indicate that this is considered insecure for production purposes.
+   * See the method Javadoc for additional details. There are no plans to remove this multitenancy.
+   * It is deprecated to indicate that this is considered insecure for production purposes.
    */
   @Deprecated
   public static CustomOAuth2User.UserBuilder withDefaultPasswordEncoder() {

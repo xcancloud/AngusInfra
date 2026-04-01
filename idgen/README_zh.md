@@ -26,10 +26,10 @@ ID Generator — idgen 模块
 
 idgen 模块提供两类 ID 生成器：
 
-| 生成器 | 类型 | 适用场景 |
-|--------|------|----------|
+| 生成器              | 类型                 | 适用场景                    |
+|------------------|--------------------|-------------------------|
 | **UidGenerator** | 64位长整型，类 Snowflake | 数据库主键、分布式追踪 ID、高并发内部 ID |
-| **BidGenerator** | 可读字符串，格式可配 | 订单号、合同编号、工单号等对外展示的业务编码 |
+| **BidGenerator** | 可读字符串，格式可配         | 订单号、合同编号、工单号等对外展示的业务编码  |
 
 两者均以 Spring Boot Starter 方式集成，通过 `angus.idgen.enabled=true` 一键开启。
 
@@ -57,6 +57,7 @@ idgen 模块提供两类 ID 生成器：
 **DefaultUidGenerator**：同步生成，无额外内存开销，适合低并发或需要严格时序的场景。
 
 **CachedUidGenerator**：在 DefaultUidGenerator 基础上增加 RingBuffer 预生成机制：
+
 - 启动时预填充满 RingBuffer（默认容量 `(maxSequence+1) << boostPower`，约 32768 槽位）。
 - 消费线程从 RingBuffer 头部取 UID，生产线程在后台异步补充。
 - 当剩余槽位低于 `paddingFactor%`（默认 50%）时触发异步填充。
@@ -81,7 +82,8 @@ idgen 模块提供两类 ID 生成器：
               └─────────────┘                        └─────────────────┘
 ```
 
-- **DB 模式**：从 `angus_id_config` 表读取 `maxId` + `step`，在内存中维护 `AtomicLong` 计数器，用完后再次取段。双重检查锁（DCL）保证并发安全。
+- **DB 模式**：从 `angus_id_config` 表读取 `maxId` + `step`，在内存中维护 `AtomicLong`
+  计数器，用完后再次取段。双重检查锁（DCL）保证并发安全。
 - **Redis 模式**：通过 `INCRBY` 原子递增，无本地计数器，适合多实例强一致要求场景。
 - **PLATFORM 范围**：所有租户共享一个号码空间（tenantId = -1）。
 - **TENANT 范围**：每个租户独立号码空间，第一次调用时自动从 `tenantId=-1` 的模板克隆配置。
@@ -92,58 +94,58 @@ idgen 模块提供两类 ID 生成器：
 
 ### 3.1 UidGenerator 体系
 
-| 类/接口 | 说明 |
-|---------|------|
-| `UidGenerator` | 接口，定义 `getUID() → long`、`parseUID(long) → String` |
-| `BitsAllocator` | 位操作工具，封装各段的移位与掩码运算 |
-| `DefaultUidGenerator` | 同步 Snowflake 实现，`nextId()` 加锁，处理时钟回拨与序列溢出 |
-| `CachedUidGenerator` | 扩展 Default，增加 RingBuffer + BufferPaddingExecutor |
-| `RingBuffer` | 基于数组的无锁环形缓冲区，`tail`/`cursor` 均为 `PaddedAtomicLong` |
-| `BufferPaddingExecutor` | 负责异步填充 RingBuffer，包含线程池调用和定时调度两种触发方式 |
-| `InstanceIdAssigner` | SPI，提供 `assignInstanceIdByEnv()` 和 `assignInstanceIdByParam()` |
+| 类/接口                           | 说明                                                                                    |
+|--------------------------------|---------------------------------------------------------------------------------------|
+| `UidGenerator`                 | 接口，定义 `getUID() → long`、`parseUID(long) → String`                                     |
+| `BitsAllocator`                | 位操作工具，封装各段的移位与掩码运算                                                                    |
+| `DefaultUidGenerator`          | 同步 Snowflake 实现，`nextId()` 加锁，处理时钟回拨与序列溢出                                             |
+| `CachedUidGenerator`           | 扩展 Default，增加 RingBuffer + BufferPaddingExecutor                                      |
+| `RingBuffer`                   | 基于数组的无锁环形缓冲区，`tail`/`cursor` 均为 `PaddedAtomicLong`                                    |
+| `BufferPaddingExecutor`        | 负责异步填充 RingBuffer，包含线程池调用和定时调度两种触发方式                                                  |
+| `InstanceIdAssigner`           | SPI，提供 `assignInstanceIdByEnv()` 和 `assignInstanceIdByParam()`                        |
 | `DisposableInstanceIdAssigner` | 默认实现，读取环境变量 `HOST`/`HTTP_PORT`/`RUNTIME_ENV`，写入 `angus_instance` 表获取自增 ID 作为 workerId |
 
 ### 3.2 BidGenerator 体系
 
-| 类/接口 | 说明 |
-|---------|------|
-| `BidGenerator` | 接口，定义 `getId` / `getIds` 系列方法，含租户重载 |
-| `AbstractBidGenerator` | 抽象基类，实现格式拼装（PREFIX、DATE、SEQ 组合） |
-| `DefaultBidGenerator` | 默认实现，ConcurrentHashMap 内存缓存 + DCL 初始化 |
-| `ConfigIdAssigner` | SPI，封装 `angus_id_config` 表的读写及号段分配 |
-| `DistributedIncrAssigner` | SPI，封装 Redis `INCRBY` 原子递增 |
+| 类/接口                      | 说明                                    |
+|---------------------------|---------------------------------------|
+| `BidGenerator`            | 接口，定义 `getId` / `getIds` 系列方法，含租户重载   |
+| `AbstractBidGenerator`    | 抽象基类，实现格式拼装（PREFIX、DATE、SEQ 组合）       |
+| `DefaultBidGenerator`     | 默认实现，ConcurrentHashMap 内存缓存 + DCL 初始化 |
+| `ConfigIdAssigner`        | SPI，封装 `angus_id_config` 表的读写及号段分配    |
+| `DistributedIncrAssigner` | SPI，封装 Redis `INCRBY` 原子递增            |
 
 ### 3.3 枚举类型
 
 #### Format（编码格式）
 
-| 值 | 输出示例 | 说明 |
-|----|----------|------|
-| `SEQ` | `00000001` | 纯序列号 |
-| `PREFIX_SEQ` | `ORD00000001` | 前缀 + 序列号 |
-| `DATE_SEQ` | `2024090100000001` | 日期 + 序列号 |
+| 值                 | 输出示例                  | 说明            |
+|-------------------|-----------------------|---------------|
+| `SEQ`             | `00000001`            | 纯序列号          |
+| `PREFIX_SEQ`      | `ORD00000001`         | 前缀 + 序列号      |
+| `DATE_SEQ`        | `2024090100000001`    | 日期 + 序列号      |
 | `PREFIX_DATE_SEQ` | `ORD2024090100000001` | 前缀 + 日期 + 序列号 |
 
 #### Mode（生成模式）
 
-| 值 | 说明 |
-|----|------|
-| `DB` | 号段从数据库 `id_config.max_id` + `step` 获取，本地 AtomicLong 消费 |
-| `REDIS` | 每次通过 Redis `INCRBY` 原子递增，无本地缓存断号风险 |
+| 值       | 说明                                                     |
+|---------|--------------------------------------------------------|
+| `DB`    | 号段从数据库 `id_config.max_id` + `step` 获取，本地 AtomicLong 消费 |
+| `REDIS` | 每次通过 Redis `INCRBY` 原子递增，无本地缓存断号风险                     |
 
 #### Scope（唯一性范围）
 
-| 值 | `tenantId` 行为 |
-|----|-----------------|
-| `PLATFORM` | 所有调用使用 tenantId=-1 的同一配置行，平台全局唯一 |
-| `TENANT` | 首次调用时以模板行（tenantId=-1）克隆出对应 tenantId 的新行 |
+| 值          | `tenantId` 行为                            |
+|------------|------------------------------------------|
+| `PLATFORM` | 所有调用使用 tenantId=-1 的同一配置行，平台全局唯一         |
+| `TENANT`   | 首次调用时以模板行（tenantId=-1）克隆出对应 tenantId 的新行 |
 
 #### DateFormat（日期格式）
 
-| 值 | 示例 |
-|----|------|
-| `YYYY` | `2024` |
-| `YYYYMM` | `202409` |
+| 值          | 示例         |
+|------------|------------|
+| `YYYY`     | `2024`     |
+| `YYYYMM`   | `202409`   |
 | `YYYYMMDD` | `20240901` |
 
 ---
@@ -167,6 +169,7 @@ CREATE TABLE `angus_instance` (
 ```
 
 **字段说明**：
+
 - `id`：自增长整型，即分配给实例的 `workerId`，需确保不超过 `2^workerBits - 1`。
 - `host` + `port`：联合唯一约束，保证同一实例重启时复用原 workerId。
 - 环境变量映射：`HOST` → host，`HTTP_PORT` → port，`RUNTIME_ENV` → instance_type。
@@ -194,6 +197,7 @@ CREATE TABLE `angus_id_config` (
 ```
 
 **关键约束**：
+
 - `(biz_key, tenant_id)` 联合唯一，TENANT 范围下每个租户独占一行。
 - `max_id`：DB 模式下记录已批量分配的上界，每次取段后以 `UPDATE ... SET max_id = max_id + step` 推进。
 - `step` 建议范围 1000–10000；过小频繁 IO，过大重启后浪费号段（产生断号）。
@@ -234,16 +238,16 @@ xcan:
 
 ### 配置说明
 
-| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| `uid.timeBits` | 28 | 时间精度为秒，28 bit 约可用 8.7 年 |
-| `uid.workerBits` | 22 | 决定最大节点数，与 `seqBits` 之和需 ≤ 63 |
-| `uid.seqBits` | 13 | 每秒最大序列数 = `2^seqBits` |
-| `uid.epochStr` | 2016-05-20 | 修改后需重置 `angus_instance` 表，否则 workerId 对应关系错位 |
-| `cached.boostPower` | 2 | 值为 2 时 RingBuffer 约有 32768 槽，约占 256KB 内存（每槽 8B） |
-| `cached.paddingFactor` | 50 | 50 表示剩余 50% 即开始补充，降低瓶颈风险 |
-| `cached.scheduleInterval` | 300 | 防止低流量时 Buffer 长期不补充导致突发流量时来不及填充 |
-| `bid.initialMapCapacity` | 512 | 影响 HashMap 初次扩容次数，按业务键数量预估 |
+| 配置项                       | 默认值        | 说明                                              |
+|---------------------------|------------|-------------------------------------------------|
+| `uid.timeBits`            | 28         | 时间精度为秒，28 bit 约可用 8.7 年                         |
+| `uid.workerBits`          | 22         | 决定最大节点数，与 `seqBits` 之和需 ≤ 63                    |
+| `uid.seqBits`             | 13         | 每秒最大序列数 = `2^seqBits`                           |
+| `uid.epochStr`            | 2016-05-20 | 修改后需重置 `angus_instance` 表，否则 workerId 对应关系错位    |
+| `cached.boostPower`       | 2          | 值为 2 时 RingBuffer 约有 32768 槽，约占 256KB 内存（每槽 8B） |
+| `cached.paddingFactor`    | 50         | 50 表示剩余 50% 即开始补充，降低瓶颈风险                        |
+| `cached.scheduleInterval` | 300        | 防止低流量时 Buffer 长期不补充导致突发流量时来不及填充                 |
+| `bid.initialMapCapacity`  | 512        | 影响 HashMap 初次扩容次数，按业务键数量预估                      |
 
 ---
 
@@ -429,7 +433,8 @@ List<String> ticketNos = bidGenerator.getIds("ticket", 50, 1001L);
 
 ### 6.7 自定义 WorkerId 分配（可选）
 
-默认使用 `DisposableInstanceIdAssigner` 通过 `angus_instance` 表自动分配。如需自定义（如 ZooKeeper 分配），实现 SPI：
+默认使用 `DisposableInstanceIdAssigner` 通过 `angus_instance` 表自动分配。如需自定义（如 ZooKeeper
+分配），实现 SPI：
 
 ```java
 @Bean
@@ -456,12 +461,12 @@ public InstanceIdAssigner myInstanceIdAssigner() {
 
 ## 7. 性能参考
 
-| 生成器 | 模式 | 单机 QPS | 说明 |
-|--------|------|----------|------|
-| `DefaultUidGenerator` | 同步 | ~50 万 | synchronized nextId()，受时钟精度限制 |
-| `CachedUidGenerator` | RingBuffer | **~600 万** | 无锁消费，生产与消费并行 |
-| `BidGenerator` | DB 模式（步长 5000） | ~10–50 万 | 取决于号段步长和网络延迟 |
-| `BidGenerator` | Redis 模式 | ~20–100 万 | INCRBY 原子操作，取决于 Redis 延迟 |
+| 生成器                   | 模式             | 单机 QPS     | 说明                            |
+|-----------------------|----------------|------------|-------------------------------|
+| `DefaultUidGenerator` | 同步             | ~50 万      | synchronized nextId()，受时钟精度限制 |
+| `CachedUidGenerator`  | RingBuffer     | **~600 万** | 无锁消费，生产与消费并行                  |
+| `BidGenerator`        | DB 模式（步长 5000） | ~10–50 万   | 取决于号段步长和网络延迟                  |
+| `BidGenerator`        | Redis 模式       | ~20–100 万  | INCRBY 原子操作，取决于 Redis 延迟      |
 
 - [UidGenerator 性能详细数据](docs/UIDPerformance_zh.md)
 - [BidGenerator 性能详细数据](docs/BIDPerformance_zh.md)
@@ -473,7 +478,8 @@ public InstanceIdAssigner myInstanceIdAssigner() {
 1. **位分配不可在运行中修改**：`timeBits`/`workerBits`/`seqBits` 更改后，原有 ID 解析会错乱，需要全量迁移。
 2. **epochStr 迁移风险**：修改 epoch 基准日期会导致生成的 ID 从更小值重新开始，可能与历史 ID 重叠。
 3. **instance 表唯一约束**：同一 `host:port` 重启后复用原 workerId，更换部署地址时会产生新行。
-4. **CachedUidGenerator 内存消耗**：默认 boostPower=2 时 RingBuffer 约占 256KB（`32768 × 8B`），生产环境按需调整。
+4. **CachedUidGenerator 内存消耗**：默认 boostPower=2 时 RingBuffer 约占 256KB（`32768 × 8B`
+   ），生产环境按需调整。
 5. **BidGenerator 号段丢失**：应用宕机或重启时，内存中未消费的号段会丢失，产生断号，属于正常现象。
 6. **TENANT 范围首次调用延迟**：首次为新租户克隆配置时有一次 DB 写入，后续复用缓存。
 7. **id_config 表自动创建**：受 `xcan.datasource.mysql.schema` 配置控制，无需手动建表。

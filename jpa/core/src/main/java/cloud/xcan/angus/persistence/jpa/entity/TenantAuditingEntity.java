@@ -1,7 +1,7 @@
-package cloud.xcan.angus.core.jpa.entity;
+package cloud.xcan.angus.persistence.jpa.entity;
 
-import cloud.xcan.angus.core.jpa.multitenancy.TenantAware;
-import cloud.xcan.angus.core.jpa.multitenancy.TenantListener;
+import cloud.xcan.angus.persistence.jpa.multitenancy.TenantAware;
+import cloud.xcan.angus.persistence.jpa.multitenancy.TenantListener;
 import cloud.xcan.angus.spec.experimental.Entity;
 import cloud.xcan.angus.spec.experimental.MultiTenant;
 import jakarta.persistence.Column;

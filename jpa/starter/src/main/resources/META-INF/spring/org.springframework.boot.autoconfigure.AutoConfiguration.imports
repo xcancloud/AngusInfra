@@ -1,2 +1,4 @@
+cloud.xcan.angus.persistence.jpa.JpaAutoConfigurer
+cloud.xcan.angus.persistence.jpa.CommonLinkJpaAutoConfigurer
 cloud.xcan.angus.persistence.jpa.multitenancy.TenantJpaAutoConfiguration
 cloud.xcan.angus.persistence.jpa.multitenancy.TenantAsyncAutoConfiguration

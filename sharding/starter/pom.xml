@@ -13,8 +13,10 @@
   <artifactId>xcan-angusinfra.sharding-starter</artifactId>
   <name>AngusInfra :: Sharding :: Starter</name>
   <packaging>jar</packaging>
-  <description>Spring Boot starter for sharding; includes auto-configuration, dynamic routing DataSource,
-    AOP-based shard resolution, SQL table-name rewriting interceptor, and automatic schema management.
+  <description>Spring Boot starter for sharding; includes auto-configuration, dynamic routing
+    DataSource,
+    AOP-based shard resolution, SQL table-name rewriting interceptor, and automatic schema
+    management.
   </description>
 
   <dependencies>
@@ -86,12 +88,16 @@
         <executions>
           <execution>
             <id>jacoco-prepare</id>
-            <goals><goal>prepare-agent</goal></goals>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
           </execution>
           <execution>
             <id>jacoco-report</id>
             <phase>test</phase>
-            <goals><goal>report</goal></goals>
+            <goals>
+              <goal>report</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>

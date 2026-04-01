@@ -1,6 +1,6 @@
 package cloud.xcan.angus.persistence.jpa.multitenancy.it;
 
-import cloud.xcan.angus.core.jpa.entity.TenantEntity;
+import cloud.xcan.angus.persistence.jpa.entity.TenantEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

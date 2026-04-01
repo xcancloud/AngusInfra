@@ -31,11 +31,6 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.datasource</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.plugin-core</artifactId>
     </dependency>
 
@@ -56,8 +51,23 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.l2cache-starter</artifactId>
+      <artifactId>xcan-angusinfra.cache-starter</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.job-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.queue-starter</artifactId>
+    </dependency>
+
+    <!-- <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.l2cache-starter</artifactId>
+    </dependency> -->
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>

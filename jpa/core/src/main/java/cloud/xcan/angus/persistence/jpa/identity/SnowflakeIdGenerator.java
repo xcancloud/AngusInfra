@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.jpa.identity;
+package cloud.xcan.angus.persistence.jpa.identity;
 
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;

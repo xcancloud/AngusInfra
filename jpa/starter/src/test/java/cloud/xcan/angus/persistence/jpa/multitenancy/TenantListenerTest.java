@@ -7,8 +7,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import cloud.xcan.angus.api.enums.ApiType;
-import cloud.xcan.angus.core.jpa.multitenancy.TenantAware;
-import cloud.xcan.angus.core.jpa.multitenancy.TenantListener;
 import cloud.xcan.angus.spec.experimental.BizConstant;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;

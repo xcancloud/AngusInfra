@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceInfo;
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
-import cloud.xcan.angus.core.jpa.identity.SnowflakeIdGenerator;
 import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
 import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
@@ -12,6 +11,7 @@ import cloud.xcan.angus.idgen.dao.IdConfigRepo;
 import cloud.xcan.angus.idgen.dao.InstanceRepo;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies;
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
+import cloud.xcan.angus.persistence.jpa.identity.SnowflakeIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

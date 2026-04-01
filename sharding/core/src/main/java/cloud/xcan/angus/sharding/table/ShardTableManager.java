@@ -16,9 +16,9 @@ public interface ShardTableManager {
   /**
    * Ensure all required sharded tables exist for the given shard key.
    *
-   * @param shardKey               the primary shard key (e.g. tenant ID)
-   * @param shardTableCount        number of table shards
-   * @param enableSecondaryIndex   whether secondary table indexing is enabled
+   * @param shardKey             the primary shard key (e.g. tenant ID)
+   * @param shardTableCount      number of table shards
+   * @param enableSecondaryIndex whether secondary table indexing is enabled
    */
   void ensureTablesExist(long shardKey, int shardTableCount, boolean enableSecondaryIndex);
 }

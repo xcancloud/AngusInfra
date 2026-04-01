@@ -1,4 +1,4 @@
-package cloud.xcan.angus.datasource.config;
+package cloud.xcan.angus.persistence.config;
 
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;

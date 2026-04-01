@@ -70,7 +70,7 @@ public class ShardingTableInterceptor extends TenantInterceptor {
     Shard shard = MetricsDataSourceContextHolder.getShard();
     return shard.tableSecondIndex() >= 0
         ? tableName + SHARD_TABLE_NAME_SPLIT + shard.tenantId()
-            + SHARD_TABLE_NAME_SPLIT + shard.tableSecondIndex()
+        + SHARD_TABLE_NAME_SPLIT + shard.tableSecondIndex()
         : tableName + SHARD_TABLE_NAME_SPLIT + shard.tenantId();
   }
 

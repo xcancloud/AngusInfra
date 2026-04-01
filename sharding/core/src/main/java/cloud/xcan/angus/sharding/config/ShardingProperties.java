@@ -28,8 +28,8 @@ public class ShardingProperties {
   private int shardTableCount = 1;
 
   /**
-   * Whether to enable secondary table-level indexing. When false, tables are only split by
-   * the primary shard key (e.g. tenant ID).
+   * Whether to enable secondary table-level indexing. When false, tables are only split by the
+   * primary shard key (e.g. tenant ID).
    */
   private boolean enableTableSecondaryIndex = false;
 
@@ -68,12 +68,28 @@ public class ShardingProperties {
    */
   private String[] templateTableNames;
 
+  /**
+   * Whether to persist shard table records to a durable store on creation.
+   * When {@code false} (default), an in-memory registry is used and the registry is lost on
+   * restart (safe when DDL uses {@code CREATE TABLE IF NOT EXISTS}).
+   * When {@code true}, a JDBC-backed registry writes each new shard table record to the
+   * {@link #tableRegistryTable} table in the primary datasource, enabling cross-restart tracking.
+   */
+  private boolean tableRegistryEnabled = false;
+
+  /**
+   * Name of the SQL table used by the JDBC shard table registry.
+   * Only relevant when {@link #tableRegistryEnabled} is {@code true}.
+   */
+  private String tableRegistryTable = "angus_shard_table";
+
   private Mysql mysql = new Mysql();
   private Postgresql postgresql = new Postgresql();
 
   @Getter
   @Setter
   public static class Mysql {
+
     private String driverClassName = "com.mysql.cj.jdbc.Driver";
     private String[] urls;
   }
@@ -81,6 +97,7 @@ public class ShardingProperties {
   @Getter
   @Setter
   public static class Postgresql {
+
     private String driverClassName = "org.postgresql.Driver";
     private String[] urls;
   }

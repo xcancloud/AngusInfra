@@ -1,4 +1,4 @@
-package cloud.xcan.angus.datasource.config;
+package cloud.xcan.angus.persistence.config;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;

@@ -1,4 +1,4 @@
-package cloud.xcan.angus.core.jpa.entity;
+package cloud.xcan.angus.persistence.jpa.entity;
 
 import static cloud.xcan.angus.spec.SpecConstant.DateFormat.DATE_FMT;
 

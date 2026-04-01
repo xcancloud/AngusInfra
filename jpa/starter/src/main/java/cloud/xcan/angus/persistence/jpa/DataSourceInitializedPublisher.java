@@ -1,4 +1,4 @@
-package cloud.xcan.angus.jpa;
+package cloud.xcan.angus.persistence.jpa;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;

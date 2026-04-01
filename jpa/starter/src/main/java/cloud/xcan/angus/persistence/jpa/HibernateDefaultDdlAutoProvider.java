@@ -1,4 +1,4 @@
-package cloud.xcan.angus.jpa;
+package cloud.xcan.angus.persistence.jpa;
 
 import java.util.stream.StreamSupport;
 import javax.sql.DataSource;

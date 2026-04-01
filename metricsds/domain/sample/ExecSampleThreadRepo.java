@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.tester.infra.metricsds.domain.sample;
 
-import cloud.xcan.angus.core.jpa.repository.BaseRepository;
+import cloud.xcan.angus.persistence.jpa.repository.BaseRepository;
 import cloud.xcan.angus.core.tester.infra.metricsds.Sharding;
 import cloud.xcan.angus.remote.search.SearchCriteria;
 import java.util.Collection;

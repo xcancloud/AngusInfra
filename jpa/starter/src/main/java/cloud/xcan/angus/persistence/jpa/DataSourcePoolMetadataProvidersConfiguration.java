@@ -1,4 +1,4 @@
-package cloud.xcan.angus.jpa;
+package cloud.xcan.angus.persistence.jpa;
 
 import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;

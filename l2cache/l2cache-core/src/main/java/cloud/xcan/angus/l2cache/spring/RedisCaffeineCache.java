@@ -34,7 +34,8 @@ import org.springframework.util.CollectionUtils;
  * <p>
  * Key features: - L1 Cache: Local Caffeine cache for ultra-fast access - L2 Cache: Distributed
  * Redis cache for data persistence and sharing - Cache synchronization via Redis pub/sub mechanism
- * - Configurable cache penetration protection - Multi-tenant multitenancy with tenant-aware cache keys
+ * - Configurable cache penetration protection - Multi-tenant multitenancy with tenant-aware cache
+ * keys
  * </p>
  *
  * <p>

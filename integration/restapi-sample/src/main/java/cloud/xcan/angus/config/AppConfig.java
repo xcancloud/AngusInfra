@@ -1,6 +1,6 @@
 package cloud.xcan.angus.config;
 
-import cloud.xcan.angus.datasource.config.DataSourceProperties;
+import cloud.xcan.angus.persistence.config.DataSourceProperties;
 import cloud.xcan.angus.persistence.jpa.repository.BaseRepositoryImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;

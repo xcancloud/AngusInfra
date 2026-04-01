@@ -29,13 +29,13 @@
 
 模块分为 5 个子模块：
 
-| 子模块 | 作用 |
-|--------|------|
-| `api` | 定义插件 SPI、模型、事件与异常 |
-| `core` | 插件运行时核心实现，包括默认管理器、类加载器、上下文与存储接口 |
-| `starter` | Spring Boot 自动装配、JPA 存储支持、管理控制器 |
-| `examples` | 示例插件工程，如 GitHub / Jenkins 插件 |
-| `bom` | 依赖版本统一管理 |
+| 子模块        | 作用                              |
+|------------|---------------------------------|
+| `api`      | 定义插件 SPI、模型、事件与异常               |
+| `core`     | 插件运行时核心实现，包括默认管理器、类加载器、上下文与存储接口 |
+| `starter`  | Spring Boot 自动装配、JPA 存储支持、管理控制器 |
+| `examples` | 示例插件工程，如 GitHub / Jenkins 插件    |
+| `bom`      | 依赖版本统一管理                        |
 
 从源码实现看，这个模块的目标不是做复杂插件市场，而是为宿主系统提供“可装载、可隔离、可动态暴露接口”的扩展点基础设施。
 
@@ -113,11 +113,14 @@ DefaultPluginManager.loadPlugin(path)
 
 需要注意当前实现中的一个边界：
 
-- `DefaultPluginManager.loadPlugin()` 会执行 `initialize()`，并在插件实现了 `RestfulPlugin` 时注册动态 REST 端点。
+- `DefaultPluginManager.loadPlugin()` 会执行 `initialize()`，并在插件实现了 `RestfulPlugin` 时注册动态
+  REST 端点。
 - 但 `loadPlugin()` 本身不会自动调用 `start()`。
-- `startPlugin()` / `stopPlugin()` / `reloadPlugin()` 已在 `PluginManager` 和 `DefaultPluginManager` 中实现，但 starter 暴露的默认管理 REST API 当前没有对应的启停接口。
+- `startPlugin()` / `stopPlugin()` / `reloadPlugin()` 已在 `PluginManager` 和 `DefaultPluginManager`
+  中实现，但 starter 暴露的默认管理 REST API 当前没有对应的启停接口。
 
-因此，当前 starter 场景更适合“加载后即可提供接口”的插件，或由宿主代码直接调用 `PluginManager#startPlugin()` 管理更细粒度生命周期。
+因此，当前 starter
+场景更适合“加载后即可提供接口”的插件，或由宿主代码直接调用 `PluginManager#startPlugin()` 管理更细粒度生命周期。
 
 ### 2.4 动态 REST 暴露模型
 
@@ -126,8 +129,10 @@ DefaultPluginManager.loadPlugin(path)
 - 插件通过 `getControllerClasses()` 返回控制器类列表。
 - `DynamicRestEndpointManager` 会反射创建控制器实例。
 - 若控制器继承 `PluginController`，框架会注入 `PluginContext`。
-- 再扫描 `@GetMapping` / `@PostMapping` / `@PutMapping` / `@DeleteMapping` / `@PatchMapping` / `@RequestMapping`。
-- 最终以 `plugin.getApiPrefix()` 作为统一前缀，把插件控制器挂到宿主应用的 `RequestMappingHandlerMapping` 上。
+-
+再扫描 `@GetMapping` / `@PostMapping` / `@PutMapping` / `@DeleteMapping` / `@PatchMapping` / `@RequestMapping`。
+- 最终以 `plugin.getApiPrefix()`
+  作为统一前缀，把插件控制器挂到宿主应用的 `RequestMappingHandlerMapping` 上。
 
 默认前缀规则：
 
@@ -145,14 +150,15 @@ DefaultPluginManager.loadPlugin(path)
 
 插件包持久化由 `PluginStore` 抽象定义，当前有两种实现：
 
-| 实现 | 说明 |
-|------|------|
-| `DiskPluginStore` | 插件 JAR 直接保存到本地目录 |
-| `JpaPluginStore` | 插件二进制保存到数据库 `plugin_files` 表，加载时写入临时文件再装载 |
+| 实现                | 说明                                        |
+|-------------------|-------------------------------------------|
+| `DiskPluginStore` | 插件 JAR 直接保存到本地目录                          |
+| `JpaPluginStore`  | 插件二进制保存到数据库 `plugin_files` 表，加载时写入临时文件再装载 |
 
 自动装配优先级：
 
-- 当 `angus.plugin.storage-type=JPA` 且 Spring 容器中存在 `PluginRepository` 时，使用 `JpaPluginStore`
+- 当 `angus.plugin.storage-type=JPA` 且 Spring 容器中存在 `PluginRepository`
+  时，使用 `JpaPluginStore`
 - 否则回退到 `DiskPluginStore`
 
 ---
@@ -276,22 +282,22 @@ DefaultPluginManager.loadPlugin(path)
 
 当前支持字段：
 
-| 字段 | 说明 |
-|------|------|
-| `id` | 插件唯一标识 |
-| `name` | 插件名称 |
-| `version` | 插件版本 |
-| `description` | 插件说明 |
-| `author` | 作者 |
-| `pluginClass` | 插件入口类，全限定类名 |
-| `dependencies` | 依赖插件 ID 列表 |
-| `libraries` | 外挂依赖库列表 |
-| `configuration` | 插件默认配置 |
-| `minSystemVersion` | 宿主最小系统版本 |
-| `requiredPermissions` | 所需权限列表 |
-| `homepage` | 插件主页 |
-| `license` | 许可证 |
-| `tags` | 标签列表 |
+| 字段                    | 说明          |
+|-----------------------|-------------|
+| `id`                  | 插件唯一标识      |
+| `name`                | 插件名称        |
+| `version`             | 插件版本        |
+| `description`         | 插件说明        |
+| `author`              | 作者          |
+| `pluginClass`         | 插件入口类，全限定类名 |
+| `dependencies`        | 依赖插件 ID 列表  |
+| `libraries`           | 外挂依赖库列表     |
+| `configuration`       | 插件默认配置      |
+| `minSystemVersion`    | 宿主最小系统版本    |
+| `requiredPermissions` | 所需权限列表      |
+| `homepage`            | 插件主页        |
+| `license`             | 许可证         |
+| `tags`                | 标签列表        |
 
 最小示例：
 
@@ -330,13 +336,13 @@ DefaultPluginManager.loadPlugin(path)
 
 当使用 `JpaPluginStore` 时，插件包二进制写入 `plugin_files` 表：
 
-| 字段 | 说明 |
-|------|------|
-| `id` | 插件 ID，主键 |
-| `name` | 插件名称 |
-| `version` | 插件版本 |
-| `data` | JAR 二进制内容（BLOB） |
-| `uploadedAt` | 上传时间 |
+| 字段           | 说明              |
+|--------------|-----------------|
+| `id`         | 插件 ID，主键        |
+| `name`       | 插件名称            |
+| `version`    | 插件版本            |
+| `data`       | JAR 二进制内容（BLOB） |
+| `uploadedAt` | 上传时间            |
 
 ---
 
@@ -369,22 +375,22 @@ angus:
 
 配置项说明：
 
-| 配置项 | 默认值 | 说明 |
-|--------|--------|------|
-| `enabled` | `true` | 是否启用插件自动装配 |
-| `storage-type` | `DISK` | 插件存储后端，支持 `DISK` / `JPA` |
-| `directory` | `./plugins` | 磁盘存储时插件 JAR 目录 |
-| `data-directory` | `./plugin-data` | 插件运行数据目录根路径 |
-| `auto-load` | `true` | 启动时是否自动扫描并加载插件 |
-| `max-upload-size` | `52428800` | 管理接口允许上传的最大文件大小 |
-| `enable-management-api` | `true` | 管理 API 是否启用。当前代码中仅用于配置承载，没有单独条件开关控制 Controller 注册 |
-| `management-api-prefix` | `/api/plugins` | 管理 API 前缀配置。当前 `PluginManagementController` 路径写死为 `/api/v1/plugin-management`，该属性尚未真正生效 |
-| `enable-security-check` | `true` | 是否输出权限检查相关日志 |
-| `allowed-sources` | `*` | 允许的插件来源列表。当前代码中未看到强制校验逻辑 |
-| `scan-interval` | `30000` | 预留扫描间隔配置，当前未见热加载扫描线程实现 |
-| `validate-on-startup` | `true` | 启动或加载时是否执行插件描述校验 |
-| `default-configuration` | `{}` | 注入所有插件的默认配置 |
-| `plugin-configurations` | `{}` | 按插件 ID 覆盖配置 |
+| 配置项                     | 默认值             | 说明                                                                                      |
+|-------------------------|-----------------|-----------------------------------------------------------------------------------------|
+| `enabled`               | `true`          | 是否启用插件自动装配                                                                              |
+| `storage-type`          | `DISK`          | 插件存储后端，支持 `DISK` / `JPA`                                                                |
+| `directory`             | `./plugins`     | 磁盘存储时插件 JAR 目录                                                                          |
+| `data-directory`        | `./plugin-data` | 插件运行数据目录根路径                                                                             |
+| `auto-load`             | `true`          | 启动时是否自动扫描并加载插件                                                                          |
+| `max-upload-size`       | `52428800`      | 管理接口允许上传的最大文件大小                                                                         |
+| `enable-management-api` | `true`          | 管理 API 是否启用。当前代码中仅用于配置承载，没有单独条件开关控制 Controller 注册                                       |
+| `management-api-prefix` | `/api/plugins`  | 管理 API 前缀配置。当前 `PluginManagementController` 路径写死为 `/api/v1/plugin-management`，该属性尚未真正生效 |
+| `enable-security-check` | `true`          | 是否输出权限检查相关日志                                                                            |
+| `allowed-sources`       | `*`             | 允许的插件来源列表。当前代码中未看到强制校验逻辑                                                                |
+| `scan-interval`         | `30000`         | 预留扫描间隔配置，当前未见热加载扫描线程实现                                                                  |
+| `validate-on-startup`   | `true`          | 启动或加载时是否执行插件描述校验                                                                        |
+| `default-configuration` | `{}`            | 注入所有插件的默认配置                                                                             |
+| `plugin-configurations` | `{}`            | 按插件 ID 覆盖配置                                                                             |
 
 ---
 
@@ -454,7 +460,8 @@ public class PluginBootstrap {
 }
 ```
 
-> 当前 starter 中没有看到自动调用 `PluginManager.initialize()` 的生命周期钩子，因此若宿主不主动初始化，`auto-load` 配置本身不会触发加载。
+> 当前 starter 中没有看到自动调用 `PluginManager.initialize()`
+> 的生命周期钩子，因此若宿主不主动初始化，`auto-load` 配置本身不会触发加载。
 
 ### 6.3 场景二：开发一个最小插件
 
@@ -724,13 +731,13 @@ public class PluginOpsService {
 
 `PluginManagementController` 默认提供以下接口：
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| `POST` | `/api/v1/plugin-management/install` | 上传并安装插件 |
+| 方法       | 路径                                     | 说明         |
+|----------|----------------------------------------|------------|
+| `POST`   | `/api/v1/plugin-management/install`    | 上传并安装插件    |
 | `DELETE` | `/api/v1/plugin-management/{pluginId}` | 卸载并可选删除插件包 |
-| `GET` | `/api/v1/plugin-management/{pluginId}` | 查询插件详情 |
-| `GET` | `/api/v1/plugin-management/list` | 查询全部插件 |
-| `GET` | `/api/v1/plugin-management/stats` | 查询插件统计 |
+| `GET`    | `/api/v1/plugin-management/{pluginId}` | 查询插件详情     |
+| `GET`    | `/api/v1/plugin-management/list`       | 查询全部插件     |
+| `GET`    | `/api/v1/plugin-management/stats`      | 查询插件统计     |
 
 返回结构使用 `ApiLocaleResult` 包装。
 
@@ -750,7 +757,9 @@ public class PluginOpsService {
 4. 依赖插件 `dependencies` 当前只做告警日志，不会阻止加载，也没有自动拓扑排序。
 5. `minSystemVersion` 当前只做版本比较与告警，不会强制阻止加载。
 6. `requiredPermissions` 当前主要用于日志输出，未看到真正的权限裁决逻辑。
-7. `management-api-prefix`、`enable-management-api`、`allowed-sources`、`scan-interval` 在当前代码中更多是配置预留位，尚未完全贯穿到控制器路径、接口开关、来源校验和热加载调度中。
-8. `loadPlugin()` 会执行 `initialize()` 和动态 REST 注册，但不会自动 `start()`；如果插件业务依赖 `start()`，需要宿主主动调用 `PluginManager.startPlugin()`。
+7. `management-api-prefix`、`enable-management-api`、`allowed-sources`、`scan-interval`
+   在当前代码中更多是配置预留位，尚未完全贯穿到控制器路径、接口开关、来源校验和热加载调度中。
+8. `loadPlugin()` 会执行 `initialize()` 和动态 REST 注册，但不会自动 `start()`
+   ；如果插件业务依赖 `start()`，需要宿主主动调用 `PluginManager.startPlugin()`。
 9. 使用 `JpaPluginStore` 时，插件加载依赖临时文件中转，不适合把超大插件包频繁装载/卸载作为高频操作。
 10. 动态注册的控制器需要保证路径不与宿主应用现有接口冲突，否则注册阶段可能抛出映射冲突异常。

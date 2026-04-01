@@ -1,6 +1,6 @@
 package cloud.xcan.angus.core.tester.infra.metricsds.domain.usage.disk;
 
-import cloud.xcan.angus.core.jpa.repository.BaseRepository;
+import cloud.xcan.angus.persistence.jpa.repository.BaseRepository;
 import cloud.xcan.angus.core.tester.infra.metricsds.Sharding;
 import java.time.LocalDateTime;
 import java.util.List;

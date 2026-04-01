@@ -62,7 +62,8 @@ public class MetricsDataSourceConfiguration {
     int shardDbNum = mds.getShardDbNum();
     Assert.assertTrue(shardDbNum >= 1 && shardDbNum <= MAX_SHARD_DB_NUM,
         "shardDbNum value range: 1-" + MAX_SHARD_DB_NUM);
-    Assert.assertTrue(mds.getShardTabledNum() >= 1 && mds.getShardTabledNum() <= MAX_SHARD_TABLE_NUM,
+    Assert.assertTrue(
+        mds.getShardTabledNum() >= 1 && mds.getShardTabledNum() <= MAX_SHARD_TABLE_NUM,
         "shardTabledNum value range: 1-" + MAX_SHARD_TABLE_NUM);
 
     MetricsDynamicDataSourceRouter proxy = new MetricsDynamicDataSourceRouter();

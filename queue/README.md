@@ -8,18 +8,18 @@ dependency on external messaging middleware such as Kafka or RabbitMQ.
 
 ### Core Capabilities
 
-| Feature | Description |
-|---------|-------------|
-| **Multi-topic** | Independent topics, each with its own message set |
-| **Partitioning** | Configurable partitions per topic (default 8); deterministic routing by partition key |
-| **Priority** | Integer priority field; higher-priority messages are leased first |
-| **Delayed messages** | `visibleAt` field enables scheduled/deferred delivery |
-| **Lease-based consumption** | At-least-once semantics; lease expires if not acknowledged |
-| **ACK / NACK** | ACK marks message DONE; NACK re-enqueues with configurable backoff |
-| **Dead Letter Queue (DLQ)** | Messages exceeding `maxAttempts` move to DLQ; supports replay and purge |
-| **Soft-delete DLQ** | Optional mode: mark DLQ records deleted, purge after retention period |
-| **Idempotency key** | Optional deduplication key per message |
-| **Audit logging** | Admin operations recorded via pluggable `AuditLogger` |
+| Feature                     | Description                                                                           |
+|-----------------------------|---------------------------------------------------------------------------------------|
+| **Multi-topic**             | Independent topics, each with its own message set                                     |
+| **Partitioning**            | Configurable partitions per topic (default 8); deterministic routing by partition key |
+| **Priority**                | Integer priority field; higher-priority messages are leased first                     |
+| **Delayed messages**        | `visibleAt` field enables scheduled/deferred delivery                                 |
+| **Lease-based consumption** | At-least-once semantics; lease expires if not acknowledged                            |
+| **ACK / NACK**              | ACK marks message DONE; NACK re-enqueues with configurable backoff                    |
+| **Dead Letter Queue (DLQ)** | Messages exceeding `maxAttempts` move to DLQ; supports replay and purge               |
+| **Soft-delete DLQ**         | Optional mode: mark DLQ records deleted, purge after retention period                 |
+| **Idempotency key**         | Optional deduplication key per message                                                |
+| **Audit logging**           | Admin operations recorded via pluggable `AuditLogger`                                 |
 
 ---
 
@@ -185,38 +185,38 @@ public interface RepositoryAdapter {
 
 ### `angus_mq_message` — Main message table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | BIGINT AUTO_INCREMENT | Primary key |
-| `topic` | VARCHAR(128) | Message topic |
-| `partition_id` | INT | Partition index |
-| `priority` | INT | Higher = earlier lease (default 0) |
-| `payload` | JSON | Message body |
-| `headers` | JSON | Optional metadata |
-| `status` | TINYINT | 0=READY, 1=LEASED, 2=DONE |
-| `visible_at` | TIMESTAMP | Earliest delivery time (delayed messages) |
-| `lease_until` | TIMESTAMP | Lease expiry (set by consumer) |
-| `lease_owner` | VARCHAR(128) | Consumer identity holding the lease |
-| `attempts` | INT | Delivery attempts so far |
-| `max_attempts` | INT | Max attempts before DLQ (default 16) |
-| `idempotency_key` | VARCHAR(256) | Optional deduplication key |
-| `created_at` | TIMESTAMP | Creation time |
-| `updated_at` | TIMESTAMP | Last update time |
-| `version` | BIGINT | Optimistic-lock version |
+| Column            | Type                  | Description                               |
+|-------------------|-----------------------|-------------------------------------------|
+| `id`              | BIGINT AUTO_INCREMENT | Primary key                               |
+| `topic`           | VARCHAR(128)          | Message topic                             |
+| `partition_id`    | INT                   | Partition index                           |
+| `priority`        | INT                   | Higher = earlier lease (default 0)        |
+| `payload`         | JSON                  | Message body                              |
+| `headers`         | JSON                  | Optional metadata                         |
+| `status`          | TINYINT               | 0=READY, 1=LEASED, 2=DONE                 |
+| `visible_at`      | TIMESTAMP             | Earliest delivery time (delayed messages) |
+| `lease_until`     | TIMESTAMP             | Lease expiry (set by consumer)            |
+| `lease_owner`     | VARCHAR(128)          | Consumer identity holding the lease       |
+| `attempts`        | INT                   | Delivery attempts so far                  |
+| `max_attempts`    | INT                   | Max attempts before DLQ (default 16)      |
+| `idempotency_key` | VARCHAR(256)          | Optional deduplication key                |
+| `created_at`      | TIMESTAMP             | Creation time                             |
+| `updated_at`      | TIMESTAMP             | Last update time                          |
+| `version`         | BIGINT                | Optimistic-lock version                   |
 
 ### `angus_mq_dead_letter` — Dead letter queue table
 
-| Column | Type | Description |
-|--------|------|-------------|
-| `id` | BIGINT AUTO_INCREMENT | Primary key |
-| `topic` | VARCHAR(128) | Message topic |
-| `partition_id` | INT | Partition index |
-| `payload` | JSON | Message body |
-| `headers` | JSON | Optional metadata |
-| `attempts` | INT | Attempt count when moved to DLQ |
-| `reason` | VARCHAR(256) | Reason for DLQ move |
-| `created_at` | TIMESTAMP | DLQ entry creation time |
-| `deleted_at` | TIMESTAMP | Soft-delete timestamp (NULL = active) |
+| Column         | Type                  | Description                           |
+|----------------|-----------------------|---------------------------------------|
+| `id`           | BIGINT AUTO_INCREMENT | Primary key                           |
+| `topic`        | VARCHAR(128)          | Message topic                         |
+| `partition_id` | INT                   | Partition index                       |
+| `payload`      | JSON                  | Message body                          |
+| `headers`      | JSON                  | Optional metadata                     |
+| `attempts`     | INT                   | Attempt count when moved to DLQ       |
+| `reason`       | VARCHAR(256)          | Reason for DLQ move                   |
+| `created_at`   | TIMESTAMP             | DLQ entry creation time               |
+| `deleted_at`   | TIMESTAMP             | Soft-delete timestamp (NULL = active) |
 
 ---
 
@@ -373,14 +373,15 @@ angus:
 
 ### Queue API — `/api/v1/queue`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/api/v1/queue/send` | Send a message to a topic |
+| Method | Path                 | Description                                               |
+|--------|----------------------|-----------------------------------------------------------|
+| `POST` | `/api/v1/queue/send` | Send a message to a topic                                 |
 | `POST` | `/api/v1/queue/poll` | Lease READY messages (READY → LEASED), return leased list |
-| `POST` | `/api/v1/queue/ack` | Acknowledge messages (LEASED → DONE) |
-| `POST` | `/api/v1/queue/nack` | Nack messages with backoff (LEASED → READY, attempts+1) |
+| `POST` | `/api/v1/queue/ack`  | Acknowledge messages (LEASED → DONE)                      |
+| `POST` | `/api/v1/queue/nack` | Nack messages with backoff (LEASED → READY, attempts+1)   |
 
 **Send request body:**
+
 ```json
 {
   "topic": "order-events",
@@ -394,11 +395,13 @@ angus:
 ```
 
 **Poll request body:**
+
 ```json
 { "topic": "order-events", "owner": "worker-1", "partitions": [0,1,2,3], "leaseSeconds": 60, "limit": 50 }
 ```
 
 **ACK / NACK request body:**
+
 ```json
 { "ids": [101, 102, 103] }
 { "ids": [104, 105], "backoffSeconds": 30 }
@@ -406,13 +409,13 @@ angus:
 
 ### Admin API — `/api/v1/queue/admin`
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/v1/queue/admin/stats?topic=<t>` | Topic stats: status distribution, DLQ count, ready-per-partition |
-| `POST` | `/api/v1/queue/admin/reclaim?limit=500` | Manually trigger lease reclaim |
-| `DELETE` | `/api/v1/queue/admin/purge/done?topic=<t>&before=<iso>` | Purge DONE messages before timestamp |
-| `DELETE` | `/api/v1/queue/admin/purge/dlq?topic=<t>` | Purge DLQ (hard or soft per config) |
-| `POST` | `/api/v1/queue/admin/dlq/replay?topic=<t>&limit=100` | Replay DLQ messages back to READY |
+| Method   | Path                                                    | Description                                                      |
+|----------|---------------------------------------------------------|------------------------------------------------------------------|
+| `GET`    | `/api/v1/queue/admin/stats?topic=<t>`                   | Topic stats: status distribution, DLQ count, ready-per-partition |
+| `POST`   | `/api/v1/queue/admin/reclaim?limit=500`                 | Manually trigger lease reclaim                                   |
+| `DELETE` | `/api/v1/queue/admin/purge/done?topic=<t>&before=<iso>` | Purge DONE messages before timestamp                             |
+| `DELETE` | `/api/v1/queue/admin/purge/dlq?topic=<t>`               | Purge DLQ (hard or soft per config)                              |
+| `POST`   | `/api/v1/queue/admin/dlq/replay?topic=<t>&limit=100`    | Replay DLQ messages back to READY                                |
 
 ---
 
@@ -479,11 +482,11 @@ In this mode, `purgeDeadLetters()` sets `deleted_at = NOW()` instead of issuing 
 
 ## Background Schedulers
 
-| Scheduler | Default Interval | Config key | Function |
-|-----------|-----------------|------------|----------|
-| `LeaseReaperScheduler` | 3 s | `angus.queue.reclaim-interval-ms` | Reset timed-out LEASED → READY |
-| `DeadLetterMoverScheduler` | 5 s | `angus.queue.dead-letter-move-interval-ms` | Move over-limit messages to DLQ |
-| `DlqSoftDeletePurgerScheduler` | 10 min | `angus.queue.admin.purge-interval-ms` | Hard-delete old soft-deleted DLQ records |
+| Scheduler                      | Default Interval | Config key                                 | Function                                 |
+|--------------------------------|------------------|--------------------------------------------|------------------------------------------|
+| `LeaseReaperScheduler`         | 3 s              | `angus.queue.reclaim-interval-ms`          | Reset timed-out LEASED → READY           |
+| `DeadLetterMoverScheduler`     | 5 s              | `angus.queue.dead-letter-move-interval-ms` | Move over-limit messages to DLQ          |
+| `DlqSoftDeletePurgerScheduler` | 10 min           | `angus.queue.admin.purge-interval-ms`      | Hard-delete old soft-deleted DLQ records |
 
 Disable all schedulers with `angus.queue.scheduling.enabled=false` if you prefer to manage these
 tasks externally (e.g. via Quartz or a dedicated maintenance service).
@@ -512,7 +515,8 @@ moves happen — useful in test environments or when using an external scheduler
 **Q: What happens when `maxAttempts` is reached?**
 
 A: `DeadLetterMoverScheduler` detects messages where `attempts >= max_attempts` and moves them to
-`angus_mq_dead_letter`. They no longer appear in `poll` results and must be handled via the admin API
+`angus_mq_dead_letter`. They no longer appear in `poll` results and must be handled via the admin
+API
 (replay or purge).
 
 ---

@@ -1,11 +1,9 @@
-package cloud.xcan.angus.web;
+package cloud.xcan.angus.persistence.jpa;
 
 import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
 import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
-import cloud.xcan.angus.datasource.config.DataSourceExtraProperties;
-import cloud.xcan.angus.datasource.config.DataSourceProperties;
-import cloud.xcan.angus.datasource.config.HikariProperties;
-import cloud.xcan.angus.persistence.jpa.CommonLinkHibernateJpaConfiguration;
+import cloud.xcan.angus.persistence.config.DataSourceExtraProperties;
+import cloud.xcan.angus.persistence.config.HikariProperties;
 import cloud.xcan.angus.persistence.jpa.repository.BaseRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -13,17 +11,16 @@ import jakarta.persistence.EntityManager;
 import javax.sql.DataSource;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -34,12 +31,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *
  * @author XiaoLong Liu
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = DataSourceAutoConfiguration.class)
 @ConditionalOnClass({LocalContainerEntityManagerFactoryBean.class, EntityManager.class,
     SessionImplementor.class})
 @EnableConfigurationProperties({JpaProperties.class, DataSourceExtraProperties.class,
     HikariProperties.class})
-@AutoConfigureAfter({DataSourceAutoConfiguration.class})
 @Import(CommonLinkHibernateJpaConfiguration.class)
 @ConditionalOnProperty(name = "angus.datasource.commonlink.enabled", havingValue = "true")
 public class CommonLinkJpaAutoConfigurer {

@@ -41,18 +41,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     HikariProperties.class})
 @AutoConfigureAfter({DataSourceAutoConfiguration.class})
 @Import(CommonLinkHibernateJpaConfiguration.class)
-@ConditionalOnProperty(name = "xcan.datasource.commonlink.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "angus.datasource.commonlink.enabled", havingValue = "true")
 public class CommonLinkJpaAutoConfigurer {
 
   @Bean("commonLinkDataSourceProperties")
-  @ConfigurationProperties(prefix = "xcan.datasource.commonlink.mysql")
+  @ConfigurationProperties(prefix = "angus.datasource.commonlink.mysql")
   @Conditional(MySqlEnvCondition.class)
   public DataSourceProperties loadCommonLinkMySqlDataSourceProperties() {
     return new DataSourceProperties();
   }
 
   @Bean("commonLinkDataSourceProperties")
-  @ConfigurationProperties(prefix = "xcan.datasource.commonlink.postgresql")
+  @ConfigurationProperties(prefix = "angus.datasource.commonlink.postgresql")
   @Conditional(PostgresEnvCondition.class)
   public DataSourceProperties loadCommonLinkPgDataSourceProperties() {
     return new DataSourceProperties();

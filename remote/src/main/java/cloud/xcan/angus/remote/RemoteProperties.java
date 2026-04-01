@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
  * </pre>
  */
 @Component
-@ConfigurationProperties(prefix = "xcan.remote")
+@ConfigurationProperties(prefix = "angus.remote")
 @Getter
 @Setter
 public class RemoteProperties {

@@ -25,7 +25,7 @@ server:
     include-message: always
     include-binding-errors: always
 
-xcan:
+angus:
   auth:
     innerapi:
       enabled: false

@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(SystemLogProperties.class)
-@ConditionalOnProperty(prefix = "xcan.syslog", name = "enabled", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "angus.syslog", name = "enabled", matchIfMissing = true)
 public class SystemLogAutoConfigurer {
 
   private static String path;

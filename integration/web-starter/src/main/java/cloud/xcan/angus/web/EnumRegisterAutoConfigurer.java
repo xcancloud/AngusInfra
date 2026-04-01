@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ApplicationInfo.class})
-@ConditionalOnProperty(name = "xcan.enums.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "angus.enums.enabled", havingValue = "true", matchIfMissing = true)
 public class EnumRegisterAutoConfigurer {
 
   @Bean

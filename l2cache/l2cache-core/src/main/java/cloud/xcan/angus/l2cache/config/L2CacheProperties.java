@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 @Accessors(chain = true)
-@ConfigurationProperties(prefix = "xcan.l2cache")
+@ConfigurationProperties(prefix = "angus.l2cache")
 public class L2CacheProperties {
 
   private Boolean enabled = false;

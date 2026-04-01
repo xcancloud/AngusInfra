@@ -22,7 +22,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 @ConditionalOnClass(EnableAsync.class)
 @ConditionalOnMissingBean(AsyncConfigurer.class)
-@ConditionalOnProperty(prefix = "xcan.jpa.multitenancy.async", name = "enabled", havingValue = "true",
+@ConditionalOnProperty(prefix = "angus.jpa.multitenancy.async", name = "enabled", havingValue = "true",
     matchIfMissing = true)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class TenantAsyncAutoConfiguration {

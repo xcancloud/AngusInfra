@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
-@ConditionalOnProperty(name = "xcan.redis.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "angus.redis.enabled", havingValue = "true", matchIfMissing = false)
 public class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
   LettuceConnectionConfiguration(RedisProperties properties,

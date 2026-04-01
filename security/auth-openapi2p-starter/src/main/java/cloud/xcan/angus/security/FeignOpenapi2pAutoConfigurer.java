@@ -29,7 +29,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(Openapi2pAuthProperties.class)
 @Conditional(PrivateEditionCondition.class)
-@ConditionalOnProperty(prefix = "xcan.auth.openapi2p", name = "enabled", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "angus.auth.openapi2p", name = "enabled", matchIfMissing = false)
 public class FeignOpenapi2pAutoConfigurer {
 
   @Bean

@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(InnerApiAuthProperties.class)
 @ConditionalOnProperty(
-    prefix = "xcan.auth.innerapi",
+    prefix = "angus.auth.innerapi",
     name = "enabled",
     matchIfMissing = true
 )

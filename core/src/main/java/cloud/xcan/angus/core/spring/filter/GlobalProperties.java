@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "xcan.global", ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "angus.global", ignoreInvalidFields = true)
 public class GlobalProperties {
 
   private Cors cors = new Cors();

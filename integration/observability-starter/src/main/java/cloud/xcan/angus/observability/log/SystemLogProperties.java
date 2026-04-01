@@ -23,17 +23,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Setter
 @Accessors(chain = true)
-@ConfigurationProperties(prefix = "xcan.syslog", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "angus.syslog", ignoreUnknownFields = false)
 public class SystemLogProperties implements AppPropertiesRegister {
 
   // @formatter:off
-  // public static final String SL_ENABLED = "xcan.syslog.enabled";
-  public static final String SL_CLEAR_WAY = "xcan.syslog.clearWay";
-  public static final String SL_CLEAR_BEFORE_DAY = "xcan.syslog.clearBeforeDay";
-  public static final String SL_COMPRESSION_BEFORE_DAY = "xcan.syslog.compressionBeforeDay";
-  public static final String SL_COMPRESSION_MOVE_PATH = "xcan.syslog.compressionMovePath";
-  public static final String SL_DISK_USAGE_EXCEEDS_RATE = "xcan.syslog.diskUsageExceedsRate";
-  public static final String SL_DISK_USAGE_EXCEEDS_AND_CLEAR_BEFORE_DAY = "xcan.syslog.diskUsageExceedsAndClearBeforeDay";
+  // public static final String SL_ENABLED = "angus.syslog.enabled";
+  public static final String SL_CLEAR_WAY = "angus.syslog.clearWay";
+  public static final String SL_CLEAR_BEFORE_DAY = "angus.syslog.clearBeforeDay";
+  public static final String SL_COMPRESSION_BEFORE_DAY = "angus.syslog.compressionBeforeDay";
+  public static final String SL_COMPRESSION_MOVE_PATH = "angus.syslog.compressionMovePath";
+  public static final String SL_DISK_USAGE_EXCEEDS_RATE = "angus.syslog.diskUsageExceedsRate";
+  public static final String SL_DISK_USAGE_EXCEEDS_AND_CLEAR_BEFORE_DAY = "angus.syslog.diskUsageExceedsAndClearBeforeDay";
 
   // System log must be enabled
   // @Schema(description = "Enable system log configuration")

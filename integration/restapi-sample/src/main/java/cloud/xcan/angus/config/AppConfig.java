@@ -21,7 +21,7 @@ public class AppConfig {
 
   @Bean("dataSourceProperties")
   @ConfigurationProperties(prefix = "spring.datasource")
-  //@ConditionalOnProperty(name = "xcan.datasource.extra.dbType", havingValue = "mysql")
+  //@ConditionalOnProperty(name = "angus.datasource.extra.dbType", havingValue = "mysql")
   public DataSourceProperties loadMySqlDataSourceProperties() {
     return new DataSourceProperties();
   }

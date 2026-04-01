@@ -27,14 +27,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Setter
 @Accessors(chain = true)
-@ConfigurationProperties(prefix = "xcan.api-log")
+@ConfigurationProperties(prefix = "angus.api-log")
 public class ApiLogProperties implements AppPropertiesRegister {
 
   // @formatter:off
-  public static final String ENABLED = "xcan.api-log.enabled";
-  public static final String LOGGER_SERVICE = "xcan.api-log.loggerService";
-  public static final String EVENT_SERVICE = "xcan.api-log.eventService";
-  public static final String CLEAR_BEFORE_DAY_IN_CONFIG = "xcan.api-log.clearBeforeDay";
+  public static final String ENABLED = "angus.api-log.enabled";
+  public static final String LOGGER_SERVICE = "angus.api-log.loggerService";
+  public static final String EVENT_SERVICE = "angus.api-log.eventService";
+  public static final String CLEAR_BEFORE_DAY_IN_CONFIG = "angus.api-log.clearBeforeDay";
 
   private Boolean enabled = true;
 
@@ -110,12 +110,12 @@ public class ApiLogProperties implements AppPropertiesRegister {
   @Setter
   public static class SystemRequest implements AppPropertiesRegister {
 
-    public static final String SR_ENABLED = "xcan.apilog.systemRequest.enabled";
-    public static final String SR_PRINT_LEVEL = "xcan.apilog.systemRequest.printLevel";
-    public static final String SR_MAX_PAYLOAD_LENGTH = "xcan.apilog.systemRequest.maxPayloadLength";
-    public static final String SR_CUSTOM_IGNORE_PATTERN = "xcan.apilog.systemRequest.customIgnorePattern";
-    public static final String SR_PUSH_LOGGER_SERVICE = "xcan.apilog.systemRequest.pushLoggerService";
-    public static final String SR_PUSH_LOGGER_SERVICE_IGNORE_PATTERN = "xcan.apilog.systemRequest.pushLoggerServiceIgnorePattern";
+    public static final String SR_ENABLED = "angus.apilog.systemRequest.enabled";
+    public static final String SR_PRINT_LEVEL = "angus.apilog.systemRequest.printLevel";
+    public static final String SR_MAX_PAYLOAD_LENGTH = "angus.apilog.systemRequest.maxPayloadLength";
+    public static final String SR_CUSTOM_IGNORE_PATTERN = "angus.apilog.systemRequest.customIgnorePattern";
+    public static final String SR_PUSH_LOGGER_SERVICE = "angus.apilog.systemRequest.pushLoggerService";
+    public static final String SR_PUSH_LOGGER_SERVICE_IGNORE_PATTERN = "angus.apilog.systemRequest.pushLoggerServiceIgnorePattern";
 
     /**
      * Record the logs of system token from: {@link cloud.xcan.angus.spec.experimental.BizConstant.ClientSource#XCAN_SYS_TOKEN}

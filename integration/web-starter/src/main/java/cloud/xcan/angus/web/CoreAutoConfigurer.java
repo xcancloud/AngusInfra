@@ -67,7 +67,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnClass(WebMvcConfigurer.class)
 @EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class,
     MultipartProperties.class})
-@ConditionalOnProperty(name = "xcan.core.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "angus.core.enabled", havingValue = "true", matchIfMissing = false)
 public class CoreAutoConfigurer implements WebMvcConfigurer {
 
   public CoreAutoConfigurer() {

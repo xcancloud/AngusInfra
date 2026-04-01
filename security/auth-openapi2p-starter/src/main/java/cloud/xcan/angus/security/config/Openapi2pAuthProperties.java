@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  * @since 2025-03-21
  */
 @Component
-@ConfigurationProperties(prefix = "xcan.auth.openapi2p")
+@ConfigurationProperties(prefix = "angus.auth.openapi2p")
 @Data
 public class Openapi2pAuthProperties {
 

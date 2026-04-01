@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @Configuration(proxyBeanMethods = true)
 @EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class})
-@ConditionalOnProperty(name = "xcan.common.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "angus.common.enabled", havingValue = "true", matchIfMissing = true)
 public class CommonAutoConfigurer implements ApplicationContextAware {
 
   @Getter

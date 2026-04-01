@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
  * @since 2025-03-21
  */
 @Component
-@ConfigurationProperties(prefix = "xcan.auth.innerapi")
+@ConfigurationProperties(prefix = "angus.auth.innerapi")
 @Data
 public class InnerApiAuthProperties {
 

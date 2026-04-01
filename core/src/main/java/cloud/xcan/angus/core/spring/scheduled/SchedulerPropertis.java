@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "xcan.scheduler", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "angus.scheduler", ignoreUnknownFields = false)
 public class SchedulerPropertis {
 
   private int threadPoolSize = 10;

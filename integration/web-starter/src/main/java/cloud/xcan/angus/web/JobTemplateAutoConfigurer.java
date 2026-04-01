@@ -18,7 +18,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(RedisAutoConfigurer.class)
-@ConditionalOnProperty(name = "xcan.job.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "angus.job.enabled", havingValue = "true", matchIfMissing = true)
 public class JobTemplateAutoConfigurer {
 
   @ConditionalOnMissingBean

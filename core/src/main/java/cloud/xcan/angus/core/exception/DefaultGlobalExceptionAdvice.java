@@ -110,7 +110,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @ControllerAdvice
 public class DefaultGlobalExceptionAdvice {
 
-  @Value("${xcan.trace.enabled:false}")
+  @Value("${angus.trace.enabled:false}")
   private Boolean traced = false;
 
   @Autowired(required = false)

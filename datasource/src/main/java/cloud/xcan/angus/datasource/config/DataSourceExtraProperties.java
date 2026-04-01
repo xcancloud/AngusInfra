@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "xcan.datasource.extra")
+@ConfigurationProperties(prefix = "angus.datasource.extra")
 public class DataSourceExtraProperties {
 
   /**

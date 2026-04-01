@@ -60,7 +60,7 @@ import org.springframework.util.ClassUtils;
  * {@link JpaBaseConfiguration} implementation for Hibernate.
  */
 @Slf4j
-@ConditionalOnProperty(name = "xcan.datasource.commonlink.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "angus.datasource.commonlink.enabled", havingValue = "true")
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(HibernateProperties.class)
 //@ConditionalOnSingleCandidate(DataSource.class)

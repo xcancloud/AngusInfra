@@ -50,7 +50,7 @@ import org.springframework.context.annotation.DependsOn;
 @AutoConfigureAfter(FeignAutoConfigurer.class)
 //@Conditional({AuditLogAutoConfigurer.AuditLogCondition.class}) <- Fix:: Will cause CommonService#Setting to be invalid
 @EnableConfigurationProperties({ApiLogProperties.class})
-@ConditionalOnExpression(value = "${xcan.api-log.enabled:true} || ${xcan.opt-log.enabled:false}")
+@ConditionalOnExpression(value = "${angus.api-log.enabled:true} || ${xcan.opt-log.enabled:false}")
 public class AuditLogAutoConfigurer {
 
   public final static String[] RESOURCES = new String[]{
@@ -95,7 +95,7 @@ public class AuditLogAutoConfigurer {
 
   @ConditionalOnMissingBean
   @Bean("operationEventRemote")
-  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.opt-log", name = "enabled", matchIfMissing = true)
   public OperationEventRemote operationEventRemote(Client client, Encoder encoder,
       Decoder decoder, Contract contract, ApiLogProperties apiLogProperties,
       FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
@@ -108,7 +108,7 @@ public class AuditLogAutoConfigurer {
   @DependsOn("operationEventRemote")
   @ConditionalOnMissingBean(name = "operationEventRepository")
   @Bean("operationEventRepository")
-  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.opt-log", name = "enabled", matchIfMissing = true)
   public EventRepository<OperationEvent> operationEventRepository(
       OperationEventRemote operationEventRemote, ObjectMapper objectMapper) {
     return new MemoryAndRemoteEventRepository<OperationEvent>(
@@ -118,7 +118,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("operationEventRepository")
   @Bean("operationEventListener")
-  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.opt-log", name = "enabled", matchIfMissing = true)
   public EventListener<OperationEvent> operationEventListener(
       EventRepository<OperationEvent> operationEventRepository) {
     return new OperationEventListener<>(operationEventRepository);
@@ -126,7 +126,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("operationEventListener")
   @Bean(EventSender.OperationQueue.QUEUE_NAME)
-  //@ConditionalOnProperty(prefix = "xcan.opt-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.opt-log", name = "enabled", matchIfMissing = true)
   public DisruptorQueueManager<OperationEvent> operationEventDisruptorQueue(
       EventListener<OperationEvent> operationEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
@@ -136,7 +136,7 @@ public class AuditLogAutoConfigurer {
 
   @ConditionalOnMissingBean
   @Bean("apiLogEventRemote")
-  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.api-log", name = "enabled", matchIfMissing = true)
   public ApiLogEventRemote apiLogEventRemote(Client client, Encoder encoder,
       Decoder decoder, Contract contract, ApiLogProperties apiLogProperties,
       FeignInnerApiAuthInterceptor feignInnerApiAuthInterceptor) {
@@ -149,7 +149,7 @@ public class AuditLogAutoConfigurer {
   @DependsOn("apiLogEventRemote")
   @ConditionalOnMissingBean(name = "apiLogEventRepository")
   @Bean("apiLogEventRepository")
-  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.api-log", name = "enabled", matchIfMissing = true)
   public EventRepository<ApiLogEvent> apiLogEventRepository(ApiLogEventRemote apiLogEventRemote,
       ObjectMapper objectMapper) {
     return new MemoryAndRemoteEventRepository<ApiLogEvent>(
@@ -159,7 +159,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("apiLogEventRepository")
   @Bean("apiLogEventListener")
-  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.api-log", name = "enabled", matchIfMissing = true)
   public EventListener<ApiLogEvent> apiLogEventListener(
       EventRepository<ApiLogEvent> apiLogEventRepository) {
     return new OperationEventListener<>(apiLogEventRepository);
@@ -167,7 +167,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("apiLogEventListener")
   @Bean(EventSender.ApiLogQueue.QUEUE_NAME)
-  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.api-log", name = "enabled", matchIfMissing = true)
   public DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue(
       EventListener<ApiLogEvent> apiLogEventListener) {
     return DisruptorQueueFactory.createWorkPoolQueue(128 * 1024, true,
@@ -176,7 +176,7 @@ public class AuditLogAutoConfigurer {
   }
 
   @Bean
-  //@ConditionalOnProperty(prefix = "xcan.api-log", name = "enabled", matchIfMissing = true)
+  //@ConditionalOnProperty(prefix = "angus.api-log", name = "enabled", matchIfMissing = true)
   public FilterRegistrationBean<ApiLogFilter> registrationApiLogFilterBean(
       ApiLogProperties apiLogProperties,
       DisruptorQueueManager<ApiLogEvent> apiLogEventDisruptorQueue) {

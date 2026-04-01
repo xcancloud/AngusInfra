@@ -54,7 +54,7 @@ import org.springframework.util.CollectionUtils;
     HikariProperties.class})
 @AutoConfigureAfter({DataSourceAutoConfiguration.class})
 @Import(HibernateJpaConfiguration.class)
-@ConditionalOnProperty(name = "xcan.datasource.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "angus.datasource.enabled", havingValue = "true")
 public class JpaAutoConfigurer {
 
 
@@ -72,7 +72,7 @@ public class JpaAutoConfigurer {
 
   @Primary
   @Bean("dataSourceProperties")
-  @ConfigurationProperties(prefix = "xcan.datasource.mysql")
+  @ConfigurationProperties(prefix = "angus.datasource.mysql")
   @Conditional(MySqlEnvCondition.class)
   public DataSourceProperties loadMySqlDataSourceProperties() {
     return new DataSourceProperties();
@@ -80,7 +80,7 @@ public class JpaAutoConfigurer {
 
   @Primary
   @Bean("dataSourceProperties")
-  @ConfigurationProperties(prefix = "xcan.datasource.postgresql")
+  @ConfigurationProperties(prefix = "angus.datasource.postgresql")
   @Conditional(PostgresEnvCondition.class)
   public DataSourceProperties loadPgDataSourceProperties() {
     return new DataSourceProperties();
@@ -141,7 +141,7 @@ public class JpaAutoConfigurer {
    * Gateway needs to be excluded!!! -> WebMvcConfigurer not found
    */
   @Bean
-  @ConditionalOnProperty(name = "xcan.summary.enabled", havingValue = "true", matchIfMissing = true)
+  @ConditionalOnProperty(name = "angus.summary.enabled", havingValue = "true", matchIfMissing = true)
   public SummaryRepository summaryRepository() {
     return new SimpleSummaryRepository();
   }

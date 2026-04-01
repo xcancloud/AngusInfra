@@ -19,7 +19,7 @@ eureka:
     status-page-url: http://${spring.cloud.client.ip-address}:${server.port}/swagger-ui/
     health-check-url-path: /actuator/health
 
-xcan:
+angus:
   core:
     enabled: true
   global:

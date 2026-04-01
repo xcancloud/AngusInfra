@@ -31,7 +31,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @AutoConfigureBefore(L2CacheAutoConfigurer.class)
 @EnableConfigurationProperties(RedisProperties.class)
 @Import({LettuceConnectionConfiguration.class})
-@ConditionalOnProperty(name = "xcan.redis.enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(name = "angus.redis.enabled", havingValue = "true", matchIfMissing = false)
 public class RedisAutoConfigurer {
 
   @Bean

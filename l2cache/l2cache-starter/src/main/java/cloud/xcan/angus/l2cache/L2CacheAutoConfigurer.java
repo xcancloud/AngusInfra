@@ -44,7 +44,7 @@ import org.springframework.security.jackson2.CoreJackson2Module;
 @Configuration
 //@AutoConfigureAfter(RedisAutoConfiguration.class)
 @EnableConfigurationProperties(L2CacheProperties.class)
-@ConditionalOnProperty(prefix = "xcan.l2cache", name = "enabled", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "angus.l2cache", name = "enabled", matchIfMissing = false)
 public class L2CacheAutoConfigurer {
 
   @Bean("l2cacheRedisObjectMapper")

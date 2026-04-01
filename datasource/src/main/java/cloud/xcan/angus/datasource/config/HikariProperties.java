@@ -13,7 +13,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "xcan.datasource.hikari")
+@ConfigurationProperties(prefix = "angus.datasource.hikari")
 public class HikariProperties {
 
   private int minimumIdle = 8;

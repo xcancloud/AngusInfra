@@ -10,7 +10,7 @@ public class PostgresEnvCondition implements Condition {
 
   @Override
   public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-    String dbType = context.getEnvironment().getProperty("xcan.datasource.extra.dbType");
+    String dbType = context.getEnvironment().getProperty("angus.datasource.extra.dbType");
     Assert.assertNotEmpty(dbType, "dbType config is required");
     return SupportedDbType.POSTGRES.getValue().equalsIgnoreCase(dbType);
   }

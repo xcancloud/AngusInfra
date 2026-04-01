@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "xcan.redis", ignoreUnknownFields = false)
+@ConfigurationProperties(prefix = "angus.redis", ignoreUnknownFields = false)
 public class RedisProperties extends
     org.springframework.boot.autoconfigure.data.redis.RedisProperties {
 

@@ -2,15 +2,7 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-## Overview
-
-The `plugin` module provides an extensible plugin framework for AngusInfra. Key features include:
-
-- Storage and management of plugin artifacts (Disk or JPA storage backends)
-- Plugin lifecycle management (install, uninstall, load, unload)
-- Isolated class loading (`PluginClassLoader`) and a plugin runtime context
-- Dynamic registration of REST endpoints (plugins can expose APIs at runtime)
-- Management APIs for uploading, removing, listing and inspecting plugins
+> The AngusInfra Plugin module provides a lightweight Java plugin framework for dynamically loading external plugin JARs into a host Spring Boot application at runtime. It offers plugin descriptor parsing, isolated class loading, lifecycle management, a per-plugin runtime context, dynamic REST endpoint registration, and a management API.
 
 ## Module Layout
 

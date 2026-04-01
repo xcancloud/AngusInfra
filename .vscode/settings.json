@@ -1,3 +1,16 @@
 {
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.jdt.ls.java.home": "/softwares/jdk-21/jdk-21.0.2.jdk/Contents/Home",
+  "maven.executable.path": "/softwares/apache-maven-3.8.5/bin/mvn",
+  "maven.settingsFile": "/softwares/repository/xcan_repo_settings_noprofile.xml",
+  "maven.terminal.useJavaHome": true,
+  "terminal.integrated.env.osx": {
+    "JAVA_HOME": "/softwares/jdk-21/jdk-21.0.2.jdk/Contents/Home",
+    "M2_HOME": "/softwares/apache-maven-3.8.5",
+    "MAVEN_HOME": "/softwares/apache-maven-3.8.5",
+    "PATH": "/softwares/jdk-21/jdk-21.0.2.jdk/Contents/Home/bin:/softwares/apache-maven-3.8.5/bin:${env:PATH}"
+  },
+  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable",
+  "chat.tools.terminal.autoApprove": {
+    "mvn compile": true
+  }
 }

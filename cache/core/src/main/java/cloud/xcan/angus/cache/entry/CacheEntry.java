@@ -18,7 +18,7 @@ import lombok.Setter;
  * Cache Entry Entity for JPA persistence Stores cache key-value pairs with expiration information
  */
 @Entity
-@Table(name = "cache_entries", indexes = {
+@Table(name = "angus_cache_entries", indexes = {
     @Index(name = "idx_cache_key", columnList = "cache_key", unique = true),
     @Index(name = "idx_expire_time", columnList = "expire_at")
 })

@@ -92,7 +92,7 @@ import java.util.Locale;
  * <p>
  * This enum provides access to the localized textual form of the day-of-week. Some locales also
  * assign different numeric values to the days, declaring Sunday to have the value 1, however this
- * class provides no support for this. See {@link WeekFields} for localized week-numbering.
+ * class provides no multitenancy for this. See {@link WeekFields} for localized week-numbering.
  * <p>
  * <b>Do not use {@code ordinal()} to obtain the numeric representation of {@code DayOfWeek}.
  * Use {@code getIntValue()} instead.</b>

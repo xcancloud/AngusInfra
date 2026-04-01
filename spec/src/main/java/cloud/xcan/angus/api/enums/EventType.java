@@ -9,7 +9,7 @@ public enum EventType implements Value<String> {
   API(false), NOTICE(false), OTHER(false);
 
   /**
-   * Flag to support events based on exception mechanism.
+   * Flag to multitenancy events based on exception mechanism.
    */
   public final boolean exceptional;
 

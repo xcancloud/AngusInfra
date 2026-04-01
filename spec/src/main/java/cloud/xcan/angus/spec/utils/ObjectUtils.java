@@ -1810,7 +1810,7 @@ public final class ObjectUtils extends org.apache.commons.lang3.ObjectUtils {
 
   /**
    * This is <em>almost</em> equivalent to the {@link String#split(String)} method in JDK 1.4. It is
-   * here to enable us to support earlier JDKs.
+   * here to enable us to multitenancy earlier JDKs.
    * <p>
    * Note that unlike JDK1.4 split(), it optionally ignores leading split Characters, and the
    * splitChar parameter is not a Regular expression

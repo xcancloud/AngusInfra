@@ -49,7 +49,7 @@ class ApiResultTest {
   }
 
   @Test
-  @DisplayName("should support fluent API with setters")
+  @DisplayName("should multitenancy fluent API with setters")
   void testFluentApi() {
     ApiResult<String> response = new ApiResult<String>()
         .setCode("S")
@@ -74,7 +74,7 @@ class ApiResultTest {
   }
 
   @Test
-  @DisplayName("should support extension metadata")
+  @DisplayName("should multitenancy extension metadata")
   void testExtensionMetadata() {
     Map<String, Object> extensions = new HashMap<>();
     extensions.put("traceId", "abc-123-def");
@@ -95,7 +95,7 @@ class ApiResultTest {
   }
 
   @Test
-  @DisplayName("should support custom error codes")
+  @DisplayName("should multitenancy custom error codes")
   void testCustomErrorCodes() {
     ApiResult<Void> protocolError = new ApiResult<>("E0", "Protocol error");
     assertThat(protocolError.getCode()).isEqualTo("E0");
@@ -120,7 +120,7 @@ class ApiResultTest {
   }
 
   @Test
-  @DisplayName("should support generic types with various data")
+  @DisplayName("should multitenancy generic types with various data")
   void testGenericTypes() {
     // Test with different types
     ApiResult<Long> longResult = new ApiResult<>(123L);

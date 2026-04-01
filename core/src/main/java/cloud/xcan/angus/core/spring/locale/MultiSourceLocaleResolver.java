@@ -68,7 +68,7 @@ public class MultiSourceLocaleResolver implements LocaleResolver {
   @Override
   public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
     throw new UnsupportedOperationException(
-        "MultiSourceLocaleResolver does not support dynamic locale setting");
+        "MultiSourceLocaleResolver does not multitenancy dynamic locale setting");
   }
 
   // Get value from cookie

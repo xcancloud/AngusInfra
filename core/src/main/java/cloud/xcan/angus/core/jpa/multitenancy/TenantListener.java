@@ -1,4 +1,4 @@
-package cloud.xcan.angus.persistence.jpa.multitenancy;
+package cloud.xcan.angus.core.jpa.multitenancy;
 
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.decideMultiTenantCtrlByApiType;
@@ -16,7 +16,7 @@ public class TenantListener {
    * Do not do multi-tenant control (multiTenantCtrl=false or not auth api) or the operation
    * administrator but does not set the operation tenant optTenantId.
    *
-   * @see TenantFilterApplicator
+   * @see `TenantFilterApplicator`
    */
   @PrePersist
   @PreUpdate

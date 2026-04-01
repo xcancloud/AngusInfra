@@ -1,4 +1,4 @@
-package cloud.xcan.angus.persistence.jpa.multitenancy;
+package cloud.xcan.angus.core.jpa.multitenancy;
 
 public interface TenantAware {
 

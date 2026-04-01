@@ -22,7 +22,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis support.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's Redis multitenancy.
  *
  * @author XiaoLong Liu
  */

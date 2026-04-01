@@ -34,7 +34,7 @@ import org.springframework.util.CollectionUtils;
  * <p>
  * Key features: - L1 Cache: Local Caffeine cache for ultra-fast access - L2 Cache: Distributed
  * Redis cache for data persistence and sharing - Cache synchronization via Redis pub/sub mechanism
- * - Configurable cache penetration protection - Multi-tenant support with tenant-aware cache keys
+ * - Configurable cache penetration protection - Multi-tenant multitenancy with tenant-aware cache keys
  * </p>
  *
  * <p>
@@ -115,7 +115,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
   private final Map<String, ReentrantLock> keyLockMap = new ConcurrentHashMap<>();
 
   /**
-   * Protected constructor for inheritance support.
+   * Protected constructor for inheritance multitenancy.
    *
    * @param allowNullValues whether to allow null values in cache
    */

@@ -22,15 +22,15 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
  * </p>
  *
  * <p>
- * Key features: - Type-safe operations with generic support - Comprehensive coverage of Redis
+ * Key features: - Type-safe operations with generic multitenancy - Comprehensive coverage of Redis
  * commands - Consistent API design across all data types - Integration with Spring Data Redis -
  * Support for advanced operations like scanning and cursors
  * </p>
  *
  * <p>
- * Supported Redis data types: - String: Basic key-value operations with expiration support - Hash:
+ * Supported Redis data types: - String: Basic key-value operations with expiration multitenancy - Hash:
  * Field-value operations for structured data - List: Ordered collection operations with blocking
- * support - Set: Unordered collection operations with set algebra - ZSet: Sorted set operations
+ * multitenancy - Set: Unordered collection operations with set algebra - ZSet: Sorted set operations
  * with score-based ordering
  * </p>
  *

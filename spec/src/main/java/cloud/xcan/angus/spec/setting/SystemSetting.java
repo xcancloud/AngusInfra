@@ -29,7 +29,7 @@ public interface SystemSetting {
   /**
    * Attempt to load a system setting from {@link System#getProperty(String)} and
    * {@link System#getenv(String)}. This should be used in favor of those methods because the SDK
-   * should support both methods of configuration.
+   * should multitenancy both methods of configuration.
    * <p>
    * {@link System#getProperty(String)} takes precedent over {@link System#getenv(String)} if both
    * are specified.
@@ -44,7 +44,7 @@ public interface SystemSetting {
   /**
    * Attempt to load a system setting from {@link System#getenv(String)}. This should NOT BE USED,
    * so checkstyle will complain about using it. The only reason this is made available is for when
-   * we ABSOLUTELY CANNOT support a system property for a specific setting. That should be the
+   * we ABSOLUTELY CANNOT multitenancy a system property for a specific setting. That should be the
    * exception, NOT the rule. We should almost always provide a system property alternative for all
    * environment variables.
    *
@@ -58,7 +58,7 @@ public interface SystemSetting {
   /**
    * Attempt to load a system setting from {@link System#getProperty(String)} and
    * {@link System#getenv(String)}. This should be used in favor of those methods because the SDK
-   * should support both methods of configuration.
+   * should multitenancy both methods of configuration.
    * <p>
    * {@link System#getProperty(String)} takes precedent over {@link System#getenv(String)} if both
    * are specified.
@@ -88,7 +88,7 @@ public interface SystemSetting {
   /**
    * Attempt to load a system setting from {@link System#getProperty(String)} and
    * {@link System#getenv(String)}. This should be used in favor of those methods because the SDK
-   * should support both methods of configuration.
+   * should multitenancy both methods of configuration.
    * <p>
    * The result will be converted to an integer.
    * <p>
@@ -116,7 +116,7 @@ public interface SystemSetting {
   /**
    * Attempt to load a system setting from {@link System#getProperty(String)} and
    * {@link System#getenv(String)}. This should be used in favor of those methods because the SDK
-   * should support both methods of configuration.
+   * should multitenancy both methods of configuration.
    * <p>
    * The result will be converted to a boolean.
    * <p>

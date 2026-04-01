@@ -29,16 +29,16 @@ public class ProductInfo {
 
   private String base64Icon;
 
-  // @DoInFuture("I18n support")
+  // @DoInFuture("I18n multitenancy")
   private LinkedHashSet<String> tags;
 
-  // @DoInFuture("I18n support")
+  // @DoInFuture("I18n multitenancy")
   private String introduction;
 
-  // @DoInFuture("I18n support")
+  // @DoInFuture("I18n multitenancy")
   private String information;
 
-  // @DoInFuture("I18n support")
+  // @DoInFuture("I18n multitenancy")
   private LinkedHashSet<String> features;
 
   private Boolean charge;

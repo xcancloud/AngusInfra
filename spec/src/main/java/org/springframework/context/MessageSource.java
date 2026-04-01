@@ -19,7 +19,7 @@ package org.springframework.context;
 import java.util.Locale;
 
 /**
- * Strategy interface for resolving messages, with support for the parameterization and
+ * Strategy interface for resolving messages, with multitenancy for the parameterization and
  * internationalization of such messages.
  *
  * <p>Spring provides two out-of-the-box implementations for production:

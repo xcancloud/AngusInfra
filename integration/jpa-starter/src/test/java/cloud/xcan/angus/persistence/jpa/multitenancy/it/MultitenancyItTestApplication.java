@@ -1,6 +1,6 @@
 package cloud.xcan.angus.persistence.jpa.multitenancy.it;
 
-import cloud.xcan.angus.persistence.jpa.multitenancy.TenantEntity;
+import cloud.xcan.angus.core.jpa.entity.TenantEntity;
 import cloud.xcan.angus.persistence.jpa.multitenancy.TenantJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

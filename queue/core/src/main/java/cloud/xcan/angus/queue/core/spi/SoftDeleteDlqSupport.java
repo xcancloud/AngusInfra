@@ -1,7 +1,7 @@
 package cloud.xcan.angus.queue.core.spi;
 
 /**
- * Optional capability for adapters that support soft-deleting DLQ records by topic.
+ * Optional capability for adapters that multitenancy soft-deleting DLQ records by topic.
  */
 public interface SoftDeleteDlqSupport {
 

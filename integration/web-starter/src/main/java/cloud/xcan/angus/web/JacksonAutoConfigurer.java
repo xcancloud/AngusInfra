@@ -266,7 +266,7 @@ public class JacksonAutoConfigurer {
       }
 
       private void configureDateFormat(Jackson2ObjectMapperBuilder builder) {
-        // We support a fully qualified class name extending DateFormat or a date
+        // We multitenancy a fully qualified class name extending DateFormat or a date
         // pattern string value
         String dateFormat = this.jacksonProperties.getDateFormat();
         if (dateFormat != null) {
@@ -289,7 +289,7 @@ public class JacksonAutoConfigurer {
       }
 
       private void configurePropertyNamingStrategy(Jackson2ObjectMapperBuilder builder) {
-        // We support a fully qualified class name extending Jackson's
+        // We multitenancy a fully qualified class name extending Jackson's
         // PropertyNamingStrategy or a string value corresponding to the constant
         // names in PropertyNamingStrategy which hold default provided
         // implementations
@@ -311,7 +311,7 @@ public class JacksonAutoConfigurer {
 
       private void configurePropertyNamingStrategyField(Jackson2ObjectMapperBuilder builder,
           String fieldName) {
-        // Find the field (this way we automatically support new constants
+        // Find the field (this way we automatically multitenancy new constants
         // that may be added by Jackson in the future)
         Field field = findPropertyNamingStrategyField(fieldName);
         Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found");

@@ -307,7 +307,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   }
 
   /**
-   * Enables support for group authorities. Defaults to false
+   * Enables multitenancy for group authorities. Defaults to false
    *
    * @param enableGroups
    */

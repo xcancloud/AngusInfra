@@ -95,7 +95,7 @@ public class RemoteProperties {
   public static class TracingConfig {
 
     /**
-     * Enable distributed tracing support
+     * Enable distributed tracing multitenancy
      */
     private boolean enabled = true;
 
@@ -123,7 +123,7 @@ public class RemoteProperties {
   public static class IdempotenceConfig {
 
     /**
-     * Enable idempotence key support
+     * Enable idempotence key multitenancy
      */
     private boolean enabled = true;
 

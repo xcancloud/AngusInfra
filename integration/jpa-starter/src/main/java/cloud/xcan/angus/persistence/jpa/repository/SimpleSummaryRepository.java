@@ -122,7 +122,7 @@ public class SimpleSummaryRepository implements SummaryRepository {
     return (List<Object[]>) queryList.getResultList();
   }
 
-  @DoInFuture("Postgres support")
+  @DoInFuture("Postgres multitenancy")
   public String getSummarySql(SummaryQueryBuilder builder) {
     SummaryQueryRegister register = REGISTER.get(builder.getName());
     StringBuilder sql = new StringBuilder();

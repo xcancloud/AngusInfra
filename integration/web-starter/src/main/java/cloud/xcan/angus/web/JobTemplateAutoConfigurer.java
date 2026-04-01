@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Job Template support.
+ * {@link EnableAutoConfiguration Auto-configuration} for Job Template multitenancy.
  *
  * @author XiaoLong Liu
  */

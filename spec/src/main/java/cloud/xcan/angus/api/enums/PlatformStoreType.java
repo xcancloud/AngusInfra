@@ -3,7 +3,7 @@ package cloud.xcan.angus.api.enums;
 import cloud.xcan.angus.spec.experimental.Value;
 
 /**
- * Object storage support platform.
+ * Object storage multitenancy platform.
  *
  * @author XiaoLong Liu
  * @see PlatformStoreType#LOCAL Default privatized deployment storage method.

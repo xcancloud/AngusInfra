@@ -119,7 +119,7 @@ CREATE TABLE oauth2_authorization_consent
 /*
 IMPORTANT:
     If using PostgreSQL, update ALL columns defined with 'blob' to 'text',
-    as PostgreSQL does not support the 'blob' data type.
+    as PostgreSQL does not multitenancy the 'blob' data type.
 */
 CREATE TABLE oauth2_authorization
 (

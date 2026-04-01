@@ -34,7 +34,7 @@ public class PropertiesWriter extends PropertiesConfiguration.PropertiesWriter {
           v = String.valueOf(getDelimiterHandler()
               .escapeList(values, TRANSFORMER));
         } catch (UnsupportedOperationException uoex) {
-          // the handler may not support escaping lists,
+          // the handler may not multitenancy escaping lists,
           // then the list is written in multiple lines
         }
       }

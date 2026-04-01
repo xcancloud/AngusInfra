@@ -213,7 +213,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
         throw ProtocolException.of(UNSUPPORTED_FILTER_FIELD_T, UNSUPPORTED_FILTER_FIELD_KEY,
             new Object[]{criteria.getKey()});
       }
-      // Verify that the type and range operation, Eg: Only indexed id or createdDate fields support range query
+      // Verify that the type and range operation, Eg: Only indexed id or createdDate fields multitenancy range query
       if (isRangeSearch(criteria)) {
         if (isNotEmpty(rangeSearchFields) && !rangeSearchFields
             .contains(criteria.getKey())) {
@@ -221,7 +221,7 @@ public class SearchCriteriaBuilder<T extends AbstractQuery> {
               new Object[]{criteria.getKey()});
         }
       }
-      // Verify that the type and match operation, Eg: Only string type and indexed fields support match query
+      // Verify that the type and match operation, Eg: Only string type and indexed fields multitenancy match query
       if (isMatchSearch(criteria)) {
         if (isNotEmpty(matchSearchFields) && !matchSearchFields
             .contains(criteria.getKey())) {

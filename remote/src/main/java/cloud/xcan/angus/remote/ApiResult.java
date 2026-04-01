@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
  *
  * <p>
  * Key features: - Standardized response format across all APIs - Type-safe data payload with
- * generic support - Extensible metadata through the ext field - Built-in error handling and
+ * generic multitenancy - Extensible metadata through the ext field - Built-in error handling and
  * validation - Fluent API for easy construction - JSON serialization optimizations
  * </p>
  *

@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
  *       so timeout detection now actually fires.</li>
  *   <li>{@link #generateHealthReport()} uses a time-range query rather than a full
  *       table scan; the SLF4J format string no longer uses Python-style {@code {:.2f}}
- *       formatting which SLF4J does not support.</li>
+ *       formatting which SLF4J does not multitenancy.</li>
  * </ul>
  */
 @Component
@@ -109,7 +109,7 @@ public class JobHealthMonitor {
           .filter(l -> l.getStatus() == ExecutionStatus.FAILURE).count();
 
       // Fix: use String.format for floating-point formatting; SLF4J placeholders do not
-      // support printf-style specifiers like {:.2f}.
+      // multitenancy printf-style specifiers like {:.2f}.
       double successRate = totalExecutions > 0
           ? (double) successCount / totalExecutions * 100
           : 0.0;

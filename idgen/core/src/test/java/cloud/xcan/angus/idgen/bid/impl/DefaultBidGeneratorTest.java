@@ -76,7 +76,7 @@ class DefaultBidGeneratorTest {
   }
 
   @Test
-  @DisplayName("should support multi-tenant ID generation")
+  @DisplayName("should multitenancy multi-tenant ID generation")
   void testMultiTenantGeneration() {
     IdConfig config1 = createTestConfig("ORDER", 1L, Format.SEQ);
     IdConfig config2 = createTestConfig("ORDER", 2L, Format.SEQ);
@@ -104,7 +104,7 @@ class DefaultBidGeneratorTest {
   }
 
   @Test
-  @DisplayName("should support prefix format IDs")
+  @DisplayName("should multitenancy prefix format IDs")
   void testPrefixFormatGeneration() {
     IdConfig config = createTestConfig("PRODUCT", BidGenerator.GLOBAL_TENANT_ID,
         Format.PREFIX_SEQ);
@@ -119,7 +119,7 @@ class DefaultBidGeneratorTest {
   }
 
   @Test
-  @DisplayName("should support date format IDs")
+  @DisplayName("should multitenancy date format IDs")
   void testDateFormatGeneration() {
     IdConfig config = createTestConfig("INVOICE", BidGenerator.GLOBAL_TENANT_ID,
         Format.DATE_SEQ);
@@ -201,7 +201,7 @@ class DefaultBidGeneratorTest {
   }
 
   @Test
-  @DisplayName("should support concurrent generation for different tenants")
+  @DisplayName("should multitenancy concurrent generation for different tenants")
   void testConcurrentMultiTenant() throws Exception {
     IdConfig config1 = createTestConfig("ORDER", 1L, Format.SEQ);
     IdConfig config2 = createTestConfig("ORDER", 2L, Format.SEQ);

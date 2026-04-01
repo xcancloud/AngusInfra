@@ -88,9 +88,9 @@ class JobSchedulerServiceTest {
         jobExecutorPool,
         transactionManager
     );
-    lenient().when(jobRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-    lenient().when(executionLogRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
-    lenient().when(shardRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    lenient().when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
+    lenient().when(executionLogRepository.save(any(JobExecutionLog.class))).thenAnswer(inv -> inv.getArgument(0));
+    lenient().when(shardRepository.save(any(JobShard.class))).thenAnswer(inv -> inv.getArgument(0));
   }
 
   @AfterEach

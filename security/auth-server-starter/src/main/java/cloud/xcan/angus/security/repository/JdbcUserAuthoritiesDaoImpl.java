@@ -36,17 +36,17 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   // @formatter:off
   public static final String DEF_USERS_BY_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
-      + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
+      + "id, first_name, last_name, full_name, sys_admin, to_user, email, phone, "
       + "password_expired_date, last_modified_password_date, expired_date, "
-      + "tenant_id, tenant_name, directory_id, default_language, default_time_zone "
-      + "FROM oauth2_user WHERE username = ? OR mobile = ? OR email = ?";
+      + "tenant_id, tenant_name, default_language, default_time_zone "
+      + "FROM oauth2_user WHERE username = ? OR phone = ? OR email = ?";
 
   public static final String DEF_USERS_BY_COMPOSITE_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
-          + "id, first_name, last_name, full_name, password_strength, sys_admin, to_user, email, mobile, main_dept_id,"
+          + "id, first_name, last_name, full_name,sys_admin, to_user, email, phone, "
           + "password_expired_date, last_modified_password_date, expired_date, "
-          + "tenant_id, tenant_name, directory_id, default_language, default_time_zone "
-          + "FROM oauth2_user WHERE id = ? AND (username = ? OR mobile = ? OR email = ?)";
+          + "tenant_id, tenant_name, default_language, default_time_zone "
+          + "FROM oauth2_user WHERE id = ? AND (username = ? OR phone = ? OR email = ?)";
 
 	public static final String DEF_AUTHORITIES_BY_USERNAME_QUERY =
       "SELECT username, authority FROM oauth2_authorities WHERE username = ?";
@@ -110,7 +110,7 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
       throw new UsernameNotFoundException(this.messages.getMessage("JdbcDaoImpl.notFound",
           new Object[]{compositeAccount}, "Username {0} not found"));
     }
-    // Important: If login in with a mobile or email and there are multiple accounts,
+    // Important: If login in with a phone or email and there are multiple accounts,
     // if the userId is not specified, the first valid account will be used by default.
     UserDetails user = users.get(0); // contains no GrantedAuthority[]
     Set<GrantedAuthority> dbAuthsSet = new HashSet<>();
@@ -157,26 +157,23 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     String firstName = rs.getString(8);
     String lastName = rs.getString(9);
     String fullName = rs.getString(10);
-    String passwordStrength = rs.getString(11);
-    boolean sysAdmin = rs.getBoolean(12);
-    String mobile = rs.getString(13);
-    String email = rs.getString(14);
-    String mainDeptId = rs.getString(15);
-    Timestamp ts1 = rs.getTimestamp(16);
+    boolean sysAdmin = rs.getBoolean(11);
+    String phone = rs.getString(12);
+    String email = rs.getString(13);
+    Timestamp ts1 = rs.getTimestamp(14);
     Instant passwordExpiredDate = ts1 != null ? ts1.toInstant() : null;
-    Timestamp ts2 = rs.getTimestamp(17);
+    Timestamp ts2 = rs.getTimestamp(15);
     Instant lastModifiedPasswordDate = ts2 != null ? ts2.toInstant() : null;
-    Timestamp ts3 = rs.getTimestamp(18);
+    Timestamp ts3 = rs.getTimestamp(16);
     Instant expiredDate = ts3 != null ? ts3.toInstant() : null;
-    String tenantId = rs.getString(19);
-    String tenantName = rs.getString(20);
-    String directoryId = rs.getString(21);
-    String defaultLanguage = rs.getString(22);
-    String defaultTimeZone = rs.getString(23);
+    String tenantId = rs.getString(17);
+    String tenantName = rs.getString(18);
+    String defaultLanguage = rs.getString(19);
+    String defaultTimeZone = rs.getString(20);
     return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
         credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
-        passwordStrength, sysAdmin, mobile, email, mainDeptId, passwordExpiredDate,
-        lastModifiedPasswordDate, expiredDate, tenantId, tenantName, directoryId,
+        sysAdmin, phone, email, passwordExpiredDate,
+        lastModifiedPasswordDate, expiredDate, tenantId, tenantName,
         defaultLanguage, defaultTimeZone);
   }
 

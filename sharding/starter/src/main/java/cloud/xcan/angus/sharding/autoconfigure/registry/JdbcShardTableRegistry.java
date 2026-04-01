@@ -6,9 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -98,21 +98,15 @@ public class JdbcShardTableRegistry implements ShardTableRegistry {
     }
     try {
       jdbc.update("INSERT INTO " + tableName
-              + " (table_name, shard_key, db_index, table_index) VALUES (?, ?, ?, ?)"
-              + " ON CONFLICT (table_name) DO NOTHING",
+              + " (table_name, shard_key, db_index, table_index) VALUES (?, ?, ?, ?)",
           record.getTableName(), record.getShardKey(), record.getDbIndex(),
           record.getTableIndex());
+    } catch (DuplicateKeyException e) {
+      // Record already exists — silently ignore (ON CONFLICT DO NOTHING semantics)
+      log.debug("Shard table record '{}' already exists, skipping.", record.getTableName());
     } catch (Exception e) {
-      // Fallback: try standard INSERT IGNORE style (MySQL)
-      try {
-        jdbc.update("INSERT IGNORE INTO " + tableName
-                + " (table_name, shard_key, db_index, table_index) VALUES (?, ?, ?, ?)",
-            record.getTableName(), record.getShardKey(), record.getDbIndex(),
-            record.getTableIndex());
-      } catch (Exception ex) {
-        log.warn("Failed to persist shard table record '{}': {}", record.getTableName(),
-            ex.getMessage());
-      }
+      log.warn("Failed to persist shard table record '{}': {}", record.getTableName(),
+          e.getMessage());
     }
   }
 

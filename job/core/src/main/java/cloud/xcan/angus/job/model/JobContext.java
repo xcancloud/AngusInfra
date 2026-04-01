@@ -14,33 +14,33 @@ import lombok.Getter;
 @Builder
 public class JobContext {
 
-  private final Long jobId;
-  private final String jobName;
-  private final String jobGroup;
-  private final JobType jobType;
+  private Long jobId;
+  private String jobName;
+  private String jobGroup;
+  private JobType jobType;
 
   /**
    * Zero-based shard index; {@code null} for SIMPLE jobs and the reduce phase.
    */
-  private final Integer shardingItem;
+  private Integer shardingItem;
 
   /**
    * The parameter string bound to this shard; {@code null} for SIMPLE jobs.
    */
-  private final String shardingParameter;
+  private String shardingParameter;
 
   /**
    * Total number of shards for this execution; {@code null} for SIMPLE jobs.
    */
-  private final Integer totalShardingCount;
+  private Integer totalShardingCount;
 
   /**
    * Arbitrary key→value parameters attached to the job definition.
    */
-  private final Map<String, Object> parameters;
+  private Map<String, Object> parameters;
 
   /**
    * Wall-clock time at which the scheduler dispatched this execution.
    */
-  private final LocalDateTime executeTime;
+  private LocalDateTime executeTime;
 }

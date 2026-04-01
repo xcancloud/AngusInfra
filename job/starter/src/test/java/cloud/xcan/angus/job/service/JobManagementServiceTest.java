@@ -61,7 +61,7 @@ class JobManagementServiceTest {
     req.setBeanName("myExecutor");
     req.setJobType(JobType.SIMPLE);
 
-    when(jobRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
 
     ScheduledJob created = service.createJob(req);
 
@@ -81,7 +81,7 @@ class JobManagementServiceTest {
     req.setCronExpression("0 * * * * *");
     req.setBeanName("exec");
     req.setJobType(JobType.SIMPLE);
-    when(jobRepository.save(any())).thenThrow(new DataIntegrityViolationException("uk"));
+    when(jobRepository.save(any(ScheduledJob.class))).thenThrow(new DataIntegrityViolationException("uk"));
 
     assertThatThrownBy(() -> service.createJob(req))
         .isInstanceOf(IllegalStateException.class)
@@ -185,7 +185,7 @@ class JobManagementServiceTest {
   void pauseJob() {
     ScheduledJob job = readyJob(1L);
     when(jobRepository.findById(1L)).thenReturn(Optional.of(job));
-    when(jobRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
 
     service.pauseJob(1L);
 
@@ -198,7 +198,7 @@ class JobManagementServiceTest {
     ScheduledJob job = readyJob(1L);
     job.setStatus(JobStatus.PAUSED);
     when(jobRepository.findById(1L)).thenReturn(Optional.of(job));
-    when(jobRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
 
     service.resumeJob(1L);
 
@@ -249,7 +249,7 @@ class JobManagementServiceTest {
   void triggerJob_success() {
     ScheduledJob job = readyJob(4L);
     when(jobRepository.findById(4L)).thenReturn(Optional.of(job));
-    when(jobRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
 
     LocalDateTime before = LocalDateTime.now();
     service.triggerJob(4L);
@@ -295,7 +295,7 @@ class JobManagementServiceTest {
   void updateJob_recalcNextExecuteTime() {
     ScheduledJob job = readyJob(6L);
     when(jobRepository.findById(6L)).thenReturn(Optional.of(job));
-    when(jobRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
+    when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
 
     UpdateJobRequest req = new UpdateJobRequest();
     req.setJobName("UpdatedName");

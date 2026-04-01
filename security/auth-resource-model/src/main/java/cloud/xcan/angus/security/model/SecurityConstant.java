@@ -22,7 +22,7 @@ public interface SecurityConstant {
   //String INTROSPECTION_CLAIM_NAMES_TO_USER = "to_user";
   String INTROSPECTION_CLAIM_NAMES_MOBILE = "mobile";
   String INTROSPECTION_CLAIM_NAMES_EMAIL = "email";
-  String INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID = "main_dept_id";
+  //String INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID = "main_dept_id";
   String INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE = "password_expired_date";
   String INTROSPECTION_CLAIM_NAMES_LAST_MODIFIED_PASSWORD_DATE = "last_modified_password_date";
   String INTROSPECTION_CLAIM_NAMES_EXPIRED_DATE = "expired_date";
@@ -31,7 +31,7 @@ public interface SecurityConstant {
   //String INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS = "tenant_real_name_status";
   //String INTROSPECTION_CLAIM_NAMES_COUNTRY = "country";
   String INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE = "client_source";
-  String INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID = "directory_id";
+  //String INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID = "directory_id";
   String INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE = "default_language";
   //String INTROSPECTION_CLAIM_NAMES_DEFAULT_TIMEZONE = "default_time_zone";
   String INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN = "user_token";

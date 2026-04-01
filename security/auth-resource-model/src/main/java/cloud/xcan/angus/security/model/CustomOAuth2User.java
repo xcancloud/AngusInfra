@@ -87,15 +87,11 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   protected String fullName;
 
-  protected String passwordStrength;
-
   protected boolean sysAdmin;
 
   protected String mobile;
 
   protected String email;
-
-  protected String mainDeptId;
 
   protected Instant passwordExpiredDate;
 
@@ -106,8 +102,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
   protected String tenantId;
 
   protected String tenantName;
-
-  protected String directoryId;
 
   protected String defaultLanguage;
 
@@ -176,18 +170,17 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities) {
     this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
-        authorities, "-1", null, null, null, null, false, null, null, null, null,
-        null, null, "-1", null, null, null, null);
+        authorities, "-1", null, null, null, false,  null, null, null,
+        null, null, "-1", null, null, null);
   }
 
   public CustomOAuth2User(String username, String password, boolean enabled,
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities, String id, String firstName,
-      String lastName, String fullName, String passwordStrength, boolean sysAdmin,
-      String mobile, String email, String mainDeptId, Instant passwordExpiredDate,
+      String lastName, String fullName, boolean sysAdmin,
+      String mobile, String email, Instant passwordExpiredDate,
       Instant lastModifiedPasswordDate, Instant expiredDate,
-      String tenantId, String tenantName, String directoryId, String defaultLanguage,
-      String defaultTimeZone) {
+      String tenantId, String tenantName, String defaultLanguage, String defaultTimeZone) {
     Assert.isTrue(username != null && !username.isEmpty() /*&& password != null*/,
         "Cannot username null or empty values to constructor");
 
@@ -203,17 +196,14 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.firstName = firstName;
     this.lastName = lastName;
     this.fullName = fullName;
-    this.passwordStrength = stringSafe(passwordStrength, PasswordStrength.UNKNOWN.getValue());
     this.sysAdmin = sysAdmin;
     this.mobile = mobile;
     this.email = email;
-    this.mainDeptId = mainDeptId;
     this.passwordExpiredDate = passwordExpiredDate;
     this.lastModifiedPasswordDate = lastModifiedPasswordDate;
     this.expiredDate = expiredDate;
     this.tenantId = tenantId;
     this.tenantName = tenantName;
-    this.directoryId = directoryId;
     this.defaultLanguage = defaultLanguage;
     this.defaultTimeZone = defaultTimeZone;
   }
@@ -277,10 +267,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     return this.setPassword || isNotEmpty(password);
   }
 
-  public boolean supportDirectoryAuth() {
-    return Objects.nonNull(directoryId);
-  }
-
   @Override
   public void eraseCredentials() {
     this.password = null;
@@ -338,14 +324,12 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     sb.append(", defaultLanguage='").append(defaultLanguage).append('\'');
     sb.append(", lastModifiedPasswordDate=").append(lastModifiedPasswordDate);
     sb.append(", passwordExpiredDate=").append(passwordExpiredDate);
-    sb.append(", mainDeptId=").append(mainDeptId);
     sb.append(", email='").append(email).append('\'');
     sb.append(", mobile='").append(mobile).append('\'');
     sb.append(", fullName='").append(fullName).append('\'');
     sb.append(", lastName='").append(lastName).append('\'');
     sb.append(", firstName='").append(firstName).append('\'');
     sb.append(", sysAdmin=").append(sysAdmin);
-    sb.append(", passwordStrength='").append(passwordStrength).append('\'');
     sb.append(", id=").append(id);
     sb.append(", authorities=").append(authorities);
     sb.append(", credentialsNonExpired=").append(credentialsNonExpired);
@@ -366,8 +350,8 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
         .disabled(!user.enabled).accountExpired(!user.accountNonExpired)
         .accountLocked(!user.accountNonLocked).credentialsExpired(!user.credentialsNonExpired)
         .authorities(authorities).id(user.id).firstName(user.firstName).lastName(user.lastName)
-        .fullName(user.fullName).passwordStrength(user.passwordStrength).sysAdmin(user.sysAdmin)
-        .mobile(user.mobile).email(user.email).mainDeptId(user.mainDeptId)
+        .fullName(user.fullName).sysAdmin(user.sysAdmin)
+        .phone(user.mobile).email(user.email)
         .passwordExpiredDate(user.passwordExpiredDate)
         .lastModifiedPasswordDate(user.lastModifiedPasswordDate).expiredDate(user.expiredDate)
         .tenantId(user.tenantId).tenantName(user.tenantName)
@@ -511,18 +495,15 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     private String firstName;
     private String lastName;
     private String fullName;
-    private String passwordStrength;
     private boolean sysAdmin = false;
-    private String mobile;
+    private String phone;
     private String email;
-    private String mainDeptId;
     private Instant passwordExpiredDate;
     private Instant lastModifiedPasswordDate;
     private Instant expiredDate;
     private String tenantId;
     private String tenantName;
 
-    private String directoryId;
     private String defaultLanguage;
     private String defaultTimeZone;
 
@@ -715,28 +696,18 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder passwordStrength(String passwordStrength) {
-      this.passwordStrength = passwordStrength;
-      return this;
-    }
-
     public CustomOAuth2User.UserBuilder sysAdmin(boolean sysAdmin) {
       this.sysAdmin = sysAdmin;
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder mobile(String mobile) {
-      this.mobile = mobile;
+    public CustomOAuth2User.UserBuilder phone(String phone) {
+      this.phone = phone;
       return this;
     }
 
     public CustomOAuth2User.UserBuilder email(String email) {
       this.email = email;
-      return this;
-    }
-
-    public CustomOAuth2User.UserBuilder mainDeptId(String mainDeptId) {
-      this.mainDeptId = mainDeptId;
       return this;
     }
 
@@ -765,11 +736,6 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       return this;
     }
 
-    public CustomOAuth2User.UserBuilder directoryId(String directoryId) {
-      this.directoryId = directoryId;
-      return this;
-    }
-
     public CustomOAuth2User.UserBuilder defaultLanguage(String defaultLanguage) {
       this.defaultLanguage = defaultLanguage;
       return this;
@@ -784,11 +750,10 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       String encodedPassword = nonNull(password) ? passwordEncoder.apply(this.password) : null;
       return new CustomOAuth2User(this.username, encodedPassword, !this.disabled,
           !this.accountExpired, !this.credentialsExpired, !this.accountLocked, this.authorities,
-          this.id, this.firstName, this.lastName, this.fullName, this.passwordStrength,
-          this.sysAdmin, this.mobile, this.email, this.mainDeptId,
+          this.id, this.firstName, this.lastName, this.fullName,
+          this.sysAdmin, this.phone, this.email,
           this.passwordExpiredDate, this.lastModifiedPasswordDate, this.expiredDate,
-          this.tenantId, this.tenantName, this.directoryId, this.defaultLanguage,
-          this.defaultTimeZone);
+          this.tenantId, this.tenantName, this.defaultLanguage, this.defaultTimeZone);
     }
   }
 

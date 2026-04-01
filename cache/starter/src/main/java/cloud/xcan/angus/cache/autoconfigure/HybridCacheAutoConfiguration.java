@@ -4,25 +4,31 @@ import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.HybridCacheManager;
 import cloud.xcan.angus.cache.IDistributedCache;
 import cloud.xcan.angus.cache.config.CacheProperties;
+import cloud.xcan.angus.cache.entry.CacheEntry;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import cloud.xcan.angus.cache.web.CacheManagementController;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(CacheProperties.class)
+@ConditionalOnClass(JpaRepository.class)
+@EntityScan(basePackageClasses = CacheEntry.class)
+@EnableJpaRepositories(basePackageClasses = SpringDataCacheEntryRepository.class)
 public class HybridCacheAutoConfiguration {
 
   /**
    * Chooses persistence at <em>bean creation</em> time via {@link ObjectProvider}, so a
-   * {@link SpringDataCacheEntryRepository} registered by JPA (possibly after this configuration
-   * class is parsed) is still visible. Using {@code @ConditionalOnBean} on a separate method can
-   * miss the repository when this configuration is {@code @Import}ed next to
-   * {@code @EnableJpaRepositories}.
+   * {@link SpringDataCacheEntryRepository} registered by JPA is used as the default. Falls back to
+   * {@link NoOpCachePersistence} (pure in-memory) when JPA repository is not available.
    */
   @Bean
   @ConditionalOnMissingBean(CachePersistence.class)

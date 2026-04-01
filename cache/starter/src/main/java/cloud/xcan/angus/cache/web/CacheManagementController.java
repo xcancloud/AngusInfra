@@ -18,6 +18,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @Tag(name = "Cache Management", description = "APIs to manage and monitor the hybrid cache")
+@PreAuthorize("@PPS.isCloudTenantSecurity() && @PPS.isSysAdmin()")
 @RestController
 @RequestMapping(path = "/api/v1/cache", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CacheManagementController {

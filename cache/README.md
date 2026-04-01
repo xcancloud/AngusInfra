@@ -14,8 +14,9 @@ and a persistent backing store. It is designed to provide:
 
 - `core` — Core cache interfaces and implementations (
   e.g. `HybridCacheManager`, `CaffeineMemoryCache`, `CachePersistence` interfaces).
-- `starter` — Spring Boot starter providing auto-configuration, optional Spring Data JPA persistence
-  adapter and management REST controllers.
+- `starter` — Spring Boot starter providing auto-configuration with JPA entity/repository
+  scanning, persistence adapter and management REST controllers. JPA-based persistence is the
+  default when a datasource is configured.
 
 ## Key Interfaces / Classes
 
@@ -28,7 +29,8 @@ and a persistent backing store. It is designed to provide:
   persisted entries. The backing table is named **`angus_cache_entries`**.
 - `cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository` — Spring Data repository (starter).
 - `cloud.xcan.angus.cache.autoconfigure.HybridCacheAutoConfiguration` — Auto-configuration that
-  wires persistence and management controller when appropriate.
+  wires JPA entity scanning, repository registration, persistence and management controller.
+  Registered via `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`.
 - `cloud.xcan.angus.cache.autoconfigure.TransactionalDistributedCache` — Decorator that adds Spring
   `@Transactional` semantics to every cache operation.
 - `cloud.xcan.angus.cache.autoconfigure.NoOpCachePersistence` — Pure in-memory fallback (no DB).
@@ -92,34 +94,49 @@ public class MyService {
 }
 ```
 
-### 4. Persistence (optional)
+### 4. Persistence (JPA — default)
 
-The starter auto-configures a `CachePersistence` adapter when a
-`SpringDataCacheEntryRepository` bean is present (i.e. you include the JPA starter and scan the
-package). Otherwise the cache runs with **`NoOpCachePersistence`** (pure in-memory via
-`ConcurrentHashMap`) — data is not durable across restarts.
+The starter auto-configures JPA-based persistence via `@EntityScan` and
+`@EnableJpaRepositories` — no manual annotation or package scanning is required.
+When the starter is on the classpath with a configured datasource, the
+`SpringDataCacheEntryRepository` bean is registered automatically and cache entries
+are persisted to the `angus_cache_entries` table.
 
-If you enable JPA persistence, configure a datasource in `application.yml` and scan the cache
-module's packages:
+Configure a datasource in `application.yml`:
 
-```java
-@SpringBootApplication
-@EntityScan(basePackages = {
-    "com.yourcompany.app",
-    "cloud.xcan.angus.cache.entry"   // required: CacheEntry entity
-})
-@EnableJpaRepositories(basePackages = {
-    "com.yourcompany.app.repository",
-    "cloud.xcan.angus.cache.jpa"     // required: SpringDataCacheEntryRepository
-})
-public class YourApplication { ... }
+```yaml
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/mydb?useSSL=false&serverTimezone=UTC
+    username: root
+    password: yourpassword
+  jpa:
+    hibernate:
+      ddl-auto: validate   # Production: use validate + manual DDL
 ```
 
-The JPA entity maps to the table **`angus_cache_entries`**. For production manual initialization,
-use centralized scripts:
+For production manual initialization, use centralized scripts:
 
 - MySQL: `cache/core/src/main/resources/schema/mysql/cache-schema.sql`
 - PostgreSQL: `cache/core/src/main/resources/schema/postgres/cache-schema.sql`
+
+Spring SQL initialization example:
+
+```yaml
+# MySQL
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/mysql/cache-schema.sql
+
+# PostgreSQL
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/postgres/cache-schema.sql
+```
 
 ### 5. Configuration reference
 

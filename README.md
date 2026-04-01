@@ -104,38 +104,6 @@ build scalable, secure, and maintainable server-side applications more efficient
 | **`parent`** | Maven parent POM defining global build configurations, plugin management, and profile strategies.    |
 | **`docs`**   | Documentation repository including architecture design, module guides, and quickstart instructions.  |  
 
-## Database Schema Script Convention
-
-To keep module ownership clear and avoid cross-module coupling, schema scripts are maintained in
-each module's own `core` sub-module under `src/main/resources/schema`.
-
-Current modules with manual DDL scripts:
-
-| Module | MySQL Script | PostgreSQL Script |
-|--------|--------------|-------------------|
-| `cache` | `cache/core/src/main/resources/schema/mysql/cache-schema.sql` | `cache/core/src/main/resources/schema/postgres/cache-schema.sql` |
-| `idgen` | `idgen/core/src/main/resources/schema/mysql/idgen-schema.sql` | `idgen/core/src/main/resources/schema/postgres/idgen-schema.sql` |
-| `job` | `job/core/src/main/resources/schema/mysql/job-schema.sql` | `job/core/src/main/resources/schema/postgres/job-schema.sql` |
-| `queue` | `queue/core/src/main/resources/schema/mysql/queue-schema.sql` | `queue/core/src/main/resources/schema/postgres/queue-schema.sql` |
-
-Recommended initialization examples:
-
-```yaml
-# MySQL
-spring:
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema/mysql/<module>-schema.sql
-
-# PostgreSQL
-spring:
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema/postgres/<module>-schema.sql
-```
-
 ## Use Cases
 
 💡 AngusInfra is particularly well-suited for SaaS applications that require multi-tenant support,

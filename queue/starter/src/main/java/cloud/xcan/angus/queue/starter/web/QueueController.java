@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Queue Management", description = "APIs to send, poll and manage queue messages")
+@PreAuthorize("@PPS.isCloudTenantSecurity() && @PPS.isSysAdmin()")
 @RestController
 @RequestMapping(path = "/api/v1/queue", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueueController {

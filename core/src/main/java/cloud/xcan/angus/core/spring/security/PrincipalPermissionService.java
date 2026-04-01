@@ -55,6 +55,10 @@ public class PrincipalPermissionService {
         || PrincipalContextUtils.hasAnyToRole(policies);
   }
 
+  public boolean isSysAdmin() {
+    return PrincipalContextUtils.isSysAdmin();
+  }
+
   public boolean isOpClient() {
     return PrincipalContextUtils.isOpClient();
   }

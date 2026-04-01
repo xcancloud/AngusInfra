@@ -184,11 +184,12 @@ public interface CachePersistence {
 
 ### 3.7 `HybridCacheAutoConfiguration` — 自动配置
 
-Spring Boot 自动配置入口，条件装配逻辑如下：
+Spring Boot 自动配置入口（通过 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 注册），条件装配逻辑如下：
 
 ```
-classpath 存在 SpringDataCacheEntryRepository ?
-    ├─ 是 → CachePersistence = SpringCachePersistenceAdapter（JPA 模式）
+classpath 存在 JpaRepository ?
+    ├─ 是 → 自动扫描 CacheEntry 实体和 SpringDataCacheEntryRepository 仓库
+    │       CachePersistence = SpringCachePersistenceAdapter（JPA 模式，默认）
     └─ 否 → CachePersistence = NoOpCachePersistence（纯内存模式）
 
 IDistributedCache = TransactionalDistributedCache(HybridCacheManager)
@@ -198,7 +199,7 @@ angus.cache.management.enabled = true ?
     └─ 否 → 不暴露管理端点（默认）
 ```
 
-使用 `ObjectProvider` 延迟解析 `SpringDataCacheEntryRepository`，兼容 `@EnableJpaRepositories` 与 `@Import` 同时出现的场景。
+通过 `@AutoConfiguration` + `@EntityScan` + `@EnableJpaRepositories` 实现零配置自动扫描，用户无需在启动类上手动添加包扫描注解。
 
 ---
 
@@ -297,23 +298,17 @@ INFO  c.x.a.cache.autoconfigure.NoOpCachePersistence - Cache running in memory-o
 
 ---
 
-### 6.2 场景二：JPA 持久化模式（推荐生产使用）
+### 6.2 场景二：JPA 持久化模式（默认，推荐生产使用）
 
 适用于：多实例部署、需要跨实例共享缓存数据、重启后数据不丢失的场景。
 
-**步骤 1：** 引入 Maven 依赖（同上，额外需要 JPA 和数据库驱动）
+**步骤 1：** 引入 Maven 依赖
 
 ```xml
 <dependency>
   <groupId>cloud.xcan.angus</groupId>
   <artifactId>xcan-angusinfra.cache-starter</artifactId>
   <version>3.0.0</version>
-</dependency>
-
-<!-- Spring Data JPA -->
-<dependency>
-  <groupId>org.springframework.boot</groupId>
-  <artifactId>spring-boot-starter-data-jpa</artifactId>
 </dependency>
 
 <!-- 数据库驱动（以 MySQL 为例） -->
@@ -323,7 +318,11 @@ INFO  c.x.a.cache.autoconfigure.NoOpCachePersistence - Cache running in memory-o
 </dependency>
 ```
 
-**步骤 2：** 配置数据源并开启 JPA 实体扫描
+> Starter 已内置 `spring-boot-starter-data-jpa` 依赖，无需额外引入。
+
+**步骤 2：** 配置数据源
+
+Starter 通过 `@AutoConfiguration` + `@EntityScan` + `@EnableJpaRepositories` 自动扫描缓存实体和仓库，**无需在启动类上手动添加包扫描注解**。
 
 ```yaml
 spring:
@@ -334,11 +333,8 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: update        # 自动建表（生产环境建议使用 validate 并手动建表）
+      ddl-auto: validate        # 生产环境建议使用 validate 并手动建表
     show-sql: false
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
 angus:
   cache:
@@ -346,31 +342,30 @@ angus:
       max-size: 10000
 ```
 
-**步骤 3：** 在 Spring Boot 启动类上启用实体扫描（确保 `CacheEntry` 被 Hibernate 管理）
-
-```java
-@SpringBootApplication
-@EntityScan(basePackages = {
-    "com.yourcompany.yourapp",           // 你的业务实体包
-    "cloud.xcan.angus.cache.entry"       // 缓存模块实体包
-})
-@EnableJpaRepositories(basePackages = {
-    "com.yourcompany.yourapp.repository",
-    "cloud.xcan.angus.cache.jpa"         // 缓存模块 JPA 仓库包
-})
-public class YourApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(YourApplication.class, args);
-    }
-}
-```
-
 **数据库手动建表（生产推荐）：**
 
 - MySQL：`cache/core/src/main/resources/schema/mysql/cache-schema.sql`
 - PostgreSQL：`cache/core/src/main/resources/schema/postgres/cache-schema.sql`
 
-**步骤 4：** 注入使用（与纯内存模式代码完全一致，接口不变）
+Spring SQL 初始化配置示例：
+
+```yaml
+# MySQL
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/mysql/cache-schema.sql
+
+# PostgreSQL
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/postgres/cache-schema.sql
+```
+
+**步骤 3：** 注入使用（与纯内存模式代码完全一致，接口不变）
 
 ```java
 @Service

@@ -96,38 +96,6 @@
 | **`parent`** | Maven 父 POM，定义全局构建配置、插件管理及 Profile 策略 |
 | **`docs`**   | 项目文档库，包含架构设计、模块说明及快速接入指南        |  
 
-## 数据库脚本规范
-
-为保证模块边界清晰、避免跨模块耦合，数据库定义脚本统一维护在各模块自身的 `core` 子模块
-`src/main/resources/schema` 目录下。
-
-当前已落地的模块如下：
-
-| 模块 | MySQL 脚本 | PostgreSQL 脚本 |
-|------|------------|-----------------|
-| `cache` | `cache/core/src/main/resources/schema/mysql/cache-schema.sql` | `cache/core/src/main/resources/schema/postgres/cache-schema.sql` |
-| `idgen` | `idgen/core/src/main/resources/schema/mysql/idgen-schema.sql` | `idgen/core/src/main/resources/schema/postgres/idgen-schema.sql` |
-| `job` | `job/core/src/main/resources/schema/mysql/job-schema.sql` | `job/core/src/main/resources/schema/postgres/job-schema.sql` |
-| `queue` | `queue/core/src/main/resources/schema/mysql/queue-schema.sql` | `queue/core/src/main/resources/schema/postgres/queue-schema.sql` |
-
-推荐初始化配置示例：
-
-```yaml
-# MySQL
-spring:
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema/mysql/<module>-schema.sql
-
-# PostgreSQL
-spring:
-  sql:
-    init:
-      mode: always
-      schema-locations: classpath:schema/postgres/<module>-schema.sql
-```
-
 ## 适用场景
 
 💡 AngusInfra 特别适合于需要多租户支持的 SaaS 应用、企业内部系统和其他需要快速开发和部署的 Web 应用。

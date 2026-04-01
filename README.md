@@ -3,8 +3,8 @@
 [English](README.md) | [中文](README_zh.md)
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-brightgreen)](https://spring.io/projects/spring-boot)
-[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-4.2.0-green)](https://spring.io/projects/spring-cloud)
-[![Eureka Client](https://img.shields.io/badge/Eureka%20Client-2.0.4-lightgrey)](https://spring.io/projects/spring-cloud-netflix)
+[![Spring Cloud](https://img.shields.io/badge/Spring%20Cloud-2024.0.0-green)](https://spring.io/projects/spring-cloud)
+[![Eureka Client](https://img.shields.io/badge/Eureka%20Client-4.2.0-lightgrey)](https://spring.io/projects/spring-cloud-netflix)
 [![Open API](https://img.shields.io/badge/Open%20API-3.0.1-blue)](https://swagger.io/specification/)
 
 **AngusInfra** is a rapid development foundational framework based on SpringBoot. It aims to
@@ -40,63 +40,101 @@ build scalable, secure, and maintainable server-side applications more efficient
 
 ## **Core Modules**
 
-| Module     | Description                                                                                                                                                         |  
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **`spec`** | Public specifications library defining global common models (DTOs/enums/error codes), interface contracts, and cross-module communication protocols.                |  
-| **`core`** | Core aggregator module — re-exports all sub-modules below for backward compatibility. New projects should depend on individual sub-modules for leaner dependencies. |  
-
-#### Core Sub-Modules
-
-| Module                         | Description                                                                                                      |  
-|--------------------------------|------------------------------------------------------------------------------------------------------------------|  
-| **`core-base`**                | Essential business logic, exception handling, event collection, multi-tenancy, Spring extensions, and utilities. |  
-| **`persistence-jdbc-starter`** | Spring Data JDBC integration with multi-tenant support, batch operations, and converter utilities.               |  
-| **`persistence-jpa-starter`**  | Spring Data JPA integration including generic repositories, specification builders, and audit support.           |  
-| **`feign-starter`**            | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.          |  
-| **`jackson-customizer`**       | Jackson JSON serialization customization with standard ObjectMapper configuration and custom serializers.        |  
-| **`observability-starter`**    | Logging, metrics, and data export utilities for application observability.                                       |  
+| Module     | Description                                                                                                                                         |
+|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`spec`** | Public specifications library defining global common models (DTOs/enums/error codes), interface contracts, and cross-module communication protocols. |
+| **`core`** | Core base library providing fundamental utilities, exception handling, multi-tenancy support, business templates, and Spring extensions.              |
+| **`jdbc`** | Spring Data JDBC integration library with multi-tenant support, batch operations, and converter utilities.                                           |
 
 ### **Data Layer Modules**
 
-| Module           | Description                                                                                                                                                        |  
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **`datasource`** | Datasource extension library offering multi-tenant dynamic datasource configuration, basic sharding strategies, and read-write separation based on Spring JPA.     |  
-| **`l2cache`**    | Two-level cache library integrating Redis + Caffeine for high-performance caching, supporting distributed consistency and cache penetration prevention strategies. |  
-| **`lettucex`**   | Redis enhancement library standardizing Lettuce configurations and providing business extension utilities.                                                         |  
+| Module           | Description                                                                                                                                                        |
+|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`datasource`** | Datasource extension library offering multi-tenant dynamic datasource configuration, basic sharding strategies, and read-write separation based on Spring JPA.     |
+| **`cache`**      | Two-level cache library combining in-memory (Caffeine) and database (JPA) persistence, with management REST API and Spring Boot auto-configuration.                |
+| **`l2cache`**    | Two-level cache library integrating Redis + Caffeine for high-performance caching, supporting distributed consistency and cache penetration prevention strategies. |
+| **`lettucex`**   | Redis enhancement library standardizing Lettuce configurations and providing business extension utilities.                                                         |
+
+### **Distributed Infrastructure**
+
+| Module      | Description                                                                                                                                                          |
+|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`idgen`** | Distributed ID generator supporting Snowflake-variant UidGenerator, custom business ID (BidGenerator), and caching strategies.                                       |
+| **`job`**   | Database-driven distributed task scheduling framework with SIMPLE, SHARDING, and MAP_REDUCE execution models, distributed locking, and management REST API.          |
+| **`queue`** | Database-backed message queue implementing lease-based SQS-style semantics with partitioning, dead-letter support, lifecycle management, and REST API.               |
+
+### **Plugin Framework**
+
+| Module       | Description                                                                                                                                    |
+|--------------|------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`plugin`** | Extensible plugin framework with dynamic class loading, lifecycle management, and hot-plugging support (includes api, core, and starter sub-modules). |
 
 ### **Security & Authentication**
 
-| Module                                | Description                                                                                                          |  
-|---------------------------------------|----------------------------------------------------------------------------------------------------------------------|  
-| **`security/auth-server-starter`**    | OAuth2 authorization server with automated token issuance, key management, and authorization endpoint configuration. |  
-| **`security/auth-resource-starter`**  | Resource server component supporting password and client credentials grant types for resource access authorization.  |  
-| **`security/auth-openapi-starter`**   | Private API authentication module (OAuth2 client credentials) for third-party system integration.                    |  
-| **`security/auth-openapi2p-starter`** | Open API authentication module (API Key schema) for standardized SaaS private deployment authorization.              |  
-| **`security/auth-innerapi-starter`**  | Internal service authentication module (lightweight signature verification) for secure inter-service communication.  |  
+| Module                                | Description                                                                                                          |
+|---------------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| **`security/auth-resource-model`**    | Authorization persistence resource models and DTOs for resource authentication.                                      |
+| **`security/auth-server-starter`**    | OAuth2 authorization server with automated token issuance, key management, and authorization endpoint configuration. |
+| **`security/auth-resource-starter`**  | OAuth2 resource server supporting password and client credentials grant types for resource access authorization.      |
+| **`security/auth-openapi2p-starter`** | Private API authentication module (OAuth2 client credentials) for standardized SaaS private deployment authorization. |
+| **`security/auth-innerapi-starter`**  | Internal service authentication module (OAuth2 client credentials) for secure inter-service communication.           |
 
 ### **SpringBoot Rapid Integration**
 
-| Module                         | Description                                                                                                                  |  
-|--------------------------------|------------------------------------------------------------------------------------------------------------------------------|  
-| **`integration/web-starter`**  | RESTful API development toolkit with auto-configured unified response formats, global exception handling, and CORS policies. |  
-| **`integration/oas3-starter`** | OpenAPI 3.x support with automated API documentation generation and Swagger UI integration.                                  |  
+| Module                                  | Description                                                                                                                  |
+|-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| **`integration/web-starter`**           | RESTful API development toolkit with auto-configured unified response formats, global exception handling, and CORS policies. |
+| **`integration/oas3-starter`**          | OpenAPI 3.x support with automated API documentation generation and Swagger UI integration.                                  |
+| **`integration/jpa-starter`**           | Spring Data JPA integration with generic repositories, specification builders, and audit support.                             |
+| **`integration/feign-starter`**         | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.                       |
+| **`integration/observability-starter`** | Logging, metrics, and data export utilities for application observability.                                                    |
 
 ### **Development Toolchain**
 
-| Module           | Description                                                                                                           |  
-|------------------|-----------------------------------------------------------------------------------------------------------------------|  
-| **`idgen`**      | Distributed ID generator supporting Snowflake, custom business IDs, and other strategies.                             |  
-| **`validator`**  | Enhanced validation library with annotation-based rules and custom validator templates.                               |  
-| **`checkstyle`** | Automated code style rules enforcing Google coding standards.                                                         |  
-| **`remote`**     | OpenFeign-based remote call library with DTO/VO/TO definitions, unified response formats, and multi-language support. |  
-| **`bom`**        | Bill of Materials (BOM) for centralized dependency version management and conflict resolution.                        |  
+| Module          | Description                                                                                                           |
+|-----------------|-----------------------------------------------------------------------------------------------------------------------|
+| **`validator`** | Enhanced validation library with annotation-based rules and custom validator templates.                                |
+| **`remote`**    | OpenFeign-based remote call library with DTO/VO/TO definitions, unified response formats, and multi-language support. |
+| **`bom`**       | Bill of Materials (BOM) for centralized dependency version management and conflict resolution.                         |
 
 ### **Architecture Governance**
 
-| Module       | Description                                                                                         |  
-|--------------|-----------------------------------------------------------------------------------------------------|  
-| **`parent`** | Maven parent POM defining global build configurations, plugin management, and profile strategies.   |  
-| **`docs`**   | Documentation repository including architecture design, module guides, and quickstart instructions. |  
+| Module       | Description                                                                                         |
+|--------------|-----------------------------------------------------------------------------------------------------|
+| **`parent`** | Maven parent POM defining global build configurations, plugin management, and profile strategies.    |
+| **`docs`**   | Documentation repository including architecture design, module guides, and quickstart instructions.  |  
+
+## Database Schema Script Convention
+
+To keep module ownership clear and avoid cross-module coupling, schema scripts are maintained in
+each module's own `core` sub-module under `src/main/resources/schema`.
+
+Current modules with manual DDL scripts:
+
+| Module | MySQL Script | PostgreSQL Script |
+|--------|--------------|-------------------|
+| `cache` | `cache/core/src/main/resources/schema/mysql/cache-schema.sql` | `cache/core/src/main/resources/schema/postgres/cache-schema.sql` |
+| `idgen` | `idgen/core/src/main/resources/schema/mysql/idgen-schema.sql` | `idgen/core/src/main/resources/schema/postgres/idgen-schema.sql` |
+| `job` | `job/core/src/main/resources/schema/mysql/job-schema.sql` | `job/core/src/main/resources/schema/postgres/job-schema.sql` |
+| `queue` | `queue/core/src/main/resources/schema/mysql/queue-schema.sql` | `queue/core/src/main/resources/schema/postgres/queue-schema.sql` |
+
+Recommended initialization examples:
+
+```yaml
+# MySQL
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/mysql/<module>-schema.sql
+
+# PostgreSQL
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema/postgres/<module>-schema.sql
+```
 
 ## Use Cases
 

@@ -14,7 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "mq_dead_letter", indexes = {
+@Table(name = "angus_mq_dead_letter", indexes = {
     // countByTopic / findByTopicLimit: WHERE topic=? AND deleted_at IS NULL
     @Index(name = "idx_mq_dlq_topic", columnList = "topic"),
     // purgeSoftDeletedBefore: WHERE deleted_at IS NOT NULL AND deleted_at < ?

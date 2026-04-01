@@ -13,14 +13,14 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
 
   @Modifying
   @Query(value = """
-      UPDATE mq_message
+      UPDATE angus_mq_message
       SET status=1,
           lease_until = :leaseUntil,
           lease_owner=:owner,
           updated_at=NOW()
       WHERE id IN (
         SELECT id FROM (
-          SELECT id FROM mq_message
+          SELECT id FROM angus_mq_message
           WHERE topic=:topic AND partition_id IN (:partitions)
             AND status=0 AND visible_at <= NOW()
           ORDER BY priority DESC, visible_at ASC, id ASC
@@ -35,12 +35,12 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
       @Param("limit") int limit);
 
   @Modifying
-  @Query(value = "UPDATE mq_message SET status=2, updated_at=NOW() WHERE id IN (:ids)", nativeQuery = true)
+  @Query(value = "UPDATE angus_mq_message SET status=2, updated_at=NOW() WHERE id IN (:ids)", nativeQuery = true)
   int ackBatch(@Param("ids") Collection<Long> ids);
 
   @Modifying
   @Query(value = """
-      UPDATE mq_message
+      UPDATE angus_mq_message
       SET status=0,
           attempts=attempts+1,
           visible_at = :newVisibleAt,
@@ -53,14 +53,14 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
 
   @Modifying
   @Query(value = """
-      UPDATE mq_message
+      UPDATE angus_mq_message
       SET status=0,
           lease_owner=NULL,
           lease_until=NULL,
           updated_at=NOW()
       WHERE id IN (
         SELECT id FROM (
-          SELECT id FROM mq_message
+          SELECT id FROM angus_mq_message
           WHERE status=1 AND lease_until < NOW()
           ORDER BY lease_until ASC, id ASC
           LIMIT :limit
@@ -70,7 +70,7 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   int reclaimExpiredLeases(@Param("limit") int limit);
 
   @Query(value = """
-      SELECT * FROM mq_message
+      SELECT * FROM angus_mq_message
       WHERE lease_owner=:owner AND lease_until >= NOW() AND status=1
       ORDER BY priority DESC, visible_at ASC, id ASC
       LIMIT :limit
@@ -78,12 +78,12 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   List<MessageEntity> findLeasedByOwner(@Param("owner") String owner,
       @Param("limit") int limit);
 
-  @Query(value = "SELECT status, COUNT(*) cnt FROM mq_message WHERE topic=:topic GROUP BY status", nativeQuery = true)
+  @Query(value = "SELECT status, COUNT(*) cnt FROM angus_mq_message WHERE topic=:topic GROUP BY status", nativeQuery = true)
   List<Object[]> countByStatus(@Param("topic") String topic);
 
   @Query(value = """
       SELECT partition_id, COUNT(*) cnt
-      FROM mq_message
+      FROM angus_mq_message
       WHERE topic=:topic AND status=0 AND visible_at <= NOW()
       GROUP BY partition_id
       ORDER BY partition_id
@@ -91,11 +91,11 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   List<Object[]> readyCountPerPartition(@Param("topic") String topic);
 
   @Modifying
-  @Query(value = "DELETE FROM mq_message WHERE topic=:topic AND status=2 AND updated_at < :before", nativeQuery = true)
+  @Query(value = "DELETE FROM angus_mq_message WHERE topic=:topic AND status=2 AND updated_at < :before", nativeQuery = true)
   int purgeDoneBefore(@Param("topic") String topic, @Param("before") Instant before);
 
   @Query(value = """
-      SELECT * FROM mq_message
+      SELECT * FROM angus_mq_message
       WHERE attempts >= max_attempts
       ORDER BY id ASC
       LIMIT :limit
@@ -103,6 +103,6 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   List<MessageEntity> findExceededAttempts(@Param("limit") int limit);
 
   @Modifying
-  @Query(value = "DELETE FROM mq_message WHERE id IN (:ids)", nativeQuery = true)
+  @Query(value = "DELETE FROM angus_mq_message WHERE id IN (:ids)", nativeQuery = true)
   int deleteByIds(@Param("ids") Collection<Long> ids);
 }

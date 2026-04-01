@@ -17,7 +17,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "mq_message", indexes = {
+@Table(name = "angus_mq_message", indexes = {
     // leaseBatch: WHERE topic=? AND partition_id IN (?) AND status=0 AND visible_at<=NOW()
     @Index(name = "idx_mq_msg_topic_status_visible", columnList = "topic, status, visible_at"),
     // reclaimExpiredLeases: WHERE status=1 AND lease_until<NOW()

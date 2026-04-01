@@ -3,6 +3,7 @@ package cloud.xcan.angus.cache;
 import cloud.xcan.angus.cache.config.CacheProperties;
 import cloud.xcan.angus.cache.entry.CacheEntry;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -153,10 +154,7 @@ public class HybridCacheManager implements IDistributedCache {
     }
 
     Optional<CacheEntry> entry = cachePersistence.findByKey(key);
-    if (entry.isPresent()) {
-      return !entry.get().hasExpired();
-    }
-    return false;
+    return entry.filter(cacheEntry -> !cacheEntry.hasExpired()).isPresent();
   }
 
   /**
@@ -165,7 +163,7 @@ public class HybridCacheManager implements IDistributedCache {
   @Override
   public long getTTL(String key) {
     Optional<CacheEntry> entry = cachePersistence.findByKey(key);
-    if (!entry.isPresent()) {
+    if (entry.isEmpty()) {
       return -2; // Key not found
     }
 
@@ -178,17 +176,14 @@ public class HybridCacheManager implements IDistributedCache {
       return -1; // No expiration
     }
 
-    long ttl = java.time.temporal.ChronoUnit.SECONDS.between(
-        LocalDateTime.now(),
-        cacheEntry.getExpireAt()
-    );
+    long ttl = ChronoUnit.SECONDS.between(LocalDateTime.now(), cacheEntry.getExpireAt());
     return Math.max(ttl, 0);
   }
 
   @Override
   public boolean expire(String key, long ttlSeconds) {
     Optional<CacheEntry> entry = cachePersistence.findByKey(key);
-    if (!entry.isPresent()) {
+    if (entry.isEmpty()) {
       return false;
     }
     try {

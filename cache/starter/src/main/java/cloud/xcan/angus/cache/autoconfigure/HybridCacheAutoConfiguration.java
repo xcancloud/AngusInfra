@@ -35,15 +35,18 @@ public class HybridCacheAutoConfiguration {
   }
 
   /**
-   * Chooses persistence at <em>bean creation</em> time via {@link ObjectProvider}, so a
-   * {@link SpringDataCacheEntryRepository} registered by JPA is used as the default. Falls back to
-   * {@link NoOpCachePersistence} (pure in-memory) when JPA jpa is not available.
+   * Chooses persistence at <em>bean creation</em> time via {@link ObjectProvider}: uses
+   * {@link SpringCachePersistenceAdapter} when a {@link SpringDataCacheEntryRepository} is
+   * available, otherwise falls back to {@link NoOpCachePersistence} (pure in-memory).
    */
   @Bean
   @ConditionalOnMissingBean(CachePersistence.class)
   public CachePersistence cachePersistence(
       ObjectProvider<SpringDataCacheEntryRepository> repositoryProvider) {
     SpringDataCacheEntryRepository repository = repositoryProvider.getIfAvailable();
+    if (repository == null) {
+      return new NoOpCachePersistence();
+    }
     return new SpringCachePersistenceAdapter(repository);
   }
 

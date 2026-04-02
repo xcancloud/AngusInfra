@@ -1,6 +1,11 @@
 package cloud.xcan.angus.job.config;
 
+import cloud.xcan.angus.job.executor.JobExecutor;
 import cloud.xcan.angus.job.properties.JobProperties;
+import cloud.xcan.angus.job.registrar.JobRegistrar;
+import cloud.xcan.angus.job.repository.ScheduledJobRepository;
+import cloud.xcan.angus.job.service.JobManagementService;
+import java.util.Map;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -24,6 +29,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * <p>JPA repositories and entity scanning are handled by Spring Boot's
  * auto-configuration ({@code JpaRepositoriesAutoConfiguration}) — no hard-coded package strings are
  * needed here.
+ *
+ * <p>Also registers {@link JobRegistrar} which scans all {@link JobExecutor} beans annotated with
+ * {@link cloud.xcan.angus.job.annotation.JobDefinition} and auto-registers them into the
+ * {@code scheduled_job} table on startup (idempotent).
  */
 @AutoConfiguration
 @EnableScheduling
@@ -60,5 +69,21 @@ public class JobAutoConfiguration {
     scheduler.setThreadNamePrefix("job-scheduler-");
     scheduler.initialize();
     return scheduler;
+  }
+
+  /**
+   * Registers all {@link JobExecutor} beans annotated with
+   * {@link cloud.xcan.angus.job.annotation.JobDefinition} into {@code scheduled_job} on startup.
+   *
+   * <p>The bean is conditional so that applications can provide their own {@link JobRegistrar}
+   * sub-class if custom registration logic is required.
+   */
+  @Bean
+  @ConditionalOnMissingBean(JobRegistrar.class)
+  public JobRegistrar jobRegistrar(
+      JobManagementService jobManagementService,
+      ScheduledJobRepository jobRepository,
+      Map<String, JobExecutor> jobExecutors) {
+    return new JobRegistrar(jobManagementService, jobRepository, jobExecutors);
   }
 }

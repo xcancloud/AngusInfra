@@ -212,7 +212,7 @@ public class GlobalHoldFilter implements Filter {
     principal.setRequestId(requestId)
         .setRemoteAddress(ipAddress)
         .setUserAgent(userAgent)
-        .setDeviceIno(deviceInfo);
+        .setDeviceInfo(deviceInfo);
     if (rootRequest) {
       PrincipalContext.setRequestAttribute(REMOTE_ADDR_IN_QUERY, ipAddress);
       PrincipalContext.setRequestAttribute(USER_AGENT, userAgent);

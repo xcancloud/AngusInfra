@@ -23,9 +23,9 @@ Job 模块
 
 job 模块由 `core` 与 `starter` 两部分组成：
 
-- `xcan-angusinfra.job-core`：定义任务 SPI、实体、枚举、请求模型和配置模型。
+- `xcan-angusinfra.job-core`：定义任务 SPI、实体、枚举、请求模型、配置模型和 `@JobDefinition` 注解。
 - `xcan-angusinfra.job-starter`：提供 Spring Boot 自动装配、调度器、分布式锁服务、健康监控、JPA
-  Repository 与 REST 管理接口。
+  Repository、REST 管理接口和 `JobRegistrar`（启动时自动注册）。
 
 模块当前支持三种任务类型：
 
@@ -44,6 +44,7 @@ job 模块由 `core` 与 `starter` 两部分组成：
 - 基于 `job_shard` 的分片态跟踪与 Map 阶段中间结果保存。
 - 支持暂停、恢复、立即触发、删除、查看历史和统计。
 - 内置过期锁清理、超时任务检测与小时级健康报告。
+- **`@JobDefinition` 注解驱动的自动注册**：应用启动时幂等写入 `scheduled_job`，无需手工 SQL。
 
 ---
 
@@ -54,11 +55,13 @@ job 模块由 `core` 与 `starter` 两部分组成：
 ```text
 业务应用
   ├─ 自定义 JobExecutor / ShardingJobExecutor / MapReduceJobExecutor
+  │     └─ 标注 @JobDefinition（声明 cron、group、重试策略等）
   ├─ 通过 REST API 管理任务
   └─ 引入 xcan-angusinfra.job-starter
 
 starter
   ├─ JobAutoConfiguration
+  ├─ JobRegistrar          ← 启动时扫描 @JobDefinition，幂等注册到 scheduled_job
   ├─ JobSchedulerService
   ├─ JobManagementService
   ├─ DistributedLockService
@@ -69,6 +72,7 @@ starter
 core
   ├─ ScheduledJob / JobExecutionLog / JobShard / DistributedLock
   ├─ JobExecutor SPI
+  ├─ @JobDefinition 注解
   ├─ CreateJobRequest / UpdateJobRequest / JobContext / JobExecutionResult
   └─ JobProperties / enums
 
@@ -100,7 +104,25 @@ core
 释放 distributed_lock
 ```
 
-### 2.3 分布式锁模型
+### 2.3 自动注册流程（JobRegistrar）
+
+```text
+应用启动 → ApplicationRunner.run()
+    ↓
+遍历 Spring 容器中所有 JobExecutor Bean
+    ↓
+读取 Bean 上的 @JobDefinition 注解（自动穿透 CGLIB/JDK 代理）
+    ↓
+findByJobNameAndJobGroup 检查是否已存在
+  ├─ 已存在 → 跳过（幂等，保护运维人员通过 REST API 做的修改）
+  └─ 不存在 → 调用 JobManagementService.createJob() 写入数据库
+    ↓
+若 initialDelaySeconds > 0，将 next_execute_time 推迟相应秒数
+    ↓
+输出汇总日志：注册 N 个，跳过 M 个，失败 K 个
+```
+
+### 2.4 分布式锁模型
 
 `DistributedLockService` 使用数据库表 `distributed_lock` 实现互斥：
 
@@ -109,9 +131,9 @@ core
 - `lock_key` 是主键，多个节点并发插入时只有一个节点成功。
 - 解锁时同时校验 `owner` 和 `lockValue`，避免误删其他节点锁。
 
-该设计避免了“先查再删再插”的 TOCTOU 竞争窗口，满足多实例部署下同一任务只会被一个节点执行。
+该设计避免了"先查再删再插"的 TOCTOU 竞争窗口，满足多实例部署下同一任务只会被一个节点执行。
 
-### 2.4 三种任务执行模型
+### 2.5 三种任务执行模型
 
 #### SIMPLE
 
@@ -145,6 +167,7 @@ core
 - 注册共享任务线程池 `jobExecutorPool`。
 - 注册 Spring 调度线程池 `taskScheduler`。
 - 启用 `JobProperties` 配置绑定。
+- 注册 `JobRegistrar`（`@ConditionalOnMissingBean`，可覆盖）。
 
 默认线程池策略：
 
@@ -163,7 +186,33 @@ core
 `DefaultJobExecutorRegistry` 会将所有实现 `JobExecutor` 的 Spring Bean
 收集到不可变 `Map<String, JobExecutor>` 中，因此任务定义里的 `beanName` 必须与 Spring Bean 名完全一致。
 
-### 3.3 任务模型
+### 3.3 `@JobDefinition` 注解
+
+声明在 `JobExecutor` 实现类上，由 `JobRegistrar` 在启动时读取并注册。
+
+| 属性                   | 类型        | 默认值       | 说明                                       |
+|----------------------|-----------|-----------|------------------------------------------|
+| `name`               | `String`  | —（必填）     | 任务名称，与 `group` 联合唯一                      |
+| `group`              | `String`  | `default` | 任务分组，建议使用应用短码（如 `gm`、`git`）             |
+| `cron`               | `String`  | —（必填）     | 6 段 Spring cron 表达式                      |
+| `type`               | `JobType` | `SIMPLE`  | 任务类型                                     |
+| `shardingCount`      | `int`     | `1`       | 分片数，仅 SHARDING / MAP_REDUCE 有意义          |
+| `shardingParameter`  | `String`  | `""`      | 逗号分隔的分片参数                                |
+| `maxRetryCount`      | `int`     | `3`       | 失败最大重试次数，`0` 表示不重试                       |
+| `initialDelaySeconds`| `int`     | `0`       | 首次触发延迟秒数，用于让应用充分预热                       |
+| `description`        | `String`  | `""`      | 任务描述，写入 `scheduled_job.description`      |
+
+### 3.4 JobRegistrar
+
+`JobRegistrar` 实现 `ApplicationRunner`，在应用启动就绪后执行：
+
+- 遍历所有 `JobExecutor` Bean，通过 `AopUtils.getTargetClass` 穿透代理读取 `@JobDefinition`。
+- 按 `name + group` 幂等检查，已存在则跳过。
+- 通过 `JobManagementService.createJob()` 写入数据库，同步计算首次触发时间。
+- 支持 `@Conditional` 条件 Bean：条件不满足时 Bean 不存在，自动不注册。
+- 可通过 `@ConditionalOnMissingBean(JobRegistrar.class)` 提供自定义子类覆盖默认行为。
+
+### 3.5 任务模型
 
 #### ScheduledJob
 
@@ -196,7 +245,7 @@ core
 - `status`：`PENDING` / `RUNNING` / `COMPLETED` / `FAILED`。
 - `mapResult`：MapReduce 的 map 中间结果。
 
-### 3.4 管理服务
+### 3.6 管理服务
 
 `JobManagementService` 提供：
 
@@ -209,7 +258,7 @@ core
 - 查看执行历史 `getJobExecutionHistory`
 - 统计指标 `getJobStatistics`
 
-### 3.5 健康监控
+### 3.7 健康监控
 
 `JobHealthMonitor` 提供三类后台自愈能力：
 
@@ -379,17 +428,21 @@ angus:
 
 > 模块通过 `AutoConfiguration.imports` 自动加载 `JobAutoConfiguration`，无需手工 `@EnableScheduling`。
 
-### 6.4 场景一：接入普通任务（SIMPLE）
+### 6.4 场景一：注解驱动自动注册（推荐）
 
-定义执行器：
+这是最简洁的接入方式。在执行器类上同时标注 `@Component` 和 `@JobDefinition`，启动时
+`JobRegistrar` 自动将任务写入 `scheduled_job` 表，无需手工 SQL 或调用 REST API。
 
 ```java
-import cloud.xcan.angus.job.executor.JobExecutor;
-import cloud.xcan.angus.job.model.JobContext;
-import cloud.xcan.angus.job.model.JobExecutionResult;
-import org.springframework.stereotype.Component;
-
 @Component("dailyReportJob")
+@JobDefinition(
+    name        = "daily-report",
+    group       = "report",
+    cron        = "0 0 2 * * *",
+    maxRetryCount = 3,
+    initialDelaySeconds = 10,
+    description = "每日凌晨生成日报"
+)
 public class DailyReportJob implements JobExecutor {
 
   @Override
@@ -403,31 +456,31 @@ public class DailyReportJob implements JobExecutor {
 }
 ```
 
-创建任务请求示例：
+**幂等保证**：已存在同名 Job 时自动跳过，重启不会覆盖运维人员通过 REST API 修改过的 cron。
 
-```json
-{
-  "jobName": "daily-report",
-  "jobGroup": "report",
-  "cronExpression": "0 0 2 * * *",
-  "beanName": "dailyReportJob",
-  "jobType": "SIMPLE",
-  "maxRetryCount": 3,
-  "description": "每日凌晨生成日报"
-}
-```
+**条件 Bean 支持**：若执行器类上标注了 `@Conditional`（如私有化版本条件），条件不满足时 Bean 不注册，
+`JobRegistrar` 自然跳过，无需特殊处理。
 
-### 6.5 场景二：接入分片任务（SHARDING）
+### 6.5 场景二：接入普通任务（SIMPLE）
+
+与场景一相同，`@JobDefinition` 默认 `type = SIMPLE`。适合日报生成、缓存刷新、单表清理等串行任务。
+
+### 6.6 场景三：接入分片任务（SHARDING）
 
 适合批量扫描、分库分表巡检、分片同步等天然可并行的任务。
 
 ```java
-import cloud.xcan.angus.job.executor.ShardingJobExecutor;
-import cloud.xcan.angus.job.model.JobContext;
-import cloud.xcan.angus.job.model.JobExecutionResult;
-import org.springframework.stereotype.Component;
-
 @Component("userSyncShardingJob")
+@JobDefinition(
+    name           = "user-sync",
+    group          = "sync",
+    cron           = "0 */10 * * * *",
+    type           = JobType.SHARDING,
+    shardingCount  = 4,
+    shardingParameter = "p0,p1,p2,p3",
+    maxRetryCount  = 2,
+    description    = "每10分钟执行一次用户同步"
+)
 public class UserSyncShardingJob implements ShardingJobExecutor {
 
   @Override
@@ -447,34 +500,22 @@ public class UserSyncShardingJob implements ShardingJobExecutor {
 }
 ```
 
-创建任务请求示例：
-
-```json
-{
-  "jobName": "user-sync",
-  "jobGroup": "sync",
-  "cronExpression": "0 */10 * * * *",
-  "beanName": "userSyncShardingJob",
-  "jobType": "SHARDING",
-  "shardingCount": 4,
-  "shardingParameter": "p0,p1,p2,p3",
-  "maxRetryCount": 2,
-  "description": "每10分钟执行一次用户同步"
-}
-```
-
-### 6.6 场景三：接入 MapReduce 任务（MAP_REDUCE）
+### 6.7 场景四：接入 MapReduce 任务（MAP_REDUCE）
 
 适合先并行计算、再统一聚合的场景，例如日志聚合、统计汇总、批量评分。
 
 ```java
-import cloud.xcan.angus.job.executor.MapReduceJobExecutor;
-import cloud.xcan.angus.job.model.JobContext;
-import cloud.xcan.angus.job.model.JobExecutionResult;
-import java.util.List;
-import org.springframework.stereotype.Component;
-
 @Component("salesSummaryJob")
+@JobDefinition(
+    name          = "sales-summary",
+    group         = "analytics",
+    cron          = "0 0/30 * * * *",
+    type          = JobType.MAP_REDUCE,
+    shardingCount = 8,
+    shardingParameter = "s0,s1,s2,s3,s4,s5,s6,s7",
+    maxRetryCount = 1,
+    description   = "半小时汇总一次销售数据"
+)
 public class SalesSummaryJob implements MapReduceJobExecutor {
 
   @Override
@@ -496,23 +537,7 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 }
 ```
 
-创建任务请求示例：
-
-```json
-{
-  "jobName": "sales-summary",
-  "jobGroup": "analytics",
-  "cronExpression": "0 0/30 * * * *",
-  "beanName": "salesSummaryJob",
-  "jobType": "MAP_REDUCE",
-  "shardingCount": 8,
-  "shardingParameter": "s0,s1,s2,s3,s4,s5,s6,s7",
-  "maxRetryCount": 1,
-  "description": "半小时汇总一次销售数据"
-}
-```
-
-### 6.7 场景四：通过 REST API 管理任务
+### 6.8 场景五：通过 REST API 管理任务
 
 控制器路径前缀：`/api/v1/jobs`
 
@@ -539,7 +564,7 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 - `successRate`
 - `avgExecutionTime`
 
-### 6.8 场景五：运维与监控接入
+### 6.9 场景六：运维与监控接入
 
 模块已内置基本运维能力：
 
@@ -554,6 +579,8 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 - `Job ... will be retried`
 - `Cleaned ... expired distributed lock(s)`
 - `Found ... job execution(s) potentially timed out`
+- `Registered job:` / `Job already registered, skipping:`
+- `Job registration complete —`
 
 ---
 
@@ -587,14 +614,18 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 
 ## 8. 注意事项
 
-1. `beanName` 必须与 Spring 容器中的执行器 Bean 名完全一致，否则执行时会抛出 “No JobExecutor
-   registered” 异常。
+1. `beanName` 必须与 Spring 容器中的执行器 Bean 名完全一致，否则执行时会抛出 "No JobExecutor
+   registered" 异常。
 2. `cronExpression` 使用 Spring 的 6 段表达式解析器，不是 Quartz 的 7 段扩展格式。
 3. `trigger` 只能触发 `READY` 或 `PAUSED` 任务，`RUNNING` 和 `FAILED` 状态不能直接触发。
 4. 分片任务与 MapReduce 任务都会先删除上一轮遗留 shard 再创建新 shard，因此 `job_shard`
-   表表达的是“当前/最近一次运行态”，不是永久历史。
+   表表达的是"当前/最近一次运行态"，不是永久历史。
 5. 任一 shard 失败会导致整个 SHARDING / MAP_REDUCE 任务进入失败处理流程。
 6. 锁超时时间 `lock-timeout-seconds` 过小会造成长任务尚未执行完成就被其他节点重新抢到，生产环境要按最大执行时长保守设置。
 7. `max-jobs-per-scan` 用于防止积压任务一次性灌满线程池；大批量任务场景不要盲目调大。
-8. `ExecutionStatus.TIMEOUT` 目前主要用于监控语义，源码中的健康监控会识别长时间 `RUNNING`
+8. `ExecutionStatus.TIMEOUT` 目前主要用于监控语义，健康监控会识别长时间 `RUNNING`
    记录并报警，但不会自动强制中断业务线程。
+9. `@JobDefinition` 注册是**幂等的**：重启不会覆盖已有记录。若需强制更新 cron，使用
+   `PUT /api/v1/jobs/{id}` REST 接口，或先删除数据库记录再重启。
+10. `JobRegistrar` 支持通过 `@ConditionalOnMissingBean(JobRegistrar.class)` 替换为自定义实现，
+    以满足特殊注册逻辑（如多数据源、动态 cron 从配置中心读取等）。

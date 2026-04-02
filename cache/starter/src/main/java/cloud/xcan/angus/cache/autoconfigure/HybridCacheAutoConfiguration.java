@@ -6,14 +6,12 @@ import cloud.xcan.angus.cache.IDistributedCache;
 import cloud.xcan.angus.cache.config.CacheProperties;
 import cloud.xcan.angus.cache.entry.CacheEntry;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
-import cloud.xcan.angus.cache.web.CacheManagementController;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -58,17 +56,4 @@ public class HybridCacheAutoConfiguration {
     return new TransactionalDistributedCache(core);
   }
 
-  /**
-   * Cache management REST controller — opt-in via {@code angus.cache.management.enabled=true}.
-   *
-   * <p><strong>Security notice:</strong> these endpoints can read, write and clear all cached
-   * data. Always protect them with authentication (e.g. Spring Security) before enabling in
-   * non-local environments.
-   */
-  @Bean
-  @ConditionalOnProperty(name = "angus.cache.management.enabled", havingValue = "true")
-  @ConditionalOnMissingBean(CacheManagementController.class)
-  public CacheManagementController cacheManagementController(IDistributedCache cache) {
-    return new CacheManagementController(cache);
-  }
 }

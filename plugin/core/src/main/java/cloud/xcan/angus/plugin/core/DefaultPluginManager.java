@@ -571,6 +571,31 @@ public class DefaultPluginManager implements PluginManager {
     return plugins.containsKey(pluginId);
   }
 
+  /**
+   * Return the Plugin instance for the given pluginId, or null if not found.
+   *
+   * @param pluginId plugin identifier
+   * @return Plugin instance or null
+   */
+  public Plugin getPlugin(String pluginId) {
+    PluginWrapper wrapper = plugins.get(pluginId);
+    return wrapper != null ? wrapper.getPlugin() : null;
+  }
+
+  /**
+   * Return the PluginContext associated with the given pluginId, or null if not found.
+   * <p>
+   * Callers can use the context to look up services registered by the plugin via
+   * {@link cloud.xcan.angus.plugin.api.PluginContext#getService(String, Class)}.
+   *
+   * @param pluginId plugin identifier
+   * @return PluginContext or null
+   */
+  public PluginContext getPluginContext(String pluginId) {
+    PluginWrapper wrapper = plugins.get(pluginId);
+    return wrapper != null ? wrapper.getContext() : null;
+  }
+
   private void publishEvent(PluginEvent event) {
     try {
       applicationContext.publishEvent(event);

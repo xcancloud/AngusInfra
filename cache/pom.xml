@@ -20,5 +20,6 @@
   <modules>
     <module>core</module>
     <module>starter</module>
+    <module>web</module>
   </modules>
 </project>

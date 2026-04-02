@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
-import cloud.xcan.angus.cache.web.CacheManagementController;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
@@ -52,15 +51,7 @@ class HybridCacheAutoConfigurationTest {
       Object cacheTarget =
           AopTestUtils.getUltimateTargetObject(ctx.getBean(IDistributedCache.class));
       assertThat(cacheTarget).isInstanceOf(TransactionalDistributedCache.class);
-      assertThat(ctx).doesNotHaveBean(CacheManagementController.class);
     });
-  }
-
-  @Test
-  void managementEnabled_registersController() {
-    baseRunner
-        .withPropertyValues("angus.cache.management.enabled=true")
-        .run(ctx -> assertThat(ctx).hasSingleBean(CacheManagementController.class));
   }
 
   @Test

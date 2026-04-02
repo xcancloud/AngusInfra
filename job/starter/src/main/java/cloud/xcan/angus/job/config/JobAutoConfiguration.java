@@ -7,6 +7,7 @@ import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import cloud.xcan.angus.job.service.JobManagementService;
 import java.util.Map;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -79,6 +80,7 @@ public class JobAutoConfiguration {
    * sub-class if custom registration logic is required.
    */
   @Bean
+  @ConditionalOnBean(JobManagementService.class)
   @ConditionalOnMissingBean(JobRegistrar.class)
   public JobRegistrar jobRegistrar(
       JobManagementService jobManagementService,

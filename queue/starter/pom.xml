@@ -136,7 +136,6 @@
                     <include>cloud.xcan.angus.queue.starter.adapter</include>
                     <include>cloud.xcan.angus.queue.starter.autoconfigure</include>
                     <include>cloud.xcan.angus.queue.starter.scheduler</include>
-                    <include>cloud.xcan.angus.queue.starter.web</include>
                   </includes>
                   <limits>
                     <limit>

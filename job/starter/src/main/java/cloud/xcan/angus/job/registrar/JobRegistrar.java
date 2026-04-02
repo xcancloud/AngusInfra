@@ -52,6 +52,21 @@ public class JobRegistrar implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
+    // -----------------------------------------------------------------------
+    // 启动阶段：清理遗留的 RUNNING 脏数据
+    //
+    // 正常情况下任务执行完毕后状态会恢复为 READY 或 FAILED。若应用崩溃（kill -9、
+    // OOM、强制重启等），正在执行的任务状态会永久滞留为 RUNNING，导致调度器
+    // 永远无法再次触发这些任务（调度器只轮询 READY 状态）。
+    //
+    // 此处在任务注册前批量重置所有 RUNNING → READY，确保每次重启后自动恢复正常调度。
+    // -----------------------------------------------------------------------
+    int reset = jobRepository.resetStaleRunningJobs();
+    if (reset > 0) {
+      log.warn("Reset {} stale RUNNING job(s) to READY on startup (caused by previous crash or forced shutdown)",
+          reset);
+    }
+
     int registered = 0;
     int skipped = 0;
     int failed = 0;

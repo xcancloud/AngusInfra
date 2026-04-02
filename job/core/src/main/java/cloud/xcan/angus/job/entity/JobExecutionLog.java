@@ -23,7 +23,7 @@ import lombok.Setter;
  */
 @Entity
 @Table(
-    name = "job_execution_log",
+    name = "angus_job_execution_log",
     indexes = {
         @Index(name = "idx_jel_job_id", columnList = "job_id"),
         @Index(name = "idx_jel_start_time", columnList = "start_time"),

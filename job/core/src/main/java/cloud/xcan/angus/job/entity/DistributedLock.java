@@ -24,7 +24,7 @@ import lombok.Setter;
  */
 @Entity
 @Table(
-    name = "distributed_lock",
+    name = "angus_distributed_lock",
     indexes = @Index(name = "idx_dl_expire_time", columnList = "expire_time")
 )
 @Getter

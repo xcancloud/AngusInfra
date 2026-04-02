@@ -25,7 +25,7 @@ import lombok.Setter;
  */
 @Entity
 @Table(
-    name = "scheduled_job",
+    name = "angus_scheduled_job",
     uniqueConstraints = @UniqueConstraint(
         name = "uk_job_name_group",
         columnNames = {"job_name", "job_group"}

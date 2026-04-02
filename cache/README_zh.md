@@ -219,7 +219,7 @@ angus:
   cache:
     memory:
       max-size: 10000            # L1 内存缓存最大条目数（LRU 驱逐阈值），默认 10000
-      cleanup-interval-seconds: 300  # 保留字段（兼容旧版 API），Caffeine 通过 per-entry TTL 自动管理过期，此值不再驱动驱逐
+      cleanup-interval-seconds: 300  # 保留字段（兼容旧版 API），Caffeine 通过 per-entity TTL 自动管理过期，此值不再驱动驱逐
     management:
       enabled: false             # 是否启用管理 REST API（/api/v1/cache/**），默认关闭
 ```

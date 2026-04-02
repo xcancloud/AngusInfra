@@ -446,7 +446,7 @@ public class Assert {
 
   /**
    * Assert that a Map contains entries; that is, it must not be {@code null} and must contain at
-   * least one entry.
+   * least one entity.
    * <pre class="code">Assert.notEmpty(map, "Map must contain entries");</pre>
    *
    * @param map     the map to check
@@ -462,7 +462,7 @@ public class Assert {
 
   /**
    * Assert that a Map contains entries; that is, it must not be {@code null} and must contain at
-   * least one entry.
+   * least one entity.
    * <pre class="code">
    * Assert.notEmpty(map, () -&gt; "The " + mapType + " map must contain entries");
    * </pre>

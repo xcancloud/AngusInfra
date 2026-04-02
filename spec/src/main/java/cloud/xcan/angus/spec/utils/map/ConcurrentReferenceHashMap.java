@@ -39,7 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * at any time, so it may appear that an unknown thread is silently removing entries.
  *
  * <p>If not explicitly specified, this implementation will use
- * {@linkplain SoftReference soft entry references}.
+ * {@linkplain SoftReference soft entity references}.
  */
 public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements
     ConcurrentMap<K, V> {
@@ -78,7 +78,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
   private final int shift;
 
   /**
-   * Late binding entry set.
+   * Late binding entity set.
    */
   @Nullable
   private volatile Set<Map.Entry<K, V>> entrySet;
@@ -685,7 +685,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
   protected interface Reference<K, V> {
 
     /**
-     * Return the referenced entry, or {@code null} if the entry is no longer available.
+     * Return the referenced entity, or {@code null} if the entity is no longer available.
      */
     @Nullable
     Entry<K, V> get();
@@ -702,7 +702,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
     Reference<K, V> getNext();
 
     /**
-     * Release this entry and ensure that it will be returned from
+     * Release this entity and ensure that it will be returned from
      * {@code ReferenceManager#pollForPurge()}.
      */
     void release();
@@ -710,7 +710,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
 
   /**
-   * A single map entry.
+   * A single map entity.
    *
    * @param <K> the key type
    * @param <V> the value type
@@ -794,7 +794,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Execute the task.
      *
      * @param ref     the found reference (or {@code null})
-     * @param entry   the found entry (or {@code null})
+     * @param entry   the found entity (or {@code null})
      * @param entries access to the underlying entries
      * @return the result of the task
      * @see #execute(Reference, Entry)
@@ -809,7 +809,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
      * Convenience method that can be used for tasks that do not need access to {@link Entries}.
      *
      * @param ref   the found reference (or {@code null})
-     * @param entry the found entry (or {@code null})
+     * @param entry the found entity (or {@code null})
      * @return the result of the task
      * @see #execute(Reference, Entry, Entries)
      */
@@ -835,7 +835,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
   private interface Entries<V> {
 
     /**
-     * Add a new entry with the specified value.
+     * Add a new entity with the specified value.
      *
      * @param value the value to add
      */
@@ -844,7 +844,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
 
   /**
-   * Internal entry-set implementation.
+   * Internal entity-set implementation.
    */
   private class EntrySet extends AbstractSet<Map.Entry<K, V>> {
 
@@ -889,7 +889,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
 
 
   /**
-   * Internal entry iterator implementation.
+   * Internal entity iterator implementation.
    */
   private class EntryIterator implements Iterator<Map.Entry<K, V>> {
 
@@ -989,7 +989,7 @@ public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implemen
     /**
      * Factory method used to create a new {@link Reference}.
      *
-     * @param entry the entry contained in the reference
+     * @param entry the entity contained in the reference
      * @param hash  the hash
      * @param next  the next reference in the chain, or {@code null} if none
      * @return a new {@link Reference}

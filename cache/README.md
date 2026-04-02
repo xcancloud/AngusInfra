@@ -25,7 +25,7 @@ and a persistent backing store. It is designed to provide:
   persistence.
 - `cloud.xcan.angus.cache.CaffeineMemoryCache` — L1 in-memory cache powered by Caffeine.
 - `cloud.xcan.angus.cache.CachePersistence` — Persistence abstraction for storing cache entries.
-- `cloud.xcan.angus.cache.entry.CacheEntry` / `CacheEntryRepository` — JPA entity and repository for
+- `cloud.xcan.angus.cache.entity.CacheEntry` / `CacheEntryRepository` — JPA entity and repository for
   persisted entries. The backing table is named **`angus_cache_entries`**.
 - `cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository` — Spring Data repository (starter).
 - `cloud.xcan.angus.cache.autoconfigure.HybridCacheAutoConfiguration` — Auto-configuration that
@@ -148,7 +148,7 @@ angus:
   cache:
     memory:
       max-size: 10000              # Max entries in L1 (LRU eviction threshold). Default: 10000
-      cleanup-interval-seconds: 300  # Kept for API compatibility; Caffeine manages per-entry TTL automatically
+      cleanup-interval-seconds: 300  # Kept for API compatibility; Caffeine manages per-entity TTL automatically
     management:
       enabled: false               # Expose /api/v1/cache/** management endpoints. Default: false
 ```

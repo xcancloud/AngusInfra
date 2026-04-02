@@ -41,11 +41,6 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
    */
   private final DistributedIncrAssigner distributedIncrAssigner;
 
-  /**
-   * Configurable initial capacity for better performance under high concurrency
-   */
-  private final int initialMapCapacity;
-
   private final Map<String, IdConfig> idConfigMap;
   private final Map<String, AtomicLong> idAtomicMap;
 
@@ -68,7 +63,6 @@ public class DefaultBidGenerator extends AbstractBidGenerator {
       DistributedIncrAssigner distributedIncrAssigner, int initialMapCapacity) {
     this.configIdAssigner = configIdAssigner;
     this.distributedIncrAssigner = distributedIncrAssigner;
-    this.initialMapCapacity = initialMapCapacity;
 
     // Initialize maps with configurable capacity to prevent frequent rehashing
     this.idConfigMap = new ConcurrentHashMap<>(initialMapCapacity, LOAD_FACTOR,

@@ -4,7 +4,7 @@ import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.HybridCacheManager;
 import cloud.xcan.angus.cache.IDistributedCache;
 import cloud.xcan.angus.cache.config.CacheProperties;
-import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.entity.CacheEntry;
 import cloud.xcan.angus.cache.jpa.SpringCachePersistenceAdapter;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import jakarta.persistence.EntityManagerFactory;
@@ -44,9 +44,7 @@ public class HybridCacheAutoConfiguration {
   public CachePersistence cachePersistence(
       ObjectProvider<SpringDataCacheEntryRepository> repositoryProvider) {
     SpringDataCacheEntryRepository repository = repositoryProvider.getIfAvailable();
-    return repository != null
-        ? new SpringCachePersistenceAdapter(repository)
-        : new NoOpCachePersistence();
+    return new SpringCachePersistenceAdapter(repository);
   }
 
   @Bean

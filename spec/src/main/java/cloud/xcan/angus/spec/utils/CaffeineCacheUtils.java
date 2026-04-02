@@ -68,7 +68,7 @@ public class CaffeineCacheUtils {
           .expireAfterWrite(expireAfterWriteMinutes, TimeUnit.MINUTES)
           .expireAfterAccess(expireAfterAccessMinutes, TimeUnit.MINUTES)
           .removalListener((RemovalListener<Object, Object>) (key, value, cause) -> {
-            log.debug("Cache [{}] entry removed: key={}, cause={}", cacheName, key, cause);
+            log.debug("Cache [{}] entity removed: key={}, cause={}", cacheName, key, cause);
           });
 
       // 启用统计（生产环境建议按需开启）
@@ -93,7 +93,7 @@ public class CaffeineCacheUtils {
           .refreshAfterWrite(refreshAfterWriteMinutes, TimeUnit.MINUTES)
           .expireAfterWrite(refreshAfterWriteMinutes * 3, TimeUnit.MINUTES)
           .removalListener((RemovalListener<Object, Object>) (key, value, cause) -> {
-            log.debug("Refresh cache [{}] entry removed: key={}, cause={}", cacheName, key, cause);
+            log.debug("Refresh cache [{}] entity removed: key={}, cause={}", cacheName, key, cause);
           })
           .build(new CacheLoader<Object, Object>() {
             @Override
@@ -115,7 +115,7 @@ public class CaffeineCacheUtils {
           .maximumSize(DEFAULT_MAXIMUM_SIZE)
           .expireAfterWrite(DEFAULT_EXPIRE_AFTER_WRITE_MINUTES, TimeUnit.MINUTES)
           .removalListener((RemovalListener<Object, Object>) (key, value, cause) -> {
-            log.debug("Soft reference cache [{}] entry removed: key={}, cause={}", cacheName, key,
+            log.debug("Soft reference cache [{}] entity removed: key={}, cause={}", cacheName, key,
                 cause);
           })
           .build();
@@ -133,7 +133,7 @@ public class CaffeineCacheUtils {
           .maximumSize(DEFAULT_MAXIMUM_SIZE)
           .expireAfterWrite(DEFAULT_EXPIRE_AFTER_WRITE_MINUTES, TimeUnit.MINUTES)
           .removalListener((RemovalListener<Object, Object>) (key, value, cause) -> {
-            log.debug("Weak reference cache [{}] entry removed: key={}, cause={}", cacheName, key,
+            log.debug("Weak reference cache [{}] entity removed: key={}, cause={}", cacheName, key,
                 cause);
           })
           .build();

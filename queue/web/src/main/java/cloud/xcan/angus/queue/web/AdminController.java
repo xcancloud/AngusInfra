@@ -1,6 +1,6 @@
 package cloud.xcan.angus.queue.web;
 
-import cloud.xcan.angus.queue.core.service.QueueAdminService;
+import cloud.xcan.angus.queue.service.QueueAdminService;
 import cloud.xcan.angus.remote.ApiLocaleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -73,7 +73,7 @@ public class JobSchedulerService {
   private final String nodeId = UUID.randomUUID().toString();
 
   // ---------------------------------------------------------------------------
-  // Scheduler entry point
+  // Scheduler entity point
   // ---------------------------------------------------------------------------
 
   @Scheduled(fixedDelayString = "${angus.job.scan-interval-ms:1000}")

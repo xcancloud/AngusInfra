@@ -1,7 +1,7 @@
 package cloud.xcan.angus.cache;
 
 import cloud.xcan.angus.cache.config.CacheProperties;
-import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
@@ -193,7 +193,7 @@ public class HybridCacheManager implements IDistributedCache {
       cacheEntry.setTtlSeconds(ttlSeconds);
       cacheEntry.setIsExpired(false);
       cachePersistence.save(cacheEntry);
-      memoryCache.remove(key); // invalidate memory entry; refreshed on next get()
+      memoryCache.remove(key); // invalidate memory entity; refreshed on next get()
       log.debug("Cache expiration set: key={}, ttl={}", key, ttlSeconds);
       return true;
     } catch (Exception e) {

@@ -6,9 +6,7 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   cloud.xcan.angus.web.JacksonAutoConfigurer,\
   cloud.xcan.angus.web.EnumRegisterAutoConfigurer,\
   cloud.xcan.angus.web.AuditLogAutoConfigurer,\
-  cloud.xcan.angus.web.SystemLogAutoConfigurer,\
-  cloud.xcan.angus.persistence.jpa.JpaAutoConfigurer,\
-  cloud.xcan.angus.persistence.jpa.CommonLinkJpaAutoConfigurer
+  cloud.xcan.angus.web.SystemLogAutoConfigurer
 org.springframework.context.ApplicationListener=\
   cloud.xcan.angus.web.listener.ApplicationReadyListener,\
   cloud.xcan.angus.web.listener.ApplicationInitListener

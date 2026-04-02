@@ -50,7 +50,7 @@ import org.springframework.util.CollectionUtils;
     SessionImplementor.class})
 @EnableConfigurationProperties({JpaProperties.class, DataSourceExtraProperties.class,
     HikariProperties.class})
-@Import(HibernateJpaConfiguration.class)
+@Import(JpaHibernateConfiguration.class)
 @ConditionalOnProperty(name = "angus.datasource.enabled", havingValue = "true")
 public class JpaAutoConfigurer {
 

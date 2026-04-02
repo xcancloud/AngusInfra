@@ -14,9 +14,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import cloud.xcan.angus.queue.core.model.MessageData;
-import cloud.xcan.angus.queue.core.service.QueueService;
-import cloud.xcan.angus.queue.starter.autoconfigure.QueueProperties;
+import cloud.xcan.angus.queue.model.MessageData;
+import cloud.xcan.angus.queue.service.QueueService;
+import cloud.xcan.angus.queue.autoconfigure.QueueProperties;
 import java.time.Instant;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

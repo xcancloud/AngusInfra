@@ -449,7 +449,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
   private void validateAuthorities(Collection<? extends GrantedAuthority> authorities) {
     Assert.notNull(authorities, "Authorities list must not be null");
     for (GrantedAuthority authority : authorities) {
-      Assert.notNull(authority, "Authorities list contains a null entry");
+      Assert.notNull(authority, "Authorities list contains a null entity");
       Assert.hasText(authority.getAuthority(),
           "getAuthority() method must return a non-empty string");
     }

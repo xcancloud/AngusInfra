@@ -4,7 +4,6 @@ import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
 import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
 import cloud.xcan.angus.persistence.config.DataSourceExtraProperties;
 import cloud.xcan.angus.persistence.config.HikariProperties;
-import cloud.xcan.angus.persistence.jpa.repository.BaseRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
@@ -23,9 +22,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for UC View Repository.
@@ -81,13 +78,4 @@ public class CommonLinkJpaAutoConfigurer {
     return new HikariDataSource(hikariConfig);
   }
 
-  @EnableTransactionManagement
-  @EnableJpaRepositories(
-      repositoryBaseClass = BaseRepositoryImpl.class,
-      entityManagerFactoryRef = "commonLinkEntityManagerFactory",
-      transactionManagerRef = "commonLinkTransactionManager",
-      basePackages = {"cloud.xcan.angus.api.commonlink"})
-  public static class JpaEnableCommonLinkConfiguration {
-
-  }
 }

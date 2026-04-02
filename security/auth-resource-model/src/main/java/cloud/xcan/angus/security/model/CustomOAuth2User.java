@@ -452,7 +452,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
     @Override
     public int compare(GrantedAuthority g1, GrantedAuthority g2) {
-      // Neither should ever be null as each entry is checked before adding it to
+      // Neither should ever be null as each entity is checked before adding it to
       // the set. If the authority is null, it is a custom authority and should
       // precede others.
       if (g2.getAuthority() == null) {
@@ -600,7 +600,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
     /**
      * Populates the roles. This method is a shortcut for calling {@link #authorities(String...)},
-     * but automatically prefixes each entry with "ROLE_". This means the following:
+     * but automatically prefixes each entity with "ROLE_". This means the following:
      *
      * <code>
      * builder.roles("USER","ADMIN");

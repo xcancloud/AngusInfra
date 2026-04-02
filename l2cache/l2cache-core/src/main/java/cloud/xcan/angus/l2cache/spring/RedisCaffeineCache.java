@@ -363,7 +363,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
 
   /**
    * <p>
-   * Evicts a single cache entry from both L1 and L2 caches. Ensures proper order: Redis first, then
+   * Evicts a single cache entity from both L1 and L2 caches. Ensures proper order: Redis first, then
    * local cache to prevent race conditions.
    * </p>
    *
@@ -383,7 +383,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
     level1Cache.invalidate(key);
 
     if (log.isDebugEnabled()) {
-      log.debug("Evicted cache entry for key: {}", key);
+      log.debug("Evicted cache entity for key: {}", key);
     }
   }
 
@@ -556,7 +556,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
     } else {
       String key = key0.toString();
       level1Cache.invalidate(key);
-      log.debug("Cleared local cache entry for cache: {}, key: {}", this.cacheName, key);
+      log.debug("Cleared local cache entity for cache: {}, key: {}", this.cacheName, key);
     }
   }
 
@@ -606,7 +606,7 @@ public class RedisCaffeineCache extends AbstractValueAdaptingCache {
    * <p>
    * Checks if L1 cache is enabled for a specific Redis cache key. This allows fine-grained control
    * over which keys use L1 cache. The argument is the fully qualified key (same as {@link #getKey}
-   * output), not the logical entry key.
+   * output), not the logical entity key.
    * </p>
    *
    * @param cacheKey the tenant-aware Redis key to check

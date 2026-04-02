@@ -64,7 +64,7 @@ public final class UnzipUtils {
       while ((zipEntry = zipInputStream.getNextEntry()) != null) {
         Path outPath = destDir.resolve(zipEntry.getName()).normalize();
         if (!outPath.startsWith(destDir)) {
-          throw new IOException("Zip entry outside destination: " + zipEntry.getName());
+          throw new IOException("Zip entity outside destination: " + zipEntry.getName());
         }
 
         if (zipEntry.isDirectory()) {

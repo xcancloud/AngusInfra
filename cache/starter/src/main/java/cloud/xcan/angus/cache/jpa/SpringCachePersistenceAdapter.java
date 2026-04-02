@@ -1,7 +1,7 @@
 package cloud.xcan.angus.cache.jpa;
 
 import cloud.xcan.angus.cache.CachePersistence;
-import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 

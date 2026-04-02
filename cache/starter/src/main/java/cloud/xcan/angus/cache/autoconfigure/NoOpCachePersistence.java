@@ -1,7 +1,7 @@
 package cloud.xcan.angus.cache.autoconfigure;
 
 import cloud.xcan.angus.cache.CachePersistence;
-import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;

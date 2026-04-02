@@ -93,7 +93,7 @@ public class CacheManagementController {
     return ApiLocaleResult.success();
   }
 
-  @Operation(operationId = "deleteCacheKey", summary = "Delete cache key", description = "Delete a cache entry by key. If the key does not exist, the operation is idempotent and returns success in wrapper.",
+  @Operation(operationId = "deleteCacheKey", summary = "Delete cache key", description = "Delete a cache entity by key. If the key does not exist, the operation is idempotent and returns success in wrapper.",
       responses = {
           @ApiResponse(responseCode = "200", description = "Deleted or not present (wrapped)")})
   @DeleteMapping("/{key}")

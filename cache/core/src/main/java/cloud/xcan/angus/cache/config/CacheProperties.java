@@ -29,8 +29,8 @@ public class CacheProperties {
     private long maxSize = 10000;
 
     /**
-     * Retained for API compatibility; no longer drives Caffeine eviction. Caffeine uses per-entry
-     * TTL derived from each entry's expireAt timestamp.
+     * Retained for API compatibility; no longer drives Caffeine eviction. Caffeine uses per-entity
+     * TTL derived from each entity's expireAt timestamp.
      */
     private long cleanupIntervalSeconds = 300;
   }

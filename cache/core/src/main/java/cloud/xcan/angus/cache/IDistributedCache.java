@@ -33,7 +33,7 @@ public interface IDistributedCache {
   Optional<String> get(String key);
 
   /**
-   * Delete a cache entry
+   * Delete a cache entity
    *
    * @param key Cache key
    * @return true if deleted, false if not found

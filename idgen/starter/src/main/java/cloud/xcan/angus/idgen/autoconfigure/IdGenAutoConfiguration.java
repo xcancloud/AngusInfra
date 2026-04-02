@@ -160,9 +160,9 @@ public class IdGenAutoConfiguration {
         bidConfig.getInitialMapCapacity());
   }
 
-  static final class CoreCondition implements Condition {
+  public static final class CoreCondition implements Condition {
 
-    CoreCondition() {
+    public CoreCondition() {
     }
 
     @Override

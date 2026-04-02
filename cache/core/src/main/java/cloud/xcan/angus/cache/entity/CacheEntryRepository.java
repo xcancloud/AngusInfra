@@ -1,0 +1,47 @@
+package cloud.xcan.angus.cache.entity;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Persistence operations shape. The core module doesn't depend on Spring Data; the starter will
+ * provide an implementation that delegates to Spring Data JPA.
+ */
+public interface CacheEntryRepository {
+
+  /**
+   * Find cache entity by key
+   */
+  Optional<CacheEntry> findByKey(String key);
+
+  /**
+   * Delete cache entity by key
+   */
+  boolean deleteByKey(String key);
+
+  /**
+   * Find all expired entries
+   */
+  List<CacheEntry> findExpiredEntries();
+
+  /**
+   * Find all entries that should expire before a certain time
+   */
+  List<CacheEntry> findEntriesExpireBefore(LocalDateTime expireTime);
+
+  /**
+   * Delete expired entries
+   */
+  int deleteExpiredEntries();
+
+  /**
+   * Count total entries
+   */
+  long count();
+
+  /**
+   * Count expired entries
+   */
+  long countExpiredEntries();
+}

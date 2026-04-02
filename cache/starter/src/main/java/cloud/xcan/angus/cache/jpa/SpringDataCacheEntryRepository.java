@@ -1,6 +1,6 @@
 package cloud.xcan.angus.cache.jpa;
 
-import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;

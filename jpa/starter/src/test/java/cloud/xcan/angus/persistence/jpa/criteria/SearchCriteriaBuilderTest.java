@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 class SearchCriteriaBuilderTest {
 
   /**
-   * Fresh type never passed to SearchCriteriaBuilder — static maps have no entry.
+   * Fresh type never passed to SearchCriteriaBuilder — static maps have no entity.
    */
   static class UnconfiguredPageQuery extends PageQuery {
 

@@ -9,7 +9,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
 /**
- * Applies {@link TenantFilterApplicator} on {@code @Transactional} entry. Runs with low precedence
+ * Applies {@link TenantFilterApplicator} on {@code @Transactional} entity. Runs with low precedence
  * so the transaction interceptor has typically bound a synchronization / session already.
  */
 @Aspect

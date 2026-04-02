@@ -12,7 +12,7 @@ import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Caffeine-based In-Memory Cache Implementation. Uses per-entry TTL via {@link Expiry} so each
+ * Caffeine-based In-Memory Cache Implementation. Uses per-entity TTL via {@link Expiry} so each
  * cache item expires at its own {@code expireAt} timestamp, independent of any global access-based
  * eviction policy.
  */
@@ -41,7 +41,7 @@ public class CaffeineMemoryCache {
 
   /**
    * @param maxSize                maximum number of entries held in memory (LRU eviction)
-   * @param cleanupIntervalSeconds retained for API compatibility; Caffeine manages per-entry expiry
+   * @param cleanupIntervalSeconds retained for API compatibility; Caffeine manages per-entity expiry
    *                               automatically via the {@code expireAt} timestamp, so this
    *                               parameter is no longer used in the Caffeine builder
    */
@@ -67,7 +67,7 @@ public class CaffeineMemoryCache {
           @Override
           public long expireAfterRead(String key, CacheItem value, long currentTime,
               long currentDuration) {
-            return currentDuration; // reading does not reset per-entry TTL
+            return currentDuration; // reading does not reset per-entity TTL
           }
         })
         .recordStats()

@@ -1,6 +1,6 @@
 package cloud.xcan.angus.cache;
 
-import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.util.Optional;
 
 public interface CachePersistence {
@@ -10,9 +10,9 @@ public interface CachePersistence {
   CacheEntry save(CacheEntry entry);
 
   /**
-   * Deletes the entry with the given key.
+   * Deletes the entity with the given key.
    *
-   * @return {@code true} if an entry was found and removed; {@code false} otherwise
+   * @return {@code true} if an entity was found and removed; {@code false} otherwise
    */
   boolean deleteByKey(String key);
 

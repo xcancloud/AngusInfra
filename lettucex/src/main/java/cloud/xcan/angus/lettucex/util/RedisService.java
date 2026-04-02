@@ -699,7 +699,7 @@ public class RedisService<T> {
 
   /**
    * <p>
-   * Gets the entry set (values) of the hash at the specified key.
+   * Gets the entity set (values) of the hash at the specified key.
    * </p>
    *
    * @param key the key to get hash values for

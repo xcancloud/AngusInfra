@@ -1,10 +1,10 @@
 package cloud.xcan.angus.queue.web;
 
-import cloud.xcan.angus.queue.core.model.LeaseMessages;
-import cloud.xcan.angus.queue.core.model.MessageData;
-import cloud.xcan.angus.queue.core.model.SendMessage;
-import cloud.xcan.angus.queue.core.service.QueueService;
-import cloud.xcan.angus.queue.starter.autoconfigure.QueueProperties;
+import cloud.xcan.angus.queue.model.LeaseMessages;
+import cloud.xcan.angus.queue.model.MessageData;
+import cloud.xcan.angus.queue.model.SendMessage;
+import cloud.xcan.angus.queue.service.QueueService;
+import cloud.xcan.angus.queue.autoconfigure.QueueProperties;
 import cloud.xcan.angus.remote.ApiLocaleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

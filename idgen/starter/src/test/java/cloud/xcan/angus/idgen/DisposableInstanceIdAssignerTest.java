@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
-import cloud.xcan.angus.idgen.dao.InstanceRepo;
+import cloud.xcan.angus.idgen.entity.InstanceRepository;
 import cloud.xcan.angus.idgen.entity.Instance;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class DisposableInstanceIdAssignerTest {
 
   @Mock
-  private InstanceRepo instanceRepo;
+  private InstanceRepository instanceRepo;
 
   @InjectMocks
   private DisposableInstanceIdAssigner assigner;

@@ -9,11 +9,17 @@ import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
 import cloud.xcan.angus.idgen.dao.IdConfigRepo;
 import cloud.xcan.angus.idgen.dao.InstanceRepo;
+import cloud.xcan.angus.idgen.dao.SpringDataIdConfigRepository;
+import cloud.xcan.angus.idgen.dao.SpringIdConfigPersistenceAdapter;
+import cloud.xcan.angus.idgen.entity.Instance;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies;
 import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import cloud.xcan.angus.persistence.jpa.identity.SnowflakeIdGenerator;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
@@ -21,6 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
@@ -31,6 +38,14 @@ public class IdGenAutoConfigurer {
 
   public IdGenAutoConfigurer(IdGenProperties idGenProperties) {
     this.idGenProperties = idGenProperties;
+  }
+
+  @Configuration(proxyBeanMethods = false)
+  @ConditionalOnBean(EntityManagerFactory.class)
+  @EntityScan(basePackageClasses = Instance.class)
+  @EnableJpaRepositories(basePackageClasses = InstanceRepo.class)
+  static class CacheJpaRepositoryConfiguration {
+
   }
 
   @Bean
@@ -96,6 +111,13 @@ public class IdGenAutoConfigurer {
     SnowflakeIdGenerator.setUidGenerator(generator);
     generator.afterPropertiesSet();
     return generator;
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  @ConditionalOnBean(SpringDataIdConfigRepository.class)
+  public IdConfigRepo idConfigRepo(SpringDataIdConfigRepository springDataIdConfigRepository) {
+    return new SpringIdConfigPersistenceAdapter(springDataIdConfigRepository);
   }
 
   @Bean

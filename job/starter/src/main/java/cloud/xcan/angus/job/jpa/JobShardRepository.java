@@ -1,4 +1,4 @@
-package cloud.xcan.angus.job.repository;
+package cloud.xcan.angus.job.jpa;
 
 import cloud.xcan.angus.job.entity.JobShard;
 import cloud.xcan.angus.job.enums.ShardStatus;
@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA repository for {@link JobShard}.
+ * Spring Data JPA jpa for {@link JobShard}.
  */
 @Repository
 public interface JobShardRepository extends JpaRepository<JobShard, Long> {

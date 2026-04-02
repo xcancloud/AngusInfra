@@ -1,7 +1,7 @@
 package cloud.xcan.angus.idgen;
 
 import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
-import cloud.xcan.angus.idgen.dao.IdConfigRepo;
+import cloud.xcan.angus.idgen.entity.IdConfigRepository;
 import cloud.xcan.angus.idgen.entity.IdConfig;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class DisposableConfigIdAssigner implements ConfigIdAssigner {
 
-  private final IdConfigRepo idConfigRepository;
+  private final IdConfigRepository idConfigRepository;
 
-  public DisposableConfigIdAssigner(IdConfigRepo idConfigRepository) {
+  public DisposableConfigIdAssigner(IdConfigRepository idConfigRepository) {
     this.idConfigRepository = idConfigRepository;
   }
 

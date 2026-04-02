@@ -8,7 +8,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
-import cloud.xcan.angus.idgen.dao.InstanceRepo;
+import cloud.xcan.angus.idgen.entity.InstanceRepository;
 import cloud.xcan.angus.idgen.entity.Instance;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import org.slf4j.Logger;
@@ -45,9 +45,9 @@ public class DisposableInstanceIdAssigner implements InstanceIdAssigner {
     retrieveFromEnv();
   }
 
-  private InstanceRepo instanceRepository;
+  private InstanceRepository instanceRepository;
 
-  public DisposableInstanceIdAssigner(InstanceRepo workerNodeRepository) {
+  public DisposableInstanceIdAssigner(InstanceRepository workerNodeRepository) {
     this.instanceRepository = workerNodeRepository;
   }
 

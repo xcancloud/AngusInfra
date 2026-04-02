@@ -16,10 +16,14 @@ import cloud.xcan.angus.queue.starter.repository.MessageRepository;
 import cloud.xcan.angus.queue.starter.scheduler.DeadLetterMoverScheduler;
 import cloud.xcan.angus.queue.starter.scheduler.DlqSoftDeletePurgerScheduler;
 import cloud.xcan.angus.queue.starter.scheduler.LeaseReaperScheduler;
+import jakarta.persistence.EntityManagerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,13 +33,19 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
 @EnableScheduling
 @EnableConfigurationProperties(QueueProperties.class)
-@EntityScan(basePackageClasses = {MessageEntity.class, DeadLetterEntity.class})
-@EnableJpaRepositories(basePackageClasses = {MessageRepository.class, DeadLetterRepository.class})
 @ConditionalOnClass(JpaRepository.class)
 public class QueueAutoConfiguration {
+
+  @Configuration(proxyBeanMethods = false)
+  @ConditionalOnBean(EntityManagerFactory.class)
+  @EntityScan(basePackageClasses = {MessageEntity.class, DeadLetterEntity.class})
+  @EnableJpaRepositories(basePackageClasses = {MessageRepository.class, DeadLetterRepository.class})
+  static class QueueJpaRepositoryConfiguration {
+
+  }
 
   @Bean
   @ConditionalOnMissingBean(RepositoryAdapter.class)

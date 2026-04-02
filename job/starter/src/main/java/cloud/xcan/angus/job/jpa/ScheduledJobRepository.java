@@ -1,4 +1,4 @@
-package cloud.xcan.angus.job.repository;
+package cloud.xcan.angus.job.jpa;
 
 import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.enums.JobStatus;
@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA repository for {@link ScheduledJob}.
+ * Spring Data JPA jpa for {@link ScheduledJob}.
  */
 @Repository
 public interface ScheduledJobRepository extends JpaRepository<ScheduledJob, Long> {

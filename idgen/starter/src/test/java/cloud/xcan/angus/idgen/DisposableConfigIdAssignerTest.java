@@ -7,7 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import cloud.xcan.angus.idgen.dao.IdConfigRepo;
+import cloud.xcan.angus.idgen.entity.IdConfigRepository;
 import cloud.xcan.angus.idgen.entity.IdConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class DisposableConfigIdAssignerTest {
 
   @Mock
-  private IdConfigRepo idConfigRepo;
+  private IdConfigRepository idConfigRepo;
 
   @InjectMocks
   private DisposableConfigIdAssigner assigner;

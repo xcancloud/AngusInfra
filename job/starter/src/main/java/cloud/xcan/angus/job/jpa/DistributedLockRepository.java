@@ -1,4 +1,4 @@
-package cloud.xcan.angus.job.repository;
+package cloud.xcan.angus.job.jpa;
 
 import cloud.xcan.angus.job.entity.DistributedLock;
 import java.time.LocalDateTime;
@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA repository for {@link DistributedLock}.
+ * Spring Data JPA jpa for {@link DistributedLock}.
  */
 @Repository
 public interface DistributedLockRepository extends JpaRepository<DistributedLock, String> {

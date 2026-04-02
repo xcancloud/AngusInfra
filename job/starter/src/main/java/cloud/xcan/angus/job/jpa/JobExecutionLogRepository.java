@@ -1,4 +1,4 @@
-package cloud.xcan.angus.job.repository;
+package cloud.xcan.angus.job.jpa;
 
 import cloud.xcan.angus.job.entity.JobExecutionLog;
 import cloud.xcan.angus.job.enums.ExecutionStatus;
@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA repository for {@link JobExecutionLog}.
+ * Spring Data JPA jpa for {@link JobExecutionLog}.
  */
 @Repository
 public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog, Long> {

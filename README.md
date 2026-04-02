@@ -85,7 +85,6 @@ build scalable, secure, and maintainable server-side applications more efficient
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
 | **`integration/web-starter`**           | RESTful API development toolkit with auto-configured unified response formats, global exception handling, and CORS policies. |
 | **`integration/oas3-starter`**          | OpenAPI 3.x support with automated API documentation generation and Swagger UI integration.                                  |
-| **`integration/jpa-starter`**           | Spring Data JPA integration with generic repositories, specification builders, and audit support.                            |
 | **`integration/feign-starter`**         | Spring Cloud OpenFeign declarative HTTP client integration with encoding, decoding, and error handling.                      |
 | **`integration/observability-starter`** | Logging, metrics, and data export utilities for application observability.                                                   |
 

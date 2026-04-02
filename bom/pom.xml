@@ -209,6 +209,12 @@
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
+        <artifactId>xcan-angusinfra.plugin-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cloud.xcan.angus</groupId>
         <artifactId>xcan-angusinfra.plugin-web</artifactId>
         <version>${project.version}</version>
       </dependency>

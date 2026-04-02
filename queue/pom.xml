@@ -12,7 +12,8 @@
   </parent>
 
   <artifactId>xcan-angusinfra.queue</artifactId>
-  <name>AngusInfra :: Queue</name>
+  <name>AngusInfra :: Queue :: Parent</name>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>Implementation of Message Queue with Database.</description>
 

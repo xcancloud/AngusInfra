@@ -11,9 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.idgen.BidGenerator;
-import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
+import cloud.xcan.angus.idgen.ConfigIdAssigner;
+import cloud.xcan.angus.idgen.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.DateFormat;
-import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
+import cloud.xcan.angus.idgen.bid.DefaultBidGenerator;
 import cloud.xcan.angus.idgen.bid.Format;
 import cloud.xcan.angus.idgen.bid.Mode;
 import cloud.xcan.angus.idgen.entity.IdConfig;

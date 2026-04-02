@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.core.io.ClassPathResource;
 
 /**
  * Tests for {@link SqlTemplateTableManager} using H2 as the backing database.

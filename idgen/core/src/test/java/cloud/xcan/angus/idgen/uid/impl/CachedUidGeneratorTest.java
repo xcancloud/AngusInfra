@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import cloud.xcan.angus.idgen.uid.CachedUidGenerator;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import java.util.HashSet;
 import java.util.Set;

@@ -156,5 +156,6 @@ class ShardingTableInterceptorTest {
   @ShardedTable
   @Table(name = "sample_sharded")
   static class SampleShardedEntity {
+
   }
 }

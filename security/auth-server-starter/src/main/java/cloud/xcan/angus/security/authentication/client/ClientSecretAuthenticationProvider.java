@@ -56,7 +56,7 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
   /**
    * Constructs a {@code ClientSecretAuthenticationProvider} using the provided parameters.
    *
-   * @param registeredClientRepository the repository of registered clients
+   * @param registeredClientRepository the jpa of registered clients
    * @param authorizationService       the authorization service
    */
   public ClientSecretAuthenticationProvider(RegisteredClientRepository registeredClientRepository,

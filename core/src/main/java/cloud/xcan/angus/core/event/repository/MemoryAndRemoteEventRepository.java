@@ -78,7 +78,7 @@ public class MemoryAndRemoteEventRepository<T extends AbstractEvent<?>> implemen
   }
 
   /**
-   * Set the capacity of this event repository.
+   * Set the capacity of this event jpa.
    *
    * @param capacity the capacity
    */

@@ -23,11 +23,11 @@ import cloud.xcan.angus.job.executor.JobExecutor;
 import cloud.xcan.angus.job.executor.JobExecutorRegistry;
 import cloud.xcan.angus.job.executor.MapReduceJobExecutor;
 import cloud.xcan.angus.job.executor.ShardingJobExecutor;
+import cloud.xcan.angus.job.jpa.JobExecutionLogRepository;
+import cloud.xcan.angus.job.jpa.JobShardRepository;
+import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.model.JobExecutionResult;
 import cloud.xcan.angus.job.properties.JobProperties;
-import cloud.xcan.angus.job.repository.JobExecutionLogRepository;
-import cloud.xcan.angus.job.repository.JobShardRepository;
-import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -88,8 +88,10 @@ class JobSchedulerServiceTest {
         jobExecutorPool,
         transactionManager
     );
-    lenient().when(jobRepository.save(any(ScheduledJob.class))).thenAnswer(inv -> inv.getArgument(0));
-    lenient().when(executionLogRepository.save(any(JobExecutionLog.class))).thenAnswer(inv -> inv.getArgument(0));
+    lenient().when(jobRepository.save(any(ScheduledJob.class)))
+        .thenAnswer(inv -> inv.getArgument(0));
+    lenient().when(executionLogRepository.save(any(JobExecutionLog.class)))
+        .thenAnswer(inv -> inv.getArgument(0));
     lenient().when(shardRepository.save(any(JobShard.class))).thenAnswer(inv -> inv.getArgument(0));
   }
 

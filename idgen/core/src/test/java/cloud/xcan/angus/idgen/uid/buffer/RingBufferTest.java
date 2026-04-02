@@ -97,7 +97,7 @@ class RingBufferTest {
             try {
               long value = ringBuffer.take();
               synchronized (lock) {
-               // Re-check under the same lock used for writes to prevent overshoot:
+                // Re-check under the same lock used for writes to prevent overshoot:
                 // two threads can both pass the outer loop condition before either increments.
                 if (takeTarget.get() < 0 || takeCount.get() < takeTarget.get()) {
                   takenValues.add(value);

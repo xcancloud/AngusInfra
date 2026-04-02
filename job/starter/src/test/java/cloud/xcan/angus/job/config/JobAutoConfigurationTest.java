@@ -2,6 +2,7 @@ package cloud.xcan.angus.job.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cloud.xcan.angus.job.autoconfigure.JobAutoConfiguration;
 import cloud.xcan.angus.job.properties.JobProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;

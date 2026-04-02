@@ -25,7 +25,7 @@ public class GitHubPlugin implements RestfulPlugin {
 
   @Override
   public String getDescription() {
-    return "Example plugin that exposes GitHub repository reading endpoints.";
+    return "Example plugin that exposes GitHub jpa reading endpoints.";
   }
 
   @Override

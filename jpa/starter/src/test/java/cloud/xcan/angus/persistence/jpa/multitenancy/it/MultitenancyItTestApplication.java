@@ -9,11 +9,12 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 /**
  * 仅用于多租户 H2 集成测试：扫描 IT 实体包，并包含 {@link TenantJpaAutoConfiguration} 所在包（
- * {@code cloud.xcan.angus.persistence.jpa.multitenancy}）以便 Hibernate 加载该包 {@code package-info}
- * 中的 {@code @FilterDef(xcanTenantScope)}。
+ * {@code cloud.xcan.angus.persistence.jpa.multitenancy}）以便 Hibernate 加载该包 {@code package-info} 中的
+ * {@code @FilterDef(xcanTenantScope)}。
  */
 @SpringBootApplication
-@EntityScan(basePackageClasses = {TenantEntity.class, MtItDepartment.class, TenantJpaAutoConfiguration.class})
+@EntityScan(basePackageClasses = {TenantEntity.class, MtItDepartment.class,
+    TenantJpaAutoConfiguration.class})
 @EnableJpaRepositories(basePackageClasses = MtItDepartmentRepository.class)
 @Import({TenantJpaAutoConfiguration.class, MultitenancyItDataSourceConfiguration.class})
 public class MultitenancyItTestApplication {

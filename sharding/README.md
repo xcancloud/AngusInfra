@@ -21,23 +21,23 @@ sharding/
 
 ### `sharding-core`
 
-| Package | Description |
-|---|---|
-| `annotation` | `@Sharding` (method), `@ShardedTable` (entity) |
-| `config` | `ShardingProperties`, `HikariShardingProperties` |
-| `context` | `ShardContext` (thread-local holder), `ShardInfo` |
-| `resolver` | `ShardKeyResolver` SPI |
-| `strategy` | `ShardingStrategy` SPI, `ModuloShardingStrategy`, `HashShardingStrategy` |
-| `table` | `ShardTableManager` SPI, `ShardTableRegistry` SPI, `ShardTableNameUtils`, `SqlTableMatcher` |
+| Package      | Description                                                                                 |
+|--------------|---------------------------------------------------------------------------------------------|
+| `annotation` | `@Sharding` (method), `@ShardedTable` (entity)                                              |
+| `config`     | `ShardingProperties`, `HikariShardingProperties`                                            |
+| `context`    | `ShardContext` (thread-local holder), `ShardInfo`                                           |
+| `resolver`   | `ShardKeyResolver` SPI                                                                      |
+| `strategy`   | `ShardingStrategy` SPI, `ModuloShardingStrategy`, `HashShardingStrategy`                    |
+| `table`      | `ShardTableManager` SPI, `ShardTableRegistry` SPI, `ShardTableNameUtils`, `SqlTableMatcher` |
 
 ### `sharding-starter`
 
-| Package | Description |
-|---|---|
-| `autoconfigure` | `ShardingAutoConfiguration`, `ShardingAspect`, `ShardingTableInterceptor`, `ShardingRoutingDataSource`, `SqlTemplateTableManager` |
-| `autoconfigure/registry` | `InMemoryShardTableRegistry`, `JdbcShardTableRegistry` |
-| `autoconfigure/resolver` | `DefaultShardKeyResolver` |
-| `autoconfigure/jpa` | `ShardTableEntity`, `ShardTableJpaRepository`, `JpaShardTableRegistry`, `ShardingJpaAutoConfiguration` |
+| Package                  | Description                                                                                                                       |
+|--------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `autoconfigure`          | `ShardingAutoConfiguration`, `ShardingAspect`, `ShardingTableInterceptor`, `ShardingRoutingDataSource`, `SqlTemplateTableManager` |
+| `autoconfigure/registry` | `InMemoryShardTableRegistry`, `JdbcShardTableRegistry`                                                                            |
+| `autoconfigure/resolver` | `DefaultShardKeyResolver`                                                                                                         |
+| `autoconfigure/jpa`      | `ShardTableEntity`, `ShardTableJpaRepository`, `JpaShardTableRegistry`, `ShardingJpaAutoConfiguration`                            |
 
 ---
 
@@ -101,7 +101,8 @@ public class ExecSample {
 
 ### 4. Enable JPA Repositories for Sharded Entities
 
-Add `@EnableJpaRepositories` pointing to the sharding entity manager factory and transaction manager:
+Add `@EnableJpaRepositories` pointing to the sharding entity manager factory and transaction
+manager:
 
 ```java
 @Configuration
@@ -182,11 +183,11 @@ exec_sample  →  exec_sample-{shardKey}-{idx}    (with secondary index)
 
 ### Table Registry
 
-| Implementation | Persistence | When to use |
-|---|---|---|
-| `InMemoryShardTableRegistry` | JVM lifetime | Default; safe with `CREATE TABLE IF NOT EXISTS` DDL |
-| `JdbcShardTableRegistry` | Primary datasource (JDBC) | `angus.sharding.table-registry-enabled=true` |
-| `JpaShardTableRegistry` | Primary datasource (JPA) | Provide `ShardTableJpaRepository` bean |
+| Implementation               | Persistence               | When to use                                         |
+|------------------------------|---------------------------|-----------------------------------------------------|
+| `InMemoryShardTableRegistry` | JVM lifetime              | Default; safe with `CREATE TABLE IF NOT EXISTS` DDL |
+| `JdbcShardTableRegistry`     | Primary datasource (JDBC) | `angus.sharding.table-registry-enabled=true`        |
+| `JpaShardTableRegistry`      | Primary datasource (JPA)  | Provide `ShardTableJpaRepository` bean              |
 
 #### Using JPA Registry
 
@@ -230,37 +231,37 @@ executing the DDL. When `enableTableSecondaryIndex=false`, `CREATE INDEX` statem
 
 ## Configuration Reference
 
-| Property | Default | Description |
-|---|---|---|
-| `angus.sharding.enabled` | `false` | Master switch |
-| `angus.sharding.shard-db-count` | `1` | Number of DB shards (1–10) |
-| `angus.sharding.shard-table-count` | `1` | Number of table shards per DB (1–50) |
-| `angus.sharding.enable-table-secondary-index` | `false` | Enable `…-{shardKey}-{idx}` table naming |
-| `angus.sharding.db-type` | `mysql` | `mysql` or `postgres` |
-| `angus.sharding.username` | | Shared username for all shard DBs |
-| `angus.sharding.password` | | Shared password for all shard DBs |
-| `angus.sharding.entity-packages` | | Packages to scan for JPA entities |
-| `angus.sharding.schema-path` | | Classpath base path for DDL templates |
-| `angus.sharding.template-table-names` | | Template table names for dynamic creation |
-| `angus.sharding.table-registry-enabled` | `false` | Enable JDBC-backed shard table registry |
-| `angus.sharding.table-registry-table` | `angus_shard_table` | Registry table name |
-| `angus.sharding.mysql.urls` | | JDBC URLs for each MySQL shard |
-| `angus.sharding.postgresql.urls` | | JDBC URLs for each PostgreSQL shard |
-| `angus.sharding.hikari.*` | | HikariCP pool settings |
+| Property                                      | Default             | Description                               |
+|-----------------------------------------------|---------------------|-------------------------------------------|
+| `angus.sharding.enabled`                      | `false`             | Master switch                             |
+| `angus.sharding.shard-db-count`               | `1`                 | Number of DB shards (1–10)                |
+| `angus.sharding.shard-table-count`            | `1`                 | Number of table shards per DB (1–50)      |
+| `angus.sharding.enable-table-secondary-index` | `false`             | Enable `…-{shardKey}-{idx}` table naming  |
+| `angus.sharding.db-type`                      | `mysql`             | `mysql` or `postgres`                     |
+| `angus.sharding.username`                     |                     | Shared username for all shard DBs         |
+| `angus.sharding.password`                     |                     | Shared password for all shard DBs         |
+| `angus.sharding.entity-packages`              |                     | Packages to scan for JPA entities         |
+| `angus.sharding.schema-path`                  |                     | Classpath base path for DDL templates     |
+| `angus.sharding.template-table-names`         |                     | Template table names for dynamic creation |
+| `angus.sharding.table-registry-enabled`       | `false`             | Enable JDBC-backed shard table registry   |
+| `angus.sharding.table-registry-table`         | `angus_shard_table` | Registry table name                       |
+| `angus.sharding.mysql.urls`                   |                     | JDBC URLs for each MySQL shard            |
+| `angus.sharding.postgresql.urls`              |                     | JDBC URLs for each PostgreSQL shard       |
+| `angus.sharding.hikari.*`                     |                     | HikariCP pool settings                    |
 
 ---
 
 ## Migration from `metricsds`
 
-| Old (`metricsds`) | New (`sharding`) |
-|---|---|
-| `@Sharding(tableField="tenantId")` | `@Sharding(shardKey="tenantId")` |
-| `@ShardingTable` | `@ShardedTable` |
-| `xcan.datasource.metrics.*` | `angus.sharding.*` |
-| `MetricsDataSourceContextHolder` | `ShardContext` |
-| `MetricsDynamicDataSourceRouter` | `ShardingRoutingDataSource` |
-| `MetricsDynamicDataSourceAspect` | `ShardingAspect` + `DefaultShardKeyResolver` |
-| `TableSchemaManager` | `SqlTemplateTableManager` + `ShardTableRegistry` |
+| Old (`metricsds`)                  | New (`sharding`)                                 |
+|------------------------------------|--------------------------------------------------|
+| `@Sharding(tableField="tenantId")` | `@Sharding(shardKey="tenantId")`                 |
+| `@ShardingTable`                   | `@ShardedTable`                                  |
+| `xcan.datasource.metrics.*`        | `angus.sharding.*`                               |
+| `MetricsDataSourceContextHolder`   | `ShardContext`                                   |
+| `MetricsDynamicDataSourceRouter`   | `ShardingRoutingDataSource`                      |
+| `MetricsDynamicDataSourceAspect`   | `ShardingAspect` + `DefaultShardKeyResolver`     |
+| `TableSchemaManager`               | `SqlTemplateTableManager` + `ShardTableRegistry` |
 
 ---
 

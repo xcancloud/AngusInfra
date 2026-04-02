@@ -4,12 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import cloud.xcan.angus.idgen.autoconfigure.IdGenAutoConfiguration;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
-class IdGenAutoConfigurerConditionTest {
+class IdGenAutoConfigurationConditionTest {
 
   @Test
   void coreConditionMatchesWhenEnabledTrue() {
@@ -18,7 +19,7 @@ class IdGenAutoConfigurerConditionTest {
     when(ctx.getEnvironment()).thenReturn(env);
     when(env.getProperty("angus.idgen.enabled")).thenReturn("true");
 
-    boolean matches = new IdGenAutoConfigurer.CoreCondition().matches(ctx,
+    boolean matches = new IdGenAutoConfiguration.CoreCondition().matches(ctx,
         mock(AnnotatedTypeMetadata.class));
 
     assertThat(matches).isTrue();
@@ -31,11 +32,11 @@ class IdGenAutoConfigurerConditionTest {
     when(ctx.getEnvironment()).thenReturn(env);
     when(env.getProperty("angus.idgen.enabled")).thenReturn("false");
 
-    assertThat(new IdGenAutoConfigurer.CoreCondition().matches(ctx,
+    assertThat(new IdGenAutoConfiguration.CoreCondition().matches(ctx,
         mock(AnnotatedTypeMetadata.class))).isFalse();
 
     when(env.getProperty("angus.idgen.enabled")).thenReturn(null);
-    assertThat(new IdGenAutoConfigurer.CoreCondition().matches(ctx,
+    assertThat(new IdGenAutoConfiguration.CoreCondition().matches(ctx,
         mock(AnnotatedTypeMetadata.class))).isFalse();
   }
 }

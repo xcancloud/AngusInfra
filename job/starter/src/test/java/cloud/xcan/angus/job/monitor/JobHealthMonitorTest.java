@@ -7,9 +7,9 @@ import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.job.entity.JobExecutionLog;
 import cloud.xcan.angus.job.enums.ExecutionStatus;
+import cloud.xcan.angus.job.jpa.DistributedLockRepository;
+import cloud.xcan.angus.job.jpa.JobExecutionLogRepository;
 import cloud.xcan.angus.job.properties.JobProperties;
-import cloud.xcan.angus.job.repository.DistributedLockRepository;
-import cloud.xcan.angus.job.repository.JobExecutionLogRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

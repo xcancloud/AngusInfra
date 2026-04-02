@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import cloud.xcan.angus.api.pojo.instance.InstanceInfo;
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
+import cloud.xcan.angus.idgen.uid.DefaultUidGenerator;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import java.util.HashSet;
 import java.util.Set;

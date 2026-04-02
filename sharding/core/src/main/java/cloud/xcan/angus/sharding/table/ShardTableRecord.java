@@ -19,8 +19,7 @@ import lombok.experimental.Accessors;
 public final class ShardTableRecord {
 
   /**
-   * Fully-qualified sharded table name, e.g. {@code exec_sample-100} or
-   * {@code exec_sample-100-3}.
+   * Fully-qualified sharded table name, e.g. {@code exec_sample-100} or {@code exec_sample-100-3}.
    */
   private String tableName;
 

@@ -47,13 +47,13 @@ build scalable, secure, and maintainable server-side applications more efficient
 
 ### **Data Layer Modules**
 
-| Module             | Description                                                                                                                                                        |
-|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **`jpa-starter`**  | Spring Data JPA integration starter providing multi-tenant dynamic datasource configuration, generic repositories, Specification builders, and audit support.      |
-| **`sharding`**     | Production-ready multi-tenant database sharding framework with dynamic routing DataSource, SQL table-name rewriting, pluggable shard-key resolution, and automatic schema management. Supports modulo and consistent-hash strategies, in-memory/JDBC/JPA table registry, and a clean SPI model. See [sharding/README.md](sharding/README.md). |
-| **`cache`**      | Two-level cache library combining in-memory (Caffeine) and database (JPA) persistence, with management REST API and Spring Boot auto-configuration.                |
-| **`l2cache`**    | Two-level cache library integrating Redis + Caffeine for high-performance caching, supporting distributed consistency and cache penetration prevention strategies. |
-| **`lettucex`**   | Redis enhancement library standardizing Lettuce configurations and providing business extension utilities.                                                         |
+| Module            | Description                                                                                                                                                                                                                                                                                                                                   |
+|-------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **`jpa-starter`** | Spring Data JPA integration starter providing multi-tenant dynamic datasource configuration, generic repositories, Specification builders, and audit support.                                                                                                                                                                                 |
+| **`sharding`**    | Production-ready multi-tenant database sharding framework with dynamic routing DataSource, SQL table-name rewriting, pluggable shard-key resolution, and automatic schema management. Supports modulo and consistent-hash strategies, in-memory/JDBC/JPA table registry, and a clean SPI model. See [sharding/README.md](sharding/README.md). |
+| **`cache`**       | Two-level cache library combining in-memory (Caffeine) and database (JPA) persistence, with management REST API and Spring Boot auto-configuration.                                                                                                                                                                                           |
+| **`l2cache`**     | Two-level cache library integrating Redis + Caffeine for high-performance caching, supporting distributed consistency and cache penetration prevention strategies.                                                                                                                                                                            |
+| **`lettucex`**    | Redis enhancement library standardizing Lettuce configurations and providing business extension utilities.                                                                                                                                                                                                                                    |
 
 ### **Distributed Infrastructure**
 

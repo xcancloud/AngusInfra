@@ -2,6 +2,7 @@ package cloud.xcan.angus.idgen;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cloud.xcan.angus.idgen.autoconfigure.IdGenProperties;
 import org.junit.jupiter.api.Test;
 
 class IdGenPropertiesTest {

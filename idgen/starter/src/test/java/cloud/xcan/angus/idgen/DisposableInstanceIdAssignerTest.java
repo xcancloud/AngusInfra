@@ -7,8 +7,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
-import cloud.xcan.angus.idgen.entity.InstanceRepository;
+import cloud.xcan.angus.idgen.autoconfigure.DisposableInstanceIdAssigner;
 import cloud.xcan.angus.idgen.entity.Instance;
+import cloud.xcan.angus.idgen.entity.InstanceRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

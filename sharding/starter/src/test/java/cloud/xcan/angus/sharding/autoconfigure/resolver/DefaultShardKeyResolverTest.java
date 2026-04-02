@@ -1,10 +1,8 @@
 package cloud.xcan.angus.sharding.autoconfigure.resolver;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import cloud.xcan.angus.sharding.annotation.Sharding;
-import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -154,7 +152,9 @@ class DefaultShardKeyResolverTest {
     }
   }
 
-  /** Dummy class for obtaining a @Sharding annotation instance via reflection. */
+  /**
+   * Dummy class for obtaining a @Sharding annotation instance via reflection.
+   */
   static class AnnotationHolder {
 
     @Sharding(shardKey = "tenantId")

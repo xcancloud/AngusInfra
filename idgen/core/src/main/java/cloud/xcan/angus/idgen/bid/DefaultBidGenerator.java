@@ -1,14 +1,10 @@
-package cloud.xcan.angus.idgen.bid.impl;
+package cloud.xcan.angus.idgen.bid;
 
 import static org.hibernate.internal.util.collections.CollectionHelper.LOAD_FACTOR;
 
 import cloud.xcan.angus.idgen.BidGenerator;
-import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
-import cloud.xcan.angus.idgen.bid.DateFormat;
-import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
-import cloud.xcan.angus.idgen.bid.Format;
-import cloud.xcan.angus.idgen.bid.Mode;
-import cloud.xcan.angus.idgen.bid.Scope;
+import cloud.xcan.angus.idgen.ConfigIdAssigner;
+import cloud.xcan.angus.idgen.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.entity.IdConfig;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
 import java.time.LocalDate;

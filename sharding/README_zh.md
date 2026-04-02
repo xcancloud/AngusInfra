@@ -20,23 +20,23 @@ sharding/
 
 ### `sharding-core`
 
-| 包 | 说明 |
-|---|---|
-| `annotation` | `@Sharding`（方法）、`@ShardedTable`（实体） |
-| `config` | `ShardingProperties`、`HikariShardingProperties` |
-| `context` | `ShardContext`（线程局部持有器）、`ShardInfo` |
-| `resolver` | `ShardKeyResolver` SPI |
-| `strategy` | `ShardingStrategy` SPI、`ModuloShardingStrategy`、`HashShardingStrategy` |
-| `table` | `ShardTableManager` SPI、`ShardTableRegistry` SPI、`ShardTableNameUtils`、`SqlTableMatcher` |
+| 包            | 说明                                                                                       |
+|--------------|------------------------------------------------------------------------------------------|
+| `annotation` | `@Sharding`（方法）、`@ShardedTable`（实体）                                                      |
+| `config`     | `ShardingProperties`、`HikariShardingProperties`                                          |
+| `context`    | `ShardContext`（线程局部持有器）、`ShardInfo`                                                      |
+| `resolver`   | `ShardKeyResolver` SPI                                                                   |
+| `strategy`   | `ShardingStrategy` SPI、`ModuloShardingStrategy`、`HashShardingStrategy`                   |
+| `table`      | `ShardTableManager` SPI、`ShardTableRegistry` SPI、`ShardTableNameUtils`、`SqlTableMatcher` |
 
 ### `sharding-starter`
 
-| 包 | 说明 |
-|---|---|
-| `autoconfigure` | `ShardingAutoConfiguration`、`ShardingAspect`、`ShardingTableInterceptor`、`ShardingRoutingDataSource`、`SqlTemplateTableManager` |
-| `autoconfigure/registry` | `InMemoryShardTableRegistry`（默认内存实现）、`JdbcShardTableRegistry`（JDBC 持久化） |
-| `autoconfigure/resolver` | `DefaultShardKeyResolver`（默认分片键解析器） |
-| `autoconfigure/jpa` | `ShardTableEntity`、`ShardTableJpaRepository`、`JpaShardTableRegistry`、`ShardingJpaAutoConfiguration` |
+| 包                        | 说明                                                                                                                            |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| `autoconfigure`          | `ShardingAutoConfiguration`、`ShardingAspect`、`ShardingTableInterceptor`、`ShardingRoutingDataSource`、`SqlTemplateTableManager` |
+| `autoconfigure/registry` | `InMemoryShardTableRegistry`（默认内存实现）、`JdbcShardTableRegistry`（JDBC 持久化）                                                       |
+| `autoconfigure/resolver` | `DefaultShardKeyResolver`（默认分片键解析器）                                                                                           |
+| `autoconfigure/jpa`      | `ShardTableEntity`、`ShardTableJpaRepository`、`JpaShardTableRegistry`、`ShardingJpaAutoConfiguration`                           |
 
 ---
 
@@ -126,6 +126,7 @@ public interface ExecSampleRepo extends JpaRepository<ExecSample, Long> {
 ```
 
 框架在每次调用时自动：
+
 1. 通过解析器链提取分片键
 2. 设置当前线程 `ShardContext`
 3. 路由到正确的分库 DataSource
@@ -137,10 +138,10 @@ public interface ExecSampleRepo extends JpaRepository<ExecSample, Long> {
 
 ### 分片策略
 
-| 策略 | 描述 |
-|---|---|
-| `ModuloShardingStrategy`（默认） | 取模算法：`|shardKey| % shardDbCount` |
-| `HashShardingStrategy` | MurmurHash3 混淆，对连续 ID（如 Snowflake）分布更均匀 |
+| 策略                           | 描述                                      |
+|------------------------------|-----------------------------------------|
+| `ModuloShardingStrategy`（默认） | 取模算法：`                                  |shardKey| % shardDbCount` |
+| `HashShardingStrategy`       | MurmurHash3 混淆，对连续 ID（如 Snowflake）分布更均匀 |
 
 注册自定义策略：
 
@@ -190,11 +191,11 @@ exec_sample  →  exec_sample-{shardKey}-{idx}    （开启二级分表）
 
 ### 分片表注册表
 
-| 实现 | 持久化 | 适用场景 |
-|---|---|---|
-| `InMemoryShardTableRegistry` | JVM 生命周期 | 默认；DDL 使用 `CREATE TABLE IF NOT EXISTS` 时安全 |
-| `JdbcShardTableRegistry` | 主库 JDBC | 设置 `angus.sharding.table-registry-enabled=true` |
-| `JpaShardTableRegistry` | 主库 JPA | 在主库注册 `ShardTableJpaRepository` Bean |
+| 实现                           | 持久化      | 适用场景                                            |
+|------------------------------|----------|-------------------------------------------------|
+| `InMemoryShardTableRegistry` | JVM 生命周期 | 默认；DDL 使用 `CREATE TABLE IF NOT EXISTS` 时安全      |
+| `JdbcShardTableRegistry`     | 主库 JDBC  | 设置 `angus.sharding.table-registry-enabled=true` |
+| `JpaShardTableRegistry`      | 主库 JPA   | 在主库注册 `ShardTableJpaRepository` Bean            |
 
 #### 使用 JPA 注册表
 
@@ -237,37 +238,37 @@ CREATE INDEX idx_exec_sample_tenant ON exec_sample (tenant_id);
 
 ## 配置参数参考
 
-| 参数 | 默认值 | 说明 |
-|---|---|---|
-| `angus.sharding.enabled` | `false` | 是否启用分库分表 |
-| `angus.sharding.shard-db-count` | `1` | 分库数量（1–10） |
-| `angus.sharding.shard-table-count` | `1` | 每库分表数量（1–50） |
-| `angus.sharding.enable-table-secondary-index` | `false` | 是否开启二级分表 |
-| `angus.sharding.db-type` | `mysql` | `mysql` 或 `postgres` |
-| `angus.sharding.username` | | 所有分库共享用户名 |
-| `angus.sharding.password` | | 所有分库共享密码 |
-| `angus.sharding.entity-packages` | | JPA 实体扫描包 |
-| `angus.sharding.schema-path` | | DDL 模板类路径前缀 |
-| `angus.sharding.template-table-names` | | 动态建表的模板表名列表 |
-| `angus.sharding.table-registry-enabled` | `false` | 启用 JDBC 持久化注册表 |
-| `angus.sharding.table-registry-table` | `angus_shard_table` | 注册表名 |
-| `angus.sharding.mysql.urls` | | MySQL 各分库 JDBC URL |
-| `angus.sharding.postgresql.urls` | | PostgreSQL 各分库 JDBC URL |
-| `angus.sharding.hikari.*` | | HikariCP 连接池参数 |
+| 参数                                            | 默认值                 | 说明                      |
+|-----------------------------------------------|---------------------|-------------------------|
+| `angus.sharding.enabled`                      | `false`             | 是否启用分库分表                |
+| `angus.sharding.shard-db-count`               | `1`                 | 分库数量（1–10）              |
+| `angus.sharding.shard-table-count`            | `1`                 | 每库分表数量（1–50）            |
+| `angus.sharding.enable-table-secondary-index` | `false`             | 是否开启二级分表                |
+| `angus.sharding.db-type`                      | `mysql`             | `mysql` 或 `postgres`    |
+| `angus.sharding.username`                     |                     | 所有分库共享用户名               |
+| `angus.sharding.password`                     |                     | 所有分库共享密码                |
+| `angus.sharding.entity-packages`              |                     | JPA 实体扫描包               |
+| `angus.sharding.schema-path`                  |                     | DDL 模板类路径前缀             |
+| `angus.sharding.template-table-names`         |                     | 动态建表的模板表名列表             |
+| `angus.sharding.table-registry-enabled`       | `false`             | 启用 JDBC 持久化注册表          |
+| `angus.sharding.table-registry-table`         | `angus_shard_table` | 注册表名                    |
+| `angus.sharding.mysql.urls`                   |                     | MySQL 各分库 JDBC URL      |
+| `angus.sharding.postgresql.urls`              |                     | PostgreSQL 各分库 JDBC URL |
+| `angus.sharding.hikari.*`                     |                     | HikariCP 连接池参数          |
 
 ---
 
 ## 从 `metricsds` 迁移
 
-| 旧代码（`metricsds`） | 新代码（`sharding`） |
-|---|---|
-| `@Sharding(tableField="tenantId")` | `@Sharding(shardKey="tenantId")` |
-| `@ShardingTable` | `@ShardedTable` |
-| `xcan.datasource.metrics.*` | `angus.sharding.*` |
-| `MetricsDataSourceContextHolder` | `ShardContext` |
-| `MetricsDynamicDataSourceRouter` | `ShardingRoutingDataSource` |
-| `MetricsDynamicDataSourceAspect` | `ShardingAspect` + `DefaultShardKeyResolver` |
-| `TableSchemaManager` | `SqlTemplateTableManager` + `ShardTableRegistry` |
+| 旧代码（`metricsds`）                   | 新代码（`sharding`）                                  |
+|------------------------------------|--------------------------------------------------|
+| `@Sharding(tableField="tenantId")` | `@Sharding(shardKey="tenantId")`                 |
+| `@ShardingTable`                   | `@ShardedTable`                                  |
+| `xcan.datasource.metrics.*`        | `angus.sharding.*`                               |
+| `MetricsDataSourceContextHolder`   | `ShardContext`                                   |
+| `MetricsDynamicDataSourceRouter`   | `ShardingRoutingDataSource`                      |
+| `MetricsDynamicDataSourceAspect`   | `ShardingAspect` + `DefaultShardKeyResolver`     |
+| `TableSchemaManager`               | `SqlTemplateTableManager` + `ShardTableRegistry` |
 
 ---
 

@@ -5,6 +5,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
+import cloud.xcan.angus.idgen.autoconfigure.InstanceInfoConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.test.util.ReflectionTestUtils;

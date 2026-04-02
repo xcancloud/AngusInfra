@@ -6,6 +6,7 @@ import cloud.xcan.angus.queue.core.service.AuditLogger;
 import cloud.xcan.angus.queue.core.service.QueueAdminService;
 import cloud.xcan.angus.queue.core.service.QueueService;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
+import cloud.xcan.angus.queue.starter.autoconfigure.QueueAutoConfiguration;
 import cloud.xcan.angus.queue.starter.scheduler.DeadLetterMoverScheduler;
 import cloud.xcan.angus.queue.starter.scheduler.DlqSoftDeletePurgerScheduler;
 import cloud.xcan.angus.queue.starter.scheduler.LeaseReaperScheduler;
@@ -21,7 +22,7 @@ public class QueueAutoConfigurationTest {
 
   /**
    * Sliced context omits full Boot auto-config; enable declarative transactions so
-   * {@code @Modifying} repository methods and
+   * {@code @Modifying} jpa methods and
    * {@link cloud.xcan.angus.queue.starter.adapter.JpaRepositoryAdapter} {@code @Transactional} work
    * when schedulers run.
    */

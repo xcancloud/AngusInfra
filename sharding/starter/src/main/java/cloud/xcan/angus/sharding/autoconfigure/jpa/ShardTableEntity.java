@@ -14,10 +14,9 @@ import lombok.experimental.Accessors;
  * JPA entity that tracks physically-created shard tables in the <em>primary</em> datasource.
  *
  * <p>To enable JPA-backed shard table persistence, include this entity in your primary
- * entity manager scan (or ensure its package is covered by your
- * {@code @EnableJpaRepositories} configuration) and register a bean of type
- * {@link ShardTableJpaRepository}.  The framework will then automatically use
- * {@link JpaShardTableRegistry} instead of the in-memory default.
+ * entity manager scan (or ensure its package is covered by your {@code @EnableJpaRepositories}
+ * configuration) and register a bean of type {@link ShardTableJpaRepository}.  The framework will
+ * then automatically use {@link JpaShardTableRegistry} instead of the in-memory default.
  *
  * <p>Example configuration:</p>
  * <pre>{@code

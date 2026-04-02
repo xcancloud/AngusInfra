@@ -1,12 +1,10 @@
-package cloud.xcan.angus.idgen.dao;
-
-import cloud.xcan.angus.idgen.entity.IdConfig;
+package cloud.xcan.angus.idgen.entity;
 
 /**
- * Persistence operations for {@link IdConfig}. Core module only declares repository capabilities,
- * while starter module provides Spring Data JPA implementation.
+ * Persistence operations for {@link IdConfig}. Core module only declares jpa capabilities, while
+ * starter module provides Spring Data JPA implementation.
  */
-public interface IdConfigRepo {
+public interface IdConfigRepository {
 
   /**
    * Save id config.

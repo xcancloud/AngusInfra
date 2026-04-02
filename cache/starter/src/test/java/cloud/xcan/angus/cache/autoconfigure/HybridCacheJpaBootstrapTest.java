@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.autoconfigure.HybridCacheJpaBootstrapTest.JpaTestApplication;
+import cloud.xcan.angus.cache.jpa.SpringCachePersistenceAdapter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootConfiguration;

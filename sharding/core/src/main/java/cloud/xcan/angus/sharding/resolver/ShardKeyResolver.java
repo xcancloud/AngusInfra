@@ -3,11 +3,11 @@ package cloud.xcan.angus.sharding.resolver;
 import cloud.xcan.angus.sharding.annotation.Sharding;
 
 /**
- * SPI contract for resolving the numeric shard key from a repository method invocation.
+ * SPI contract for resolving the numeric shard key from a jpa method invocation.
  *
  * <p>Implementations are registered as Spring beans and are automatically composed into a
- * resolution chain ordered by {@link #getOrder()}. The first resolver that returns a non-{@code
- * null} value wins; subsequent resolvers are skipped.
+ * resolution chain ordered by {@link #getOrder()}. The first resolver that returns a
+ * non-{@code null} value wins; subsequent resolvers are skipped.
  *
  * <p>Built-in implementations:
  * <ul>
@@ -23,7 +23,7 @@ public interface ShardKeyResolver {
   /**
    * Attempt to resolve the shard key.
    *
-   * @param args       the method arguments of the intercepted repository call
+   * @param args       the method arguments of the intercepted jpa call
    * @param paramNames the compiled parameter names (from {@code -parameters} flag); may be
    *                   {@code null} or empty when debug info is unavailable
    * @param sharding   the {@link Sharding} annotation declared on the method

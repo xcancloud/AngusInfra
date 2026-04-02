@@ -9,8 +9,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.job.entity.DistributedLock;
+import cloud.xcan.angus.job.jpa.DistributedLockRepository;
 import cloud.xcan.angus.job.properties.JobProperties;
-import cloud.xcan.angus.job.repository.DistributedLockRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

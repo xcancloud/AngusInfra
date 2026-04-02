@@ -130,7 +130,9 @@ DefaultPluginManager.loadPlugin(path)
 - `DynamicRestEndpointManager` 会反射创建控制器实例。
 - 若控制器继承 `PluginController`，框架会注入 `PluginContext`。
 -
+
 再扫描 `@GetMapping` / `@PostMapping` / `@PutMapping` / `@DeleteMapping` / `@PatchMapping` / `@RequestMapping`。
+
 - 最终以 `plugin.getApiPrefix()`
   作为统一前缀，把插件控制器挂到宿主应用的 `RequestMappingHandlerMapping` 上。
 

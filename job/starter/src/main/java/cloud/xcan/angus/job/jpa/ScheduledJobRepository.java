@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA jpa for {@link ScheduledJob}.
+ * Spring Data JPA repository for {@link ScheduledJob}.
  */
 @Repository
 public interface ScheduledJobRepository extends JpaRepository<ScheduledJob, Long> {

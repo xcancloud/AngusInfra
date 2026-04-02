@@ -802,13 +802,13 @@
           <artifactId>maven-clean-plugin</artifactId>
           <version>${maven-clean-plugin.version}</version>
         </plugin>
-        <!-- Uploads the project artifacts to the internal remote repository. -->
+        <!-- Uploads the project artifacts to the internal remote jpa. -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-deploy-plugin</artifactId>
           <version>${maven-deploy-plugin.version}</version>
         </plugin>
-        <!-- Copies the project artifacts to the user's local repository. -->
+        <!-- Copies the project artifacts to the user's local jpa. -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>

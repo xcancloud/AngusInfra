@@ -1,11 +1,10 @@
-package cloud.xcan.angus.idgen.uid.impl;
+package cloud.xcan.angus.idgen.uid;
 
 import static cloud.xcan.angus.spec.experimental.Assert.assertNotNull;
 import static cloud.xcan.angus.spec.experimental.Assert.assertTrue;
 
 import cloud.xcan.angus.idgen.UidGenerator;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
-import cloud.xcan.angus.idgen.uid.BitsAllocator;
 import cloud.xcan.angus.idgen.uid.buffer.BufferPaddingExecutor;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferHandler;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies;

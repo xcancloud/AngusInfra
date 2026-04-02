@@ -190,17 +190,17 @@ findByJobNameAndJobGroup 检查是否已存在
 
 声明在 `JobExecutor` 实现类上，由 `JobRegistrar` 在启动时读取并注册。
 
-| 属性                   | 类型        | 默认值       | 说明                                       |
-|----------------------|-----------|-----------|------------------------------------------|
-| `name`               | `String`  | —（必填）     | 任务名称，与 `group` 联合唯一                      |
-| `group`              | `String`  | `default` | 任务分组，建议使用应用短码（如 `gm`、`git`）             |
-| `cron`               | `String`  | —（必填）     | 6 段 Spring cron 表达式                      |
-| `type`               | `JobType` | `SIMPLE`  | 任务类型                                     |
-| `shardingCount`      | `int`     | `1`       | 分片数，仅 SHARDING / MAP_REDUCE 有意义          |
-| `shardingParameter`  | `String`  | `""`      | 逗号分隔的分片参数                                |
-| `maxRetryCount`      | `int`     | `3`       | 失败最大重试次数，`0` 表示不重试                       |
-| `initialDelaySeconds`| `int`     | `0`       | 首次触发延迟秒数，用于让应用充分预热                       |
-| `description`        | `String`  | `""`      | 任务描述，写入 `scheduled_job.description`      |
+| 属性                    | 类型        | 默认值       | 说明                                  |
+|-----------------------|-----------|-----------|-------------------------------------|
+| `name`                | `String`  | —（必填）     | 任务名称，与 `group` 联合唯一                 |
+| `group`               | `String`  | `default` | 任务分组，建议使用应用短码（如 `gm`、`git`）         |
+| `cron`                | `String`  | —（必填）     | 6 段 Spring cron 表达式                 |
+| `type`                | `JobType` | `SIMPLE`  | 任务类型                                |
+| `shardingCount`       | `int`     | `1`       | 分片数，仅 SHARDING / MAP_REDUCE 有意义     |
+| `shardingParameter`   | `String`  | `""`      | 逗号分隔的分片参数                           |
+| `maxRetryCount`       | `int`     | `3`       | 失败最大重试次数，`0` 表示不重试                  |
+| `initialDelaySeconds` | `int`     | `0`       | 首次触发延迟秒数，用于让应用充分预热                  |
+| `description`         | `String`  | `""`      | 任务描述，写入 `scheduled_job.description` |
 
 ### 3.4 JobRegistrar
 

@@ -1,6 +1,8 @@
 package cloud.xcan.angus.sharding.autoconfigure.jpa;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 import cloud.xcan.angus.sharding.table.ShardTableRecord;
 import java.util.List;
@@ -8,10 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
 /**
  * Unit tests for {@link JpaShardTableRegistry} using a mock {@link ShardTableJpaRepository}.

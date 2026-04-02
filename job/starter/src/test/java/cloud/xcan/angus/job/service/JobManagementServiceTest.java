@@ -13,11 +13,11 @@ import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.enums.ExecutionStatus;
 import cloud.xcan.angus.job.enums.JobStatus;
 import cloud.xcan.angus.job.enums.JobType;
+import cloud.xcan.angus.job.jpa.JobExecutionLogRepository;
+import cloud.xcan.angus.job.jpa.JobShardRepository;
+import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.model.UpdateJobRequest;
-import cloud.xcan.angus.job.repository.JobExecutionLogRepository;
-import cloud.xcan.angus.job.repository.JobShardRepository;
-import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -81,7 +81,8 @@ class JobManagementServiceTest {
     req.setCronExpression("0 * * * * *");
     req.setBeanName("exec");
     req.setJobType(JobType.SIMPLE);
-    when(jobRepository.save(any(ScheduledJob.class))).thenThrow(new DataIntegrityViolationException("uk"));
+    when(jobRepository.save(any(ScheduledJob.class))).thenThrow(
+        new DataIntegrityViolationException("uk"));
 
     assertThatThrownBy(() -> service.createJob(req))
         .isInstanceOf(IllegalStateException.class)
@@ -125,7 +126,7 @@ class JobManagementServiceTest {
   }
 
   @Test
-  @DisplayName("listJobs delegates to repository")
+  @DisplayName("listJobs delegates to jpa")
   void listJobs() {
     Pageable p = PageRequest.of(0, 10);
     when(jobRepository.findAll(p))
@@ -134,7 +135,7 @@ class JobManagementServiceTest {
   }
 
   @Test
-  @DisplayName("getJobExecutionHistory delegates to repository")
+  @DisplayName("getJobExecutionHistory delegates to jpa")
   void getJobExecutionHistory() {
     Pageable p = PageRequest.of(0, 5);
     when(executionLogRepository.findByJobIdOrderByStartTimeDesc(1L, p))

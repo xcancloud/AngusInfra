@@ -2,7 +2,6 @@ package cloud.xcan.angus.sharding.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -12,7 +11,6 @@ import cloud.xcan.angus.sharding.context.ShardInfo;
 import cloud.xcan.angus.sharding.resolver.ShardKeyResolver;
 import cloud.xcan.angus.sharding.strategy.ModuloShardingStrategy;
 import cloud.xcan.angus.sharding.strategy.ShardingStrategy;
-import java.lang.reflect.Method;
 import java.util.List;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.reflect.MethodSignature;

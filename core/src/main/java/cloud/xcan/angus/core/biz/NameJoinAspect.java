@@ -42,7 +42,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
    */
   private final Map<Class<?>, Map<String, NameJoinField>> classFieldJoinNameMap = new ConcurrentHashMap<>();
   /**
-   * Merge queries by repo: Vo.class + "#" + nameJoin.repository() -> NameJoinRepository
+   * Merge queries by repo: Vo.class + "#" + nameJoin.jpa() -> NameJoinRepository
    * <p>
    * Do not merge queries by repo (@Deprecated) : ->>> Vo.class + "#" + nameJoin.id() ->
    * NameJoinRepository
@@ -91,9 +91,9 @@ public class NameJoinAspect extends AbstractJoinAspect {
       Collection<?> entities = ((NameJoinRepository<Object, Object>) classRepositoryMap.get(
           firstClass + "#" + repo)).findByIdIn(allIds);
       if (isEmpty(entities)) {
-        log.warn("Class {} join repository#{} is empty by all ids in {}",
+        log.warn("Class {} join jpa#{} is empty by all ids in {}",
             firstClass.getSimpleName(), repo, allIds);
-        log.warn("Class {} join repository#{} ignored", firstClass.getSimpleName(), repo);
+        log.warn("Class {} join jpa#{} ignored", firstClass.getSimpleName(), repo);
         continue;
       }
 
@@ -175,7 +175,7 @@ public class NameJoinAspect extends AbstractJoinAspect {
         }
         if (isBlank(nameJoin.repository())) {
           throw new IllegalArgumentException(
-              " The NameJoinField property repository of " + field.getName() + " is empty");
+              " The NameJoinField property jpa of " + field.getName() + " is empty");
         }
         NameJoinRepository<?, ?> repository = SpringContextHolder
             .getBean(nameJoin.repository(), NameJoinRepository.class);

@@ -96,7 +96,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
    * Constructs an {@code CustomOAuth2TokenIntrospectionAuthenticationProvider} using the provided
    * parameters.
    *
-   * @param registeredClientRepository the repository of registered clients
+   * @param registeredClientRepository the jpa of registered clients
    * @param authorizationService       the authorization service
    */
   public CustomOAuth2TokenIntrospectionAuthenticationProvider(

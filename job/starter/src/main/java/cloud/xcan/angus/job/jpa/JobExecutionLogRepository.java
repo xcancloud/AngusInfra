@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA jpa for {@link JobExecutionLog}.
+ * Spring Data JPA repository for {@link JobExecutionLog}.
  */
 @Repository
 public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog, Long> {

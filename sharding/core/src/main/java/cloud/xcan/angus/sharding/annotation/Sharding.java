@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a repository method as requiring shard routing.
+ * Marks a jpa method as requiring shard routing.
  *
  * <p>The {@link #shardKey()} specifies which field in the method arguments determines the
  * database shard. The {@link #tableKey()} specifies which field determines the table shard

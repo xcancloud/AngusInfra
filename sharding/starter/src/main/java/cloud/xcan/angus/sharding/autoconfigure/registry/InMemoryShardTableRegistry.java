@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
  * Default in-memory {@link ShardTableRegistry} implementation.
  *
  * <p>All records are kept in a {@link ConcurrentHashMap} and are lost on JVM restart.  This is
- * safe to use when shard-table DDL statements use {@code CREATE TABLE IF NOT EXISTS}, as the
- * tables are idempotently re-created on the next access.
+ * safe to use when shard-table DDL statements use {@code CREATE TABLE IF NOT EXISTS}, as the tables
+ * are idempotently re-created on the next access.
  *
  * <p>This implementation is always registered when no other {@link ShardTableRegistry} bean is
  * present.

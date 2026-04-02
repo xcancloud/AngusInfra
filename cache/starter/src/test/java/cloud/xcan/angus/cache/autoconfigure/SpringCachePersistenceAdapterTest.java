@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.jpa.SpringCachePersistenceAdapter;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;

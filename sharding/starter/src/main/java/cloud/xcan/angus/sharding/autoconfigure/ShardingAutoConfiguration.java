@@ -156,8 +156,8 @@ public class ShardingAutoConfiguration {
   // ── ShardTableRegistry ───────────────────────────────────────────────────
 
   /**
-   * Registers an in-memory registry when no durable alternative is present and the JDBC registry
-   * is not explicitly requested.
+   * Registers an in-memory registry when no durable alternative is present and the JDBC registry is
+   * not explicitly requested.
    */
   @Bean
   @ConditionalOnMissingBean(ShardTableRegistry.class)

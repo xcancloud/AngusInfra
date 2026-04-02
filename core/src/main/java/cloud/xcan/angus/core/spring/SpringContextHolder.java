@@ -1,8 +1,8 @@
 package cloud.xcan.angus.core.spring;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
-import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
-import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
+import cloud.xcan.angus.idgen.bid.DefaultBidGenerator;
+import cloud.xcan.angus.idgen.uid.CachedUidGenerator;
 import javax.annotation.Nonnull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;

@@ -12,8 +12,8 @@ import lombok.extern.slf4j.Slf4j;
  *
  * <p>This implementation is auto-registered by
  * {@link ShardingJpaAutoConfiguration} whenever a {@link ShardTableJpaRepository} bean is present
- * on the application context.  It provides durable, cross-restart shard table tracking through
- * the primary datasource.
+ * on the application context.  It provides durable, cross-restart shard table tracking through the
+ * primary datasource.
  */
 @Slf4j
 @RequiredArgsConstructor

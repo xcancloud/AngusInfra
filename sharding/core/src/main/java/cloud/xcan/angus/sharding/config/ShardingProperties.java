@@ -54,7 +54,7 @@ public class ShardingProperties {
   private String[] entityPackages;
 
   /**
-   * Pointcut expression for the AOP sharding aspect. Typically points to the repository package.
+   * Pointcut expression for the AOP sharding aspect. Typically points to the jpa package.
    */
   private String aspectPointcut;
 
@@ -69,17 +69,17 @@ public class ShardingProperties {
   private String[] templateTableNames;
 
   /**
-   * Whether to persist shard table records to a durable store on creation.
-   * When {@code false} (default), an in-memory registry is used and the registry is lost on
-   * restart (safe when DDL uses {@code CREATE TABLE IF NOT EXISTS}).
-   * When {@code true}, a JDBC-backed registry writes each new shard table record to the
-   * {@link #tableRegistryTable} table in the primary datasource, enabling cross-restart tracking.
+   * Whether to persist shard table records to a durable store on creation. When {@code false}
+   * (default), an in-memory registry is used and the registry is lost on restart (safe when DDL
+   * uses {@code CREATE TABLE IF NOT EXISTS}). When {@code true}, a JDBC-backed registry writes each
+   * new shard table record to the {@link #tableRegistryTable} table in the primary datasource,
+   * enabling cross-restart tracking.
    */
   private boolean tableRegistryEnabled = false;
 
   /**
-   * Name of the SQL table used by the JDBC shard table registry.
-   * Only relevant when {@link #tableRegistryEnabled} is {@code true}.
+   * Name of the SQL table used by the JDBC shard table registry. Only relevant when
+   * {@link #tableRegistryEnabled} is {@code true}.
    */
   private String tableRegistryTable = "angus_shard_table";
 

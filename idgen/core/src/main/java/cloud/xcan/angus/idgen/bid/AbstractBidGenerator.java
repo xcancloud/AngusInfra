@@ -1,12 +1,10 @@
-package cloud.xcan.angus.idgen.bid.impl;
+package cloud.xcan.angus.idgen.bid;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 
 import cloud.xcan.angus.idgen.BidGenerator;
-import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
-import cloud.xcan.angus.idgen.bid.Format;
-import cloud.xcan.angus.idgen.bid.Mode;
+import cloud.xcan.angus.idgen.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.entity.IdConfig;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
 

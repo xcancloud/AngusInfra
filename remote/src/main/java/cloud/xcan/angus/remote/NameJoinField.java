@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 public @interface NameJoinField {
 
   /**
-   * Query repository bean name
+   * Query jpa bean name
    */
   String repository();
 

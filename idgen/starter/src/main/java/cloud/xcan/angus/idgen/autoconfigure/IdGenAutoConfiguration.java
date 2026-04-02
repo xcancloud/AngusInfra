@@ -1,19 +1,23 @@
-package cloud.xcan.angus.idgen;
+package cloud.xcan.angus.idgen.autoconfigure;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceInfo;
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
-import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
-import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
-import cloud.xcan.angus.idgen.bid.impl.DefaultBidGenerator;
-import cloud.xcan.angus.idgen.dao.IdConfigRepo;
-import cloud.xcan.angus.idgen.dao.InstanceRepo;
-import cloud.xcan.angus.idgen.dao.SpringDataIdConfigRepository;
-import cloud.xcan.angus.idgen.dao.SpringIdConfigPersistenceAdapter;
+import cloud.xcan.angus.idgen.BidGenerator;
+import cloud.xcan.angus.idgen.ConfigIdAssigner;
+import cloud.xcan.angus.idgen.DistributedIncrAssigner;
+import cloud.xcan.angus.idgen.bid.DefaultBidGenerator;
+import cloud.xcan.angus.idgen.entity.IdConfig;
+import cloud.xcan.angus.idgen.entity.IdConfigRepository;
 import cloud.xcan.angus.idgen.entity.Instance;
+import cloud.xcan.angus.idgen.entity.InstanceRepository;
+import cloud.xcan.angus.idgen.jpa.SpringDataIdConfigRepository;
+import cloud.xcan.angus.idgen.jpa.SpringDataInstanceRepository;
+import cloud.xcan.angus.idgen.jpa.SpringIdConfigPersistenceAdapter;
+import cloud.xcan.angus.idgen.jpa.SpringInstancePersistenceAdapter;
+import cloud.xcan.angus.idgen.uid.CachedUidGenerator;
 import cloud.xcan.angus.idgen.uid.buffer.RejectedPutBufferPolicies;
-import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import cloud.xcan.angus.persistence.jpa.identity.SnowflakeIdGenerator;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,19 +35,21 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @Configuration
-@Conditional({IdGenAutoConfigurer.CoreCondition.class})
-public class IdGenAutoConfigurer {
-
-  private final IdGenProperties idGenProperties;
-
-  public IdGenAutoConfigurer(IdGenProperties idGenProperties) {
-    this.idGenProperties = idGenProperties;
-  }
+@Conditional({IdGenAutoConfiguration.CoreCondition.class})
+public class IdGenAutoConfiguration {
 
   @Configuration(proxyBeanMethods = false)
   @ConditionalOnBean(EntityManagerFactory.class)
-  @EntityScan(basePackageClasses = Instance.class)
-  @EnableJpaRepositories(basePackageClasses = InstanceRepo.class)
+  @EntityScan(
+      basePackageClasses = {
+          IdConfig.class,
+          Instance.class
+      })
+  @EnableJpaRepositories(
+      basePackageClasses = {
+          SpringDataIdConfigRepository.class,
+          SpringDataInstanceRepository.class
+      })
   static class CacheJpaRepositoryConfiguration {
 
   }
@@ -56,14 +62,23 @@ public class IdGenAutoConfigurer {
 
   @Bean
   @ConditionalOnMissingBean
-  public DisposableInstanceIdAssigner instanceIdAssigner(InstanceRepo instanceRepo) {
+  @ConditionalOnBean(SpringDataInstanceRepository.class)
+  public InstanceRepository instanceRepository(
+      SpringDataInstanceRepository springDataInstanceRepository) {
+    return new SpringInstancePersistenceAdapter(springDataInstanceRepository);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public DisposableInstanceIdAssigner instanceIdAssigner(InstanceRepository instanceRepo) {
     return new DisposableInstanceIdAssigner(instanceRepo);
   }
 
   @Bean
   @DependsOn("dataSourceInitializer")
   @ConditionalOnMissingBean
-  public CachedUidGenerator cachedUidGenerator(InstanceInfoConfig configurer,
+  public CachedUidGenerator cachedUidGenerator(
+      IdGenProperties idGenProperties, InstanceInfoConfig configurer,
       DisposableInstanceIdAssigner instanceIdAssigner) throws Exception {
     CachedUidGenerator generator = new CachedUidGenerator();
 
@@ -116,13 +131,14 @@ public class IdGenAutoConfigurer {
   @Bean
   @ConditionalOnMissingBean
   @ConditionalOnBean(SpringDataIdConfigRepository.class)
-  public IdConfigRepo idConfigRepo(SpringDataIdConfigRepository springDataIdConfigRepository) {
+  public IdConfigRepository idConfigRepo(
+      SpringDataIdConfigRepository springDataIdConfigRepository) {
     return new SpringIdConfigPersistenceAdapter(springDataIdConfigRepository);
   }
 
   @Bean
   @ConditionalOnMissingBean
-  public ConfigIdAssigner disposableConfigIdAssigner(IdConfigRepo idConfigRepo) {
+  public ConfigIdAssigner disposableConfigIdAssigner(IdConfigRepository idConfigRepo) {
     return new DisposableConfigIdAssigner(idConfigRepo);
   }
 
@@ -136,7 +152,8 @@ public class IdGenAutoConfigurer {
   @Bean
   @DependsOn({"dataSourceInitializer"})
   @ConditionalOnMissingBean
-  public BidGenerator bidGenerator(ConfigIdAssigner configIdAssigner,
+  public BidGenerator bidGenerator(
+      IdGenProperties idGenProperties, ConfigIdAssigner configIdAssigner,
       @Autowired(required = false) DistributedIncrAssigner distributedIncrAssigner) {
     IdGenProperties.BidGeneratorConfig bidConfig = idGenProperties.getBid();
     return new DefaultBidGenerator(configIdAssigner, distributedIncrAssigner,

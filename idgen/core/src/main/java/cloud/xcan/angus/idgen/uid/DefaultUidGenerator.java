@@ -1,10 +1,8 @@
-package cloud.xcan.angus.idgen.uid.impl;
+package cloud.xcan.angus.idgen.uid;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceInfo;
 import cloud.xcan.angus.idgen.UidGenerator;
 import cloud.xcan.angus.idgen.exception.IdGenerateException;
-import cloud.xcan.angus.idgen.uid.BitsAllocator;
-import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import cloud.xcan.angus.spec.utils.DateUtils;
 import java.util.Date;
 import java.util.Objects;

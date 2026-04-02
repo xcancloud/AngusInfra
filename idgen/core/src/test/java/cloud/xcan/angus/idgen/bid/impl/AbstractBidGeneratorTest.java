@@ -4,8 +4,9 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import cloud.xcan.angus.idgen.BidGenerator;
+import cloud.xcan.angus.idgen.DistributedIncrAssigner;
+import cloud.xcan.angus.idgen.bid.AbstractBidGenerator;
 import cloud.xcan.angus.idgen.bid.DateFormat;
-import cloud.xcan.angus.idgen.bid.DistributedIncrAssigner;
 import cloud.xcan.angus.idgen.bid.Format;
 import cloud.xcan.angus.idgen.bid.Mode;
 import cloud.xcan.angus.idgen.entity.IdConfig;

@@ -1,4 +1,4 @@
-package cloud.xcan.angus.queue.starter;
+package cloud.xcan.angus.queue.starter.autoconfigure;
 
 import cloud.xcan.angus.queue.core.entity.DeadLetterEntity;
 import cloud.xcan.angus.queue.core.entity.MessageEntity;
@@ -10,7 +10,6 @@ import cloud.xcan.angus.queue.core.service.QueueService;
 import cloud.xcan.angus.queue.core.service.Slf4jAuditLogger;
 import cloud.xcan.angus.queue.core.spi.RepositoryAdapter;
 import cloud.xcan.angus.queue.starter.adapter.JpaRepositoryAdapter;
-import cloud.xcan.angus.queue.starter.autoconfigure.QueueProperties;
 import cloud.xcan.angus.queue.starter.repository.DeadLetterRepository;
 import cloud.xcan.angus.queue.starter.repository.MessageRepository;
 import cloud.xcan.angus.queue.starter.scheduler.DeadLetterMoverScheduler;

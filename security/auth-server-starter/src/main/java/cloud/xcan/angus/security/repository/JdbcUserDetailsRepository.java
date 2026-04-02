@@ -173,7 +173,7 @@ public class JdbcUserDetailsRepository extends JdbcUserAuthoritiesDaoImpl implem
       ps.setString(8, user.getLastName());
       ps.setString(9, user.getFullName());
       ps.setBoolean(10, user.isSysAdmin());
-        ps.setString(11, user.getEmail());
+      ps.setString(11, user.getEmail());
       ps.setString(12, user.getMobile());
       ps.setTimestamp(13, user.getPasswordExpiredDate() != null
           ? Timestamp.from(user.getPasswordExpiredDate()) : null);

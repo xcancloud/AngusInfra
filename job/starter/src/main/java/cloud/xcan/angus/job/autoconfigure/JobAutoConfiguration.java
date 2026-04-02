@@ -1,16 +1,23 @@
-package cloud.xcan.angus.job.config;
+package cloud.xcan.angus.job.autoconfigure;
 
+import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.executor.JobExecutor;
+import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.properties.JobProperties;
 import cloud.xcan.angus.job.registrar.JobRegistrar;
-import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import cloud.xcan.angus.job.service.JobManagementService;
+import jakarta.persistence.EntityManagerFactory;
 import java.util.Map;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -27,18 +34,31 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
  * {@link cloud.xcan.angus.job.monitor.JobHealthMonitor} and
  * {@link cloud.xcan.angus.job.service.JobSchedulerService} are picked up.
  *
- * <p>JPA repositories and entity scanning are handled by Spring Boot's
- * auto-configuration ({@code JpaRepositoriesAutoConfiguration}) — no hard-coded package strings are
- * needed here.
+ * <p>JPA: {@link JobJpaBootstrapConfiguration} registers {@link EntityScan} for job entities and
+ * {@link EnableJpaRepositories} for {@code cloud.xcan.angus.job.jpa} repositories when an
+ * {@link EntityManagerFactory} is present (runs after {@link HibernateJpaAutoConfiguration}).
  *
  * <p>Also registers {@link JobRegistrar} which scans all {@link JobExecutor} beans annotated with
  * {@link cloud.xcan.angus.job.annotation.JobDefinition} and auto-registers them into the
  * {@code scheduled_job} table on startup (idempotent).
  */
-@AutoConfiguration
+@AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
 @EnableScheduling
 @EnableConfigurationProperties(JobProperties.class)
 public class JobAutoConfiguration {
+
+  /**
+   * Binds job module entities and Spring Data repositories without relying on the application's
+   * {@code @SpringBootApplication} scan base.
+   */
+  @Configuration(proxyBeanMethods = false)
+  @ConditionalOnClass(EntityManagerFactory.class)
+  @ConditionalOnBean(EntityManagerFactory.class)
+  @EntityScan(basePackageClasses = ScheduledJob.class)
+  @EnableJpaRepositories(basePackageClasses = ScheduledJobRepository.class)
+  static class JobJpaBootstrapConfiguration {
+
+  }
 
   /**
    * Shared executor pool for job and shard work items. Used by

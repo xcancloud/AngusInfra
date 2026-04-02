@@ -55,12 +55,14 @@ public @interface JobDefinition {
    */
   String cron();
 
-  /** Task execution model; defaults to {@link JobType#SIMPLE}. */
+  /**
+   * Task execution model; defaults to {@link JobType#SIMPLE}.
+   */
   JobType type() default JobType.SIMPLE;
 
   /**
-   * Number of shards. Only meaningful for {@link JobType#SHARDING} and
-   * {@link JobType#MAP_REDUCE} jobs. Defaults to {@code 1}.
+   * Number of shards. Only meaningful for {@link JobType#SHARDING} and {@link JobType#MAP_REDUCE}
+   * jobs. Defaults to {@code 1}.
    */
   int shardingCount() default 1;
 
@@ -82,6 +84,8 @@ public @interface JobDefinition {
    */
   int initialDelaySeconds() default 0;
 
-  /** Optional human-readable description stored in {@code scheduled_job.description}. */
+  /**
+   * Optional human-readable description stored in {@code scheduled_job.description}.
+   */
   String description() default "";
 }

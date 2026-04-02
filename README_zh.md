@@ -39,13 +39,13 @@
 
 ### **数据层模块**
 
-| 模块                  | 说明                                                                |
-|---------------------|-------------------------------------------------------------------|
-| **`jpa-starter`**   | Spring Data JPA 集成模块，提供多租户动态数据源配置、通用 Repository、Specification 构建器及审计支持 |
-| **`sharding`**      | 生产级多租户数据库分库分表框架，支持动态路由数据源、SQL 表名重写、可插拔分片键解析及自动建表管理。内置取模与一致性哈希策略、内存/JDBC/JPA 注册表及干净的 SPI 模型。参见 [sharding/README_zh.md](sharding/README_zh.md) |
-| **`cache`**         | 二级缓存库，结合内存（Caffeine）与数据库（JPA）持久化，提供管理 REST API 及 Spring Boot 自动配置 |
-| **`l2cache`**    | 二级缓存库，集成 Redis + Caffeine 实现高性能缓存，支持分布式一致性及缓存防止穿透策略               |
-| **`lettucex`**   | Redis 增强库，统一 Lettuce 接入配置，提供业务扩展工具方法                              |
+| 模块                | 说明                                                                                                                                           |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| **`jpa-starter`** | Spring Data JPA 集成模块，提供多租户动态数据源配置、通用 Repository、Specification 构建器及审计支持                                                                       |
+| **`sharding`**    | 生产级多租户数据库分库分表框架，支持动态路由数据源、SQL 表名重写、可插拔分片键解析及自动建表管理。内置取模与一致性哈希策略、内存/JDBC/JPA 注册表及干净的 SPI 模型。参见 [sharding/README_zh.md](sharding/README_zh.md) |
+| **`cache`**       | 二级缓存库，结合内存（Caffeine）与数据库（JPA）持久化，提供管理 REST API 及 Spring Boot 自动配置                                                                            |
+| **`l2cache`**     | 二级缓存库，集成 Redis + Caffeine 实现高性能缓存，支持分布式一致性及缓存防止穿透策略                                                                                          |
+| **`lettucex`**    | Redis 增强库，统一 Lettuce 接入配置，提供业务扩展工具方法                                                                                                         |
 
 ### **分布式基础设施**
 
@@ -73,12 +73,12 @@
 
 ### **SpringBoot 快速集成**
 
-| 模块                                      | 说明                                                        |
-|-----------------------------------------|-----------------------------------------------------------|
-| **`integration/web-starter`**           | RESTful API 快速开发套件，自动配置统一响应格式、全局异常处理及跨域策略                 |
-| **`integration/oas3-starter`**          | OpenAPI 3.x 规范支持，自动生成接口文档并集成 Swagger UI                   |
-| **`integration/feign-starter`**         | Spring Cloud OpenFeign 声明式 HTTP 客户端集成，含编解码及错误处理           |
-| **`integration/observability-starter`** | 日志、指标及数据导出工具，服务于应用可观测性                                    |
+| 模块                                      | 说明                                              |
+|-----------------------------------------|-------------------------------------------------|
+| **`integration/web-starter`**           | RESTful API 快速开发套件，自动配置统一响应格式、全局异常处理及跨域策略       |
+| **`integration/oas3-starter`**          | OpenAPI 3.x 规范支持，自动生成接口文档并集成 Swagger UI         |
+| **`integration/feign-starter`**         | Spring Cloud OpenFeign 声明式 HTTP 客户端集成，含编解码及错误处理 |
+| **`integration/observability-starter`** | 日志、指标及数据导出工具，服务于应用可观测性                          |
 
 ### **开发工具链**
 

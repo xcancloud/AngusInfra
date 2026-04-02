@@ -12,7 +12,8 @@
   </parent>
 
   <artifactId>xcan-angusinfra.jpa</artifactId>
-  <name>AngusInfra :: JPA</name>
+  <name>AngusInfra :: JPA :: Parent</name>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>A expansion library for Spring and JPA.</description>
 

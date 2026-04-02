@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 /**
  * OAuth2 Inner API Authentication Configuration Properties
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Component;
  * @version 1.0
  * @since 2025-03-21
  */
-@Component
 @ConfigurationProperties(prefix = "angus.auth.innerapi")
 @Data
 public class InnerApiAuthProperties {

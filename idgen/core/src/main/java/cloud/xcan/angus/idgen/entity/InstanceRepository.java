@@ -1,33 +1,23 @@
-package cloud.xcan.angus.idgen.dao;
-
-import cloud.xcan.angus.idgen.entity.Instance;
-import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
+package cloud.xcan.angus.idgen.entity;
 
 /**
- * DAO for InstanceInfo
- *
- * @author XiaoLong Liu
+ * Persistence operations for {@link Instance}. Core module only declares jpa capabilities, while
+ * starter module provides Spring Data JPA implementation.
  */
-@Repository
-public interface InstanceRepo extends JpaRepository<Instance, String> {
+public interface InstanceRepository {
 
   /**
-   * Get {@link Instance} by host and port
+   * Save instance row.
    */
-  @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-  @Query(value = "select t from instance t where t.host =?1 and t.port =?2 ")
+  Instance save(Instance instance);
+
+  /**
+   * Get {@link Instance} by host and port.
+   */
   Instance findByHostAndPort(String host, String port);
 
   /**
-   * Increment Id
+   * Increment instance id by pk and current id.
    */
-  @Modifying
-  @Query("update instance t set t.id = t.id + 1 where t.pk=?1 and t.id =?2")
   int incrementId(String pk, Long id);
-
 }

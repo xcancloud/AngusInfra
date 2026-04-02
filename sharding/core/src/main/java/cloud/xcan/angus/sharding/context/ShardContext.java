@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Thread-local holder for the current shard context.
  *
- * <p>Set before repository access and cleared after each operation to prevent context leaking.
+ * <p>Set before jpa access and cleared after each operation to prevent context leaking.
  */
 @Slf4j
 public final class ShardContext {

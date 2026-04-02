@@ -12,7 +12,8 @@
   </parent>
 
   <artifactId>xcan-angusinfra.plugin</artifactId>
-  <name>AngusInfra :: Plugin</name>
+  <name>AngusInfra :: Plugin :: Parent</name>
+  <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>Parent aggregator module for building extensible plugins; manages child modules,
     versions and dependencies.

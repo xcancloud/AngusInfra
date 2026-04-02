@@ -1,8 +1,8 @@
-package cloud.xcan.angus.idgen;
+package cloud.xcan.angus.idgen.autoconfigure;
 
-import cloud.xcan.angus.idgen.bid.ConfigIdAssigner;
-import cloud.xcan.angus.idgen.entity.IdConfigRepository;
+import cloud.xcan.angus.idgen.ConfigIdAssigner;
 import cloud.xcan.angus.idgen.entity.IdConfig;
+import cloud.xcan.angus.idgen.entity.IdConfigRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**

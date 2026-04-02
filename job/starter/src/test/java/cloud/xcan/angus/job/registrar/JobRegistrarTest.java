@@ -12,10 +12,10 @@ import cloud.xcan.angus.job.annotation.JobDefinition;
 import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.enums.JobType;
 import cloud.xcan.angus.job.executor.JobExecutor;
+import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.model.JobContext;
 import cloud.xcan.angus.job.model.JobExecutionResult;
-import cloud.xcan.angus.job.repository.ScheduledJobRepository;
 import cloud.xcan.angus.job.service.JobManagementService;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -34,9 +34,9 @@ import org.springframework.boot.DefaultApplicationArguments;
  * Unit tests for {@link JobRegistrar}.
  *
  * <p>All tests use Mockito (no Spring context) to keep execution fast and
- * dependency-free.  The test fixtures use concrete inner classes that carry
- * {@link JobDefinition} annotations so the registrar's annotation-scanning
- * code is exercised for real — no reflection stubs needed.
+ * dependency-free.  The test fixtures use concrete inner classes that carry {@link JobDefinition}
+ * annotations so the registrar's annotation-scanning code is exercised for real — no reflection
+ * stubs needed.
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("JobRegistrar")
@@ -47,8 +47,8 @@ class JobRegistrarTest {
   // ---------------------------------------------------------------------------
 
   /**
-   * A minimal {@link JobExecutor} annotated with {@link JobDefinition}.  Used as the
-   * "happy-path" executor throughout the tests.
+   * A minimal {@link JobExecutor} annotated with {@link JobDefinition}.  Used as the "happy-path"
+   * executor throughout the tests.
    */
   @JobDefinition(
       name = "test-job",
@@ -66,8 +66,8 @@ class JobRegistrarTest {
   }
 
   /**
-   * A {@link JobExecutor} that carries <strong>no</strong> {@link JobDefinition} annotation.
-   * The registrar must silently ignore such executors.
+   * A {@link JobExecutor} that carries <strong>no</strong> {@link JobDefinition} annotation. The
+   * registrar must silently ignore such executors.
    */
   static class UnannotatedJob implements JobExecutor {
 
@@ -78,8 +78,8 @@ class JobRegistrarTest {
   }
 
   /**
-   * A {@link JobExecutor} whose {@link JobDefinition} requests an initial delay before the
-   * first execution.
+   * A {@link JobExecutor} whose {@link JobDefinition} requests an initial delay before the first
+   * execution.
    */
   @JobDefinition(
       name = "delayed-job",
@@ -212,7 +212,8 @@ class JobRegistrarTest {
     @Test
     @DisplayName("maps shardingCount and shardingParameter correctly")
     void maps_shardingFields() throws Exception {
-      Map<String, JobExecutor> executors = Map.of("shardingAnnotatedJob", new ShardingAnnotatedJob());
+      Map<String, JobExecutor> executors = Map.of("shardingAnnotatedJob",
+          new ShardingAnnotatedJob());
       JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("sharding-job", "test"))
@@ -390,7 +391,7 @@ class JobRegistrarTest {
     }
 
     @Test
-    @DisplayName("does NOT call repository.save when initialDelaySeconds == 0")
+    @DisplayName("does NOT call jpa.save when initialDelaySeconds == 0")
     void noDelay_doesNotSave() throws Exception {
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", new SimpleAnnotatedJob());
       JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
@@ -401,7 +402,7 @@ class JobRegistrarTest {
 
       registrar.run(NO_ARGS);
 
-      // repository.save should NOT be called for delay adjustments
+      // jpa.save should NOT be called for delay adjustments
       verify(jobRepository, never()).save(any(ScheduledJob.class));
     }
   }

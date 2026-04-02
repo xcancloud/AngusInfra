@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>xcan-angusinfra.cache</artifactId>
-  <name>AngusInfra :: Cache</name>
+  <name>AngusInfra :: Cache :: Parent</name>
   <version>3.0.0</version>
   <packaging>pom</packaging>
   <description>Implementation of Two-Level Cache with Memory and Database.</description>

@@ -39,7 +39,9 @@ public class SqlTemplateTableManager implements ShardTableManager {
   private final DataSource dataSource;
   private final String schemaPath;
   private final List<String> templateTableNames;
-  /** Fast in-process lookup; always populated from registry at startup (if registry provided). */
+  /**
+   * Fast in-process lookup; always populated from registry at startup (if registry provided).
+   */
   private final ConcurrentMap<String, Boolean> localCache = new ConcurrentHashMap<>();
   private final ShardTableRegistry registry;
 
@@ -162,12 +164,16 @@ public class SqlTemplateTableManager implements ShardTableManager {
     }
   }
 
-  /** Remove {@code CREATE INDEX} statements from the DDL (secondary-index suppression). */
+  /**
+   * Remove {@code CREATE INDEX} statements from the DDL (secondary-index suppression).
+   */
   static String removeSecondaryIndexes(String ddl) {
     return ddl.replaceAll("(?i)CREATE\\s+INDEX[^;]*;?", "");
   }
 
-  /** Simple modulo helper for persisting the db index in the registry record. */
+  /**
+   * Simple modulo helper for persisting the db index in the registry record.
+   */
   private static int computeDbIndex(long shardKey, int shardTableCount) {
     return shardTableCount > 0 ? (int) (Math.abs(shardKey) % shardTableCount) : 0;
   }

@@ -13,7 +13,7 @@ import java.util.List;
  *   <li>{@code JdbcShardTableRegistry} – durable, backed by a {@code shard_table} row in the
  *       primary datasource. Enabled by setting {@code angus.sharding.table-registry-enabled=true}.
  *       </li>
- *   <li>{@code JpaShardTableRegistry} – durable, backed by a JPA entity repository in the primary
+ *   <li>{@code JpaShardTableRegistry} – durable, backed by a JPA entity jpa in the primary
  *       datasource. Activated automatically when a {@code ShardTableJpaRepository} bean is present
  *       on the application context.</li>
  * </ul>

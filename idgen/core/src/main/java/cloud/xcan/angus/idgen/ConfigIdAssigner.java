@@ -1,4 +1,4 @@
-package cloud.xcan.angus.idgen.bid;
+package cloud.xcan.angus.idgen;
 
 import cloud.xcan.angus.idgen.entity.IdConfig;
 

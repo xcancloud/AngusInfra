@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cloud.xcan.angus.idgen.IdGenAutoConfigurer
+  cloud.xcan.angus.idgen.autoconfigure.IdGenAutoConfiguration

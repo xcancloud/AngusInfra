@@ -3,8 +3,8 @@ package cloud.xcan.angus.idgen.benchmark;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import cloud.xcan.angus.idgen.uid.CachedUidGenerator;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
-import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;

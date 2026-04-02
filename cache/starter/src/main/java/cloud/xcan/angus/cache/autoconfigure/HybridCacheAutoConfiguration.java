@@ -5,6 +5,7 @@ import cloud.xcan.angus.cache.HybridCacheManager;
 import cloud.xcan.angus.cache.IDistributedCache;
 import cloud.xcan.angus.cache.config.CacheProperties;
 import cloud.xcan.angus.cache.entry.CacheEntry;
+import cloud.xcan.angus.cache.jpa.SpringCachePersistenceAdapter;
 import cloud.xcan.angus.cache.jpa.SpringDataCacheEntryRepository;
 import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -36,7 +37,7 @@ public class HybridCacheAutoConfiguration {
   /**
    * Chooses persistence at <em>bean creation</em> time via {@link ObjectProvider}, so a
    * {@link SpringDataCacheEntryRepository} registered by JPA is used as the default. Falls back to
-   * {@link NoOpCachePersistence} (pure in-memory) when JPA repository is not available.
+   * {@link NoOpCachePersistence} (pure in-memory) when JPA jpa is not available.
    */
   @Bean
   @ConditionalOnMissingBean(CachePersistence.class)

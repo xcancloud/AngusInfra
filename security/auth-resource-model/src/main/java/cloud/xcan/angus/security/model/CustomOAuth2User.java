@@ -1,10 +1,8 @@
 package cloud.xcan.angus.security.model;
 
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
-import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
 import static java.util.Objects.nonNull;
 
-import cloud.xcan.angus.api.enums.PasswordStrength;
 import cloud.xcan.angus.spec.experimental.EntitySupport;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -18,7 +16,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -170,7 +167,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities) {
     this(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked,
-        authorities, "-1", null, null, null, false,  null, null, null,
+        authorities, "-1", null, null, null, false, null, null, null,
         null, null, "-1", null, null, null);
   }
 

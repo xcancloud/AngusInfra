@@ -9,7 +9,7 @@ import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.core.biz.BaseRepository;
 import cloud.xcan.angus.core.utils.CoreUtils;
-import cloud.xcan.angus.idgen.uid.impl.CachedUidGenerator;
+import cloud.xcan.angus.idgen.uid.CachedUidGenerator;
 import cloud.xcan.angus.remote.message.http.ResourceNotFound;
 import cloud.xcan.angus.spec.experimental.Assert;
 import cloud.xcan.angus.spec.experimental.Entity;

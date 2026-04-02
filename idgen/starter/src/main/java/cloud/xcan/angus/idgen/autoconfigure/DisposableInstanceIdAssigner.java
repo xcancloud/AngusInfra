@@ -1,4 +1,4 @@
-package cloud.xcan.angus.idgen;
+package cloud.xcan.angus.idgen.autoconfigure;
 
 import static cloud.xcan.angus.idgen.utils.NetUtils.getLocalAddress;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
@@ -8,8 +8,8 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
-import cloud.xcan.angus.idgen.entity.InstanceRepository;
 import cloud.xcan.angus.idgen.entity.Instance;
+import cloud.xcan.angus.idgen.entity.InstanceRepository;
 import cloud.xcan.angus.idgen.uid.InstanceIdAssigner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

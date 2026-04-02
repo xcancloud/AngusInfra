@@ -1,4 +1,4 @@
-package cloud.xcan.angus.idgen;
+package cloud.xcan.angus.idgen.autoconfigure;
 
 import cloud.xcan.angus.api.pojo.instance.InstanceType;
 import cloud.xcan.angus.idgen.utils.NetUtils;

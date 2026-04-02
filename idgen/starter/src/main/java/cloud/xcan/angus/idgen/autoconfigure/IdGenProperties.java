@@ -1,4 +1,4 @@
-package cloud.xcan.angus.idgen;
+package cloud.xcan.angus.idgen.autoconfigure;
 
 import lombok.Getter;
 import lombok.Setter;

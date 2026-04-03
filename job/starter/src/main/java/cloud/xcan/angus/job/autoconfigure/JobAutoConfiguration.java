@@ -3,6 +3,7 @@ package cloud.xcan.angus.job.autoconfigure;
 import cloud.xcan.angus.job.builtin.JobExecutionLogCleanupJob;
 import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.executor.JobExecutor;
+import cloud.xcan.angus.job.jpa.DistributedLockRepository;
 import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.properties.JobProperties;
 import cloud.xcan.angus.job.registrar.JobRegistrar;
@@ -109,7 +110,8 @@ public class JobAutoConfiguration {
   public JobRegistrar jobRegistrar(
       JobManagementService jobManagementService,
       ScheduledJobRepository jobRepository,
+      DistributedLockRepository lockRepository,
       Map<String, JobExecutor> jobExecutors) {
-    return new JobRegistrar(jobManagementService, jobRepository, jobExecutors);
+    return new JobRegistrar(jobManagementService, jobRepository, lockRepository, jobExecutors);
   }
 }

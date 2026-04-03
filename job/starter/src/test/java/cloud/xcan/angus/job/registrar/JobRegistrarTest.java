@@ -12,6 +12,7 @@ import cloud.xcan.angus.job.annotation.JobDefinition;
 import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.enums.JobType;
 import cloud.xcan.angus.job.executor.JobExecutor;
+import cloud.xcan.angus.job.jpa.DistributedLockRepository;
 import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.model.JobContext;
@@ -145,6 +146,9 @@ class JobRegistrarTest {
   @Mock
   private ScheduledJobRepository jobRepository;
 
+  @Mock
+  private DistributedLockRepository lockRepository;
+
   private static final DefaultApplicationArguments NO_ARGS =
       new DefaultApplicationArguments(new String[0]);
 
@@ -171,7 +175,7 @@ class JobRegistrarTest {
     @DisplayName("registers a single annotated executor on first startup")
     void registers_newAnnotatedExecutor() throws Exception {
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", new SimpleAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
           .thenReturn(Optional.empty());
@@ -199,7 +203,7 @@ class JobRegistrarTest {
       executors.put("simpleAnnotatedJob", new SimpleAnnotatedJob());
       executors.put("shardingAnnotatedJob", new ShardingAnnotatedJob());
 
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup(any(), any())).thenReturn(Optional.empty());
       when(jobManagementService.createJob(any())).thenReturn(savedJob(1L));
@@ -214,7 +218,7 @@ class JobRegistrarTest {
     void maps_shardingFields() throws Exception {
       Map<String, JobExecutor> executors = Map.of("shardingAnnotatedJob",
           new ShardingAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("sharding-job", "test"))
           .thenReturn(Optional.empty());
@@ -235,7 +239,7 @@ class JobRegistrarTest {
     @DisplayName("maps empty shardingParameter to null in the request")
     void maps_emptyShardingParameterToNull() throws Exception {
       Map<String, JobExecutor> executors = Map.of("noParamJob", new NoParamJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("no-param-job", "test"))
           .thenReturn(Optional.empty());
@@ -258,7 +262,7 @@ class JobRegistrarTest {
     @DisplayName("skips registration when job already exists in the database")
     void skips_existingJob() throws Exception {
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", new SimpleAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
           .thenReturn(Optional.of(savedJob(99L)));
@@ -276,7 +280,7 @@ class JobRegistrarTest {
       executors.put("simpleAnnotatedJob", new SimpleAnnotatedJob());   // already exists
       executors.put("shardingAnnotatedJob", new ShardingAnnotatedJob()); // new
 
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
           .thenReturn(Optional.of(savedJob(1L)));
@@ -294,7 +298,7 @@ class JobRegistrarTest {
     @DisplayName("calling run twice does not double-register (simulates two restarts)")
     void twoRunCalls_idempotent() throws Exception {
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", new SimpleAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       // First run: job does not exist
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
@@ -320,7 +324,7 @@ class JobRegistrarTest {
     @DisplayName("ignores executors without @JobDefinition")
     void ignores_unannotatedExecutor() throws Exception {
       Map<String, JobExecutor> executors = Map.of("unannotatedJob", new UnannotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       registrar.run(NO_ARGS);
 
@@ -335,7 +339,7 @@ class JobRegistrarTest {
       executors.put("unannotatedJob", new UnannotatedJob());
       executors.put("simpleAnnotatedJob", new SimpleAnnotatedJob());
 
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
           .thenReturn(Optional.empty());
@@ -350,7 +354,7 @@ class JobRegistrarTest {
     @Test
     @DisplayName("does nothing when executor map is empty")
     void empty_executorMap() throws Exception {
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, Map.of());
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, Map.of());
 
       registrar.run(NO_ARGS);
 
@@ -370,7 +374,7 @@ class JobRegistrarTest {
     @DisplayName("saves updated nextExecuteTime when initialDelaySeconds > 0")
     void saves_nextExecuteTimeWithDelay() throws Exception {
       Map<String, JobExecutor> executors = Map.of("delayedJob", new DelayedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       ScheduledJob persisted = savedJob(5L);
       when(jobRepository.findByJobNameAndJobGroup("delayed-job", "test"))
@@ -394,7 +398,7 @@ class JobRegistrarTest {
     @DisplayName("does NOT call jpa.save when initialDelaySeconds == 0")
     void noDelay_doesNotSave() throws Exception {
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", new SimpleAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
           .thenReturn(Optional.empty());
@@ -437,7 +441,7 @@ class JobRegistrarTest {
       executors.put("simpleAnnotatedJob", new SimpleAnnotatedJob());  // will throw
       executors.put("secondJob", new SecondJob());                    // should still register
 
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup(any(), any())).thenReturn(Optional.empty());
       // First call throws; second call succeeds
@@ -457,7 +461,7 @@ class JobRegistrarTest {
     @DisplayName("does not propagate exceptions from createJob to the caller")
     void doesNotPropagate_createJobException() throws Exception {
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", new SimpleAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup(any(), any())).thenReturn(Optional.empty());
       when(jobManagementService.createJob(any()))
@@ -496,7 +500,7 @@ class JobRegistrarTest {
       // bean.getClass() — the anonymous subclass — which has no annotation.
       // Therefore, we expect NO registration for a raw anonymous subclass.
       Map<String, JobExecutor> executors = Map.of("proxiedBean", proxiedBean);
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       registrar.run(NO_ARGS);
 
@@ -513,7 +517,7 @@ class JobRegistrarTest {
       assertThat(direct.getClass().getAnnotation(JobDefinition.class)).isNotNull();
 
       Map<String, JobExecutor> executors = Map.of("simpleAnnotatedJob", direct);
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("test-job", "test"))
           .thenReturn(Optional.empty());
@@ -535,7 +539,7 @@ class JobRegistrarTest {
     @DisplayName("beanName in the request matches the Spring bean name from the map key")
     void beanName_matchesMapKey() throws Exception {
       Map<String, JobExecutor> executors = Map.of("myCustomBeanName", new SimpleAnnotatedJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup(any(), any())).thenReturn(Optional.empty());
       ScheduledJob job1 = savedJob(1L);
@@ -560,7 +564,7 @@ class JobRegistrarTest {
       }
 
       Map<String, JobExecutor> executors = Map.of("noGroupJob", new NoGroupJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup("no-group-job", "default"))
           .thenReturn(Optional.empty());
@@ -586,7 +590,7 @@ class JobRegistrarTest {
       }
 
       Map<String, JobExecutor> executors = Map.of("defaultRetryJob", new DefaultRetryJob());
-      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, executors);
+      JobRegistrar registrar = new JobRegistrar(jobManagementService, jobRepository, lockRepository, executors);
 
       when(jobRepository.findByJobNameAndJobGroup(any(), any())).thenReturn(Optional.empty());
       ScheduledJob job1c = savedJob(1L);

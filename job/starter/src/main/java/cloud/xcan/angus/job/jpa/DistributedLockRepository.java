@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Spring Data JPA repository for {@link DistributedLock}.
@@ -21,6 +22,7 @@ public interface DistributedLockRepository extends JpaRepository<DistributedLock
    * @param now current server time
    * @return number of rows deleted
    */
+  @Transactional
   @Modifying
   @Query("DELETE FROM DistributedLock l WHERE l.expireTime <= :now")
   int deleteExpiredLocks(@Param("now") LocalDateTime now);
@@ -33,6 +35,7 @@ public interface DistributedLockRepository extends JpaRepository<DistributedLock
    * @param now     current server time; only rows with expireTime &le; now are affected
    * @return 1 if a row was deleted, 0 otherwise
    */
+  @Transactional
   @Modifying
   @Query("DELETE FROM DistributedLock l WHERE l.lockKey = :lockKey AND l.expireTime <= :now")
   int deleteExpiredLockByKey(@Param("lockKey") String lockKey, @Param("now") LocalDateTime now);
@@ -51,6 +54,7 @@ public interface DistributedLockRepository extends JpaRepository<DistributedLock
    * @param owner 当前节点的 nodeId（格式 {@code hostname|ip}）
    * @return 受影响的行数
    */
+  @Transactional
   @Modifying
   @Query("DELETE FROM DistributedLock l WHERE l.owner = :owner")
   int deleteByOwner(@Param("owner") String owner);

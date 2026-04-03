@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS angus_scheduled_job (
     max_retry_count    INT          DEFAULT 3,
     description        TEXT,
     log_retention_days INT          DEFAULT 0,
-    executor_node      VARCHAR(40),
+    executor_node      VARCHAR(255),
     last_execute_time  TIMESTAMP,
     next_execute_time  TIMESTAMP,
     create_time        TIMESTAMP    NOT NULL,

@@ -20,7 +20,6 @@
     <module>observability-starter</module>
     <module>web-starter</module>
     <module>oas3-starter</module>
-    <module>restapi-sample</module>
   </modules>
 
   <dependencyManagement>

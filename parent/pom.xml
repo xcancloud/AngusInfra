@@ -190,6 +190,7 @@
     <notice-maven-plugin>1.1.0</notice-maven-plugin>
     <sphinx-maven-plugin.version>2.10.0</sphinx-maven-plugin.version>
     <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
+    <jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
     <proguard-maven-plugin.version>2.6.1</proguard-maven-plugin.version>
   </properties>
 

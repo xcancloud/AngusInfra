@@ -51,9 +51,9 @@ class DefaultPluginManagerTest {
   @BeforeEach
   void setUp() {
     applicationContext = mock(ApplicationContext.class);
-    properties = new PluginProperties();
-    properties.setDirectory(tempDir.resolve("plugins").toString());
-    properties.setDataDirectory(tempDir.resolve("data").toString());
+    properties = PluginProperties.forTesting(
+        tempDir.resolve("plugins").toString(),
+        tempDir.resolve("data").toString());
     properties.setAutoLoad(false);
     Map<String, Object> defaults = new HashMap<>();
     defaults.put("system.version", "1.0.0");
@@ -78,7 +78,8 @@ class DefaultPluginManagerTest {
 
   @Test
   void loadAllWhenJarDirectoryMissingDoesNothing() {
-    properties.setDirectory(tempDir.resolve("no-such-dir").toString());
+    properties.replacePathsForTesting(tempDir.resolve("no-such-dir").toString(),
+        tempDir.resolve("data").toString());
     manager.loadAllPlugins();
     assertTrue(manager.getAllPlugins().isEmpty());
   }

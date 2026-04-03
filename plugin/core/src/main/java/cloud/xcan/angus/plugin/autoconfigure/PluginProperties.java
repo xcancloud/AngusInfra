@@ -1,16 +1,28 @@
 package cloud.xcan.angus.plugin.autoconfigure;
 
+import cloud.xcan.angus.core.utils.SpringAppDirUtils;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.Data;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Configuration holder for plugin system settings.
  * <p>
  * This is intentionally a simple POJO (no Spring annotations here) so it can be used by the starter
  * module which will bind configuration properties.
+ * <p>
+ * Plugin jar directory and runtime data directory are <strong>not</strong> configurable via
+ * {@code application.yml}: they are always derived from {@link SpringAppDirUtils#getPluginDir()} and
+ * {@link SpringAppDirUtils#getBizDataDir(String)} with {@code "plugin-data"}.
  */
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class PluginProperties {
 
   /**
@@ -30,14 +42,45 @@ public class PluginProperties {
   private StorageType storageType = StorageType.DISK;
 
   /**
-   * Directory where plugin jars are stored when using disk storage.
+   * Directory where plugin jars are stored when using disk storage. Fixed at runtime from
+   * {@link SpringAppDirUtils#getPluginDir()}; not bindable from configuration.
    */
-  private String directory = "./plugins";
+  @Setter(AccessLevel.NONE)
+  private String directory;
 
   /**
-   * Directory where plugin runtime data should be stored.
+   * Directory where plugin runtime data should be stored. Fixed at runtime from
+   * {@link SpringAppDirUtils#getBizDataDir(String)} with {@code "plugin-data"}; not bindable from
+   * configuration.
    */
-  private String dataDirectory = "./plugin-data";
+  @Setter(AccessLevel.NONE)
+  private String dataDirectory;
+
+  public PluginProperties() {
+    SpringAppDirUtils appDirs = new SpringAppDirUtils();
+    this.directory = appDirs.getPluginDir();
+    this.dataDirectory = appDirs.getBizDataDir("plugin-data");
+  }
+
+  /**
+   * Builds properties with explicit paths for unit tests. Production code should use the no-arg
+   * constructor.
+   */
+  public static PluginProperties forTesting(String directory, String dataDirectory) {
+    PluginProperties p = new PluginProperties();
+    p.directory = directory;
+    p.dataDirectory = dataDirectory;
+    return p;
+  }
+
+  /**
+   * For unit tests that need to change paths after construction. Not used by Spring configuration
+   * binding.
+   */
+  public void replacePathsForTesting(String directory, String dataDirectory) {
+    this.directory = directory;
+    this.dataDirectory = dataDirectory;
+  }
 
   // -------------------- Lifecycle & upload --------------------
 

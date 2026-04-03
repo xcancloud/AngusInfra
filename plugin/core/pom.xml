@@ -17,29 +17,17 @@
     services and foundational libraries.
   </description>
 
-  <properties>
-    <junit.jupiter.version>5.9.3</junit.jupiter.version>
-    <mockito.version>4.8.1</mockito.version>
-  </properties>
-
-  <!-- Import JUnit BOM to align platform/jupiter versions and avoid mixed junit-platform-commons on classpath -->
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>${junit.jupiter.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <dependencies>
     <!-- Depend on plugin API -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.plugin-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.core</artifactId>
       <version>${project.version}</version>
     </dependency>
 

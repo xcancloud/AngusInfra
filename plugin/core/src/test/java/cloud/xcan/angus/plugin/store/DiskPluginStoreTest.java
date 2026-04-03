@@ -20,16 +20,16 @@ class DiskPluginStoreTest {
 
   @Test
   void listEmptyWhenDirectoryHasNoJars(@TempDir Path tmp) throws IOException {
-    PluginProperties p = new PluginProperties();
-    p.setDirectory(tmp.toString());
+    PluginProperties p = PluginProperties.forTesting(tmp.toString(),
+        tmp.resolve("plugin-data").toString());
     DiskPluginStore store = new DiskPluginStore(p);
     assertTrue(store.listPluginIds().isEmpty());
   }
 
   @Test
   void storeGetListDelete(@TempDir Path tmp) throws IOException {
-    PluginProperties p = new PluginProperties();
-    p.setDirectory(tmp.toString());
+    PluginProperties p = PluginProperties.forTesting(tmp.toString(),
+        tmp.resolve("plugin-data").toString());
     DiskPluginStore store = new DiskPluginStore(p);
 
     assertTrue(store.listPluginIds().isEmpty());
@@ -54,8 +54,8 @@ class DiskPluginStoreTest {
 
   @Test
   void invalidPluginIdThrows(@TempDir Path tmp) {
-    PluginProperties p = new PluginProperties();
-    p.setDirectory(tmp.toString());
+    PluginProperties p = PluginProperties.forTesting(tmp.toString(),
+        tmp.resolve("plugin-data").toString());
     DiskPluginStore store = new DiskPluginStore(p);
     assertThrows(IOException.class, () -> store.getPluginPath("../evil"));
     assertThrows(IOException.class, () -> store.getPluginPath(null));
@@ -63,8 +63,8 @@ class DiskPluginStoreTest {
 
   @Test
   void pathTraversalRejected(@TempDir Path tmp) {
-    PluginProperties p = new PluginProperties();
-    p.setDirectory(tmp.toString());
+    PluginProperties p = PluginProperties.forTesting(tmp.toString(),
+        tmp.resolve("plugin-data").toString());
     DiskPluginStore store = new DiskPluginStore(p);
     assertThrows(IOException.class, () -> store.getPluginPath("x/../../../etc/passwd"));
   }

@@ -8,23 +8,19 @@ import cloud.xcan.angus.plugin.management.PluginManagementService;
 import cloud.xcan.angus.plugin.store.DiskPluginStore;
 import cloud.xcan.angus.plugin.store.PluginStore;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 class PluginAutoConfigurationTest {
 
   @Test
-  void loadsDiskStoreAndManagerAndManagementService(@TempDir java.nio.file.Path dir,
-      @TempDir java.nio.file.Path dataDir) {
+  void loadsDiskStoreAndManagerAndManagementService() {
     new ApplicationContextRunner()
         .withConfiguration(AutoConfigurations.of(PluginAutoConfiguration.class))
         .withPropertyValues(
             "angus.plugin.enabled=true",
             "angus.plugin.auto-load=false",
-            "angus.plugin.storage-type=DISK",
-            "angus.plugin.directory=" + dir.toAbsolutePath(),
-            "angus.plugin.data-directory=" + dataDir.toAbsolutePath()
+            "angus.plugin.storage-type=DISK"
         )
         .run(ctx -> {
           assertThat(ctx).hasSingleBean(PluginStore.class);

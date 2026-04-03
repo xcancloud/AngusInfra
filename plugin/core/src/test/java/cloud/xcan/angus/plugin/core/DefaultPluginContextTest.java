@@ -26,8 +26,8 @@ class DefaultPluginContextTest {
     d.setId("pid");
     Map<String, Object> cfg = new HashMap<>();
     cfg.put("k", "v");
-    PluginProperties props = new PluginProperties();
-    props.setDataDirectory(tmp.toString());
+    PluginProperties props = PluginProperties.forTesting(tmp.resolve("plugins").toString(),
+        tmp.toString());
     DefaultPluginContext ctx = new DefaultPluginContext(app, d, cfg, props);
 
     assertSame(app, ctx.getApplicationContext());

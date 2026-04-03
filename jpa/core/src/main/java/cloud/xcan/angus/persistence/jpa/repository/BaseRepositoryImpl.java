@@ -356,7 +356,7 @@ public class BaseRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRep
     return sql;
   }
 
-  private <T, V> @NotNull CriteriaQuery<V> getCriteriaQuery(Class<T> entityClass,
+  private <T, V> CriteriaQuery<V> getCriteriaQuery(Class<T> entityClass,
       Class<V> viewClass, GenericSpecification<T> specification, Sort sort) {
     validateEntityClass(entityClass);
     List<String> fields = getValidatedFields(entityClass, viewClass);

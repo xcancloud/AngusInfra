@@ -31,43 +31,40 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.plugin-core</artifactId>
+      <artifactId>xcan-angusinfra.jpa-core</artifactId>
     </dependency>
 
-    <dependency>
+    <!-- Business applications load on demand -->
+    <!--<dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.plugin-starter</artifactId>
     </dependency>
-
-    <dependency>
-      <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.jpa-starter</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.idgen-starter</artifactId>
     </dependency>
-
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.cache-starter</artifactId>
     </dependency>
-
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.job-starter</artifactId>
     </dependency>
-
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.queue-starter</artifactId>
-    </dependency>
+    </dependency>-->
 
     <!-- <dependency>
       <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.l2cache-starter</artifactId>
     </dependency> -->
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.jpa-starter</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>

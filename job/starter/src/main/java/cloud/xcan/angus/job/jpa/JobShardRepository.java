@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring Data JPA repository for {@link JobShard}.
+ * Spring Data JPA jpa for {@link JobShard}.
  */
 @Repository
 public interface JobShardRepository extends JpaRepository<JobShard, Long> {

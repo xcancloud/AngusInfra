@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Service for CRUD management and operational control of scheduled jobs.
  *
  * <p>All database access is routed through this service; the REST controller
- * does not hold any repository references.
+ * does not hold any jpa references.
  */
 @Service
 @RequiredArgsConstructor

@@ -357,8 +357,6 @@ angus:
   plugin:
     enabled: true
     storage-type: DISK
-    directory: ./plugins
-    data-directory: ./plugin-data
     auto-load: true
     max-upload-size: 52428800
     enable-management-api: true
@@ -427,8 +425,6 @@ angus:
   plugin:
     enabled: true
     storage-type: DISK
-    directory: ./plugins
-    data-directory: ./plugin-data
     auto-load: true
 ```
 

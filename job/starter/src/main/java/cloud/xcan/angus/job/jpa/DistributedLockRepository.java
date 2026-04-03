@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Spring Data JPA repository for {@link DistributedLock}.
+ * Spring Data JPA jpa for {@link DistributedLock}.
  */
 @Repository
 public interface DistributedLockRepository extends JpaRepository<DistributedLock, String> {

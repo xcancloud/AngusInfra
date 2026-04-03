@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Spring Data JPA repository for {@link JobExecutionLog}.
+ * Spring Data JPA jpa for {@link JobExecutionLog}.
  */
 @Repository
 public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog, Long> {

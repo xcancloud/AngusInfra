@@ -1,2 +1,2 @@
-cloud.xcan.angus.sharding.autoconfigure.ShardingAutoConfiguration
-cloud.xcan.angus.sharding.autoconfigure.jpa.ShardingJpaAutoConfiguration
+cloud.xcan.angus.sharding.ShardingAutoConfiguration
+cloud.xcan.angus.sharding.ShardingJpaAutoConfiguration

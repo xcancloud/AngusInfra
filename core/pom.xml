@@ -12,7 +12,7 @@
   </parent>
 
   <artifactId>xcan-angusinfra.core</artifactId>
-  <name>AngusInfra :: Core :: Base</name>
+  <name>AngusInfra :: Core</name>
   <packaging>jar</packaging>
   <description>Core base library for Angus projects - fundamental utilities, exception handling, and
     business template.

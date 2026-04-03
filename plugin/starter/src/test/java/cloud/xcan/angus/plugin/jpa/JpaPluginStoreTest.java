@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import cloud.xcan.angus.plugin.entity.PluginEntity;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;

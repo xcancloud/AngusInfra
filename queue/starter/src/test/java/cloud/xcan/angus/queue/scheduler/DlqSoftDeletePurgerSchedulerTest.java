@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import cloud.xcan.angus.queue.autoconfigure.QueueProperties;
-import cloud.xcan.angus.queue.repository.DeadLetterRepository;
+import cloud.xcan.angus.queue.jpa.DeadLetterRepository;
 import org.junit.jupiter.api.Test;
 
 class DlqSoftDeletePurgerSchedulerTest {

@@ -1,5 +1,6 @@
 package cloud.xcan.angus.plugin.jpa;
 
+import cloud.xcan.angus.plugin.entity.PluginEntity;
 import cloud.xcan.angus.plugin.store.PluginStore;
 import java.io.IOException;
 import java.nio.file.Files;

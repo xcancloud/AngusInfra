@@ -4,14 +4,17 @@ import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
 import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
 import cloud.xcan.angus.persistence.config.DataSourceExtraProperties;
 import cloud.xcan.angus.persistence.config.HikariProperties;
+import cloud.xcan.angus.persistence.jpa.repository.BaseRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -21,7 +24,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
@@ -34,9 +39,21 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
     SessionImplementor.class})
 @EnableConfigurationProperties({JpaProperties.class, DataSourceExtraProperties.class,
     HikariProperties.class})
-@Import(CommonLinkHibernateJpaConfiguration.class)
+@Import(CommonLinkJpaHibernateConfiguration.class)
 @ConditionalOnProperty(name = "angus.datasource.commonlink.enabled", havingValue = "true")
 public class CommonLinkJpaAutoConfigurer {
+
+  @Configuration(proxyBeanMethods = false)
+  @EnableJpaRepositories(
+      repositoryBaseClass = BaseRepositoryImpl.class,
+      entityManagerFactoryRef = "commonLinkEntityManagerFactory",
+      transactionManagerRef = "commonLinkTransactionManager",
+      basePackages = {
+          "cloud.xcan.angus.api.commonlink.**"
+      })
+  static class CommonLinkJpaRepositoryConfiguration {
+
+  }
 
   @Bean("commonLinkDataSourceProperties")
   @ConfigurationProperties(prefix = "angus.datasource.commonlink.mysql")

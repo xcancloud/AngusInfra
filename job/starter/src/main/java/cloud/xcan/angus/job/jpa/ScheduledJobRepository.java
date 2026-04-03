@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Spring Data JPA repository for {@link ScheduledJob}.
+ * Spring Data JPA jpa for {@link ScheduledJob}.
  */
 @Repository
 public interface ScheduledJobRepository extends JpaRepository<ScheduledJob, Long> {

@@ -1,7 +1,7 @@
 package cloud.xcan.angus.queue.scheduler;
 
 import cloud.xcan.angus.queue.autoconfigure.QueueProperties;
-import cloud.xcan.angus.queue.repository.DeadLetterRepository;
+import cloud.xcan.angus.queue.jpa.DeadLetterRepository;
 import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

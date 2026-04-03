@@ -14,8 +14,7 @@
   <name>AngusInfra :: BOM</name>
   <packaging>pom</packaging>
   <description>BOM for plugin dependencies: centralizes version alignment and management of
-    submodules and third-party
-    dependencies to ensure compatibility.
+    submodules and third-party dependencies to ensure compatibility.
   </description>
 
   <dependencyManagement>

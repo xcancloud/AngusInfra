@@ -1,5 +1,6 @@
 package cloud.xcan.angus.job.autoconfigure;
 
+import cloud.xcan.angus.job.builtin.JobExecutionLogCleanupJob;
 import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.executor.JobExecutor;
 import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -45,6 +47,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 @AutoConfiguration(after = HibernateJpaAutoConfiguration.class)
 @EnableScheduling
 @EnableConfigurationProperties(JobProperties.class)
+// 扫描内置 job 组件（如 JobExecutionLogCleanupJob），使其作为 Spring Bean 注册并被 JobRegistrar 发现
+@ComponentScan(basePackageClasses = JobExecutionLogCleanupJob.class)
 public class JobAutoConfiguration {
 
   /**

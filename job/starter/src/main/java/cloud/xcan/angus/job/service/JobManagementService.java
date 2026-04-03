@@ -62,6 +62,8 @@ public class JobManagementService {
     job.setMaxRetryCount(request.getMaxRetryCount() != null ? request.getMaxRetryCount() : 3);
     job.setRetryCount(0);
     job.setDescription(request.getDescription());
+    // 0 表示全局默认（7天），-1 表示永久保留；原样存储，由清理 job 按规则处理
+    job.setLogRetentionDays(request.getLogRetentionDays() != null ? request.getLogRetentionDays() : 0);
     job.setStatus(JobStatus.READY);
     job.setCreateTime(now);
     job.setUpdateTime(now);
@@ -100,6 +102,9 @@ public class JobManagementService {
     job.setJobName(request.getJobName());
     job.setCronExpression(request.getCronExpression());
     job.setDescription(request.getDescription());
+    if (request.getLogRetentionDays() != null) {
+      job.setLogRetentionDays(request.getLogRetentionDays());
+    }
     job.setNextExecuteTime(calcNextExecuteTime(request.getCronExpression()));
     job.setUpdateTime(LocalDateTime.now());
     return jobRepository.save(job);

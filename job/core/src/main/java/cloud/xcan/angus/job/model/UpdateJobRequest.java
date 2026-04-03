@@ -1,5 +1,6 @@
 package cloud.xcan.angus.job.model;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -23,4 +24,10 @@ public class UpdateJobRequest {
 
   @Size(max = 4000)
   private String description;
+
+  /**
+   * 执行日志保留天数。{@code 0} 表示使用全局默认值（7 天），{@code -1} 表示永久保留。
+   */
+  @Min(value = -1, message = "logRetentionDays must be >= -1 (-1 means keep forever)")
+  private Integer logRetentionDays;
 }

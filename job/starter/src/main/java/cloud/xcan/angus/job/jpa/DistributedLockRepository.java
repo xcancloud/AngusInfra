@@ -36,4 +36,22 @@ public interface DistributedLockRepository extends JpaRepository<DistributedLock
   @Modifying
   @Query("DELETE FROM DistributedLock l WHERE l.lockKey = :lockKey AND l.expireTime <= :now")
   int deleteExpiredLockByKey(@Param("lockKey") String lockKey, @Param("now") LocalDateTime now);
+
+  /**
+   * 删除当前节点（owner）遗留的**所有**分布式锁，包括未过期的。
+   *
+   * <p>应用启动时调用，清理该节点崩溃前获取的锁。由于 nodeId 使用稳定的
+   * hostname-based 标识，确保同一物理节点重启后能识别并清理自己遗留的锁。
+   *
+   * <p>典型场景：节点 A 在持有某些 job_lock 时被强制关闭（kill -9、OOM、
+   * 电源故障），这些锁的 {@code expireTime} 设得很远（如 5 分钟内不会过期）。
+   * 节点 A 重启后，生成相同的 nodeId，立即调用此方法清理所有遗留的锁，
+   * 避免其他节点在很长时间内无法获取这些 job。
+   *
+   * @param owner 当前节点的 nodeId（格式 {@code hostname|ip}）
+   * @return 受影响的行数
+   */
+  @Modifying
+  @Query("DELETE FROM DistributedLock l WHERE l.owner = :owner")
+  int deleteByOwner(@Param("owner") String owner);
 }

@@ -69,8 +69,13 @@ public class JobSchedulerService {
 
   /**
    * Stable per-node identifier included in lock ownership and execution-log records.
+   *
+   * <p>使用 hostname + 本机 IP 地址生成稳定的节点标识，确保同一物理节点重启后拥有相同的 ID。
+   * 这允许启动时只清理该节点遗留的分布式锁（即使过期）。
+   *
+   * <p>格式：{@code hostname|ip:port}（如 {@code server-001|192.168.1.100:8080}）
    */
-  private final String nodeId = UUID.randomUUID().toString();
+  private final String nodeId = buildNodeId();
 
   // ---------------------------------------------------------------------------
   // Scheduler entity point
@@ -430,6 +435,26 @@ public class JobSchedulerService {
       job.setNextExecuteTime(LocalDateTime.now().plusMinutes(properties.getRetryBackoffMinutes()));
       log.warn("Job {} will be retried (attempt {}/{})", job.getJobName(), retryCount + 1,
           maxRetry);
+    }
+  }
+
+  /**
+   * 生成稳定的节点标识，格式为 {@code hostname|local-ip}。
+   *
+   * <p>稳定性保证：只要物理节点不变，重启后生成的 nodeId 完全相同，
+   * 这允许应用启动时只删除该节点遗留的分布式锁（包括未过期的）。
+   *
+   * @return 节点标识字符串，格式 {@code hostname|192.168.1.100}
+   */
+  private String buildNodeId() {
+    try {
+      String hostname = java.net.InetAddress.getLocalHost().getHostName();
+      String ip = java.net.InetAddress.getLocalHost().getHostAddress();
+      return hostname + "|" + ip;
+    } catch (java.net.UnknownHostException e) {
+      // Fallback if hostname resolution fails
+      log.warn("Failed to resolve hostname, using localhost fallback", e);
+      return "localhost|127.0.0.1";
     }
   }
 }

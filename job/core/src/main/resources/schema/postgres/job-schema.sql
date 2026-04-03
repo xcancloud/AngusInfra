@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS angus_scheduled_job (
     retry_count        INT          DEFAULT 0,
     max_retry_count    INT          DEFAULT 3,
     description        TEXT,
+    log_retention_days INT          DEFAULT 0,
+    executor_node      VARCHAR(40),
     last_execute_time  TIMESTAMP,
     next_execute_time  TIMESTAMP,
     create_time        TIMESTAMP    NOT NULL,
@@ -39,6 +41,10 @@ CREATE TABLE IF NOT EXISTS angus_job_execution_log (
 CREATE INDEX IF NOT EXISTS idx_jel_job_id    ON angus_job_execution_log (job_id);
 CREATE INDEX IF NOT EXISTS idx_jel_start_time ON angus_job_execution_log (start_time);
 CREATE INDEX IF NOT EXISTS idx_jel_status    ON angus_job_execution_log (status);
+-- 优化 resetStaleRunningJobs() 查询：按 executor_node 和 status 过滤
+CREATE INDEX IF NOT EXISTS idx_jel_executor_status_job ON angus_job_execution_log (executor_node, status, job_id);
+-- 优化子查询：按 job_id 和 id 查找最新记录
+CREATE INDEX IF NOT EXISTS idx_jel_job_id_desc ON angus_job_execution_log (job_id, id);
 
 CREATE TABLE IF NOT EXISTS angus_distributed_lock (
     lock_key     VARCHAR(255) PRIMARY KEY,

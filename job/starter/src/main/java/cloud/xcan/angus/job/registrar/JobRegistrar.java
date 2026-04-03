@@ -3,6 +3,7 @@ package cloud.xcan.angus.job.registrar;
 import cloud.xcan.angus.job.annotation.JobDefinition;
 import cloud.xcan.angus.job.entity.ScheduledJob;
 import cloud.xcan.angus.job.executor.JobExecutor;
+import cloud.xcan.angus.job.jpa.DistributedLockRepository;
 import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.service.JobManagementService;
@@ -43,6 +44,7 @@ public class JobRegistrar implements ApplicationRunner {
 
   private final JobManagementService jobManagementService;
   private final ScheduledJobRepository jobRepository;
+  private final DistributedLockRepository lockRepository;
 
   /**
    * All {@link JobExecutor} beans present in the application context, keyed by Spring bean name.
@@ -52,16 +54,33 @@ public class JobRegistrar implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
+    String nodeId = buildNodeId();
+
     // -----------------------------------------------------------------------
-    // 启动阶段：清理遗留的 RUNNING 脏数据
+    // 启动阶段第一步：清理当前节点遗留的分布式锁
     //
-    // 正常情况下任务执行完毕后状态会恢复为 READY 或 FAILED。若应用崩溃（kill -9、
-    // OOM、强制重启等），正在执行的任务状态会永久滞留为 RUNNING，导致调度器
-    // 永远无法再次触发这些任务（调度器只轮询 READY 状态）。
-    //
-    // 此处在任务注册前批量重置所有 RUNNING → READY，确保每次重启后自动恢复正常调度。
+    // 若节点在持有 job_lock 时被强制关闭（kill -9、OOM、电源故障等），这些锁会
+    // 遗留在数据库中，expireTime 设得较远（如 5 分钟）。当该节点重启时，由于 nodeId
+    // 使用 hostname-based 生成，重启后仍然相同，因此可以识别并删除所有由该节点
+    // 加的锁，这样其他节点就可以立即获取这些 job 并重新调度。
     // -----------------------------------------------------------------------
-    int reset = jobRepository.resetStaleRunningJobs();
+    int locksCleaned = lockRepository.deleteByOwner(nodeId);
+    if (locksCleaned > 0) {
+      log.warn("Cleaned {} stale distributed lock(s) held by this node [{}] on startup",
+          locksCleaned, nodeId);
+    }
+
+    // -----------------------------------------------------------------------
+    // 启动阶段第二步：清理遗留的 RUNNING 脏数据（仅限当前节点）
+    //
+    // 正常情况下任务执行完毕后状态会恢复为 READY 或 FAILED。若当前节点在执行任务时
+    // 被强制终止（kill -9、OOM、强制重启等），正在执行的任务状态会永久滞留为 RUNNING，
+    // 导致调度器永远无法再次触发这些任务（调度器只轮询 READY 状态）。
+    //
+    // 此处只重置**该节点之前执行但未完成的 RUNNING job**（通过 JobExecutionLog
+    // 判断），避免误伤其他节点正在执行的 job。
+    // -----------------------------------------------------------------------
+    int reset = jobRepository.resetStaleRunningJobs(nodeId);
     if (reset > 0) {
       log.warn("Reset {} stale RUNNING job(s) to READY on startup (caused by previous crash or forced shutdown)",
           reset);
@@ -131,6 +150,8 @@ public class JobRegistrar implements ApplicationRunner {
     req.setShardingParameter(def.shardingParameter().isEmpty() ? null : def.shardingParameter());
     req.setMaxRetryCount(def.maxRetryCount());
     req.setDescription(def.description());
+    // 0 表示使用全局默认值（7天），-1 表示永久保留；均原样持久化，由清理 job 按规则处理
+    req.setLogRetentionDays(def.logRetentionDays());
     return req;
   }
 
@@ -147,6 +168,26 @@ public class JobRegistrar implements ApplicationRunner {
       return org.springframework.aop.support.AopUtils.getTargetClass(bean);
     } catch (Exception e) {
       return bean.getClass();
+    }
+  }
+
+  /**
+   * 生成稳定的节点标识，格式为 {@code hostname|local-ip}。
+   *
+   * <p>稳定性保证：只要物理节点不变，重启后生成的 nodeId 完全相同，
+   * 这允许应用启动时只删除该节点遗留的分布式锁（包括未过期的）。
+   *
+   * @return 节点标识字符串，格式 {@code hostname|192.168.1.100}
+   */
+  private String buildNodeId() {
+    try {
+      String hostname = java.net.InetAddress.getLocalHost().getHostName();
+      String ip = java.net.InetAddress.getLocalHost().getHostAddress();
+      return hostname + "|" + ip;
+    } catch (java.net.UnknownHostException e) {
+      // Fallback if hostname resolution fails
+      log.warn("Failed to resolve hostname, using localhost fallback", e);
+      return "localhost|127.0.0.1";
     }
   }
 }

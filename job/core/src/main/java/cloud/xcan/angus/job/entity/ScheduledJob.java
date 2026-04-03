@@ -89,6 +89,28 @@ public class ScheduledJob {
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
+  /**
+   * 该任务执行日志的保留天数。
+   *
+   * <ul>
+   *   <li>{@code 0}（默认）：使用全局默认值（7 天）。</li>
+   *   <li>正整数：保留指定天数的日志，超期记录由清理 job 自动删除。</li>
+   *   <li>{@code -1}：永久保留，跳过清理。</li>
+   * </ul>
+   */
+  @Column(name = "log_retention_days")
+  private Integer logRetentionDays;
+
+  /**
+   * 最近一次执行该 job 的节点标识（格式：{@code ip:port}）。
+   *
+   * <p>在 job 状态变更为 RUNNING 时写入，用于应用重启时精准清理本节点遗留的脏数据：
+   * 只将 {@code executor_node = 本节点} 的 RUNNING 记录重置为 READY，
+   * 避免在集群环境中误重置其他节点仍在正常执行的 job。
+   */
+  @Column(name = "executor_node", length = 255)
+  private String executorNode;
+
   @Column(name = "last_execute_time")
   private LocalDateTime lastExecuteTime;
 

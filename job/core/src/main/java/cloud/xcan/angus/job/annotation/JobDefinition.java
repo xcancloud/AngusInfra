@@ -88,4 +88,15 @@ public @interface JobDefinition {
    * Optional human-readable description stored in {@code scheduled_job.description}.
    */
   String description() default "";
+
+  /**
+   * 执行日志保留天数。超出该时长的历史执行记录将由内置的
+   * {@code job-execution-log-cleanup-job} 自动清理。
+   *
+   * <p>{@code 0} 表示使用全局默认值（7 天）；负值表示永久保留不清理。
+   *
+   * <p>该字段持久化到 {@code angus_scheduled_job.log_retention_days}，
+   * 可通过 REST API 动态调整，无需重新部署。
+   */
+  int logRetentionDays() default 0;
 }

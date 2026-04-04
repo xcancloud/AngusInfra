@@ -80,6 +80,8 @@
 
     <docker.image.name>angus</docker.image.name>
 
+    <langchain4j.version>1.12.1</langchain4j.version>
+
     <spring-cloud.version>2024.0.0</spring-cloud.version>
     <spring-boot.version>3.4.0</spring-boot.version>
     <spring-framework.version>6.2.0</spring-framework.version>

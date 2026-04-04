@@ -102,6 +102,10 @@
     <jna.version>5.9.0</jna.version>
     <aspectj.version>1.9.6</aspectj.version>
     <jackson.version>2.18.3</jackson.version>
+    <!-- JSON Schema generation -->
+    <victools.jsonschema.version>4.35.0</victools.jsonschema.version>
+    <!-- JSON Schema validation -->
+    <networknt.jsonschema.version>1.4.0</networknt.jsonschema.version>
     <javax.activation.version>1.2.0</javax.activation.version>
     <asm.version>9.2</asm.version>
     <disruptor.version>3.4.4</disruptor.version>
@@ -359,6 +363,24 @@
         <artifactId>jackson-datatype-jsr310</artifactId>
         <version>${jackson.version}</version>
       </dependency>
+
+      <!-- JSON Schema generation -->
+      <dependency>
+        <groupId>com.github.victools</groupId>
+        <artifactId>jsonschema-generator</artifactId>
+        <version>${victools.jsonschema.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.victools</groupId>
+        <artifactId>jsonschema-module-jackson</artifactId>
+        <version>${victools.jsonschema.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.networknt</groupId>
+        <artifactId>json-schema-validator</artifactId>
+        <version>${networknt.jsonschema.version}</version>
+      </dependency>
+
 
       <!-- JavaBeans(TM) Activation Framework. -->
       <dependency>

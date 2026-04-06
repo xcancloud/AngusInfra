@@ -132,5 +132,6 @@ class HybridCacheAutoConfigurationTest {
     public Page<CacheEntryInfo> listEntries(int pageNo, int pageSize) {
       return Page.empty();
     }
+
   }
 }

@@ -34,6 +34,12 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- Depend on OpenAPI Spec -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
@@ -89,5 +95,6 @@
       <version>${mockito.version}</version>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 </project>

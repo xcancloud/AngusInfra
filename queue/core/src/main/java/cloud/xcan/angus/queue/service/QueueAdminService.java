@@ -1,9 +1,12 @@
 package cloud.xcan.angus.queue.service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 public interface QueueAdminService {
+
+  List<String> listTopics();
 
   Map<String, Object> topicStats(String topic);
 

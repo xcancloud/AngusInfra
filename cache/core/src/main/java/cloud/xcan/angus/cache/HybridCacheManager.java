@@ -4,8 +4,10 @@ import cloud.xcan.angus.cache.config.CacheProperties;
 import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -262,6 +264,25 @@ public class HybridCacheManager implements IDistributedCache {
       log.error("[CACHE-DEGRADATION] Failed to cleanup expired entries. error={}",
           e.getMessage(), e);
       return 0;
+    }
+  }
+
+  @Override
+  public List<CacheEntryInfo> listEntries() {
+    try {
+      return cachePersistence.findAllActive().stream()
+          .map(entry -> CacheEntryInfo.builder()
+              .key(entry.getKey())
+              .createdAt(entry.getCreatedAt())
+              .updatedAt(entry.getUpdatedAt())
+              .expireAt(entry.getExpireAt())
+              .ttlSeconds(entry.getTtlSeconds())
+              .build())
+          .collect(Collectors.toList());
+    } catch (Exception e) {
+      log.error("[CACHE-DEGRADATION] Failed to list cache entries. error={}",
+          e.getMessage(), e);
+      return List.of();
     }
   }
 }

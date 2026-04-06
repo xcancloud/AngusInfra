@@ -41,5 +41,7 @@ public interface RepositoryAdapter {
   int deleteDeadLettersByIds(Collection<Long> ids);
 
   int purgeDeadLettersByTopic(String topic);
+
+  List<String> findDistinctTopics();
 }
 

@@ -105,4 +105,7 @@ public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
   @Modifying
   @Query(value = "DELETE FROM angus_mq_message WHERE id IN (:ids)", nativeQuery = true)
   int deleteByIds(@Param("ids") Collection<Long> ids);
+
+  @Query(value = "SELECT DISTINCT topic FROM angus_mq_message ORDER BY topic", nativeQuery = true)
+  List<String> findDistinctTopics();
 }

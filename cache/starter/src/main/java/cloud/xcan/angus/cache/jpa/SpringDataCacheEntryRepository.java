@@ -31,5 +31,8 @@ public interface SpringDataCacheEntryRepository extends JpaRepository<CacheEntry
 
   @Query("SELECT COUNT(c) FROM CacheEntry c WHERE c.expireAt IS NOT NULL AND c.expireAt < CURRENT_TIMESTAMP")
   long countExpiredEntries();
+
+  @Query("SELECT c FROM CacheEntry c WHERE c.expireAt IS NULL OR c.expireAt >= CURRENT_TIMESTAMP ORDER BY c.updatedAt DESC")
+  List<CacheEntry> findAllActive();
 }
 

@@ -47,8 +47,7 @@ import org.springframework.stereotype.Component;
     cron        = "0 0 * * * *",   // 每小时整点触发
     maxRetryCount = 1,
     logRetentionDays = -1,          // 清理 job 自身日志永久保留，避免自我清理
-    description = "调度执行日志清理任务：按各 job 配置的 logRetentionDays 删除过期执行记录，"
-        + "未配置时默认保留 7 天，设为 -1 则永久保留"
+    description = "调度执行日志清理任务，按各 job 配置的 logRetentionDays 删除过期执行记录"
 )
 @RequiredArgsConstructor
 public class JobExecutionLogCleanupJob implements JobExecutor {

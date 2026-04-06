@@ -2,6 +2,7 @@ package cloud.xcan.angus.cache.web;
 
 import static cloud.xcan.angus.remote.ApiConstant.ECode.BUSINESS_ERROR_CODE;
 
+import cloud.xcan.angus.cache.CacheEntryInfo;
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
 import cloud.xcan.angus.remote.ApiLocaleResult;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -68,6 +70,12 @@ public class CacheManagementController {
   @GetMapping("/stats")
   public ApiLocaleResult<CacheStats> stats() {
     return ApiLocaleResult.success(cache.getStats());
+  }
+
+  @Operation(operationId = "listCacheEntries", summary = "List all active cache entries", description = "Returns all active (non-expired) cache entries with their metadata (key, timestamps, TTL). Values are not included for performance.")
+  @GetMapping("/entries")
+  public ApiLocaleResult<List<CacheEntryInfo>> listEntries() {
+    return ApiLocaleResult.success(cache.listEntries());
   }
 
   @Operation(operationId = "getCacheValue", summary = "Get cache value by key", description = "Retrieve the value for the given cache key. Returns a business error in wrapper when the key does not exist.",

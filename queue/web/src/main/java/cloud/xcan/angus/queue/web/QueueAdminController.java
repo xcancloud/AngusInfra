@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -29,6 +30,12 @@ public class QueueAdminController {
 
   public QueueAdminController(QueueAdminService adminService) {
     this.adminService = adminService;
+  }
+
+  @Operation(operationId = "listTopics", summary = "List all topics", description = "Return distinct topic names from the message queue.")
+  @GetMapping("/topics")
+  public ApiLocaleResult<List<String>> listTopics() {
+    return ApiLocaleResult.success(adminService.listTopics());
   }
 
   @Operation(operationId = "queueStats", summary = "Get topic stats", description = "Return status counts, DLQ count and ready-per-partition for a topic.")

@@ -1,5 +1,6 @@
 package cloud.xcan.angus.cache;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -81,4 +82,11 @@ public interface IDistributedCache {
    * Cleanup expired entries from persistence and return number deleted
    */
   int cleanupExpiredEntries();
+
+  /**
+   * List all active (non-expired) cache entries
+   *
+   * @return list of active cache entries
+   */
+  List<CacheEntryInfo> listEntries();
 }

@@ -2,6 +2,7 @@ package cloud.xcan.angus.cache.jpa;
 
 import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.entity.CacheEntry;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,5 +54,11 @@ public class SpringCachePersistenceAdapter implements CachePersistence {
   @Transactional
   public int deleteExpiredEntries() {
     return repository.deleteExpiredEntries();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CacheEntry> findAllActive() {
+    return repository.findAllActive();
   }
 }

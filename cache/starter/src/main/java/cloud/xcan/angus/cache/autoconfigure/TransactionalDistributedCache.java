@@ -1,7 +1,9 @@
 package cloud.xcan.angus.cache.autoconfigure;
 
+import cloud.xcan.angus.cache.CacheEntryInfo;
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +73,12 @@ public class TransactionalDistributedCache implements IDistributedCache {
   @Transactional
   public int cleanupExpiredEntries() {
     return delegate.cleanupExpiredEntries();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<CacheEntryInfo> listEntries() {
+    return delegate.listEntries();
   }
 }
 

@@ -2,8 +2,10 @@ package cloud.xcan.angus.cache.autoconfigure;
 
 import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.entity.CacheEntry;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -59,5 +61,12 @@ public class NoOpCachePersistence implements CachePersistence {
     int before = store.size();
     store.entrySet().removeIf(e -> e.getValue().hasExpired());
     return before - store.size();
+  }
+
+  @Override
+  public List<CacheEntry> findAllActive() {
+    return store.values().stream()
+        .filter(e -> !e.hasExpired())
+        .collect(Collectors.toList());
   }
 }

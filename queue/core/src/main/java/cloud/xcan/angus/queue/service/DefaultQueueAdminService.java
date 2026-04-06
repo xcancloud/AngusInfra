@@ -34,6 +34,11 @@ public class DefaultQueueAdminService implements QueueAdminService {
   }
 
   @Override
+  public List<String> listTopics() {
+    return adapter.findDistinctTopics();
+  }
+
+  @Override
   public Map<String, Object> topicStats(String topic) {
     Map<String, Object> stats = new HashMap<>();
     Map<Integer, Long> statusCounts = new HashMap<>();

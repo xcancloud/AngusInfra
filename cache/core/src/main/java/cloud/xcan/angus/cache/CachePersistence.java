@@ -1,6 +1,7 @@
 package cloud.xcan.angus.cache;
 
 import cloud.xcan.angus.cache.entity.CacheEntry;
+import java.util.List;
 import java.util.Optional;
 
 public interface CachePersistence {
@@ -23,4 +24,6 @@ public interface CachePersistence {
   long countExpiredEntries();
 
   int deleteExpiredEntries();
+
+  List<CacheEntry> findAllActive();
 }

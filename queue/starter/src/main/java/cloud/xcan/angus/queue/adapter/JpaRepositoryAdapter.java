@@ -232,4 +232,10 @@ public class JpaRepositoryAdapter implements RepositoryAdapter, SoftDeleteDlqSup
   public int softDeleteDeadLettersByTopic(String topic) {
     return deadLetterRepository.softDeleteByTopic(topic);
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<String> findDistinctTopics() {
+    return messageRepository.findDistinctTopics();
+  }
 }

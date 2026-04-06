@@ -231,9 +231,14 @@ public class HybridCacheManager implements IDistributedCache {
     long misses =
         memStats.get("misses") instanceof Number ? ((Number) memStats.get("misses")).longValue()
             : 0L;
-    double hitRate =
-        memStats.get("hitRate") instanceof Number ? ((Number) memStats.get("hitRate")).doubleValue()
-            : 0.0;
+    // Caffeine returns hitRate=1.0 when hits+misses==0; normalise to 0.0
+    double hitRate;
+    if (hits == 0 && misses == 0) {
+      hitRate = 0.0;
+    } else {
+      hitRate = memStats.get("hitRate") instanceof Number
+          ? ((Number) memStats.get("hitRate")).doubleValue() : 0.0;
+    }
 
     return CacheStats.builder()
         .totalEntries(totalEntries)

@@ -3,6 +3,7 @@ package cloud.xcan.angus.plugin.management;
 import cloud.xcan.angus.plugin.api.PluginManager;
 import cloud.xcan.angus.plugin.exception.PluginException;
 import cloud.xcan.angus.plugin.model.PluginInfo;
+import cloud.xcan.angus.plugin.model.PluginState;
 import java.util.List;
 
 public class PluginManagementServiceImpl implements PluginManagementService {
@@ -57,7 +58,7 @@ public class PluginManagementServiceImpl implements PluginManagementService {
     int endpoints = all.stream()
         .mapToInt(p -> p.getEndpointCount() != null ? p.getEndpointCount() : 0).sum();
     int active = (int) all.stream()
-        .filter(p -> p.getState() != null && p.getState().name().equals("STARTED")).count();
+        .filter(p -> PluginState.STARTED.equals(p.getState())).count();
     return new PluginStats(total, active, endpoints);
   }
 }

@@ -513,22 +513,7 @@ public class DefaultPluginManager implements PluginManager {
     List<PluginInfo> out = new ArrayList<>();
     for (PluginWrapper w : plugins.values()) {
       PluginDescriptor d = w.getDescriptor();
-      out.add(PluginInfo.builder()
-          .id(d.getId())
-          .name(d.getName())
-          .version(d.getVersion())
-          .description(d.getDescription())
-          .author(d.getAuthor())
-          .state(w.getState())
-          .loadedAt(w.getLoadedAt())
-          .startedAt(w.getStartedAt())
-          .pluginClass(d.getPluginClass())
-          .dependencies(d.getDependencies())
-          .apiPrefix(d.getName() != null ? "/api/plugins/" + d.getId() : null)
-          .endpointCount(restEndpointManager.getPluginEndpoints(d.getId()).size())
-          .filePath(w.getPluginPath() != null ? w.getPluginPath().toString() : null)
-          .fileSize(w.getPluginPath() != null ? getFileSize(w.getPluginPath()) : null)
-          .build());
+      out.add(buildPluginInfo(w, d));
     }
     return out;
   }
@@ -547,7 +532,10 @@ public class DefaultPluginManager implements PluginManager {
     if (w == null) {
       return null;
     }
-    PluginDescriptor d = w.getDescriptor();
+    return buildPluginInfo(w, w.getDescriptor());
+  }
+
+  private PluginInfo buildPluginInfo(PluginWrapper w, PluginDescriptor d) {
     return PluginInfo.builder()
         .id(d.getId())
         .name(d.getName())
@@ -559,6 +547,10 @@ public class DefaultPluginManager implements PluginManager {
         .startedAt(w.getStartedAt())
         .pluginClass(d.getPluginClass())
         .dependencies(d.getDependencies())
+        .homepage(d.getHomepage())
+        .license(d.getLicense())
+        .tags(d.getTags())
+        .enabled(w.getState() == PluginState.STARTED)
         .apiPrefix(d.getName() != null ? "/api/plugins/" + d.getId() : null)
         .endpointCount(restEndpointManager.getPluginEndpoints(d.getId()).size())
         .filePath(w.getPluginPath() != null ? w.getPluginPath().toString() : null)

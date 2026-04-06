@@ -10,7 +10,9 @@ import cloud.xcan.angus.job.jpa.ScheduledJobRepository;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.model.UpdateJobRequest;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +23,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 /**
  * Service for CRUD management and operational control of scheduled jobs.
@@ -79,10 +83,28 @@ public class JobManagementService {
   }
 
   /**
-   * Returns all jobs (paginated).
+   * Returns jobs matching optional keyword and status filters (paginated).
+   *
+   * @param keyword optional search term — matches jobName, jobGroup, or beanName (case-insensitive)
+   * @param status  optional status filter
    */
-  public Page<ScheduledJob> listJobs(Pageable pageable) {
-    return jobRepository.findAll(pageable);
+  public Page<ScheduledJob> listJobs(String keyword, JobStatus status, Pageable pageable) {
+    Specification<ScheduledJob> spec = (root, query, cb) -> {
+      List<Predicate> predicates = new ArrayList<>();
+      if (StringUtils.hasText(keyword)) {
+        String pattern = "%" + keyword.trim().toLowerCase() + "%";
+        predicates.add(cb.or(
+            cb.like(cb.lower(root.get("jobName")), pattern),
+            cb.like(cb.lower(root.get("jobGroup")), pattern),
+            cb.like(cb.lower(root.get("beanName")), pattern)
+        ));
+      }
+      if (status != null) {
+        predicates.add(cb.equal(root.get("status"), status));
+      }
+      return predicates.isEmpty() ? null : cb.and(predicates.toArray(new Predicate[0]));
+    };
+    return jobRepository.findAll(spec, pageable);
   }
 
   /**
@@ -111,11 +133,16 @@ public class JobManagementService {
   }
 
   /**
-   * Suspends a job so the scheduler skips it.
+   * Suspends a job so the scheduler skips it. Only READY or RUNNING jobs can be paused.
    */
   @Transactional
   public void pauseJob(Long jobId) {
     ScheduledJob job = getJob(jobId);
+    if (job.getStatus() != JobStatus.READY && job.getStatus() != JobStatus.RUNNING) {
+      throw new IllegalStateException(
+          "Job " + jobId + " cannot be paused in status " + job.getStatus()
+              + "; only READY or RUNNING jobs can be paused.");
+    }
     job.setStatus(JobStatus.PAUSED);
     job.setUpdateTime(LocalDateTime.now());
     jobRepository.save(job);

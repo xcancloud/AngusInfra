@@ -4,6 +4,8 @@ import cloud.xcan.angus.queue.service.QueueAdminService;
 import cloud.xcan.angus.remote.ApiLocaleResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.Map;
@@ -38,7 +40,7 @@ public class QueueAdminController {
   @Operation(operationId = "reclaimExpiredLeases", summary = "Reclaim expired leases", description = "Set status back to READY for messages whose lease expired.")
   @PostMapping("/reclaim")
   public ApiLocaleResult<Map<String, Object>> reclaim(
-      @RequestParam(defaultValue = "500") int limit) {
+      @RequestParam(defaultValue = "500") @Min(1) @Max(10000) int limit) {
     int n = adminService.reclaimExpired(limit);
     return ApiLocaleResult.success(Map.of("reclaimed", n));
   }
@@ -61,7 +63,7 @@ public class QueueAdminController {
   @Operation(operationId = "replayDLQ", summary = "Replay DLQ messages", description = "Replay at most 'limit' DLQ messages by topic back to READY queue.")
   @PostMapping("/dlq/replay")
   public ApiLocaleResult<Map<String, Object>> replayDlq(@RequestParam @NotBlank String topic,
-      @RequestParam(defaultValue = "100") int limit) {
+      @RequestParam(defaultValue = "100") @Min(1) @Max(10000) int limit) {
     int n = adminService.replayFromDeadLetter(topic, limit);
     return ApiLocaleResult.success(Map.of("replayed", n));
   }

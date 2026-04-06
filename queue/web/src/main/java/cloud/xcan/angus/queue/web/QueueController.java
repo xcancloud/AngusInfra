@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.Instant;
@@ -128,12 +130,14 @@ public class QueueController {
     private String payload;
     @Schema(description = "Headers JSON string (optional)")
     private String headers;
+    @Min(0)
     @Schema(description = "Message priority (default 0)")
     private Integer priority;
     @Schema(description = "Visible at timestamp (ISO-8601). Default: now")
     private Instant visibleAt;
     @Schema(description = "Idempotency key (optional)")
     private String idempotencyKey;
+    @Min(1)
     @Schema(description = "Max attempts (default 16)")
     private Integer maxAttempts;
   }
@@ -159,8 +163,10 @@ public class QueueController {
     private String owner;
     @Schema(description = "Partitions to poll (optional). Default: all")
     private List<Integer> partitions;
+    @Min(1)
     @Schema(description = "Lease seconds (optional)")
     private Integer leaseSeconds;
+    @Min(1) @Max(1000)
     @Schema(description = "Max rows to lease (optional)")
     private Integer limit;
   }
@@ -187,6 +193,7 @@ public class QueueController {
     @Schema(description = "Message id list")
     @NotEmpty
     private List<Long> ids;
+    @Min(0)
     @Schema(description = "Backoff seconds (optional). Default 5")
     private Integer backoffSeconds;
 

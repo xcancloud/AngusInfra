@@ -2,6 +2,7 @@ package cloud.xcan.angus.job.web;
 
 import cloud.xcan.angus.job.entity.JobExecutionLog;
 import cloud.xcan.angus.job.entity.ScheduledJob;
+import cloud.xcan.angus.job.enums.JobStatus;
 import cloud.xcan.angus.job.model.CreateJobRequest;
 import cloud.xcan.angus.job.model.UpdateJobRequest;
 import cloud.xcan.angus.job.service.JobManagementService;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -59,12 +63,17 @@ public class JobController {
   }
 
   @Operation(operationId = "listJobs", summary = "List all scheduled jobs",
-      description = "Return a paginated list of all scheduled jobs, sorted by creation time in descending order by default.")
+      description = "Return a paginated list of all scheduled jobs, sorted by creation time in descending order by default. "
+          + "Supports keyword search (matches jobName, jobGroup, beanName) and status filtering.")
   @GetMapping
   public ApiLocaleResult<Page<ScheduledJob>> listJobs(
-      @PageableDefault(size = 20, sort = "createTime", direction = Sort.Direction.DESC)
+      @Parameter(description = "Search keyword (matches jobName, jobGroup, beanName)")
+      @RequestParam(required = false) String keyword,
+      @Parameter(description = "Filter by job status")
+      @RequestParam(required = false) JobStatus status,
+      @PageableDefault(size = 10, sort = "createTime", direction = Sort.Direction.DESC)
       Pageable pageable) {
-    return ApiLocaleResult.success(jobManagementService.listJobs(pageable));
+    return ApiLocaleResult.success(jobManagementService.listJobs(keyword, status, pageable));
   }
 
   @Operation(operationId = "getJob", summary = "Get job details",
@@ -95,14 +104,14 @@ public class JobController {
   @Operation(operationId = "deleteJob", summary = "Delete a scheduled job",
       description = "Delete a scheduled job and all associated execution history. This operation is irreversible.",
       responses = {
-          @ApiResponse(responseCode = "200", description = "Job deleted successfully"),
+          @ApiResponse(responseCode = "204", description = "Job deleted successfully"),
           @ApiResponse(responseCode = "404", description = "Job not found")
       })
   @DeleteMapping("/{jobId}")
-  public ApiLocaleResult<Void> deleteJob(
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteJob(
       @Parameter(description = "Job ID", required = true) @PathVariable Long jobId) {
     jobManagementService.deleteJob(jobId);
-    return new ApiLocaleResult<>();
   }
 
   @Operation(operationId = "pauseJob", summary = "Pause a scheduled job",
@@ -149,7 +158,8 @@ public class JobController {
   @GetMapping("/{jobId}/executions")
   public ApiLocaleResult<Page<JobExecutionLog>> getExecutionHistory(
       @Parameter(description = "Job ID", required = true) @PathVariable Long jobId,
-      @PageableDefault(size = 20) Pageable pageable) {
+      @PageableDefault(size = 20, sort = "startTime", direction = Sort.Direction.DESC)
+      Pageable pageable) {
     return ApiLocaleResult.success(
         jobManagementService.getJobExecutionHistory(jobId, pageable));
   }

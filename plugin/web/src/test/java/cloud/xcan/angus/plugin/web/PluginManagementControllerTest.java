@@ -58,8 +58,7 @@ public class PluginManagementControllerTest {
   void testGetPluginNotFound() throws Exception {
     when(service.getPlugin("nope")).thenReturn(null);
     mockMvc.perform(get("/api/v1/plugin-management/nope"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.code").value("E2"));
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -85,16 +84,14 @@ public class PluginManagementControllerTest {
   @Test
   void testRemoveOk() throws Exception {
     mockMvc.perform(delete("/api/v1/plugin-management/p1?removeFromStore=true"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.code").value("S"));
+        .andExpect(status().isNoContent());
   }
 
   @Test
   void testRemovePluginExceptionReturnsError() throws Exception {
     doThrow(new PluginException("x")).when(service).remove(eq("bad"), anyBoolean());
     mockMvc.perform(delete("/api/v1/plugin-management/bad"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.code").value("E2"));
+        .andExpect(status().isInternalServerError());
   }
 
   @Test
@@ -128,6 +125,26 @@ public class PluginManagementControllerTest {
     mockMvc.perform(multipart("/api/v1/plugin-management/install")
             .file(file)
             .param("pluginId", "pid"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value("E2"));
+  }
+
+  @Test
+  void testInstallRejectsNonJarFile() throws Exception {
+    MockMultipartFile file = new MockMultipartFile("file", "plugin.txt", null, new byte[]{1, 2});
+    mockMvc.perform(multipart("/api/v1/plugin-management/install")
+            .file(file)
+            .param("pluginId", "pid"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.code").value("E2"));
+  }
+
+  @Test
+  void testInstallRejectsBlankPluginId() throws Exception {
+    MockMultipartFile file = new MockMultipartFile("file", "p.jar", null, new byte[]{1, 2});
+    mockMvc.perform(multipart("/api/v1/plugin-management/install")
+            .file(file)
+            .param("pluginId", "  "))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.code").value("E2"));
   }

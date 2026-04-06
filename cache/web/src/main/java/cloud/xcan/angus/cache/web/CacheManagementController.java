@@ -12,10 +12,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+@Slf4j
 @Tag(name = "Cache", description = "APIs to manage and monitor the hybrid cache")
 @PreAuthorize("@PPS.isCloudTenantSecurity() && @PPS.isSysAdmin()")
 @RestController
@@ -137,14 +140,18 @@ public class CacheManagementController {
   @Operation(operationId = "clearCache", summary = "Clear all cache entries", description = "Clear both in-memory and persistent cache entries.")
   @PostMapping("/clear")
   public ApiLocaleResult<?> clear() {
+    log.warn("[CACHE-AUDIT] Clear all cache entries requested");
     cache.clear();
+    log.warn("[CACHE-AUDIT] All cache entries cleared successfully");
     return ApiLocaleResult.success();
   }
 
   @Operation(operationId = "cleanupExpiredEntries", summary = "Cleanup expired entries from persistence", description = "Delete expired entries from the persistent store and return number deleted.")
   @PostMapping("/cleanup")
   public ApiLocaleResult<CleanupResponse> cleanup() {
+    log.info("[CACHE-AUDIT] Cleanup expired cache entries requested");
     int deleted = cache.cleanupExpiredEntries();
+    log.info("[CACHE-AUDIT] Cleanup completed, {} expired entries deleted", deleted);
     return ApiLocaleResult.success(new CleanupResponse(deleted));
   }
 
@@ -153,10 +160,11 @@ public class CacheManagementController {
   @AllArgsConstructor
   public static class SetCacheRequest {
 
-    @NotBlank
+    @NotNull
     @Schema(description = "Value to store")
     private String value;
 
+    @Min(1)
     @Schema(description = "TTL in seconds (optional). If null, no expiration")
     private Long ttlSeconds;
   }
@@ -166,6 +174,7 @@ public class CacheManagementController {
   @AllArgsConstructor
   public static class ExpireRequest {
 
+    @Min(1)
     @Schema(description = "TTL in seconds")
     private long ttlSeconds;
   }

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
+import org.springframework.data.jpa.domain.Specification;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -126,12 +127,12 @@ class JobManagementServiceTest {
   }
 
   @Test
-  @DisplayName("listJobs delegates to jpa")
+  @DisplayName("listJobs delegates to jpa with keyword and status filters")
   void listJobs() {
     Pageable p = PageRequest.of(0, 10);
-    when(jobRepository.findAll(p))
+    when(jobRepository.findAll(any(Specification.class), eq(p)))
         .thenReturn(new PageImpl<>(List.of(readyJob(1L))));
-    assertThat(service.listJobs(p).getContent()).hasSize(1);
+    assertThat(service.listJobs(null, null, p).getContent()).hasSize(1);
   }
 
   @Test

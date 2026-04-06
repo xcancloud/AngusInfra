@@ -112,7 +112,7 @@ class JobControllerTest {
   @Test
   @DisplayName("GET /api/v1/jobs - returns paged list")
   void listJobs() throws Exception {
-    when(jobManagementService.listJobs(any(Pageable.class)))
+    when(jobManagementService.listJobs(any(), any(), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(savedJob(1L, "Job1"))));
 
     mockMvc.perform(get("/api/v1/jobs"))
@@ -210,11 +210,10 @@ class JobControllerTest {
   }
 
   @Test
-  @DisplayName("DELETE /api/v1/jobs/1 - returns 200 wrapped success")
+  @DisplayName("DELETE /api/v1/jobs/1 - returns 204 No Content")
   void deleteJob_success() throws Exception {
     mockMvc.perform(delete("/api/v1/jobs/1"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.code").value("S"));
+        .andExpect(status().isNoContent());
     verify(jobManagementService).deleteJob(1L);
   }
 
@@ -225,7 +224,7 @@ class JobControllerTest {
   @Test
   @DisplayName("Unexpected RuntimeException propagates via ServletException (no @ControllerAdvice)")
   void unexpectedException_returns500Generic() {
-    when(jobManagementService.listJobs(any(Pageable.class)))
+    when(jobManagementService.listJobs(any(), any(), any(Pageable.class)))
         .thenThrow(new RuntimeException("DB connection string: jdbc:mysql://secret"));
 
     assertRootCause(mockMvc, get("/api/v1/jobs"), RuntimeException.class);

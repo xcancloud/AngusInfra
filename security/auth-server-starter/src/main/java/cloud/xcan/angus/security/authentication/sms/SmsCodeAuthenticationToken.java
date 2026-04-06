@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.server.authorization.authentication.O
 public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenticationToken {
 
   private final String id;
-  private final String mobile; // mobile
+  private final String phone; // phone
   private final Set<String> scopes;
 
   /**
@@ -33,18 +33,18 @@ public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenti
    * @param id                   the user id, identify the unique user. Allow phone numbers and
    *                             email the addresses under multiple tenants, there may be multiple
    *                             values
-   * @param mobile               the user mobile
+   * @param phone               the user phone
    * @param password             the linkSecret of SMS verification code
    * @param clientPrincipal      the authenticated client principal
    * @param scopes               the requested scope(s)
    * @param additionalParameters the additional parameters
    */
-  public SmsCodeAuthenticationToken(String id, String mobile, String password,
+  public SmsCodeAuthenticationToken(String id, String phone, String password,
       Authentication clientPrincipal, @Nullable Set<String> scopes,
       @Nullable Map<String, Object> additionalParameters) {
     super(SMS_CODE_GRANT_TYPE, clientPrincipal, additionalParameters);
     this.id = id;
-    this.mobile = mobile;
+    this.phone = phone;
     this.credentials = password;
     this.scopes = Collections.unmodifiableSet(
         (scopes != null) ? new HashSet<>(scopes) : Collections.emptySet());
@@ -60,12 +60,12 @@ public class SmsCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthenti
   }
 
   /**
-   * Returns the requested mobile.
+   * Returns the requested phone.
    *
-   * @return the requested user mobile
+   * @return the requested user phone
    */
-  public String getMobile() {
-    return mobile;
+  public String getPhone() {
+    return phone;
   }
 
   /**

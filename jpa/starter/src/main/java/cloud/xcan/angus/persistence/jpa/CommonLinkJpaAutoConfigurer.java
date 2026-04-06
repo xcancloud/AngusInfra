@@ -8,13 +8,11 @@ import cloud.xcan.angus.persistence.jpa.repository.BaseRepositoryImpl;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -34,7 +32,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  *
  * @author XiaoLong Liu
  */
-@AutoConfiguration(after = DataSourceAutoConfiguration.class)
+@AutoConfiguration(after = JpaAutoConfigurer.class)
 @ConditionalOnClass({LocalContainerEntityManagerFactoryBean.class, EntityManager.class,
     SessionImplementor.class})
 @EnableConfigurationProperties({JpaProperties.class, DataSourceExtraProperties.class,

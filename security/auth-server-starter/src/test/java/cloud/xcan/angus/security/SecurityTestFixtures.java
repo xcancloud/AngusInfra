@@ -255,7 +255,7 @@ public class SecurityTestFixtures {
   public static CustomOAuth2User createUserWithPhone(String phone) {
     return userBuilder()
         .username("user-with-phone")
-        .mobile(phone)
+        .phone(phone)
         .password("Test@1234")
         .id(8L)
         .tenantId("test-tenant-123")
@@ -408,7 +408,7 @@ public class SecurityTestFixtures {
     private Long id;
     private String tenantId;
     private String email;
-    private String mobile;
+    private String phone;
     private boolean enabled = true;
     private boolean accountNonExpired = true;
     private boolean accountNonLocked = true;
@@ -440,8 +440,8 @@ public class SecurityTestFixtures {
       return this;
     }
 
-    public CustomOAuth2UserBuilder mobile(String mobile) {
-      this.mobile = mobile;
+    public CustomOAuth2UserBuilder phone(String phone) {
+      this.phone = phone;
       return this;
     }
 
@@ -477,7 +477,7 @@ public class SecurityTestFixtures {
       user.setId(id != null ? String.valueOf(id) : "1");
       user.setTenantId(tenantId != null ? tenantId : "default-tenant");
       user.setEmail(email);
-      user.setMobile(mobile);
+      user.setPhone(phone);
       user.setEnabled(enabled);
       user.setAccountNonExpired(accountNonExpired);
       user.setAccountNonLocked(accountNonLocked);

@@ -86,7 +86,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
 
   protected boolean sysAdmin;
 
-  protected String mobile;
+  protected String phone;
 
   protected String email;
 
@@ -175,7 +175,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
       boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked,
       Collection<? extends GrantedAuthority> authorities, String id, String firstName,
       String lastName, String fullName, boolean sysAdmin,
-      String mobile, String email, Instant passwordExpiredDate,
+      String phone, String email, Instant passwordExpiredDate,
       Instant lastModifiedPasswordDate, Instant expiredDate,
       String tenantId, String tenantName, String defaultLanguage, String defaultTimeZone) {
     Assert.isTrue(username != null && !username.isEmpty() /*&& password != null*/,
@@ -194,7 +194,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     this.lastName = lastName;
     this.fullName = fullName;
     this.sysAdmin = sysAdmin;
-    this.mobile = mobile;
+    this.phone = phone;
     this.email = email;
     this.passwordExpiredDate = passwordExpiredDate;
     this.lastModifiedPasswordDate = lastModifiedPasswordDate;
@@ -322,7 +322,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
     sb.append(", lastModifiedPasswordDate=").append(lastModifiedPasswordDate);
     sb.append(", passwordExpiredDate=").append(passwordExpiredDate);
     sb.append(", email='").append(email).append('\'');
-    sb.append(", mobile='").append(mobile).append('\'');
+    sb.append(", phone='").append(phone).append('\'');
     sb.append(", fullName='").append(fullName).append('\'');
     sb.append(", lastName='").append(lastName).append('\'');
     sb.append(", firstName='").append(firstName).append('\'');
@@ -348,7 +348,7 @@ public class CustomOAuth2User extends EntitySupport<CustomOAuth2User, Long> impl
         .accountLocked(!user.accountNonLocked).credentialsExpired(!user.credentialsNonExpired)
         .authorities(authorities).id(user.id).firstName(user.firstName).lastName(user.lastName)
         .fullName(user.fullName).sysAdmin(user.sysAdmin)
-        .phone(user.mobile).email(user.email)
+        .phone(user.phone).email(user.email)
         .passwordExpiredDate(user.passwordExpiredDate)
         .lastModifiedPasswordDate(user.lastModifiedPasswordDate).expiredDate(user.expiredDate)
         .tenantId(user.tenantId).tenantName(user.tenantName)

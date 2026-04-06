@@ -20,7 +20,7 @@ public interface SecurityConstant {
   //String INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH = "password_strength";
   String INTROSPECTION_CLAIM_NAMES_SYS_ADMIN = "sys_admin";
   //String INTROSPECTION_CLAIM_NAMES_TO_USER = "to_user";
-  String INTROSPECTION_CLAIM_NAMES_MOBILE = "mobile";
+  String INTROSPECTION_CLAIM_NAMES_PHONE = "phone";
   String INTROSPECTION_CLAIM_NAMES_EMAIL = "email";
   //String INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID = "main_dept_id";
   String INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE = "password_expired_date";

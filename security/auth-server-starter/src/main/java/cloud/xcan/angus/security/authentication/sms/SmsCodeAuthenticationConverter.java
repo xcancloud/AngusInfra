@@ -5,7 +5,7 @@ import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAu
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.getFormParameters;
 import static cloud.xcan.angus.security.authentication.password.OAuth2PasswordAuthenticationRequestUtils.throwError;
 import static cloud.xcan.angus.security.authentication.sms.SmsCodeAuthenticationToken.SMS_CODE_GRANT_TYPE;
-import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.MOBILE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.PHONE;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -60,13 +60,13 @@ public final class SmsCodeAuthenticationConverter implements AuthenticationConve
           Arrays.asList(StringUtils.delimitedListToStringArray(scope, " ")));
     }
 
-    // mobile (REQUIRED)
-    String mobile = parameters.getFirst(ACCOUNT);
-    if (isEmpty(mobile)) {
+    // phone (REQUIRED)
+    String phone = parameters.getFirst(ACCOUNT);
+    if (isEmpty(phone)) {
       // Important! Compatible with old parameter.
-      mobile = request.getParameter(MOBILE);
+      phone = request.getParameter(PHONE);
     }
-    if (!hasText(mobile) /*|| parameters.get(ACCOUNT).size() != 1*/) {
+    if (!hasText(phone) /*|| parameters.get(ACCOUNT).size() != 1*/) {
       throwError(OAuth2ErrorCodes.INVALID_REQUEST, ACCOUNT, ACCESS_TOKEN_REQUEST_ERROR_URI);
     }
 
@@ -95,7 +95,7 @@ public final class SmsCodeAuthenticationConverter implements AuthenticationConve
       }
     });
 
-    return new SmsCodeAuthenticationToken(userId, mobile, password, clientPrincipal,
+    return new SmsCodeAuthenticationToken(userId, phone, password, clientPrincipal,
         requestedScopes, additionalParameters);
   }
 

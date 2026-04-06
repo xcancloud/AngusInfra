@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
 public final class OAuth2PasswordAuthenticationConverter implements AuthenticationConverter {
 
   /**
-   * User username, mobile or email.
+   * User username, phone or email.
    */
   public static final String ACCOUNT = "account";
   public static final String USER_ID = "user_id";

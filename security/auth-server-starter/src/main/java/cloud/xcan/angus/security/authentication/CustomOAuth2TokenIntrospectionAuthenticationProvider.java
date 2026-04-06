@@ -22,7 +22,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_LAST_MODIFIED_PASSWORD_DATE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_LAST_NAME;
-import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_MOBILE;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PHONE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PERMISSION;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_PLATFORM;
@@ -235,7 +235,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, nullSafe(userTokenName, user.getFullName()));
     //claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
     claims.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, user.isSysAdmin());
-    claims.put(INTROSPECTION_CLAIM_NAMES_MOBILE, user.getMobile());
+    claims.put(INTROSPECTION_CLAIM_NAMES_PHONE, user.getPhone());
     claims.put(INTROSPECTION_CLAIM_NAMES_EMAIL, user.getEmail());
     //claims.put(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID, user.getMainDeptId());
     claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE, user.getPasswordExpiredDate());

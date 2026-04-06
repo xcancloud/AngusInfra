@@ -256,7 +256,7 @@ public abstract class BaseSecurityTest {
    */
   protected CustomOAuth2User createTestOAuth2UserWithPhone(String phone) {
     CustomOAuth2User user = createTestOAuth2User();
-    user.setMobile(phone);
+    user.setPhone(phone);
     return user;
   }
 

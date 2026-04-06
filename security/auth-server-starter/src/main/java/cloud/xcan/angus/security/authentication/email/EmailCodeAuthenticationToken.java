@@ -64,7 +64,7 @@ public class EmailCodeAuthenticationToken extends OAuth2AuthorizationGrantAuthen
    *
    * @return the requested user email
    */
-  public String getMobile() {
+  public String getEmail() {
     return email;
   }
 

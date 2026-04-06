@@ -157,13 +157,13 @@ public abstract class AbstractUserDetailsAuthenticationProvider implements Authe
     }
     if (authentication instanceof SmsCodeAuthenticationToken token) {
       return isNotEmpty(token.getId())
-          ? format("%s%s%s", token.getId(), COMPOSITE_ACCOUNT_SEPARATOR, token.getMobile())
-          : token.getMobile();
+          ? format("%s%s%s", token.getId(), COMPOSITE_ACCOUNT_SEPARATOR, token.getPhone())
+          : token.getPhone();
     }
     if (authentication instanceof EmailCodeAuthenticationToken token) {
       return isNotEmpty(token.getId())
-          ? format("%s%s%s", token.getId(), COMPOSITE_ACCOUNT_SEPARATOR, token.getMobile())
-          : token.getMobile();
+          ? format("%s%s%s", token.getId(), COMPOSITE_ACCOUNT_SEPARATOR, token.getEmail())
+          : token.getEmail();
     }
     return "NONE_PROVIDED";
   }

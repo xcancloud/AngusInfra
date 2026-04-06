@@ -5,6 +5,7 @@ import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TransactionalDistributedCache implements IDistributedCache {
@@ -79,6 +80,12 @@ public class TransactionalDistributedCache implements IDistributedCache {
   @Transactional(readOnly = true)
   public List<CacheEntryInfo> listEntries() {
     return delegate.listEntries();
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<CacheEntryInfo> listEntries(int pageNo, int pageSize) {
+    return delegate.listEntries(pageNo, pageSize);
   }
 }
 

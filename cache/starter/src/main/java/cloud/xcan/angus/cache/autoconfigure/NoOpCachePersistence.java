@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 /**
  * In-memory-only fallback implementation of {@link CachePersistence}.
@@ -68,5 +71,20 @@ public class NoOpCachePersistence implements CachePersistence {
     return store.values().stream()
         .filter(e -> !e.hasExpired())
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public Page<CacheEntry> findAllActive(Pageable pageable) {
+    List<CacheEntry> all = store.values().stream()
+        .filter(e -> !e.hasExpired())
+        .sorted((a, b) -> {
+          if (a.getUpdatedAt() == null || b.getUpdatedAt() == null) return 0;
+          return b.getUpdatedAt().compareTo(a.getUpdatedAt());
+        })
+        .collect(Collectors.toList());
+    int start = (int) pageable.getOffset();
+    int end = Math.min(start + pageable.getPageSize(), all.size());
+    List<CacheEntry> page = start >= all.size() ? List.of() : all.subList(start, end);
+    return new PageImpl<>(page, pageable, all.size());
   }
 }

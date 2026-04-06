@@ -3,6 +3,8 @@ package cloud.xcan.angus.cache;
 import cloud.xcan.angus.cache.entity.CacheEntry;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CachePersistence {
 
@@ -26,4 +28,6 @@ public interface CachePersistence {
   int deleteExpiredEntries();
 
   List<CacheEntry> findAllActive();
+
+  Page<CacheEntry> findAllActive(Pageable pageable);
 }

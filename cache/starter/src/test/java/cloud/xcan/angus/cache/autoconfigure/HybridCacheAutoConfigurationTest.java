@@ -2,15 +2,18 @@ package cloud.xcan.angus.cache.autoconfigure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cloud.xcan.angus.cache.CacheEntryInfo;
 import cloud.xcan.angus.cache.CachePersistence;
 import cloud.xcan.angus.cache.CacheStats;
 import cloud.xcan.angus.cache.IDistributedCache;
+import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -118,6 +121,16 @@ class HybridCacheAutoConfigurationTest {
     @Override
     public int cleanupExpiredEntries() {
       return 0;
+    }
+
+    @Override
+    public List<CacheEntryInfo> listEntries() {
+      return List.of();
+    }
+
+    @Override
+    public Page<CacheEntryInfo> listEntries(int pageNo, int pageSize) {
+      return Page.empty();
     }
   }
 }

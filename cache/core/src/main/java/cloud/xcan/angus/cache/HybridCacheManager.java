@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 /**
  * Hybrid Cache Manager Combines in-memory cache with database persistence
@@ -283,6 +285,24 @@ public class HybridCacheManager implements IDistributedCache {
       log.error("[CACHE-DEGRADATION] Failed to list cache entries. error={}",
           e.getMessage(), e);
       return List.of();
+    }
+  }
+
+  @Override
+  public Page<CacheEntryInfo> listEntries(int pageNo, int pageSize) {
+    try {
+      return cachePersistence.findAllActive(PageRequest.of(pageNo, pageSize))
+          .map(entry -> CacheEntryInfo.builder()
+              .key(entry.getKey())
+              .createdAt(entry.getCreatedAt())
+              .updatedAt(entry.getUpdatedAt())
+              .expireAt(entry.getExpireAt())
+              .ttlSeconds(entry.getTtlSeconds())
+              .build());
+    } catch (Exception e) {
+      log.error("[CACHE-DEGRADATION] Failed to list cache entries (paged). error={}",
+          e.getMessage(), e);
+      return Page.empty();
     }
   }
 }

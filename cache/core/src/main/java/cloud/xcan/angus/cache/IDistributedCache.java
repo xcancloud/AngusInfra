@@ -2,6 +2,7 @@ package cloud.xcan.angus.cache;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
 
 /**
  * Distributed Cache Interface Defines all cache operations
@@ -89,4 +90,13 @@ public interface IDistributedCache {
    * @return list of active cache entries
    */
   List<CacheEntryInfo> listEntries();
+
+  /**
+   * List active (non-expired) cache entries with pagination
+   *
+   * @param pageNo   zero-based page index
+   * @param pageSize page size
+   * @return paginated cache entries
+   */
+  Page<CacheEntryInfo> listEntries(int pageNo, int pageSize);
 }

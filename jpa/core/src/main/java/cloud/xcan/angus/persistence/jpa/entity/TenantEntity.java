@@ -13,8 +13,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
 @MultiTenant
+@FilterDef(
+    name = "xcanTenantScope",
+    parameters = @ParamDef(name = "tenantId", type = Long.class))
 @Filter(
     name = "xcanTenantScope",
     deduceAliasInjectionPoints = false,

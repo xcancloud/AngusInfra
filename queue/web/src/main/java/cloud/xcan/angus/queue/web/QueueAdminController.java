@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Queue Admin", description = "Administrative APIs for queue maintenance and DLQ management")
+@Tag(name = "QueueAdmin", description = "Administrative APIs for queue maintenance and DLQ management")
 @PreAuthorize("@PPS.isCloudTenantSecurity() && @PPS.isSysAdmin()")
 @RestController
 @RequestMapping(path = "/api/v1/queue/admin", produces = MediaType.APPLICATION_JSON_VALUE)
-public class AdminController {
+public class QueueAdminController {
 
   private final QueueAdminService adminService;
 
-  public AdminController(QueueAdminService adminService) {
+  public QueueAdminController(QueueAdminService adminService) {
     this.adminService = adminService;
   }
 

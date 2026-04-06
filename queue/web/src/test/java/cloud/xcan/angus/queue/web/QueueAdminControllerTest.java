@@ -18,7 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-class AdminControllerTest {
+class QueueAdminControllerTest {
 
   private MockMvc mvc;
   private QueueAdminService adminService;
@@ -29,7 +29,7 @@ class AdminControllerTest {
     System.setProperty("org.springframework.boot.logging.LoggingSystem", "none");
     System.setProperty("logging.system", "none");
     adminService = Mockito.mock(QueueAdminService.class);
-    AdminController controller = new AdminController(adminService);
+    QueueAdminController controller = new QueueAdminController(adminService);
     mvc = MockMvcBuilders.standaloneSetup(controller).build();
   }
 

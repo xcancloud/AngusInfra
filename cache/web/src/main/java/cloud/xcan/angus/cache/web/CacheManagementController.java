@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-@Tag(name = "Cache Management", description = "APIs to manage and monitor the hybrid cache")
+@Tag(name = "Cache", description = "APIs to manage and monitor the hybrid cache")
 @PreAuthorize("@PPS.isCloudTenantSecurity() && @PPS.isSysAdmin()")
 @RestController
 @RequestMapping(path = "/api/v1/cache", produces = MediaType.APPLICATION_JSON_VALUE)

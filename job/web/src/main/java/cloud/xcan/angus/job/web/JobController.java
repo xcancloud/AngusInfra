@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * are never accepted directly as request bodies to prevent mass-assignment.
  */
 @Slf4j
-@Tag(name = "Job Management", description = "APIs for managing distributed scheduled jobs")
+@Tag(name = "Job", description = "APIs for managing distributed scheduled jobs")
 @PreAuthorize("@PPS.isCloudTenantSecurity() && @PPS.isSysAdmin()")
 @RestController
 @RequestMapping("/api/v1/jobs")

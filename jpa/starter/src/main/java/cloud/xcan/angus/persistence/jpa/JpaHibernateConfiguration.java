@@ -110,14 +110,29 @@ public class JpaHibernateConfiguration extends JpaBaseConfiguration {
         hibernatePropertiesCustomizers.orderedStream().toList());
   }
 
+  /**
+   * Built-in packages that must be scanned for JPA managed types and package-level annotations
+   * (e.g. {@code @FilterDef} in {@code package-info.java}).
+   */
+  private static final String[] BUILT_IN_PACKAGES = {
+      "cloud.xcan.angus.persistence.jpa.entity"
+  };
+
   @Bean
   @Primary
   @ConditionalOnMissingBean
   public PersistenceManagedTypes persistenceManagedTypes(
       DataSourceExtraProperties jpaExtraProperties) {
+    List<String> allPackages = new ArrayList<>(
+        Arrays.asList(jpaExtraProperties.getEntityPackages()));
+    for (String builtIn : BUILT_IN_PACKAGES) {
+      if (!allPackages.contains(builtIn)) {
+        allPackages.add(builtIn);
+      }
+    }
     return PersistenceManagedTypes.of(
-        scanEntityClasses(jpaExtraProperties.getEntityPackages()),
-        List.of(jpaExtraProperties.getEntityPackages())
+        scanEntityClasses(allPackages.toArray(new String[0])),
+        allPackages
     );
   }
 

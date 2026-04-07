@@ -509,7 +509,7 @@ public interface BizConstant {
     /**
      * XCan custom header
      */
-    String HEADER_PREFIX = "X";
+    String HEADER_PREFIX = "X-";
 
     String NGINX_PROXY_CORS = HEADER_PREFIX + "Nginx-Proxy-Cors";
 

@@ -23,20 +23,24 @@ public class Attachment {
   @Schema(description = "Attachment file URL address", maxLength = MAX_URL_LENGTH_X4)
   private String url;
 
+  @Schema(description = "Attachment file size")
+  private Integer size;
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (!(o instanceof Attachment that)) {
       return false;
     }
-    Attachment that = (Attachment) o;
-    return name.equals(that.name) && url.equals(that.url);
+    return Objects.equals(name, that.name)
+        && Objects.equals(url, that.url)
+        && Objects.equals(size, that.size);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, url);
+    return Objects.hash(name, url, size);
   }
 }

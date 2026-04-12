@@ -279,8 +279,7 @@ public final class ServletUtils {
   }
 
   private static void doNotRangeDownload(int cacheAge, MediaType mediaType, String filename,
-      long filesize,
-      Date lastModified, InputStream inputStream, HttpServletResponse response) {
+      long filesize, Date lastModified, InputStream inputStream, HttpServletResponse response) {
     ServletOutputStream os = null;
     try {
       response.setStatus(HttpServletResponse.SC_OK);

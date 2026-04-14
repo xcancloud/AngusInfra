@@ -57,6 +57,9 @@ public class TokenCacheManager {
    */
   private volatile String fallbackToken;
 
+  String OAUTH2_INTROSPECT_CLIENT_ID = "OAUTH2_INTROSPECT_CLIENT_ID";
+  String OAUTH2_INTROSPECT_CLIENT_SECRET = "OAUTH2_INTROSPECT_CLIENT_SECRET";
+
   /**
    * Constructor for TokenCacheManager
    *
@@ -202,10 +205,18 @@ public class TokenCacheManager {
    */
   private ClientSignInDto buildTokenRequest() {
     String clientId = System.getenv(InnerApiAuthProperties.CLIENT_ID_ENV_PROPERTY);
+
+    if (clientId == null) {
+      clientId = System.getenv(OAUTH2_INTROSPECT_CLIENT_ID);
+    }
+
     String clientSecret = System.getenv(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY);
 
     if (clientSecret == null) {
       clientSecret = System.getenv(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY_LEGACY);
+      if (clientSecret == null) {
+        clientId = System.getenv(OAUTH2_INTROSPECT_CLIENT_SECRET);
+      }
     }
 
     if (clientId == null || clientId.isEmpty()) {

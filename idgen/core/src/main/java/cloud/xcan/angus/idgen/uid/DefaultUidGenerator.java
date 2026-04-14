@@ -15,12 +15,12 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The unique id has 64bits (long), default allocated as blow:<br>
  * <li>sign: The highest bit is 0
- * <li>delta seconds: The next 28 bits, represents delta seconds since a customer epoch(2016-05-20
- * 00:00:00.000). Supports about 8.7 years until to 2024-11-20 21:24:16
- * <li>worker id: The next 22 bits, represents the worker's id which assigns based on database, max
- * id is about 420W
- * <li>sequence: The next 13 bits, represents a sequence within the same second, max for
- * 8192/s<br><br>
+ * <li>delta seconds: The next 32 bits, represents delta seconds since a customer epoch(2021-01-01
+ * 00:00:00.000). Supports about 136 years until to 2157.
+ * <li>worker id: The next 13 bits, represents the worker's id which assigns based on database, max
+ * id is about 8192
+ * <li>sequence: The next 18 bits, represents a sequence within the same second, max for
+ * 262144/s<br><br>
  * <p>
  * The {@link DefaultUidGenerator#parseUID(long)} is a tool method to parse the bits
  *
@@ -28,14 +28,14 @@ import org.slf4j.LoggerFactory;
  * +------+----------------------+----------------+-----------+
  * | sign |     delta seconds    | worker node id | sequence  |
  * +------+----------------------+----------------+-----------+
- *   1bit          28bits              22bits         13bits
+ *   1bit          32bits              13bits         18bits
  * }</pre>
  * <p>
  * You can also specified the bits by Spring property setting.
- * <li>timeBits: default as 28
- * <li>workerBits: default as 22
- * <li>seqBits: default as 13
- * <li>epochStr: Epoch date string format 'yyyy-MM-dd'. Default as '2016-05-20'<p>
+ * <li>timeBits: default as 32
+ * <li>workerBits: default as 13
+ * <li>seqBits: default as 18
+ * <li>epochStr: Epoch date string format 'yyyy-MM-dd'. Default as '2021-01-01'<p>
  *
  * <b>Note that:</b> The total bits must be 64 -1
  */
@@ -102,11 +102,13 @@ public class DefaultUidGenerator implements UidGenerator/*, InitializingBean*/ {
       }
       --retriesNum;
     }
-    if (Objects.isNull(id)) {
+    if (id == null) {
       throw new RuntimeException("Failed to obtain instance id");
     }
 
-    if (instanceId > bitsAllocator.getMaxWorkerId()) {
+    this.instanceId = id;
+
+    if (instanceId < 0 || instanceId > bitsAllocator.getMaxWorkerId()) {
       throw new RuntimeException(
           "Instance id " + instanceId + " exceeds the max " + bitsAllocator.getMaxWorkerId());
     }
@@ -120,7 +122,6 @@ public class DefaultUidGenerator implements UidGenerator/*, InitializingBean*/ {
     if (retriesNum <= 0) {
       return null;
     }
-    Long id = null;
     if (Objects.nonNull(instanceInfo)) {
       return instanceIdAssigner
           .assignInstanceIdByParam(instanceInfo.getHost(), instanceInfo.getPort(),

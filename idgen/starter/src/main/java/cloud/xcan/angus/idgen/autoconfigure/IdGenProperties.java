@@ -17,10 +17,10 @@ import org.springframework.stereotype.Component;
  *   idgen:
  *     enabled: true
  *     uid:
- *       timeBits: 28
- *       workerBits: 22
- *       seqBits: 13
- *       epochStr: "2016-05-20"
+ *       timeBits: 32
+ *       workerBits: 13
+ *       seqBits: 18
+ *       epochStr: "2021-01-01"
  *       retriesNum: 3
  *     cached:
  *       boostPower: 2
@@ -68,24 +68,24 @@ public class IdGenProperties {
   public static class UidGeneatorConfig {
 
     /**
-     * Number of bits for timestamp (default 28, supports ~8.7 years)
+     * Number of bits for timestamp (default 32, supports ~136 years until 2157)
      */
-    private int timeBits = 28;
+    private int timeBits = 32;
 
     /**
-     * Number of bits for worker/instance id (default 22, supports ~4.2M instances)
+     * Number of bits for worker/instance id (default 13, supports ~8192 instances)
      */
-    private int workerBits = 22;
+    private int workerBits = 13;
 
     /**
-     * Number of bits for sequence (default 13, supports ~8192 IDs/sec)
+     * Number of bits for sequence (default 18, supports ~262144 IDs/sec)
      */
-    private int seqBits = 13;
+    private int seqBits = 18;
 
     /**
      * Epoch date for timestamp calculation (format: yyyy-MM-dd)
      */
-    private String epochStr = "2016-05-20";
+    private String epochStr = "2021-01-01";
 
     /**
      * Number of retries when obtaining instance ID fails

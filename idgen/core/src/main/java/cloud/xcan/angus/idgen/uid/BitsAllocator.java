@@ -63,6 +63,11 @@ public class BitsAllocator {
    * <b>Note that: </b>The highest bit will always be 0 for sign
    */
   public long allocate(long deltaSeconds, long workerId, long sequence) {
+    if (deltaSeconds < 0 || deltaSeconds > maxDeltaSeconds) {
+      throw new cloud.xcan.angus.idgen.exception.IdGenerateException(
+          "deltaSeconds out of range: " + deltaSeconds
+              + ", valid range [0, " + maxDeltaSeconds + "]. Check epochStr configuration.");
+    }
     return (deltaSeconds << timestampShift) | (workerId << workerIdShift) | sequence;
   }
 

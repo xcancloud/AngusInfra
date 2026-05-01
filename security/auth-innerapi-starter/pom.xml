@@ -26,6 +26,11 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
       <artifactId>xcan-angusinfra.remote</artifactId>
     </dependency>
 

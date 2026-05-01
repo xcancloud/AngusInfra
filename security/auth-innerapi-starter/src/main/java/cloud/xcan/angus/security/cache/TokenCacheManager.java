@@ -1,5 +1,6 @@
 package cloud.xcan.angus.security.cache;
 
+import cloud.xcan.angus.core.spring.env.EnvHelper;
 import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.security.config.InnerApiAuthProperties;
 import cloud.xcan.angus.security.model.cache.TokenStore;
@@ -204,18 +205,16 @@ public class TokenCacheManager {
    * Build OAuth2 client credentials token request.
    */
   private ClientSignInDto buildTokenRequest() {
-    String clientId = System.getenv(InnerApiAuthProperties.CLIENT_ID_ENV_PROPERTY);
-
+    String clientId = EnvHelper.getString(InnerApiAuthProperties.CLIENT_ID_ENV_PROPERTY);
     if (clientId == null) {
-      clientId = System.getenv(OAUTH2_INTROSPECT_CLIENT_ID);
+      clientId = EnvHelper.getString(OAUTH2_INTROSPECT_CLIENT_ID);
     }
 
-    String clientSecret = System.getenv(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY);
-
+    String clientSecret = EnvHelper.getString(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY);
     if (clientSecret == null) {
-      clientSecret = System.getenv(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY_LEGACY);
+      clientSecret = EnvHelper.getString(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY_LEGACY);
       if (clientSecret == null) {
-        clientId = System.getenv(OAUTH2_INTROSPECT_CLIENT_SECRET);
+        clientId = EnvHelper.getString(OAUTH2_INTROSPECT_CLIENT_SECRET);
       }
     }
 

@@ -10,7 +10,7 @@
     <version>3.0.0</version>
   </parent>
 
-  <artifactId>security-openapi2p-starter</artifactId>
+  <artifactId>xcan-angusinfra.security-openapi2p-starter</artifactId>
   <name>AngusInfra :: Security :: Openapi2P Authorization</name>
   <packaging>jar</packaging>
   <description>An auto-configured library for private authorization (OAuth2-client_credentials
@@ -20,7 +20,7 @@
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>security-resource-model</artifactId>
+      <artifactId>xcan-angusinfra.security-resource-model</artifactId>
       <version>${project.version}</version>
     </dependency>
 

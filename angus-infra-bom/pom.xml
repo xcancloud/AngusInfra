@@ -178,32 +178,32 @@
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>security-resource-model</artifactId>
+        <artifactId>xcan-angusinfra.security-resource-model</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>security-innerapi-starter</artifactId>
+        <artifactId>xcan-angusinfra.security-innerapi-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>security-resource-starter</artifactId>
+        <artifactId>xcan-angusinfra.security-resource-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>security-server-starter</artifactId>
+        <artifactId>xcan-angusinfra.security-server-starter</artifactId>
         <version>${project.version}</version>
         <scope>compile</scope>
       </dependency>
 
       <dependency>
         <groupId>cloud.xcan.angus</groupId>
-        <artifactId>security-openapi2p-starter</artifactId>
+        <artifactId>xcan-angusinfra.security-openapi2p-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 

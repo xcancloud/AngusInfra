@@ -10,7 +10,7 @@
     <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-angusinfra.auth-resource-model</artifactId>
+  <artifactId>security-resource-model</artifactId>
   <name>AngusInfra :: Security :: Authorization Resource Model</name>
   <packaging>jar</packaging>
   <description>Authorization Persistence Resource Models</description>

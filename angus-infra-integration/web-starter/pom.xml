@@ -83,12 +83,12 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.auth-innerapi-starter</artifactId>
+      <artifactId>security-innerapi-starter</artifactId>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.auth-openapi2p-starter</artifactId>
+      <artifactId>security-openapi2p-starter</artifactId>
     </dependency>
 
     <dependency>

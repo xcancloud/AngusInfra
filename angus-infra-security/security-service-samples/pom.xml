@@ -9,12 +9,12 @@
     <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-angusinfra.auth-service-samples</artifactId>
+  <artifactId>security-service-samples</artifactId>
   <name>AngusInfra :: Security :: Sample :: Parent</name>
   <packaging>pom</packaging>
 
   <modules>
-    <module>auth-resource-sample</module>
-    <module>auth-server-sample</module>
+    <module>security-resource-sample</module>
+    <module>security-server-sample</module>
   </modules>
 </project>

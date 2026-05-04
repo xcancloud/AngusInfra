@@ -18,12 +18,12 @@
   </description>
 
   <modules>
-    <module>auth-resource-model</module>
-    <module>auth-resource-starter</module>
-    <module>auth-server-starter</module>
-    <module>auth-openapi2p-starter</module>
-    <module>auth-innerapi-starter</module>
-    <module>auth-service-samples</module>
+    <module>security-resource-model</module>
+    <module>security-resource-starter</module>
+    <module>security-server-starter</module>
+    <module>security-openapi2p-starter</module>
+    <module>security-innerapi-starter</module>
+    <module>security-service-samples</module>
   </modules>
 
   <dependencyManagement>

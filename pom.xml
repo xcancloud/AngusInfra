@@ -18,25 +18,25 @@
   <description>Angus SaaS Development Framework</description>
 
   <modules>
-    <module>parent</module>
-    <module>bom</module>
-    <module>spec</module>
-    <module>validator</module>
-    <module>remote</module>
-    <module>idgen</module>
+    <module>angus-infra-parent</module>
+    <module>angus-infra-bom</module>
+    <module>angus-infra-spec</module>
+    <module>angus-infra-validator</module>
+    <module>angus-infra-remote</module>
+    <module>angus-infra-idgen</module>
 
     <!-- Core Module Refactoring: New Sub-modules -->
-    <module>core</module>
-    <module>jpa</module>
-    <module>cache</module>
-    <module>job</module>
-    <module>queue</module>
-    <module>plugin</module>
-    <module>lettucex</module>
-    <module>l2cache</module>
-    <module>integration</module>
-    <module>security</module>
-    <module>sharding</module>
+    <module>angus-infra-core</module>
+    <module>angus-infra-jpa</module>
+    <module>angus-infra-cache</module>
+    <module>angus-infra-job</module>
+    <module>angus-infra-queue</module>
+    <module>angus-infra-plugin</module>
+    <module>angus-infra-lettucex</module>
+    <module>angus-infra-l2cache</module>
+    <module>angus-infra-integration</module>
+    <module>angus-infra-security</module>
+    <module>angus-infra-sharding</module>
   </modules>
 
   <organization>

@@ -5,11 +5,11 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>cloud.xcan.angus</groupId>
-    <artifactId>xcan-angusinfra.auth-service-samples</artifactId>
+    <artifactId>security-service-samples</artifactId>
     <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-angusinfra.auth-server-sample</artifactId>
+  <artifactId>security-server-sample</artifactId>
   <name>AngusInfra :: Security :: Sample :: Authorization Server</name>
   <packaging>jar</packaging>
 
@@ -17,13 +17,13 @@
     <!-- Note: The auth-server-starter must come before auth-resource-starter to ensure it is initialized first. -->
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.auth-server-starter</artifactId>
+      <artifactId>security-server-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>
+      <artifactId>security-resource-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
 

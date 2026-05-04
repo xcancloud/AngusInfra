@@ -10,7 +10,7 @@
     <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-angusinfra.auth-resource-starter</artifactId>
+  <artifactId>security-resource-starter</artifactId>
   <name>AngusInfra :: Security :: Resource Authorization</name>
   <packaging>jar</packaging>
   <description>An auto-configured library for OAuth2 resource authorization
@@ -25,7 +25,7 @@
 
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusinfra.auth-resource-model</artifactId>
+      <artifactId>security-resource-model</artifactId>
     </dependency>
 
     <!-- Spring Boot Starter Security -->

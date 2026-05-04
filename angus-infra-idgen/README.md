@@ -253,7 +253,7 @@ xcan:
 
 | Property                  | Default    | Description                                                     |
 |---------------------------|------------|-----------------------------------------------------------------|
-| `uid.timeBits`            | 28         | Seconds precision; 28 bits ≈ 8.7 years from epoch               |
+| `uid.timeBits`            | 32         | Seconds precision; 32 bits ≈ 136 years from epoch               |
 | `uid.workerBits`          | 22         | `timeBits + workerBits + seqBits` must equal 63                 |
 | `uid.seqBits`             | 13         | Max IDs per second per instance = `2^seqBits`                   |
 | `uid.epochStr`            | 2016-05-20 | Changing this requires resetting the `angus_instance` table     |

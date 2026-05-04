@@ -11,7 +11,7 @@ class IdGenPropertiesTest {
   void nestedDefaultsAndOverrides() {
     IdGenProperties p = new IdGenProperties();
     assertThat(p.isEnabled()).isTrue();
-    assertThat(p.getUid().getTimeBits()).isEqualTo(28);
+    assertThat(p.getUid().getTimeBits()).isEqualTo(32);
     assertThat(p.getCached().getBoostPower()).isEqualTo(2);
     assertThat(p.getBid().getInitialMapCapacity()).isEqualTo(512);
 

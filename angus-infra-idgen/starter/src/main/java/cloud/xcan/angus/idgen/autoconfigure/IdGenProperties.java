@@ -68,7 +68,7 @@ public class IdGenProperties {
   public static class UidGeneatorConfig {
 
     /**
-     * Number of bits for timestamp (default 32, supports ~136 years until 2157)
+     * Number of bits for timestamp (default 32, ≈ 136 years from epoch in seconds precision)
      */
     private int timeBits = 32;
 

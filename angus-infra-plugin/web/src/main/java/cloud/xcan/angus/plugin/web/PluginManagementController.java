@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -90,6 +91,18 @@ public class PluginManagementController {
       throws PluginException {
     log.warn("Plugin remove requested: pluginId={}, removeFromStore={}", pluginId, removeFromStore);
     managementService.remove(pluginId, removeFromStore);
+  }
+
+  /**
+   * Map plugin failures to HTTP 500 rather than letting the servlet container surface
+   * a ServletException. Returning a body keeps the response symmetric with other endpoints.
+   */
+  @ExceptionHandler(PluginException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ApiLocaleResult<Void> handlePluginException(PluginException ex) {
+    log.error("Plugin operation failed", ex);
+    return ApiLocaleResult.error(SYSTEM_ERROR_CODE,
+        ex.getMessage() != null ? ex.getMessage() : "Plugin operation failed", null);
   }
 
   @Operation(operationId = "getPlugin", summary = "Get plugin details",

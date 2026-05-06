@@ -15,16 +15,17 @@
   <name>AngusInfra :: Plugin :: Parent</name>
   <version>3.0.0</version>
   <packaging>pom</packaging>
-  <description>Parent aggregator module for building extensible plugins; manages child modules,
-    versions and dependencies.
-  </description>
+  <description>Extensible plugin framework based on Java ServiceLoader (api / registry / manager).</description>
+
+  <properties>
+    <!-- Version of AngusMeter artifacts that the plugin framework integrates with
+         (xcan-angusmeter.spec-model, xcan-angusmeter.core-engine). -->
+    <xcan-angusmeter.version>2.0.0</xcan-angusmeter.version>
+  </properties>
 
   <modules>
     <module>api</module>
-    <module>core</module>
-    <module>starter</module>
-    <module>web</module>
-    <module>examples</module>
-    <module>bom</module>
+    <module>registry</module>
+    <module>manager</module>
   </modules>
 </project>

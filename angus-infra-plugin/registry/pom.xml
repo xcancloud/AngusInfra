@@ -10,20 +10,29 @@
     <version>3.0.0</version>
   </parent>
 
-  <artifactId>xcan-angusinfra.plugin-api</artifactId>
-  <name>AngusInfra :: Plugin :: API</name>
-  <description>Public SPI contracts and extension points for AngusInfra plugins</description>
+  <artifactId>xcan-angusinfra.plugin-registry</artifactId>
+  <name>AngusInfra :: Plugin :: Registry</name>
+  <description>Registry and discovery service for available AngusInfra plugins</description>
 
   <dependencies>
     <dependency>
       <groupId>cloud.xcan.angus</groupId>
-      <artifactId>xcan-angusmeter.spec-model</artifactId>
-      <version>${xcan-angusmeter.version}</version>
+      <artifactId>xcan-angusinfra.plugin-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

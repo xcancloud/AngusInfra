@@ -65,7 +65,7 @@ public final class LocationService {
         }
       }
     } catch (IOException e) {
-      log.warn("获取IP地理位置失败: {}", ipAddress, e);
+      log.warn("Failed to obtain IP geolocation: {} - {}", ipAddress, e.getMessage());
     }
     return empty;
   }

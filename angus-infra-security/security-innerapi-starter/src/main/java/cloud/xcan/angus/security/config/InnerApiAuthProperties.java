@@ -193,7 +193,7 @@ public class InnerApiAuthProperties {
    * <p>
    * Example: "openid profile email"
    */
-  public static final String INNER_API_TOKEN_CLIENT_SCOPE = "innerapi";
+  public static final String INNER_API_TOKEN_CLIENT_SCOPE = "inner_api_trust";
 
   // ╔═══════════════════════════════════════════════════════════════════════╗
   // ║ Constants

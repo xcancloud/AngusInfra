@@ -101,6 +101,39 @@ public final class SampleResult {
      */
     private final Map<String, Object> metadata;
 
+    /**
+     * 失败分类，用于在指标 / 报表 / 重试策略中区分
+     * 传输层错误、超时、断言失败、脚本错误等。
+     *
+     * <p>由编排器在采样完成后统一回填；样本成功时为 {@code null}。
+     */
+    private final FailureKind failureKind;
+
+    /** 首个失败断言的名称；无失败时为 {@code null}。 */
+    private final String failedAssertionName;
+
+    /** 首个失败断言的期望值（字符串表示）；可能为 {@code null}。 */
+    private final String failedAssertionExpected;
+
+    /** 首个失败断言的实际值（字符串表示）；可能为 {@code null}。 */
+    private final String failedAssertionActual;
+
+    /**
+     * 样本失败的分类标识，用于指标聚合与重试策略路由。
+     *
+     * @since 2.0.0
+     */
+    public enum FailureKind {
+        /** 传输层 / 协议层错误（连接拒绝、DNS 失败、握手失败等）。 */
+        TRANSPORT_ERROR,
+        /** 超时（连接 / 读取 / 步骤级 deadline）。 */
+        TIMEOUT,
+        /** 断言失败（业务语义校验未通过）。 */
+        ASSERTION_FAILED,
+        /** 脚本 / 数据源 / 引擎内部错误。 */
+        SCRIPT_ERROR
+    }
+
     private SampleResult(Builder builder) {
         this.sampleName         = builder.sampleName;
         this.success            = builder.success;
@@ -127,6 +160,10 @@ public final class SampleResult {
         this.timestamp          = builder.timestamp > 0 ? builder.timestamp : builder.startTime;
         this.metadata           = builder.metadata != null
                 ? new HashMap<>(builder.metadata) : new HashMap<>();
+        this.failureKind             = builder.failureKind;
+        this.failedAssertionName     = builder.failedAssertionName;
+        this.failedAssertionExpected = builder.failedAssertionExpected;
+        this.failedAssertionActual   = builder.failedAssertionActual;
     }
 
     // ==================== 访问器 ====================
@@ -151,6 +188,10 @@ public final class SampleResult {
     public long getEndTime()                               { return endTime; }
     public long getTimestamp()                             { return timestamp; }
     public Map<String, Object> getMetadata()               { return metadata; }
+    public FailureKind getFailureKind()                    { return failureKind; }
+    public String getFailedAssertionName()                 { return failedAssertionName; }
+    public String getFailedAssertionExpected()             { return failedAssertionExpected; }
+    public String getFailedAssertionActual()               { return failedAssertionActual; }
 
     /** 便利方法：当此结果中的所有断言都通过时返回 {@code true}。 */
     public boolean allAssertionsPassed() {
@@ -167,8 +208,17 @@ public final class SampleResult {
      * @return 新的 {@link SampleResult}，仅 {@code sampleName} 不同
      */
     public SampleResult withSampleName(String name) {
+        return toBuilder().sampleName(name).build();
+    }
+
+    /**
+     * 返回一个由当前实例字段初始化的 {@link Builder}，便于派生新的不可变结果。
+     *
+     * @return 已填充当前所有字段的构建器
+     */
+    public Builder toBuilder() {
         return builder()
-                .sampleName(name)
+                .sampleName(this.sampleName)
                 .success(this.success)
                 .statusCode(this.statusCode)
                 .requestMethod(this.requestMethod)
@@ -188,7 +238,10 @@ public final class SampleResult {
                 .endTime(this.endTime)
                 .timestamp(this.timestamp)
                 .metadata(this.metadata)
-                .build();
+                .failureKind(this.failureKind)
+                .failedAssertionName(this.failedAssertionName)
+                .failedAssertionExpected(this.failedAssertionExpected)
+                .failedAssertionActual(this.failedAssertionActual);
     }
 
     // ==================== 构建器 ====================
@@ -221,6 +274,10 @@ public final class SampleResult {
         private long endTime;
         private long timestamp;
         private Map<String, Object> metadata;
+        private FailureKind failureKind;
+        private String failedAssertionName;
+        private String failedAssertionExpected;
+        private String failedAssertionActual;
 
         private Builder() {}
 
@@ -244,6 +301,10 @@ public final class SampleResult {
         public Builder endTime(long endTime)                                           { this.endTime = endTime; return this; }
         public Builder timestamp(long timestamp)                                       { this.timestamp = timestamp; return this; }
         public Builder metadata(Map<String, Object> metadata)                          { this.metadata = metadata; return this; }
+        public Builder failureKind(FailureKind failureKind)                            { this.failureKind = failureKind; return this; }
+        public Builder failedAssertionName(String failedAssertionName)                 { this.failedAssertionName = failedAssertionName; return this; }
+        public Builder failedAssertionExpected(String failedAssertionExpected)         { this.failedAssertionExpected = failedAssertionExpected; return this; }
+        public Builder failedAssertionActual(String failedAssertionActual)             { this.failedAssertionActual = failedAssertionActual; return this; }
 
         /**
          * 将单个断言结果附加到断言列表。

@@ -206,24 +206,6 @@
         <artifactId>xcan-angusinfra.security-openapi2p-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.plugin-api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.plugin-registry</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>cloud.xcan.angus</groupId>
-        <artifactId>xcan-angusinfra.plugin-manager</artifactId>
-        <version>${project.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

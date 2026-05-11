@@ -31,7 +31,6 @@
     <module>angus-infra-cache</module>
     <module>angus-infra-job</module>
     <module>angus-infra-queue</module>
-    <module>angus-infra-plugin</module>
     <module>angus-infra-lettucex</module>
     <module>angus-infra-l2cache</module>
     <module>angus-infra-integration</module>

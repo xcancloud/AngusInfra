@@ -11,9 +11,25 @@ import java.lang.annotation.Target;
  *
  * <p>For example, a table named {@code exec_sample} for tenant 100 becomes {@code exec_sample-100}
  * or {@code exec_sample-100-3} when secondary table indexing is enabled.
+ *
+ * <p>When {@link #shardKey()} is specified together with a repository annotated with
+ * {@link ShardedRepository}, the {@code ShardedRepositoryAspect} will automatically extract the
+ * shard key value from method arguments (or the saved entity) and set the {@code ShardContext}
+ * for that invocation – removing the need for callers to manage the context manually.
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ShardedTable {
 
+  /**
+   * Name of the field on the entity used as the shard key (e.g. {@code "taskId"} or
+   * {@code "nodeId"}). Required when paired with {@link ShardedRepository}; ignored otherwise.
+   */
+  String shardKey() default "";
+
+  /**
+   * Number of physical table shards for this entity. {@code 0} means inherit from the runtime
+   * configuration ({@code angus.sharding.shard-table-count}).
+   */
+  int tableCount() default 0;
 }

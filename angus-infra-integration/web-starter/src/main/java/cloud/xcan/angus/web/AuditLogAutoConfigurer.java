@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -56,7 +57,13 @@ public class AuditLogAutoConfigurer {
   public final static String[] RESOURCES = new String[]{
       "/api/*", "/innerapi/*", "/pubapi/*", "/openapi2p/*"};
 
+  /**
+   * CommonEvent (global exception event) pipeline. Disabled by default because the
+   * remote receiver (POST /innerapi/v1/event) is not implemented in any service.
+   * Enable explicitly with {@code angus.event.enabled=true} when a receiver is in place.
+   */
   @ConditionalOnMissingBean
+  @ConditionalOnProperty(prefix = "angus.event", name = "enabled", havingValue = "true", matchIfMissing = false)
   @Bean("commonEventRemote")
   public CommonEventRemote commonEventRemote(Client client, Encoder encoder,
       Decoder decoder, Contract contract, ApiLogProperties apiLogProperties,
@@ -69,6 +76,7 @@ public class AuditLogAutoConfigurer {
 
   @DependsOn("commonEventRemote")
   @ConditionalOnMissingBean(name = "commonEventRepository")
+  @ConditionalOnProperty(prefix = "angus.event", name = "enabled", havingValue = "true", matchIfMissing = false)
   @Bean("commonEventRepository")
   public EventRepository<CommonEvent> commonEventRepository(
       CommonEventRemote commonEventRemote, ObjectMapper objectMapper) {
@@ -78,6 +86,7 @@ public class AuditLogAutoConfigurer {
   }
 
   @DependsOn("commonEventRepository")
+  @ConditionalOnProperty(prefix = "angus.event", name = "enabled", havingValue = "true", matchIfMissing = false)
   @Bean("commonEventListener")
   public EventListener<CommonEvent> commonEventListener(
       EventRepository<CommonEvent> commonEventRepository) {
@@ -85,6 +94,7 @@ public class AuditLogAutoConfigurer {
   }
 
   @DependsOn("commonEventListener")
+  @ConditionalOnProperty(prefix = "angus.event", name = "enabled", havingValue = "true", matchIfMissing = false)
   @Bean(EventSender.CommonQueue.QUEUE_NAME)
   public DisruptorQueueManager<CommonEvent> commonEventDisruptorQueue(
       EventListener<CommonEvent> commonEventListener) {

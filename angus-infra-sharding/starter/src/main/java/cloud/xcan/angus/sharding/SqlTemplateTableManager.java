@@ -139,12 +139,18 @@ public class SqlTemplateTableManager implements ShardTableManager {
     JdbcTemplate jdbc = new JdbcTemplate(dataSource);
     for (String stmt : ddl.split(";")) {
       String trimmed = stmt.trim();
-      if (!trimmed.isEmpty()) {
-        try {
-          jdbc.execute(trimmed);
-        } catch (Exception e) {
-          log.debug("DDL note for '{}': {}", targetTable, e.getMessage());
-        }
+      if (trimmed.isEmpty()) {
+        continue;
+      }
+      try {
+        jdbc.execute(trimmed);
+      } catch (Exception e) {
+        // 不再静默吞错：把第一条失败的 DDL 抛给外层（ensureTablesExist 会 log.warn 并跳过
+        // localCache.put，使该表保持"未创建"状态，下一次 ingest 仍会按需重试，避免假阳性。
+        String abbr = trimmed.length() > 200 ? trimmed.substring(0, 200) + "..." : trimmed;
+        throw new IllegalStateException(
+            "DDL failed for table '" + targetTable + "': " + e.getMessage()
+                + " | stmt: " + abbr, e);
       }
     }
     log.info("Shard table '{}' created from template '{}'.", targetTable, templateTable);

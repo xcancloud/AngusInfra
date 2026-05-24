@@ -166,7 +166,7 @@ public class JobController {
 
   @Operation(operationId = "getJobStatistics", summary = "Get job execution statistics",
       description = "Return aggregated statistics for the specified job, including execution counts, success/failure rates and average duration.")
-  @GetMapping("/{jobId}/statistics")
+  @GetMapping("/{jobId}/stats")
   public ApiLocaleResult<Map<String, Object>> getStatistics(
       @Parameter(description = "Job ID", required = true) @PathVariable Long jobId) {
     return ApiLocaleResult.success(jobManagementService.getJobStatistics(jobId));

@@ -554,7 +554,7 @@ public class SalesSummaryJob implements MapReduceJobExecutor {
 | `POST`   | `/api/v1/jobs/{jobId}/resume`     | 恢复任务            |
 | `POST`   | `/api/v1/jobs/{jobId}/trigger`    | 立即触发一次          |
 | `GET`    | `/api/v1/jobs/{jobId}/executions` | 查看执行历史          |
-| `GET`    | `/api/v1/jobs/{jobId}/statistics` | 查看统计信息          |
+| `GET`    | `/api/v1/jobs/{jobId}/stats` | 查看统计信息          |
 
 统计接口返回的典型字段：
 

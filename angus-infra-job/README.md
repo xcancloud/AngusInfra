@@ -530,7 +530,7 @@ Controller prefix: `/api/v1/jobs`
 | `POST`   | `/api/v1/jobs/{jobId}/resume`     | Resume a job                       |
 | `POST`   | `/api/v1/jobs/{jobId}/trigger`    | Trigger a job immediately          |
 | `GET`    | `/api/v1/jobs/{jobId}/executions` | Execution history                  |
-| `GET`    | `/api/v1/jobs/{jobId}/statistics` | Job statistics                     |
+| `GET`    | `/api/v1/jobs/{jobId}/stats` | Job statistics                     |
 
 Statistics response fields include:
 

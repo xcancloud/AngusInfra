@@ -204,7 +204,7 @@ class JobControllerTest {
     mockMvc.perform(get("/api/v1/jobs/1/executions"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.content").isArray());
-    mockMvc.perform(get("/api/v1/jobs/1/statistics"))
+    mockMvc.perform(get("/api/v1/jobs/1/stats"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.totalExecutions").value(0));
   }

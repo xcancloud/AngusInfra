@@ -8,8 +8,17 @@ import java.util.Map;
 import java.util.Objects;
 
 public enum ApiType implements Value<String> {
+  /*Angus protocol api*/
+  API,
+  OPEN_API,
+  OPEN_API_2P,
+  DOOR_API,
+  PUB_API,
+  VIEW,
+  PUB_VIEW,
 
-  API, OPEN_API, OPEN_API_2P, DOOR_API, PUB_API, VIEW, PUB_VIEW;
+  /*Raw protocol api*/
+  RAW_API;
 
   public static final Map<ApiType, String> API_TYPE_MAP =
       Map.of(API, "/api/", OPEN_API, "/openapi/", OPEN_API_2P, "/openapi2p/", DOOR_API,
@@ -42,7 +51,7 @@ public enum ApiType implements Value<String> {
         return e.getKey();
       }
     }
-    return API;
+    return RAW_API;
   }
 
   public boolean isDoorTypeApi() {

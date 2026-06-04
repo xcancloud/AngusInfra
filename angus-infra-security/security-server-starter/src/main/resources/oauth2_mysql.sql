@@ -47,8 +47,7 @@ CREATE TABLE oauth2_registered_client
 );
 CREATE INDEX idx_client_id ON oauth2_registered_client (client_id);
 CREATE INDEX idx_biz_tag ON oauth2_registered_client (biz_tag);
-CREATE INDEX idx_tenant_id ON oauth2_registered_client (tenant_id);
-CREATE INDEX idx_created_date ON oauth2_registered_client (created_date);
+CREATE INDEX idx_tenant_created ON oauth2_registered_client (tenant_id, created_date);
 
 -- org/springframework/security/core/userdetails/jdbc/users.ddl
 -- create table users
@@ -90,7 +89,7 @@ create table oauth2_user
 CREATE UNIQUE INDEX idx_username ON oauth2_user (username);
 CREATE INDEX uidx_phone_tenant_id ON oauth2_user (username, tenant_id);
 CREATE INDEX uidx_email_tenant_id ON oauth2_user (email, tenant_id);
-CREATE INDEX idx_tenant_id_2 ON oauth2_user (tenant_id);
+CREATE INDEX idx_tenant_main_dept ON oauth2_user (tenant_id, main_dept_id);
 
 -- create table authorities
 -- (

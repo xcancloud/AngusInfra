@@ -8,6 +8,7 @@ import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
 import cloud.xcan.angus.security.principal.HoldPrincipalFilter;
 import cloud.xcan.angus.security.web.BasicAuthBridgeProperties;
 import cloud.xcan.angus.security.web.BasicToBearerTokenResolver;
+import cloud.xcan.angus.security.web.ResourceServerSecurityProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -27,7 +28,8 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 @Configuration
 @EnableMethodSecurity
-@EnableConfigurationProperties({OAuth2ResourceServerProperties.class, BasicAuthBridgeProperties.class})
+@EnableConfigurationProperties({OAuth2ResourceServerProperties.class, BasicAuthBridgeProperties.class,
+    ResourceServerSecurityProperties.class})
 public class OAuth2ResourceServerSecurityAutoConfigurer {
 
   @Bean("resourceServerSecurityFilterChain")
@@ -60,11 +62,17 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
    * (see {@link BasicAuthBridgeProperties}), the token may additionally arrive as an HTTP Basic
    * password or a configured token header (e.g. {@code X-NuGet-ApiKey}); otherwise this is the
    * stock {@link DefaultBearerTokenResolver} behavior.
+   *
+   * <p>The {@code ?access_token=} query-parameter carrier is gated by
+   * {@link ResourceServerSecurityProperties#isAllowUriQueryToken()} (default {@code true} for
+   * backward compatibility); security-sensitive services disable it to keep tokens out of URLs and
+   * access logs per RFC 6750 §2.3.</p>
    */
   @Bean
-  public BearerTokenResolver bearerTokenResolver(BasicAuthBridgeProperties basicAuthBridgeProperties) {
+  public BearerTokenResolver bearerTokenResolver(BasicAuthBridgeProperties basicAuthBridgeProperties,
+      ResourceServerSecurityProperties resourceServerSecurityProperties) {
     DefaultBearerTokenResolver resolver = new DefaultBearerTokenResolver();
-    resolver.setAllowUriQueryParameter(true);
+    resolver.setAllowUriQueryParameter(resourceServerSecurityProperties.isAllowUriQueryToken());
     if (basicAuthBridgeProperties.isEnabled()) {
       return new BasicToBearerTokenResolver(resolver, basicAuthBridgeProperties);
     }

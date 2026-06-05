@@ -119,7 +119,8 @@ class BasicToBearerTokenResolverTest {
 
   @Test
   void enabled_queryParamToken_stillResolvedByDelegate() {
-    MockHttpServletRequest req = new MockHttpServletRequest();
+    // DefaultBearerTokenResolver 仅对 GET（或表单 POST）解析 ?access_token=，故显式用 GET。
+    MockHttpServletRequest req = new MockHttpServletRequest("GET", "/");
     req.addParameter("access_token", "query-token");
 
     assertThat(resolver(true, true, List.of()).resolve(req)).isEqualTo("query-token");

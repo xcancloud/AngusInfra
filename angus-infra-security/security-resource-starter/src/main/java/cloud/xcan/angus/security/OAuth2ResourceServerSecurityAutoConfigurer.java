@@ -6,6 +6,8 @@ import cloud.xcan.angus.security.handler.CustomAccessDeniedHandler;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
 import cloud.xcan.angus.security.principal.HoldPrincipalFilter;
+import cloud.xcan.angus.security.web.BasicAuthBridgeProperties;
+import cloud.xcan.angus.security.web.BasicToBearerTokenResolver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,7 +27,7 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
 
 @Configuration
 @EnableMethodSecurity
-@EnableConfigurationProperties({OAuth2ResourceServerProperties.class})
+@EnableConfigurationProperties({OAuth2ResourceServerProperties.class, BasicAuthBridgeProperties.class})
 public class OAuth2ResourceServerSecurityAutoConfigurer {
 
   @Bean("resourceServerSecurityFilterChain")
@@ -53,10 +55,19 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
     return http.build();
   }
 
+  /**
+   * Resolves the access token from the request. When the artifact-protocol Basic bridge is enabled
+   * (see {@link BasicAuthBridgeProperties}), the token may additionally arrive as an HTTP Basic
+   * password or a configured token header (e.g. {@code X-NuGet-ApiKey}); otherwise this is the
+   * stock {@link DefaultBearerTokenResolver} behavior.
+   */
   @Bean
-  public BearerTokenResolver bearerTokenResolver() {
+  public BearerTokenResolver bearerTokenResolver(BasicAuthBridgeProperties basicAuthBridgeProperties) {
     DefaultBearerTokenResolver resolver = new DefaultBearerTokenResolver();
     resolver.setAllowUriQueryParameter(true);
+    if (basicAuthBridgeProperties.isEnabled()) {
+      return new BasicToBearerTokenResolver(resolver, basicAuthBridgeProperties);
+    }
     return resolver;
   }
 

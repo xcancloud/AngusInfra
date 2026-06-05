@@ -103,6 +103,28 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
         }
       }
       if (!isMatched) {
+        // Non-API endpoints (e.g. permitAll artifact-protocol paths such as /raw/**, /maven/**,
+        // /npm/**, /docker/**) are not gated by Spring Security's `.authenticated()` rule, so this
+        // filter historically skipped them and left PrincipalContext anonymous. That broke
+        // token-authenticated writes and private reads on these endpoints, because downstream
+        // access checks (e.g. RepositoryAccessChecker) read identity from PrincipalContext and saw
+        // every protocol request as anonymous — returning 401 even with a valid access token.
+        //
+        // Best-effort hydrate the principal here when a valid (non-anonymous) bearer token is
+        // present. Anonymous requests are left untouched and proceed (e.g. public-repo reads);
+        // unsupported grant types or hydration errors never block the request — downstream access
+        // control makes the final decision.
+        Authentication protocolAuth = SecurityContextHolder.getContext().getAuthentication();
+        if (protocolAuth != null && protocolAuth.isAuthenticated()
+            && !(protocolAuth instanceof AnonymousAuthenticationToken)) {
+          try {
+            holdAuthPrincipal(request, principal, protocolAuth);
+            setPrincipalTenantId(principal, request);
+          } catch (Exception e) {
+            log.warn("Best-effort principal hydration failed for {}, proceeding anonymously: {}",
+                request.getRequestURI(), e.getMessage());
+          }
+        }
         chain.doFilter(request, response);
         return;
       }

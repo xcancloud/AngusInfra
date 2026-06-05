@@ -27,6 +27,7 @@ import org.springdoc.core.models.GroupedOpenApi;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 import org.springdoc.webmvc.api.OpenApiWebMvcResource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -169,6 +170,57 @@ public class OpenApiAutoConfigurer {
     }
     return openApi;
   }
+
+  @Bean
+  public GroupedOpenApi rawApi(ApplicationInfo applicationInfo,
+      FiltersOperationCustomizer filtersOperationCustomizer,
+      ObjectProvider<RawApiDocCustomizer> rawApiDocCustomizer) {
+    GroupedOpenApi.Builder builder;
+    if (applicationInfo.isPrivateEdition()) {
+      // Private edition
+      builder = GroupedOpenApi.builder()
+          .displayName("/** (Private Edition Raw Api Document)")
+          .group("raw")
+          .pathsToMatch("/**")
+          .pathsToExclude("/api/v1/**", "/innerapi/v1/**", "/openapi2p/v1/**", "/pubapi/v1/**")
+          // Exclude cloud service edition apis
+          .addOpenApiMethodFilter(notCloudServiceEditionFilter())
+          .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
+          .addOperationCustomizer(filtersOperationCustomizer);
+    } else {
+      // Cloud service edition
+      builder = GroupedOpenApi.builder()
+          .displayName("/** (CloudService Edition Raw Api Document)")
+          .group("raw")
+          .pathsToMatch("/**")
+          .pathsToExclude("/api/v1/**", "/innerapi/v1/**", "/openapi2p/v1/**", "/pubapi/v1/**")
+          // Exclude privatized edition apis
+          .addOpenApiMethodFilter(notPrivateServiceEditionFilter())
+          .addOpenApiCustomizer(removeDefaultResponses())
+          .addOpenApiCustomizer(sortTagsAlphabetically())
+          .addOperationCustomizer(filtersOperationCustomizer);
+    }
+    // Optional extension point: the consuming application may provide a
+    // RawApiDocCustomizer bean to give the raw group its own independent
+    // OpenAPI Info/description (e.g. an artifact protocol API document).
+    rawApiDocCustomizer.ifAvailable(builder::addOpenApiCustomizer);
+    return builder.build();
+  }
+
+  /**
+   * Optional extension point for customizing the <b>raw</b> group's OpenAPI document independently
+   * (its own {@code Info}, description, external docs, etc.).
+   *
+   * <p>The raw group aggregates every path that is not under {@code /api}, {@code /innerapi},
+   * {@code /openapi2p} or {@code /pubapi}. A consuming application can declare a single bean of this
+   * type to override the shared global {@code Info} for this group only, without affecting the other
+   * groups. When no such bean exists, the raw group keeps the shared global document unchanged.</p>
+   */
+  public interface RawApiDocCustomizer extends OpenApiCustomizer {
+
+  }
+
 
   private void addSelfHostServer(ApplicationInfo applicationInfo, OpenAPI openAPI) {
     String url = String.format("http://%s", applicationInfo.getInstanceId());

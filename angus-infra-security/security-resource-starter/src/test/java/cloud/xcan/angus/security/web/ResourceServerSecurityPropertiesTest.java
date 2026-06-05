@@ -17,15 +17,15 @@ import org.springframework.security.oauth2.server.resource.web.DefaultBearerToke
 class ResourceServerSecurityPropertiesTest {
 
   @Test
-  void allowUriQueryToken_defaultsToTrue_forBackwardCompatibility() {
-    assertThat(new ResourceServerSecurityProperties().isAllowUriQueryToken()).isTrue();
+  void allowUriQueryToken_defaultsToFalse_perRfc6750SecureDefault() {
+    assertThat(new ResourceServerSecurityProperties().isAllowUriQueryToken()).isFalse();
   }
 
   @Test
   void allowUriQueryToken_isMutable() {
     ResourceServerSecurityProperties props = new ResourceServerSecurityProperties();
-    props.setAllowUriQueryToken(false);
-    assertThat(props.isAllowUriQueryToken()).isFalse();
+    props.setAllowUriQueryToken(true);
+    assertThat(props.isAllowUriQueryToken()).isTrue();
   }
 
   @Test

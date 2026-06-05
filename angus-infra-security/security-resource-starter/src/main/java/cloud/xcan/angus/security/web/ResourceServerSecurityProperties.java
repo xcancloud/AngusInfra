@@ -10,19 +10,19 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * additionally accepts the access token via the {@code ?access_token=} URL query parameter
  * (Spring's {@code DefaultBearerTokenResolver#setAllowUriQueryParameter(true)}). RFC 6750 §2.3
  * discourages this carrier because the token then leaks into access logs, reverse-proxy logs and
- * {@code Referer} headers. The default stays {@code true} for backward compatibility with services
- * that rely on query-parameter tokens (e.g. browser download / preview links); security-sensitive
- * services such as the artifact repository opt out by setting it to {@code false}.</p>
+ * {@code Referer} headers. The default is therefore {@code false} (the RFC-recommended secure
+ * default); services that still rely on query-parameter tokens (e.g. legacy browser download /
+ * preview links) opt back in by setting it to {@code true}.</p>
  */
 @ConfigurationProperties(prefix = "angus.security.resource")
 public class ResourceServerSecurityProperties {
 
   /**
    * Whether the access token may be supplied via the {@code ?access_token=} URL query parameter.
-   * Default {@code true} (backward compatible). Set to {@code false} to follow the RFC 6750 §2.3
-   * recommendation and keep tokens out of URLs / access logs.
+   * Default {@code false} per the RFC 6750 §2.3 recommendation (keeps tokens out of URLs / access
+   * logs). Set to {@code true} to restore the legacy query-parameter carrier.
    */
-  private boolean allowUriQueryToken = true;
+  private boolean allowUriQueryToken = false;
 
   public boolean isAllowUriQueryToken() {
     return allowUriQueryToken;

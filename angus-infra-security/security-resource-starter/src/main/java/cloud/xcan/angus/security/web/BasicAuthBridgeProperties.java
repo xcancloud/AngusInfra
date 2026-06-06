@@ -40,6 +40,23 @@ public class BasicAuthBridgeProperties {
    */
   private List<String> tokenHeaders = new ArrayList<>();
 
+  /**
+   * Ant-style request-path patterns for which the bridge is skipped, i.e. the {@code Authorization:
+   * Basic} password and token headers are NOT converted into a bearer token. This is required for
+   * artifact <b>login/token</b> endpoints (npm {@code .../-/user/...}, docker {@code .../v2/token}),
+   * where the client sends the real <i>account + password</i> as Basic credentials to be exchanged
+   * by the endpoint itself; converting them into a bearer token would make the resource server
+   * introspect the password as an opaque token and reject the request with {@code invalid_token}
+   * before the login handler ever runs.
+   *
+   * <p>Patterns are matched with {@link org.springframework.util.AntPathMatcher} against the request
+   * URI; leading {@code /**} makes them context-path agnostic. Defaults cover the npm and docker
+   * login endpoints. Checked only when {@link #enabled} is {@code true}.</p>
+   */
+  private List<String> excludePaths = new ArrayList<>(List.of(
+      "/**/-/user/**",
+      "/**/v2/token"));
+
   public boolean isEnabled() {
     return enabled;
   }
@@ -62,5 +79,13 @@ public class BasicAuthBridgeProperties {
 
   public void setTokenHeaders(List<String> tokenHeaders) {
     this.tokenHeaders = tokenHeaders;
+  }
+
+  public List<String> getExcludePaths() {
+    return excludePaths;
+  }
+
+  public void setExcludePaths(List<String> excludePaths) {
+    this.excludePaths = excludePaths;
   }
 }

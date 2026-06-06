@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 
 /**
@@ -36,6 +37,8 @@ public class BasicToBearerTokenResolver implements BearerTokenResolver {
   private final boolean enabled;
   private final boolean acceptBasicPassword;
   private final List<String> tokenHeaders;
+  private final List<String> excludePaths;
+  private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
   public BasicToBearerTokenResolver(DefaultBearerTokenResolver delegate,
       BasicAuthBridgeProperties properties) {
@@ -43,6 +46,7 @@ public class BasicToBearerTokenResolver implements BearerTokenResolver {
     this.enabled = properties.isEnabled();
     this.acceptBasicPassword = properties.isAcceptBasicPassword();
     this.tokenHeaders = properties.getTokenHeaders();
+    this.excludePaths = properties.getExcludePaths();
   }
 
   @Override
@@ -55,11 +59,32 @@ public class BasicToBearerTokenResolver implements BearerTokenResolver {
     if (!enabled) {
       return null;
     }
+    // Login/token endpoints exchange real account+password themselves; never bridge their Basic
+    // credentials into a bearer token, otherwise introspection rejects them with invalid_token.
+    if (isExcluded(request)) {
+      return null;
+    }
     String fromHeader = resolveFromTokenHeaders(request);
     if (fromHeader != null) {
       return fromHeader;
     }
     return resolveFromBasicPassword(request);
+  }
+
+  private boolean isExcluded(HttpServletRequest request) {
+    if (excludePaths == null || excludePaths.isEmpty()) {
+      return false;
+    }
+    String uri = request.getRequestURI();
+    if (uri == null) {
+      return false;
+    }
+    for (String pattern : excludePaths) {
+      if (StringUtils.hasText(pattern) && pathMatcher.match(pattern, uri)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private String resolveFromTokenHeaders(HttpServletRequest request) {

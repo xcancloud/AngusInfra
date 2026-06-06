@@ -36,14 +36,14 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
   // @formatter:off
   public static final String DEF_USERS_BY_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
-      + "id, first_name, last_name, full_name, sys_admin, to_user, email, phone, "
+      + "id, first_name, last_name, full_name, sys_admin, phone, email, "
       + "password_expired_date, last_modified_password_date, expired_date, "
       + "tenant_id, tenant_name, default_language, default_time_zone "
       + "FROM oauth2_user WHERE username = ? OR phone = ? OR email = ?";
 
   public static final String DEF_USERS_BY_COMPOSITE_ACCOUNT_QUERY =
       "SELECT username, password, enabled, account_non_expired, account_non_locked, credentials_non_expired,"
-          + "id, first_name, last_name, full_name,sys_admin, to_user, email, phone, "
+          + "id, first_name, last_name, full_name,sys_admin, phone, email, "
           + "password_expired_date, last_modified_password_date, expired_date, "
           + "tenant_id, tenant_name, default_language, default_time_zone "
           + "FROM oauth2_user WHERE id = ? AND (username = ? OR phone = ? OR email = ?)";
@@ -170,9 +170,9 @@ public class JdbcUserAuthoritiesDaoImpl extends JdbcDaoSupport implements
     String tenantName = rs.getString(18);
     String defaultLanguage = rs.getString(19);
     String defaultTimeZone = rs.getString(20);
-    return new CustomOAuth2User(username, password, enabled, accountNonExpired, accountNonLocked,
-        credentialsNonExpired, AuthorityUtils.NO_AUTHORITIES, id, firstName, lastName, fullName,
-        sysAdmin, phone, email, passwordExpiredDate,
+    return new CustomOAuth2User(username, password, enabled, accountNonExpired,
+        credentialsNonExpired, accountNonLocked, AuthorityUtils.NO_AUTHORITIES, id, firstName,
+        lastName, fullName, sysAdmin, phone, email, passwordExpiredDate,
         lastModifiedPasswordDate, expiredDate, tenantId, tenantName,
         defaultLanguage, defaultTimeZone);
   }

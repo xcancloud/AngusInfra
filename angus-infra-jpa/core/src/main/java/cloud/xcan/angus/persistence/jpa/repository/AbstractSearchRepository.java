@@ -420,12 +420,29 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     }
     if (strValue.indexOf("+") > 0 || strValue.indexOf("-") > 0 || strValue.indexOf("*") > 0
         || strValue.indexOf(">") > 0 || strValue.indexOf("<") > 0) {
-      // 含 + - * < > 等特殊字符（如 CVE-2019-14697 中的连字符）时，若仅用双引号包裹，
-      // MySQL 默认 sql_mode（无 ANSI_QUOTES）下双引号会被当作 SQL 字符串定界符，全文引擎实际
-      // 收到裸串，其中的 - 会被 BOOLEAN MODE 解析为排除(NOT)操作符，命中大量无关结果。
-      // 改为「单引号包双引号」的短语形式：外层单引号是 SQL 字符串字面量，内层双引号令全文引擎
-      // 按连续序列精确匹配，特殊字符作为普通字符处理。先去除内部单引号防止破坏字面量/注入。
-      return "'\"" + RegExUtils.removeAll(strValue, "'") + "\"'";
+      // 含 + - * < > 等特殊字符（如 CVE-2019-14697 中的连字符）时：
+      // 1) 若直接用双引号包裹，MySQL 默认 sql_mode（无 ANSI_QUOTES）下双引号会被当作 SQL 字符串
+      //    定界符，全文引擎实际收到裸串，其中的 - 会被 BOOLEAN MODE 解析为排除(NOT)操作符，
+      //    命中大量无关结果；
+      // 2) 若改用 '"CVE-2019-14697"' 这种双引号短语形式，ngram 解析器无法跨连字符等分隔符构建
+      //    短语，导致结果为空。
+      // 因此将特殊字符/布尔操作符统一替换为空格，切分为子词，每个子词前加 + 表示「必须包含」。
+      // 在 ngram BOOLEAN MODE 下，各子词均需连续匹配，既能精确命中又不会因分隔符产生空结果。
+      // 先去除单引号与反斜杠，防止破坏 SQL 字符串字面量或注入。
+      String cleaned = strValue.replace("'", "").replace("\\", "");
+      String[] tokens = cleaned.split("[\\s+\\-*<>~@()\"]+");
+      StringBuilder boolExpr = new StringBuilder();
+      for (String token : tokens) {
+        if (!token.isEmpty()) {
+          boolExpr.append('+').append(token).append(' ');
+        }
+      }
+      String expr = boolExpr.toString().trim();
+      if (expr.isEmpty()) {
+        // 无有效子词时退回短语形式，避免空表达式匹配不到任何内容
+        return "'\"" + cleaned + "\"'";
+      }
+      return "'" + expr + "'";
     }
     strValue = RegExUtils.removeAll(strValue, "'");
     if (strValue.startsWith("/")) {

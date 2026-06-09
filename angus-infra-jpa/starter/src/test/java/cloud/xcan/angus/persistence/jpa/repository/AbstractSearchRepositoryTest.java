@@ -443,7 +443,10 @@ class AbstractSearchRepositoryTest {
   void detectFulltextSearchValue_branches() {
     assertThat(AbstractSearchRepository.detectFulltextSearchValue("")).isEmpty();
     assertThat(AbstractSearchRepository.detectFulltextSearchValue("\"x\"")).startsWith("\"");
-    assertThat(AbstractSearchRepository.detectFulltextSearchValue("a+b")).contains("\"");
+    // 含特殊字符时改为 token-AND 的布尔形式：+a +b（每个子词必须包含，分隔符替换为空格）
+    assertThat(AbstractSearchRepository.detectFulltextSearchValue("a+b")).isEqualTo("'+a +b'");
+    assertThat(AbstractSearchRepository.detectFulltextSearchValue("CVE-2019-14697"))
+        .isEqualTo("'+CVE +2019 +14697'");
     assertThat(AbstractSearchRepository.detectFulltextSearchValue("/a/b")).contains("+");
     assertThat(AbstractSearchRepository.detectFulltextSearchValue("plain")).contains("\"");
     assertThat(AbstractSearchRepository.detectFulltextSearchValue("it's ok")).contains("\"");

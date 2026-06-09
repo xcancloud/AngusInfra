@@ -420,7 +420,12 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
     }
     if (strValue.indexOf("+") > 0 || strValue.indexOf("-") > 0 || strValue.indexOf("*") > 0
         || strValue.indexOf(">") > 0 || strValue.indexOf("<") > 0) {
-      return "\"" + strValue + "\"";
+      // 含 + - * < > 等特殊字符（如 CVE-2019-14697 中的连字符）时，若仅用双引号包裹，
+      // MySQL 默认 sql_mode（无 ANSI_QUOTES）下双引号会被当作 SQL 字符串定界符，全文引擎实际
+      // 收到裸串，其中的 - 会被 BOOLEAN MODE 解析为排除(NOT)操作符，命中大量无关结果。
+      // 改为「单引号包双引号」的短语形式：外层单引号是 SQL 字符串字面量，内层双引号令全文引擎
+      // 按连续序列精确匹配，特殊字符作为普通字符处理。先去除内部单引号防止破坏字面量/注入。
+      return "'\"" + RegExUtils.removeAll(strValue, "'") + "\"'";
     }
     strValue = RegExUtils.removeAll(strValue, "'");
     if (strValue.startsWith("/")) {

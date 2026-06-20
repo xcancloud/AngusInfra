@@ -17,6 +17,7 @@ import feign.Retryer;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 import feign.codec.ErrorDecoder;
+import feign.QueryMapEncoder;
 import feign.form.spring.SpringFormEncoder;
 import java.io.IOException;
 import java.net.URL;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -69,16 +71,24 @@ public class FeignAutoConfigurer {
   }
 
   @Bean
+  @ConditionalOnMissingBean
+  public QueryMapEncoder queryMapEncoder() {
+    return new FilterQueryMapEncoder();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
   public Feign.Builder feignBuilder(Client client,
       Encoder feignEncoder, Decoder feignDecoder, ErrorDecoder errorDecoder,
-      Logger.Level feignLoggerLevel) {
+      Logger.Level feignLoggerLevel, Contract contract, QueryMapEncoder queryMapEncoder) {
     return Feign.builder()
         .client(client)
         .encoder(feignEncoder)
         .decoder(feignDecoder)
         .errorDecoder(errorDecoder)
         .logLevel(feignLoggerLevel)
-        .queryMapEncoder(new FilterQueryMapEncoder())
+        .contract(contract)
+        .queryMapEncoder(queryMapEncoder)
         /* new Retryer.Default(): The maximum number of retry requests is 5(maxAttempts),
          * the initial interval time is 100ms(period), the next interval time increases by 1.5 times,
          * and the maximum interval time between retries is 1s(maxPeriod) */

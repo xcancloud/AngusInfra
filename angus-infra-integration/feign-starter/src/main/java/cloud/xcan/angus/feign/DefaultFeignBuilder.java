@@ -2,7 +2,6 @@ package cloud.xcan.angus.feign;
 
 import feign.Feign;
 import feign.Retryer;
-import feign.querymap.BeanQueryMapEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
@@ -13,6 +12,8 @@ public class DefaultFeignBuilder {
   @Primary
   @Bean
   public Feign.Builder feignBuilder() {
-    return Feign.builder().queryMapEncoder(new BeanQueryMapEncoder()).retryer(Retryer.NEVER_RETRY);
+    return Feign.builder()
+        .queryMapEncoder(new FilterQueryMapEncoder())
+        .retryer(Retryer.NEVER_RETRY);
   }
 }

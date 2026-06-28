@@ -259,7 +259,7 @@ public class GlobalHoldFilter implements Filter {
 
   private void setResponseHeader(HttpServletResponse response, Principal principal) {
     response.setHeader(Header.SERVICE_ID, principal.getServiceCode());
-    response.setHeader(Header.INSTANCE_ID, principal.getInstanceId());
+    //response.setHeader(Header.INSTANCE_ID, principal.getInstanceId());
     response.setHeader(Header.REQUEST_ID, principal.getRequestId());
   }
 

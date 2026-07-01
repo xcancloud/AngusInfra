@@ -10,8 +10,9 @@ public final class FileNameSecurityUtil {
   private FileNameSecurityUtil() {
   }
 
-  // 允许的文件名字符（可根据需求调整）
-  private static final Pattern ALLOWED_CHARS = Pattern.compile("[a-zA-Z0-9._\\-]");
+  // 允许 Unicode 语言字符（包括中文、日文、韩文等）、数字、组合标记，以及常见安全文件名分隔符
+  private static final Pattern ALLOWED_CHARS = Pattern.compile(
+      "[\\p{L}\\p{N}\\p{M}\\p{IsHan}\\p{IsHiragana}\\p{IsKatakana}\\p{IsHangul}._\\-]");
 
   // 危险文件扩展名黑名单
   private static final String[] DANGEROUS_EXTENSIONS = {
@@ -35,13 +36,14 @@ public final class FileNameSecurityUtil {
 
     // 移除或替换危险字符
     StringBuilder safeName = new StringBuilder();
-    for (char c : fileName.toCharArray()) {
-      if (ALLOWED_CHARS.matcher(String.valueOf(c)).matches()) {
-        safeName.append(c);
+    fileName.codePoints().forEach(codePoint -> {
+      String character = new String(Character.toChars(codePoint));
+      if (ALLOWED_CHARS.matcher(character).matches()) {
+        safeName.append(character);
       } else {
         safeName.append('_'); // 用下划线替换危险字符
       }
-    }
+    });
 
     String cleanedName = safeName.toString();
 
@@ -133,7 +135,7 @@ public final class FileNameSecurityUtil {
 
     // 检查文件扩展名
     if (checkExtension && !isExtensionSafe(originalFileName)) {
-      throw new SecurityException("不安全的文件类型: " + originalFileName);
+      throw new SecurityException("Unsafe file type: " + originalFileName);
     }
 
     // 清理文件名

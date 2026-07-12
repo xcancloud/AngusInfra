@@ -53,27 +53,12 @@ spring:
 
 ***注意：***
 
-- 默认忽略保护的资源包括：
-
-```java
-  String[] AUTH_WHITELIST = {
-    // springboot actuator
-    "/actuator/**",
-    "/pubapi/**",
-    "/innerapi/**",
-    //"/openapi2p/**",
-    "/pubview/**",
-    // -- swagger ui
-    "/swagger-ui/*",
-    "/swagger-resources/**",
-    "/v2/api-docs",
-    "/v3/api-docs",
-    //"/webjars/**",
-    // oauth public endpoint
-    //"/oauth/user/login", "/oauth/authorize"
-    //"/oauth/token"
-};
-```
+- 默认需认证的资源：`/api/**`、`/openapi/**`、`/innerapi/**`、`/openapi2p/**`、`/view/**`。
+- 公开资源（`/pubapi/**`、`/pubview/**`）使用**独立更高优先级**的 `publicApiSecurityFilterChain`，且**不启用**
+  `oauth2ResourceServer`。仅靠 `permitAll()` 不够：若请求仍携带过期的
+  `Authorization: Bearer`，资源服务器 Bearer 过滤器仍会 introspection 并返回
+  `401 invalid_token`（`Provided token isn't active`）。公开链跳过 Bearer 认证后，可选身份解析应在业务层完成（如 AccessTokenParser）。
+- 应用可通过同名 bean `publicApiSecurityFilterChain` 覆盖默认公开链。
 
 #### 3. 获取 access_token 访问受保护 API
 

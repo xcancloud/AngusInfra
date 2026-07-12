@@ -1,6 +1,7 @@
 package cloud.xcan.angus.security;
 
 import static cloud.xcan.angus.spec.experimental.BizConstant.AUTH_RESOURCES;
+import static cloud.xcan.angus.spec.experimental.BizConstant.PUBLIC_RESOURCES;
 
 import cloud.xcan.angus.security.handler.CustomAccessDeniedHandler;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
@@ -10,10 +11,13 @@ import cloud.xcan.angus.security.web.BasicAuthBridgeProperties;
 import cloud.xcan.angus.security.web.BasicToBearerTokenResolver;
 import cloud.xcan.angus.security.web.ResourceServerSecurityProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,15 +36,34 @@ import org.springframework.security.web.access.intercept.AuthorizationFilter;
     ResourceServerSecurityProperties.class})
 public class OAuth2ResourceServerSecurityAutoConfigurer {
 
+  /**
+   * Public APIs ({@code /pubapi/**}, {@code /pubview/**}) must not run the OAuth2 resource-server
+   * Bearer filter. {@code permitAll()} alone is insufficient: when a request carries
+   * {@code Authorization: Bearer ...}, Spring Security still introspects the token and returns
+   * {@code 401 invalid_token} (e.g. expired) before authorization. A dedicated higher-priority
+   * chain without {@code oauth2ResourceServer} skips Bearer authentication entirely; optional
+   * identity enrichment belongs in application code (e.g. AccessTokenParser).
+   */
+  @Bean("publicApiSecurityFilterChain")
+  @Order(Ordered.HIGHEST_PRECEDENCE + 10)
+  @ConditionalOnMissingBean(name = "publicApiSecurityFilterChain")
+  public SecurityFilterChain publicApiSecurityFilterChain(HttpSecurity http) throws Exception {
+    http.securityMatcher(PUBLIC_RESOURCES)
+        .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+        .csrf(AbstractHttpConfigurer::disable);
+    http.headers(headers -> headers.frameOptions(FrameOptionsConfig::disable));
+    return http.build();
+  }
+
   @Bean("resourceServerSecurityFilterChain")
+  @Order(Ordered.HIGHEST_PRECEDENCE + 20)
   public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http,
       BearerTokenResolver bearerTokenResolver, AccessDeniedHandler accessDeniedHandler,
       AuthenticationEntryPoint authenticationEntryPoint,
       OpaqueTokenIntrospector opaqueTokenIntrospector, ObjectMapper objectMapper) throws Exception {
     http.authorizeHttpRequests(authorize -> authorize
-            //.requestMatchers("/**").permitAll() // Allow public access
             .requestMatchers(AUTH_RESOURCES).authenticated()
-            .anyRequest().permitAll())// Other requests require authentication
+            .anyRequest().permitAll())
         .addFilterAfter(new HoldPrincipalFilter(objectMapper), AuthorizationFilter.class)
         .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
             .bearerTokenResolver(bearerTokenResolver)

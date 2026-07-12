@@ -59,27 +59,13 @@ spring:
 
 ***Note:***
 
-- By default, the following resources are not protected:
-
-```java
-  String[] AUTH_WHITELIST = {
-    // springboot actuator
-    "/actuator/**",
-    "/pubapi/**",
-    "/innerapi/**",
-    //"/openapi2p/**",
-    "/pubview/**",
-    // -- swagger ui
-    "/swagger-ui/*",
-    "/swagger-resources/**",
-    "/v2/api-docs",
-    "/v3/api-docs",
-    //"/webjars/**",
-    // oauth public endpoint
-    //"/oauth/user/login", "/oauth/authorize"
-    //"/oauth/token"
-};
-```
+- Authenticated by default: `/api/**`, `/openapi/**`, `/innerapi/**`, `/openapi2p/**`, `/view/**`.
+- Public resources (`/pubapi/**`, `/pubview/**`) use a **higher-priority** `publicApiSecurityFilterChain`
+  **without** `oauth2ResourceServer`. `permitAll()` alone is not enough: a present but expired
+  `Authorization: Bearer` token is still introspected and rejected with `401 invalid_token`
+  (`Provided token isn't active`). Optional identity enrichment belongs in application code
+  (e.g. AccessTokenParser).
+- Apps may override the default public chain by declaring a bean named `publicApiSecurityFilterChain`.
 
 ```bash
 curl -X POST http://localhost:9090/oauth2/token \

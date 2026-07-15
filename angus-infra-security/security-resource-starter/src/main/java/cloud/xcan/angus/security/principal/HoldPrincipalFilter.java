@@ -28,6 +28,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
 import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_USER_ID;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNull;
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
@@ -206,8 +207,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setUserId(-1L).setFullName(nonNull(clientName) ? clientName.toString() : null/*default*/) // SystemToken[xxx]
           .setUsername(clientId.toString()/*default*/).setSysAdmin(false)
-          .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
-          .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null);
+          .setUserAgent(resolveRequestAgent(userAgent, principal, request))
+          .setRemoteAddress(resolveRemoteAddress(remoteAddr, principal, request));
       if (log.isDebugEnabled()) {
         log.debug("Hold client principal info : {}", principal);
       }
@@ -251,8 +252,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setFullName(nonNull(fullName) ? fullName.toString() : null)
           .setUsername(nonNull(username) ? username.toString() : null)
           .setSysAdmin(nonNull(sysAdmin) && Boolean.parseBoolean(sysAdmin.toString()))
-          .setUserAgent(nonNull(userAgent) ? userAgent.toString() : null)
-          .setRemoteAddress(nonNull(remoteAddr) ? remoteAddr.toString() : null)
+          .setUserAgent(resolveRequestAgent(userAgent, principal, request))
+          .setRemoteAddress(resolveRemoteAddress(remoteAddr, principal, request))
           .setPermissions(isNull(permissions) ? Collections.emptyList()
               : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()))
           .setUserToken(nonNull(isUserToken) && Boolean.parseBoolean(isUserToken.toString()));
@@ -273,6 +274,45 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       authorization = BEARER_TOKEN_TYPE + " " + request.getParameter(ACCESS_TOKEN);
     }
     return authorization;
+  }
+
+  /**
+   * introspection claim 优先；缺失时保留 GlobalHoldFilter 已写入的 Principal 值，再回退 HTTP Header。
+   * 避免 claim 为空时把已解析的 User-Agent 覆盖成 null。
+   */
+  private static String resolveRequestAgent(Object claim, Principal principal,
+      HttpServletRequest request) {
+    if (nonNull(claim) && isNotEmpty(claim.toString())) {
+      return claim.toString();
+    }
+    if (isNotEmpty(principal.getUserAgent())) {
+      return principal.getUserAgent();
+    }
+    String header = request.getHeader("User-Agent");
+    return isNotEmpty(header) ? header : null;
+  }
+
+  /**
+   * introspection claim 优先；缺失时保留 GlobalHoldFilter 已写入的 Principal 值，再回退代理头 / remoteAddr。
+   */
+  private static String resolveRemoteAddress(Object claim, Principal principal,
+      HttpServletRequest request) {
+    if (nonNull(claim) && isNotEmpty(claim.toString())) {
+      return claim.toString();
+    }
+    if (isNotEmpty(principal.getRemoteAddress())) {
+      return principal.getRemoteAddress();
+    }
+    String forwarded = request.getHeader("X-Forwarded-For");
+    if (isNotEmpty(forwarded)) {
+      int comma = forwarded.indexOf(',');
+      return (comma > 0 ? forwarded.substring(0, comma) : forwarded).trim();
+    }
+    String realIp = request.getHeader("X-Real-IP");
+    if (isNotEmpty(realIp)) {
+      return realIp.trim();
+    }
+    return request.getRemoteAddr();
   }
 
   public void setResponseHeader(HttpServletResponse response, Principal principal) {

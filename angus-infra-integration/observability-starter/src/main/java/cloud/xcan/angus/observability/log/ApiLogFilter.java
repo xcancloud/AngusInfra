@@ -96,6 +96,14 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
       return;
     }
 
+    // SSE / 长连接绝不能走 ContentCachingResponseWrapper：
+    // doFilter 在 Controller 返回 SseEmitter 后即结束，此时缓存仍为空便 copyBodyToResponse，
+    // 后续 token 只写入包装器缓存，浏览器 EventStream 永远收不到帧（对话落库却无流式 UI）。
+    if (isStreamingPath(path, request)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     boolean isSystemAccess = PrincipalContext.isSystemAccess();
     if (isSystemAccess && ignoreSystemLog(path)) {
       filterChain.doFilter(request, response);
@@ -322,6 +330,19 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     } else {
       return new ContentCachingResponseWrapper(response);
     }
+  }
+
+  /**
+   * 流式接口判定：路径以 /stream 结尾、OpenAI/分享 completions，或 Accept 声明 SSE。
+   */
+  static boolean isStreamingPath(String path, HttpServletRequest request) {
+    if (path != null) {
+      if (path.endsWith("/stream") || path.endsWith("/chat/completions")) {
+        return true;
+      }
+    }
+    String accept = request.getHeader(HttpHeaders.ACCEPT);
+    return accept != null && accept.contains("text/event-stream");
   }
 }
 

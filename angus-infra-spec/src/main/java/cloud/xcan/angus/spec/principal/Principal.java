@@ -36,7 +36,7 @@ public class Principal implements Serializable {
   private boolean authenticated = false;
 
   /**
-   * Tenant level setting
+   * User-level default language (from oauth2_user / token claim; request locale may set it first).
    */
   private SupportedLanguage defaultLanguage;
 

@@ -75,7 +75,13 @@ public class OAuth2AuthorizationServerAutoConfigurer {
   private static final String ISSUER = "https://www.xcan.cloud";
   private static final String CUSTOM_CONSENT_PAGE_URI = "/oauth2/consent";
 
+  /**
+   * Must run before {@code resourceServerSecurityFilterChain} (any-request). Without an explicit
+   * {@link Order}, this bean defaults to {@link Ordered#LOWEST_PRECEDENCE} and Spring Security
+   * rejects startup because the resource-server chain already matches every request.
+   */
   @Bean("authorizationServerSecurityFilterChain")
+  @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain authorizationServerSecurityFilterChain(
       HttpSecurity http, CustomOAuth2ClientRepository registeredClientRepository,
       AuthorizationServerSettings authorizationServerSettings,

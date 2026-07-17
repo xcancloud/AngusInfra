@@ -44,10 +44,10 @@ import org.springframework.stereotype.Component;
 @JobDefinition(
     name        = "job-execution-log-cleanup-job",
     group       = "infra",
-    cron        = "0 0 * * * *",   // 每小时整点触发
+    cron        = "0 0 * * * *",   // every hour on the hour
     maxRetryCount = 1,
-    logRetentionDays = -1,          // 清理 job 自身日志永久保留，避免自我清理
-    description = "调度执行日志清理任务，按各 job 配置的 logRetentionDays 删除过期执行记录"
+    logRetentionDays = -1,          // keep this cleanup job logs forever to avoid self-cleanup
+    description = "Cleanup job execution logs by each job logRetentionDays setting"
 )
 @RequiredArgsConstructor
 public class JobExecutionLogCleanupJob implements JobExecutor {
@@ -78,20 +78,20 @@ public class JobExecutionLogCleanupJob implements JobExecutor {
       try {
         int deleted = logRepository.deleteByJobIdAndStartTimeBefore(jobId, deadline);
         if (deleted > 0) {
-          log.info("清理 job[id={}] 过期执行日志 {} 条（保留 {} 天，截止 {}）",
-              jobId, deleted, effectiveDays, deadline);
+          log.info("Deleted {} expired execution log(s) for job[id={}] (retention {} days, cutoff {})",
+              deleted, jobId, effectiveDays, deadline);
           totalDeleted += deleted;
         }
       } catch (Exception e) {
         // 单个 job 清理失败不影响其他 job，记录后继续
-        log.error("清理 job[id={}] 执行日志失败", jobId, e);
+        log.error("Failed to clean execution logs for job[id={}]", jobId, e);
         errorCount++;
       }
     }
 
-    String summary = String.format("共扫描 %d 个 job，删除过期日志 %d 条，失败 %d 个",
+    String summary = String.format("Scanned %d job(s), deleted %d expired log(s), failed %d",
         jobs.size(), totalDeleted, errorCount);
-    log.info("调度日志清理完成：{}", summary);
+    log.info("Job execution log cleanup finished: {}", summary);
 
     if (errorCount == 0) {
       return JobExecutionResult.builder()

@@ -8,11 +8,16 @@ import static java.util.Objects.nonNull;
 
 import cloud.xcan.angus.remote.MessageJoinField;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,7 +35,8 @@ import org.aspectj.lang.annotation.Pointcut;
  * Optional AOP assembly: after a {@link MessageJoin} method returns, fill VO fields annotated with
  * {@link MessageJoinField} via {@link I18nMessageResolver}.
  *
- * <p>Missing {@code @MessageJoinField} is a no-op (does not throw).</p>
+ * <p>Supports nested heterogeneous VOs and same-type trees (e.g. menu {@code children}). Missing
+ * {@code @MessageJoinField} is a no-op (does not throw).</p>
  *
  * @author XiaoLong Liu
  */
@@ -97,56 +103,103 @@ public class I18nMessageAspect extends AbstractJoinAspect {
       return;
     }
 
-    // Flatten nested same-type trees (e.g. menu.children) so child nodes are also filled
-    Object[] flatVos = flattenSameTypeTree(voArray);
-    Map<String, MessageJoinField> joinFields = findAndCacheJoinInfo(flatVos[0]);
-    if (isEmpty(joinFields)) {
-      // No annotated fields — no-op (safe for mistakenly annotated methods)
+    // Group root + nested VO instances by concrete class (tree + heterogeneous nesting)
+    Map<Class<?>, List<Object>> vosByType = collectVosByType(voArray);
+    if (isEmpty(vosByType)) {
       return;
     }
 
-    Class<?> firstClass = flatVos[0].getClass();
-    for (Entry<String, MessageJoinField> entry : joinFields.entrySet()) {
-      String fieldName = entry.getKey();
-      MessageJoinField joinMeta = entry.getValue();
-      fillField(flatVos, firstClass, fieldName, joinMeta, locale);
+    for (Entry<Class<?>, List<Object>> typeEntry : vosByType.entrySet()) {
+      Class<?> voClass = typeEntry.getKey();
+      List<Object> instances = typeEntry.getValue();
+      if (isEmpty(instances)) {
+        continue;
+      }
+      Map<String, MessageJoinField> joinFields = findAndCacheJoinInfo(voClass);
+      if (isEmpty(joinFields)) {
+        continue;
+      }
+      Object[] flatVos = instances.toArray();
+      for (Entry<String, MessageJoinField> entry : joinFields.entrySet()) {
+        fillField(flatVos, voClass, entry.getKey(), entry.getValue(), locale);
+      }
     }
   }
 
   /**
-   * Collect root VOs and nested collection elements of the same runtime class (tree nodes).
+   * Collect nestable bean instances under roots, grouped by runtime class.
+   *
+   * <p>Walks object fields and collection/array elements; skips JDK types. Uses identity visit
+   * tracking to avoid cycles.</p>
    */
-  private static Object[] flattenSameTypeTree(Object[] roots) throws IllegalAccessException {
-    Class<?> type = roots[0].getClass();
-    List<Object> flat = new ArrayList<>();
-    Set<Object> visited = new HashSet<>();
+  private Map<Class<?>, List<Object>> collectVosByType(Object[] roots)
+      throws IllegalAccessException {
+    Map<Class<?>, List<Object>> byType = new LinkedHashMap<>();
+    Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
     for (Object root : roots) {
-      collectSameTypeNodes(root, type, flat, visited);
+      collectNested(root, byType, visited);
     }
-    return flat.toArray();
+    return byType;
   }
 
-  private static void collectSameTypeNodes(Object node, Class<?> type, List<Object> flat,
-      Set<Object> visited) throws IllegalAccessException {
-    if (node == null || !type.isAssignableFrom(node.getClass()) || !visited.add(node)) {
+  private void collectNested(Object node, Map<Class<?>, List<Object>> byType, Set<Object> visited)
+      throws IllegalAccessException {
+    if (node == null || !visited.add(node)) {
       return;
     }
-    flat.add(node);
-    for (Field field : FieldUtils.getAllFields(node.getClass())) {
-      if (!Collection.class.isAssignableFrom(field.getType())) {
+
+    if (node instanceof Collection<?> collection) {
+      for (Object element : collection) {
+        collectNested(element, byType, visited);
+      }
+      return;
+    }
+
+    Class<?> clazz = node.getClass();
+    if (clazz.isArray()) {
+      if (!clazz.getComponentType().isPrimitive()) {
+        int length = Array.getLength(node);
+        for (int i = 0; i < length; i++) {
+          collectNested(Array.get(node, i), byType, visited);
+        }
+      }
+      return;
+    }
+
+    if (!isNestableBean(clazz)) {
+      return;
+    }
+
+    byType.computeIfAbsent(clazz, key -> new ArrayList<>()).add(node);
+
+    for (Field field : FieldUtils.getAllFields(clazz)) {
+      if (shouldSkipField(field)) {
         continue;
       }
       field.setAccessible(true);
-      Collection<?> children = (Collection<?>) field.get(node);
-      if (isEmpty(children)) {
-        continue;
-      }
-      for (Object child : children) {
-        if (child != null && type.isAssignableFrom(child.getClass())) {
-          collectSameTypeNodes(child, type, flat, visited);
-        }
-      }
+      collectNested(field.get(node), byType, visited);
     }
+  }
+
+  private static boolean shouldSkipField(Field field) {
+    int modifiers = field.getModifiers();
+    return Modifier.isStatic(modifiers) || Modifier.isTransient(modifiers);
+  }
+
+  /**
+   * Candidate VO / DTO beans: non-JDK, non-enum, non-primitive wrappers.
+   */
+  private static boolean isNestableBean(Class<?> clazz) {
+    if (clazz.isPrimitive() || clazz.isEnum() || clazz.isInterface() || clazz.isAnnotation()) {
+      return false;
+    }
+    String name = clazz.getName();
+    return !name.startsWith("java.")
+        && !name.startsWith("javax.")
+        && !name.startsWith("jakarta.")
+        && !name.startsWith("kotlin.")
+        && !name.startsWith("sun.")
+        && !name.startsWith("com.sun.");
   }
 
   private void fillField(Object[] voArray, Class<?> voClass, String fieldName,
@@ -224,8 +277,7 @@ public class I18nMessageAspect extends AbstractJoinAspect {
     return keyField;
   }
 
-  private Map<String, MessageJoinField> findAndCacheJoinInfo(Object first) {
-    Class<?> clazz = first.getClass();
+  private Map<String, MessageJoinField> findAndCacheJoinInfo(Class<?> clazz) {
     Map<String, MessageJoinField> cached = cacheFieldNameMap.get(clazz);
     if (cached != null) {
       return cached;
@@ -250,19 +302,23 @@ public class I18nMessageAspect extends AbstractJoinAspect {
 
   private boolean isDefaultLocale(Locale locale) {
     String configured = properties.getDefaultLocale();
-    if (isBlank(configured)) {
+    if (isBlank(configured) || locale == null) {
       return false;
     }
     String tag = DefaultI18nMessageResolver.toLanguageTag(locale);
-    if (configured.equals(tag)) {
+    if (configured.equals(tag) || configured.equals(locale.toString())) {
       return true;
     }
-    // Also accept SupportedLanguage enum equality
-    try {
-      SupportedLanguage current = SupportedLanguage.safeLanguage(locale);
-      return configured.equals(current.getValue());
-    } catch (Exception ignore) {
-      return false;
+    // Match SupportedLanguage only when the locale actually maps to a known value.
+    // Do NOT use safeLanguage() here — it falls back to zh_CN for en_US and would
+    // incorrectly skip MessageJoin for English locales.
+    if (SupportedLanguage.contain(tag)) {
+      return configured.equals(tag);
     }
+    if (SupportedLanguage.contain(locale.toString())) {
+      return configured.equals(locale.toString());
+    }
+    String language = locale.getLanguage();
+    return SupportedLanguage.contain(language) && configured.equals(language);
   }
 }

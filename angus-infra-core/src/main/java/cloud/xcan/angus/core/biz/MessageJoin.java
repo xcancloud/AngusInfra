@@ -13,7 +13,8 @@ import java.lang.annotation.Target;
  * <p>Prefer injecting {@link I18nMessageResolver} in assemblers for new code. Use this annotation
  * when a thin facade should assemble translated display text automatically.</p>
  *
- * <p>If the return type has no {@code @MessageJoinField}, the aspect no-ops.</p>
+ * <p>Nested VOs (object fields, lists, and same-type trees such as menu children) are scanned
+ * recursively. Types without {@code @MessageJoinField} are skipped (no-op).</p>
  *
  * @author XiaoLong Liu
  * @see I18nMessageResolver

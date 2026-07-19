@@ -242,9 +242,10 @@ public PageResult<RoleVo> list(RoleFindDto dto) {
 - 没有 `@MessageJoinField` → Aspect **静默跳过**（不再抛异常）。
 - 字段 `type` 为空 → 仍抛异常（配置错误）。
 - 扫描含父类字段（`getAllFields`）。
-- 同一集合内元素类型须一致（与 `NameJoin` 相同）。
-- **树形 VO**（如菜单 `children`）：Aspect 会扁平化同类型嵌套节点后再填充，子节点同样生效。
+- **异构嵌套 VO**（如 `UserCurrentDetailVo.accessApp` / `authApps` / `accessAppFuncTree`）：递归收集各具体类型实例，按类型分别填充。
+- **树形 VO**（如菜单 `children`）：同上递归收集，子节点同样生效。
 - 若 VO 含 `permission.menuName`，在填充 `name` 时会同步更新该字段。
+- 跳过 JDK / Jakarta 类型，并用对象身份去重，避免环引用。
 
 ### 5.5 种子数据示例
 

@@ -1,19 +1,31 @@
 package cloud.xcan.angus.core.biz;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
+/**
+ * Persistence port for config i18n messages. Implemented by application Spring Data repositories.
+ *
+ * @author XiaoLong Liu
+ */
 public interface I18nMessageJoinRepository<T extends I18nMessage> {
 
   /**
-   * After enabling the cache, use it to query all messages of type
+   * Load all messages of a type (used to warm the type-level Caffeine cache).
    */
   List<T> findByType(String type);
 
   /**
-   * Use after closing the cache. The query needs to use message
+   * Load messages by type + language + stable keys (cache disabled / targeted load).
+   */
+  List<T> findByTypeAndLanguageAndMessageKeyIn(String type, String language,
+      Collection<String> messageKeys);
+
+  /**
+   * Legacy lookup by default display text. Prefer
+   * {@link #findByTypeAndLanguageAndMessageKeyIn(String, String, Collection)}.
    */
   List<T> findByTypeAndLanguageAndDefaultMessageIn(String type, String language,
-      Set<String> defaultMessage);
+      Collection<String> defaultMessages);
 
 }

@@ -9,6 +9,11 @@
 
 **AngusInfra** 是一个基于SpringBoot的快速开发基础框架。该框架旨在简化和加速多租户应用的开发过程，使开发者能够更高效地构建可扩展、安全且易于维护的服务端应用。
 
+## 文档
+
+- [数据库配置数据国际化（I18n Message）](docs/i18n-message/README_zh.md) —
+  [English](docs/i18n-message/README.md)
+
 ## 主要特点
 
 - 🌟 **OpenAPI支持**：支持并严格遵循 OpenAPI 规范，确保 API 开发和管理有广泛的社区支持。

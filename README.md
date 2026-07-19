@@ -11,6 +11,11 @@
 simplify and accelerate the development process of multi-tenant applications, enabling developers to
 build scalable, secure, and maintainable server-side applications more efficiently.
 
+## Documentation
+
+- [Database Config Data i18n (I18n Message)](docs/i18n-message/README.md) —
+  [中文](docs/i18n-message/README_zh.md)
+
 ## **Core Features**
 
 - 🌟 **OpenAPI Support**: Strict compliance with OpenAPI specifications ensures broad community

@@ -11,7 +11,13 @@ import cloud.xcan.angus.core.app.AppWorkspace;
 import cloud.xcan.angus.core.app.AppWorkspaceInit;
 import cloud.xcan.angus.core.app.ApplicationInit;
 import cloud.xcan.angus.core.app.check.CheckAppExpirationAspect;
+import cloud.xcan.angus.core.biz.DefaultI18nMessageResolver;
+import cloud.xcan.angus.core.biz.I18nMessage;
 import cloud.xcan.angus.core.biz.I18nMessageAspect;
+import cloud.xcan.angus.core.biz.I18nMessageCache;
+import cloud.xcan.angus.core.biz.I18nMessageJoinRepository;
+import cloud.xcan.angus.core.biz.I18nMessageProperties;
+import cloud.xcan.angus.core.biz.I18nMessageResolver;
 import cloud.xcan.angus.core.biz.JoinSupplier;
 import cloud.xcan.angus.core.biz.NameJoinAspect;
 import cloud.xcan.angus.core.exception.DefaultGlobalExceptionAdvice;
@@ -34,10 +40,12 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartProperties;
@@ -66,7 +74,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @AutoConfigureAfter(CommonAutoConfigurer.class)
 @ConditionalOnClass(WebMvcConfigurer.class)
 @EnableConfigurationProperties({ApplicationInfo.class, GlobalProperties.class,
-    MultipartProperties.class})
+    MultipartProperties.class, I18nMessageProperties.class})
 @ConditionalOnProperty(name = "angus.core.enabled", havingValue = "true", matchIfMissing = false)
 public class CoreAutoConfigurer implements WebMvcConfigurer {
 
@@ -129,13 +137,40 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
   }
 
   @Bean
-  public I18nMessageAspect i18nMessageAspect() {
-    return new I18nMessageAspect();
+  @ConditionalOnMissingBean
+  @ConditionalOnProperty(prefix = "angus.i18n.message", name = "enabled", havingValue = "true",
+      matchIfMissing = true)
+  public I18nMessageCache i18nMessageCache(I18nMessageProperties i18nMessageProperties) {
+    return new I18nMessageCache(i18nMessageProperties);
   }
 
   @Bean
-  public MessageEndpoint messageEndpoint() {
-    return new MessageEndpoint();
+  @ConditionalOnMissingBean(I18nMessageResolver.class)
+  @ConditionalOnProperty(prefix = "angus.i18n.message", name = "enabled", havingValue = "true",
+      matchIfMissing = true)
+  public I18nMessageResolver i18nMessageResolver(
+      ObjectProvider<I18nMessageJoinRepository<? extends I18nMessage>> messageRepositoryProvider,
+      I18nMessageCache i18nMessageCache,
+      I18nMessageProperties i18nMessageProperties) {
+    return new DefaultI18nMessageResolver(messageRepositoryProvider.getIfUnique(),
+        i18nMessageCache, i18nMessageProperties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  @ConditionalOnProperty(prefix = "angus.i18n.message", name = "enabled", havingValue = "true",
+      matchIfMissing = true)
+  public I18nMessageAspect i18nMessageAspect(I18nMessageResolver i18nMessageResolver,
+      I18nMessageProperties i18nMessageProperties) {
+    return new I18nMessageAspect(i18nMessageResolver, i18nMessageProperties);
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  @ConditionalOnProperty(prefix = "angus.i18n.message", name = "enabled", havingValue = "true",
+      matchIfMissing = true)
+  public MessageEndpoint messageEndpoint(I18nMessageResolver i18nMessageResolver) {
+    return new MessageEndpoint(i18nMessageResolver);
   }
 
   @Bean

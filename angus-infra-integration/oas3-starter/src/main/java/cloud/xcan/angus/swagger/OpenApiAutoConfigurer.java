@@ -9,6 +9,7 @@ import cloud.xcan.angus.core.spring.condition.CloudServiceEditionCondition;
 import cloud.xcan.angus.spec.annotations.CloudServiceEdition;
 import cloud.xcan.angus.spec.annotations.PrivateEdition;
 import cloud.xcan.angus.spec.experimental.Assert;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
@@ -18,6 +19,7 @@ import io.swagger.v3.oas.models.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -28,7 +30,6 @@ import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.webmvc.api.MultipleOpenApiWebMvcResource;
 import org.springdoc.webmvc.api.OpenApiWebMvcResource;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -43,9 +44,6 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @ConditionalOnProperty(name = {"springdoc.api-docs.enabled"}, matchIfMissing = true)
 //@EnableConfigurationProperties({SpringDocConfigProperties.class})
 public class OpenApiAutoConfigurer {
-
-  @Value("${springdoc.oauth2.token-url:http://localhost:9090/oauth2/token}")
-  private String oauth2TokenUrl;
 
   private static final List<String> ALLOWED_STATUS_CODES
       = Arrays.asList("200", "201", "204", "404");
@@ -69,10 +67,25 @@ public class OpenApiAutoConfigurer {
     OpenAPI openAPI = doc.getOpenApi();
     Assert.assertNotNull(openAPI, "OpenAPI config should not be null");
 
+    // OpenAPIService 会把空 Components 写回该共享 bean；若 schemas 为 null，
+    // springdoc 2.8.6 SpecPropertiesCustomizer 在合并时会 NPE（#2960）。
+    ensureComponentsSchemasMap(openAPI);
+
     if (!applicationInfo.isProdProfile()) {
       addSelfHostServer(applicationInfo, openAPI);
     }
     return openAPI;
+  }
+
+  private static void ensureComponentsSchemasMap(OpenAPI openAPI) {
+    Components components = openAPI.getComponents();
+    if (components == null) {
+      components = new Components();
+      openAPI.setComponents(components);
+    }
+    if (components.getSchemas() == null) {
+      components.setSchemas(new LinkedHashMap<>());
+    }
   }
 
   @Bean
@@ -233,59 +246,37 @@ public class OpenApiAutoConfigurer {
   }
 
   private OpenApiCustomizer addGlobalUserSecurityCustomizer() {
-    return openApi -> openApi
-        // Use existing opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_HTTP_NAME))
-        // Use OAuth2 opaque tokens for authentication
-        //.addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_OAUTH2_NAME))
-        .getComponents()
-        .addSecuritySchemes(SECURITY_SCHEME_USER_HTTP_NAME,
-            new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("opaque")
-                .description("Use existing opaque tokens for authentication")
-        )/*.addSecuritySchemes(SECURITY_SCHEME_USER_OAUTH2_NAME,
-            new SecurityScheme()
-                .type(Type.OAUTH2)
-                .scheme("bearer")
-                .bearerFormat("opaque")
-                .flows(new OAuthFlows()
-                    .password(new OAuthFlow()
-                        .tokenUrl(oauth2TokenUrl)
-                        .scopes(new Scopes()
-                            .addString("read", "Read Permission")
-                            .addString("write", "Write Permission"))))
-                .description("Use OAuth2 opaque tokens for authentication")
-        )*/;
+    return openApi -> {
+      ensureComponentsSchemasMap(openApi);
+      openApi
+          // Use existing opaque tokens for authentication
+          .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_USER_HTTP_NAME))
+          .getComponents()
+          .addSecuritySchemes(SECURITY_SCHEME_USER_HTTP_NAME,
+              new SecurityScheme()
+                  .type(SecurityScheme.Type.HTTP)
+                  .scheme("bearer")
+                  .bearerFormat("opaque")
+                  .description("Use existing opaque tokens for authentication")
+          );
+    };
   }
 
   private OpenApiCustomizer addGlobalSysSecurityCustomizer() {
-    return openApi -> openApi
-        // Use existing opaque tokens for authentication
-        .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_HTTP_NAME))
-        // Use OAuth2 opaque tokens for authentication
-        //.addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_OAUTH2_NAME))
-        .getComponents()
-        .addSecuritySchemes(SECURITY_SCHEME_SYS_HTTP_NAME,
-            new SecurityScheme()
-                .type(SecurityScheme.Type.HTTP)
-                .scheme("bearer")
-                .bearerFormat("opaque")
-                .description("Use existing opaque tokens for authentication")
-        )/*.addSecuritySchemes(SECURITY_SCHEME_SYS_OAUTH2_NAME,
-            new SecurityScheme()
-                .type(Type.OAUTH2)
-                .scheme("bearer")
-                .bearerFormat("opaque")
-                .flows(new OAuthFlows()
-                    .clientCredentials(new OAuthFlow()
-                        .tokenUrl(oauth2TokenUrl)
-                        .scopes(new Scopes()
-                            .addString("read", "Read Permission")
-                            .addString("write", "Write Permission"))))
-                .description("Use OAuth2 opaque tokens for authentication")
-        )*/;
+    return openApi -> {
+      ensureComponentsSchemasMap(openApi);
+      openApi
+          // Use existing opaque tokens for authentication
+          .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_SYS_HTTP_NAME))
+          .getComponents()
+          .addSecuritySchemes(SECURITY_SCHEME_SYS_HTTP_NAME,
+              new SecurityScheme()
+                  .type(SecurityScheme.Type.HTTP)
+                  .scheme("bearer")
+                  .bearerFormat("opaque")
+                  .description("Use existing opaque tokens for authentication")
+          );
+    };
   }
 
   private OpenApiCustomizer removeDefaultResponses() {

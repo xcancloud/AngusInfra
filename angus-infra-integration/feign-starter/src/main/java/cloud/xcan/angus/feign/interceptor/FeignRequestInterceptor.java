@@ -1,15 +1,16 @@
 package cloud.xcan.angus.feign.interceptor;
 
-import static cloud.xcan.angus.spec.SpecConstant.LOCALE_COOKIE_NAME;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.AUTHORIZATION;
-import static cloud.xcan.angus.spec.experimental.BizConstant.Header.COOKIE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.INVOKE_INSTANCE_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.INVOKE_SERVICE_ID;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.LANG;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.OPT_TENANT_ID;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REQUEST_ID;
+import static cloud.xcan.angus.spec.http.HttpRequestHeader.Accept_Language;
 
 import cloud.xcan.angus.api.enums.ApiType;
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
+import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
 import feign.RequestInterceptor;
@@ -64,7 +65,9 @@ public class FeignRequestInterceptor implements RequestInterceptor {
       }
     }
 
-    // 3. relay locale
-    template.header(COOKIE, LOCALE_COOKIE_NAME + "=" + LocaleContextHolder.getLocale());
+    // 3. relay locale — must match MultiSourceLocaleResolver (X-Lang / Accept-Language)
+    SupportedLanguage language = SupportedLanguage.safeLanguage(LocaleContextHolder.getLocale());
+    template.header(LANG, language.getValue());
+    template.header(Accept_Language.getValue(), language.toLanguageTag());
   }
 }

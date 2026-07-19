@@ -4,6 +4,7 @@ import static cloud.xcan.angus.spec.locale.SdfLocaleHolder.getLocale;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 
+import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -154,7 +155,10 @@ public class DefaultI18nMessageResolver implements I18nMessageResolver {
   }
 
   /**
-   * Exact locale tag → language → configured default locale.
+   * Exact SupportedLanguage tag → language family → configured default locale.
+   * <p>
+   * Chinese variants ({@code zh}, {@code zh-CN}, {@code zh-TW}, …) normalize to {@code zh_CN}
+   * then fall back to {@code zh}. English variants normalize to {@code en}.
    */
   List<String> localeCandidates(Locale locale) {
     LinkedHashSet<String> candidates = new LinkedHashSet<>();
@@ -163,7 +167,9 @@ public class DefaultI18nMessageResolver implements I18nMessageResolver {
       if (isNotEmpty(tag)) {
         candidates.add(tag);
       }
-      if (isNotEmpty(locale.getLanguage())) {
+      if ("zh_CN".equals(tag)) {
+        candidates.add("zh");
+      } else if (isNotEmpty(locale.getLanguage()) && !locale.getLanguage().equals(tag)) {
         candidates.add(locale.getLanguage());
       }
     }
@@ -176,28 +182,22 @@ public class DefaultI18nMessageResolver implements I18nMessageResolver {
 
   /**
    * Normalize to SupportedLanguage-style tags: {@code zh_CN}, {@code en}.
+   * All {@code zh*} regions (including TW/HK) map to {@code zh_CN}.
    */
   static String toLanguageTag(Locale locale) {
     if (locale == null) {
       return null;
     }
-    // Locale.CHINA / SIMPLIFIED_CHINESE → zh_CN
-    if (Locale.SIMPLIFIED_CHINESE.equals(locale) || Locale.CHINA.equals(locale)
-        || ("zh".equals(locale.getLanguage()) && "CN".equalsIgnoreCase(locale.getCountry()))) {
-      return "zh_CN";
-    }
-    if (Locale.ENGLISH.equals(locale) || "en".equalsIgnoreCase(locale.getLanguage())) {
-      // Prefer plain "en" to match SupportedLanguage.en
-      if (isEmpty(locale.getCountry()) || "US".equalsIgnoreCase(locale.getCountry())
-          || "GB".equalsIgnoreCase(locale.getCountry())) {
-        return "en";
-      }
-    }
-    String language = locale.getLanguage();
-    String country = locale.getCountry();
-    if (isNotEmpty(country)) {
-      return language + "_" + country;
-    }
-    return language;
+    return SupportedLanguage.tryParse(locale.toLanguageTag())
+        .or(() -> SupportedLanguage.tryParse(locale.toString()))
+        .map(SupportedLanguage::getValue)
+        .orElseGet(() -> {
+          String language = locale.getLanguage();
+          String country = locale.getCountry();
+          if (isNotEmpty(country)) {
+            return language + "_" + country;
+          }
+          return language;
+        });
   }
 }

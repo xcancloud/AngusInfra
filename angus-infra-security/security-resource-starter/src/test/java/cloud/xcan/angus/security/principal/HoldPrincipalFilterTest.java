@@ -1,6 +1,7 @@
 package cloud.xcan.angus.security.principal;
 
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_ID;
+import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_FULL_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_GRANT_TYPE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_ID;
@@ -8,16 +9,21 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_SYS_ADMIN;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
+import static cloud.xcan.angus.spec.SpecConstant.LOCALE_EXPLICIT_REQUEST_ATTR;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
+import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -52,6 +58,8 @@ class HoldPrincipalFilterTest {
   void clearContext() {
     SecurityContextHolder.clearContext();
     PrincipalContext.remove();
+    LocaleContextHolder.resetLocaleContext();
+    SdfLocaleHolder.resetLocaleContext();
   }
 
   /** 记录式过滤链：捕获下游执行当时的认证态与 userId（过滤器返回后上下文已被清理）。 */
@@ -60,6 +68,8 @@ class HoldPrincipalFilterTest {
     boolean called = false;
     boolean authPassed = false;
     Long userId = null;
+    SupportedLanguage defaultLanguage = null;
+    Locale sdfLocale = null;
 
     @Override
     public void doFilter(jakarta.servlet.ServletRequest request,
@@ -67,17 +77,27 @@ class HoldPrincipalFilterTest {
       this.called = true;
       this.authPassed = PrincipalContext.isAuthPassed();
       this.userId = PrincipalContext.getUserId();
+      this.defaultLanguage = PrincipalContext.get().getDefaultLanguage();
+      this.sdfLocale = SdfLocaleHolder.getLocale();
     }
   }
 
   private static BearerTokenAuthentication userBearer(String grantTypeValue, long userId,
       long tenantId) {
+    return userBearer(grantTypeValue, userId, tenantId, null);
+  }
+
+  private static BearerTokenAuthentication userBearer(String grantTypeValue, long userId,
+      long tenantId, String defaultLanguage) {
     Map<String, Object> principalClaim = new HashMap<>();
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, tenantId);
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_USERNAME, "lxl");
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_ID, userId);
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, "Xiao Long");
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, false);
+    if (defaultLanguage != null) {
+      principalClaim.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE, defaultLanguage);
+    }
 
     Map<String, Object> attributes = new HashMap<>();
     attributes.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, "test-client");
@@ -184,5 +204,53 @@ class HoldPrincipalFilterTest {
     assertThat(chain.called).isTrue();
     assertThat(chain.authPassed).isTrue();
     assertThat(chain.userId).isEqualTo(777L);
+  }
+
+  @Test
+  void apiPath_explicitRequestLanguage_keepsRequestLocaleOverUserClaim() throws Exception {
+    SecurityContextHolder.getContext()
+        .setAuthentication(userBearer("password", 1L, 1L, "zh_CN"));
+    MockHttpServletRequest req = req("GET", "/api/v1/repo/list");
+    req.setAttribute(LOCALE_EXPLICIT_REQUEST_ATTR, Boolean.TRUE);
+    PrincipalContext.createIfAbsent().setDefaultLanguage(SupportedLanguage.en);
+    SdfLocaleHolder.setLocale(Locale.ENGLISH);
+    RecordingChain chain = new RecordingChain();
+
+    filter.doFilter(req, new MockHttpServletResponse(), chain);
+
+    assertThat(chain.called).isTrue();
+    assertThat(chain.defaultLanguage).isEqualTo(SupportedLanguage.en);
+    assertThat(SupportedLanguage.safeLanguage(chain.sdfLocale)).isEqualTo(SupportedLanguage.en);
+  }
+
+  @Test
+  void apiPath_noExplicitLocale_usesUserClaimAndSyncsHolders() throws Exception {
+    SecurityContextHolder.getContext()
+        .setAuthentication(userBearer("password", 1L, 1L, "zh_CN"));
+    MockHttpServletRequest req = req("GET", "/api/v1/repo/list");
+    req.setAttribute(LOCALE_EXPLICIT_REQUEST_ATTR, Boolean.FALSE);
+    PrincipalContext.createIfAbsent().setDefaultLanguage(SupportedLanguage.en);
+    SdfLocaleHolder.setLocale(Locale.ENGLISH);
+    RecordingChain chain = new RecordingChain();
+
+    filter.doFilter(req, new MockHttpServletResponse(), chain);
+
+    assertThat(chain.called).isTrue();
+    assertThat(chain.defaultLanguage).isEqualTo(SupportedLanguage.zh_CN);
+    assertThat(SupportedLanguage.safeLanguage(chain.sdfLocale)).isEqualTo(SupportedLanguage.zh_CN);
+  }
+
+  @Test
+  void apiPath_userClaimEnUs_normalizedWithoutThrowing() throws Exception {
+    SecurityContextHolder.getContext()
+        .setAuthentication(userBearer("password", 1L, 1L, "en-US"));
+    MockHttpServletRequest req = req("GET", "/api/v1/repo/list");
+    req.setAttribute(LOCALE_EXPLICIT_REQUEST_ATTR, Boolean.FALSE);
+    RecordingChain chain = new RecordingChain();
+
+    filter.doFilter(req, new MockHttpServletResponse(), chain);
+
+    assertThat(chain.called).isTrue();
+    assertThat(chain.defaultLanguage).isEqualTo(SupportedLanguage.en);
   }
 }

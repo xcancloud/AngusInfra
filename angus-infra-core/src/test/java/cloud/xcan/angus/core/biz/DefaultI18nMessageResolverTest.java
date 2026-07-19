@@ -88,8 +88,18 @@ class DefaultI18nMessageResolverTest {
   void toLanguageTag_mapsChinaAndEnglish() {
     assertEquals("zh_CN", DefaultI18nMessageResolver.toLanguageTag(Locale.CHINA));
     assertEquals("zh_CN", DefaultI18nMessageResolver.toLanguageTag(Locale.SIMPLIFIED_CHINESE));
+    assertEquals("zh_CN", DefaultI18nMessageResolver.toLanguageTag(Locale.TAIWAN));
+    assertEquals("zh_CN", DefaultI18nMessageResolver.toLanguageTag(Locale.forLanguageTag("zh-HK")));
     assertEquals("en", DefaultI18nMessageResolver.toLanguageTag(Locale.ENGLISH));
     assertEquals("en", DefaultI18nMessageResolver.toLanguageTag(Locale.US));
+  }
+
+  @Test
+  void localeCandidates_zhTw_usesZhCnThenZhThenDefault() {
+    List<String> candidates = resolver.localeCandidates(Locale.TAIWAN);
+    assertEquals("zh_CN", candidates.get(0));
+    assertEquals("zh", candidates.get(1));
+    assertTrue(candidates.contains(properties.getDefaultLocale()));
   }
 
   @Test

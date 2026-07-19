@@ -24,8 +24,9 @@ public class I18nMessageProperties {
   private boolean enabled = true;
 
   /**
-   * Application default locale name, aligned with {@code SupportedLanguage} ({@code zh_CN},
-   * {@code en}).
+   * Application default locale name ({@code SupportedLanguage} enum name). Defaults to
+   * {@link cloud.xcan.angus.spec.experimental.BizConstant#DEFAULT_LANGUAGE} ({@code en});
+   * override via {@code angus.i18n.message.default-locale}.
    */
   private String defaultLocale = DEFAULT_LANGUAGE;
 

@@ -309,9 +309,8 @@ public class I18nMessageAspect extends AbstractJoinAspect {
     if (configured.equals(tag) || configured.equals(locale.toString())) {
       return true;
     }
-    // Match SupportedLanguage only when the locale actually maps to a known value.
-    // Do NOT use safeLanguage() here — it falls back to zh_CN for en_US and would
-    // incorrectly skip MessageJoin for English locales.
+    // Match SupportedLanguage only when the locale actually maps to a known value
+    // (avoid treating unknown tags as the configured default).
     if (SupportedLanguage.contain(tag)) {
       return configured.equals(tag);
     }

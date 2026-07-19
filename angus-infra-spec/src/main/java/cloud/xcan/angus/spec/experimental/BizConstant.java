@@ -24,6 +24,16 @@ public interface BizConstant {
   String PRODUCT_PROVIDE = "CN=XCan Cloud @_@ https://www.xcan.cloud";
   String PRODUCT_ISSUER = "CN=XCan Cloud";
 
+  /**
+   * System default language — <b>single source of truth</b> ({@code SupportedLanguage} enum name).
+   * <p>
+   * Downstream defaults must derive from this value, not hardcode a parallel constant:
+   * <ul>
+   *   <li>{@code SupportedLanguage#defaultLanguage()}</li>
+   *   <li>{@code SpecConstant#DEFAULT_LOCALE}</li>
+   *   <li>{@code I18nMessageProperties#defaultLocale}</li>
+   * </ul>
+   */
   String DEFAULT_LANGUAGE = "en";
 
   String TENANT_ID_DB_KEY = "tenant_id";
@@ -529,6 +539,11 @@ public interface BizConstant {
     String DATA_SCOPE = HEADER_PREFIX + "Data-Scope";
     String ACCESS_SCOPE = HEADER_PREFIX + "Access-Scope";
 
+    /**
+     * Preferred request language for Angus services (e.g. {@code en}, {@code zh_CN}).
+     * Higher priority than {@code Accept-Language} when both are present.
+     */
+    String LANG = HEADER_PREFIX + "Lang";
     String LANGUAGE = HEADER_PREFIX + "DEFAULT-LANGUAGE";
     String TIME_ZONE = HEADER_PREFIX + "DEFAULT-TIME-ZONE";
 

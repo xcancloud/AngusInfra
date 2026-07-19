@@ -1,5 +1,8 @@
 package cloud.xcan.angus.spec.locale;
 
+import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_LOCALE;
+import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_TIME_ZONE;
+
 import cloud.xcan.angus.spec.thread.NamedInheritableThreadLocal;
 import cloud.xcan.angus.spec.thread.NamedThreadLocal;
 import java.util.Locale;
@@ -27,11 +30,11 @@ public final class SdfLocaleHolder {
   private static final ThreadLocal<LocaleContext> inheritableLocaleContextHolder =
       new NamedInheritableThreadLocal<>("LocaleContext");
 
-  // Shared default locale at the framework level
-  private static Locale defaultLocale;
+  // Shared default locale at the framework level (English — not JVM Locale.getDefault())
+  private static Locale defaultLocale = DEFAULT_LOCALE;
 
   // Shared default time zone at the framework level
-  private static TimeZone defaultTimeZone;
+  private static TimeZone defaultTimeZone = DEFAULT_TIME_ZONE;
 
   private SdfLocaleHolder() {
   }

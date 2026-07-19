@@ -43,8 +43,12 @@ through an expireable **in-memory Caffeine cache**. No Redis is required.
 1. **Stable key** — business code stores `message_key` (e.g. `ROLE_ADMIN`), never Chinese text as the lookup key.
 2. **DB persistence** — all editable config copy lives in `gm_i18n_messages`.
 3. **Local expireable cache** — Caffeine only; multi-instance eventual consistency via TTL + manual/API eviction.
-4. **Locale fallback** — `zh_CN` → `zh` → configured default locale → fallback text / original key.
+4. **Locale fallback** — request tag → language family → configured default (`en`) → fallback / key.
 5. **Layered i18n** — enums → classpath; config copy → this module; entity content → separate model.
+
+**Default language (single source):** `BizConstant.DEFAULT_LANGUAGE` (`en`).
+`SupportedLanguage.defaultLanguage()`, `SpecConstant.DEFAULT_LOCALE`, and
+`angus.i18n.message.default-locale` all derive from it — do not hardcode a parallel default.
 
 ---
 
@@ -139,7 +143,7 @@ Prefix: `angus.i18n.message`
 | Property | Default | Description |
 |----------|---------|-------------|
 | `enabled` | `true` | Master switch for resolver + aspect beans |
-| `default-locale` | `en` (same as `BizConstant.DEFAULT_LANGUAGE`) | Application default locale (`SupportedLanguage` name) |
+| `default-locale` | `BizConstant.DEFAULT_LANGUAGE` (`en`) | Application default locale (`SupportedLanguage` name); override only when needed |
 | `skip-default-locale` | `true` | When `true`, `@MessageJoin` skips work if request locale equals default (VO already holds default text). Set `false` when VO fields hold keys and must always resolve. |
 | `cache.maximum-size` | `2048` | Max Caffeine entries (keyed by `type`) |
 | `cache.expire-after-write-minutes` | `30` | Expire after write |
@@ -306,14 +310,22 @@ i18nMessageResolver.evictAll();      // all types
 
 ## 8. Locale Fallback
 
-Candidate order for locale `zh_CN`:
+Candidate order for Chinese request locales (`zh`, `zh-CN`, `zh-TW`, `zh-HK`, … — all normalize to `zh_CN`):
 
 1. Exact tag: `zh_CN`
-2. Language only: `zh` (if distinct)
+2. Language only: `zh`
 3. Configured `angus.i18n.message.default-locale` (e.g. `en`)
 4. Caller `fallback` argument, else original `messageKey`
 
-`SupportedLanguage` values today: `zh_CN`, `en`. Prefer storing `language` exactly as those enum names.
+**Request language policy** (`SupportedLanguage`):
+
+| Input | Resolved |
+|-------|----------|
+| `en` / `en-US` / `en_US` / `en-GB` | `en` |
+| `zh` / `zh-CN` / `zh_CN` / `zh-TW` / `zh-HK` | `zh_CN` (Simplified Chinese only today) |
+| unknown / malformed | system default (`en`) |
+
+Prefer storing DB `language` exactly as enum names: `en`, `zh_CN`.
 
 ---
 

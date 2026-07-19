@@ -24,15 +24,15 @@ public class CommDto implements Serializable {
   //  private Long tenantId;
 
   //  /**
-  //   * Locale:{language}-{country}.
+  //   * Locale / language tag. Prefer SupportedLanguage names: en, zh_CN.
   //   *
-  //   * <p>eg: zh-CN</p>
+  //   * <p>eg: en, zh_CN (Accept-Language may send en-US / zh-CN)</p>
   //   *
-  //   * @see java.util.Locale
+  //   * @see cloud.xcan.angus.spec.locale.SupportedLanguage
   //   */
   //  @Length(max = 16)
-  //  @CharConstant(array = {"zh-CN","en"})
-  //  @Schema(description = "Locale. eg:zh-CN", allowableValues = "zh-CN,en")
+  //  @CharConstant(array = {"en","zh_CN"})
+  //  @Schema(description = "Locale. eg: en", allowableValues = "en,zh_CN")
   //  private String locale;
 
   //  /**

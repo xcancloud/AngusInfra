@@ -29,6 +29,7 @@ import cloud.xcan.angus.core.spring.filter.GlobalProperties;
 import cloud.xcan.angus.core.spring.locale.MultiSourceLocaleResolver;
 import cloud.xcan.angus.core.spring.security.PrincipalPermissionService;
 import cloud.xcan.angus.feign.interceptor.FeignRequestInterceptor;
+import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
 import cloud.xcan.angus.swagger.ByteArrayToStringConverter;
 import cloud.xcan.angus.web.endpoint.AppWorkspaceEndpoint;
 import cloud.xcan.angus.web.endpoint.MessageEndpoint;
@@ -55,6 +56,7 @@ import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.cloud.openfeign.FeignAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
@@ -247,6 +249,9 @@ public class CoreAutoConfigurer implements WebMvcConfigurer {
    */
   @Bean(LOCALE_RESOLVER_BEAN_NAME)
   public MultiSourceLocaleResolver localeResolver() {
+    // Non-web / async threads fall back to these defaults (not JVM Locale.getDefault()).
+    SdfLocaleHolder.setDefaultLocale(DEFAULT_LOCALE);
+    LocaleContextHolder.setDefaultLocale(DEFAULT_LOCALE);
     MultiSourceLocaleResolver resolver = new MultiSourceLocaleResolver();
     resolver.setDefaultLocale(DEFAULT_LOCALE);
     return resolver;

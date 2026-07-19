@@ -23,6 +23,7 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
+import static cloud.xcan.angus.spec.SpecConstant.LOCALE_EXPLICIT_REQUEST_ATTR;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
@@ -41,6 +42,7 @@ import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.locale.MessageHolder;
+import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
@@ -52,10 +54,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -201,7 +205,6 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       principal.setAuthorization(getAuthorization(request))
           .setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
-          .setDefaultLanguage(SupportedLanguage.defaultLanguage()) // TODO Client auth: prefer tenant default language when available
           .setTenantId(tenantId).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setClientId(clientId.toString())
           .setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
@@ -209,6 +212,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setUsername(clientId.toString()/*default*/).setSysAdmin(false)
           .setUserAgent(resolveRequestAgent(userAgent, principal, request))
           .setRemoteAddress(resolveRemoteAddress(remoteAddr, principal, request));
+      // TODO Client auth: prefer tenant default language when available
+      applyDefaultLanguage(request, principal, SupportedLanguage.defaultLanguage());
       if (log.isDebugEnabled()) {
         log.debug("Hold client principal info : {}", principal);
       }
@@ -245,7 +250,6 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
       principal.setAuthorization(getAuthorization(request)).setAuthenticated(true).setGrantType(grantType)
           .setUri(request.getRequestURI()).setMethod(request.getMethod())
-          .setDefaultLanguage(nonNull(defaultLanguage) ? SupportedLanguage.valueOf(defaultLanguage.toString()) : SupportedLanguage.defaultLanguage())
           .setClientId(clientId.toString()).setClientSource(nonNull(clientSource) ? clientSource.toString() : null)
           .setTenantId(Long.valueOf(tenantId.toString())).setTenantName(nonNull(tenantName)? tenantName.toString() : null)
           .setUserId(nonNull(id) ? Long.valueOf(id.toString()) : null)
@@ -257,6 +261,9 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
           .setPermissions(isNull(permissions) ? Collections.emptyList()
               : ((ArrayList<Object>)permissions).stream().map(Object::toString).collect(Collectors.toList()))
           .setUserToken(nonNull(isUserToken) && Boolean.parseBoolean(isUserToken.toString()));
+      // Explicit request language (query/cookie/X-Lang/Accept-Language) wins over user profile.
+      applyDefaultLanguage(request, principal, SupportedLanguage.safeLanguage(
+          nonNull(defaultLanguage) ? defaultLanguage.toString() : null));
       if (log.isDebugEnabled()) {
         log.debug("Hold principal info : {}", principal);
       }
@@ -266,6 +273,25 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
     }
     // @formatter:on
     return false;
+  }
+
+  /**
+   * Priority: explicit request language (set by GlobalHoldFilter / MultiSourceLocaleResolver) &gt;
+   * identity claim / fallback &gt; system default. When not explicit, also sync thread locale
+   * holders so MessageHolder / MessageJoin match Principal.defaultLanguage.
+   */
+  private static void applyDefaultLanguage(HttpServletRequest request, Principal principal,
+      SupportedLanguage fromIdentity) {
+    boolean explicit = Boolean.TRUE.equals(request.getAttribute(LOCALE_EXPLICIT_REQUEST_ATTR));
+    if (explicit && nonNull(principal.getDefaultLanguage())) {
+      return;
+    }
+    SupportedLanguage language =
+        nonNull(fromIdentity) ? fromIdentity : SupportedLanguage.defaultLanguage();
+    principal.setDefaultLanguage(language);
+    Locale locale = language.toLocale();
+    SdfLocaleHolder.setLocale(locale);
+    LocaleContextHolder.setLocale(locale);
   }
 
   public static String getAuthorization(HttpServletRequest request) {

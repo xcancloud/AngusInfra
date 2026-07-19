@@ -2,7 +2,11 @@ package cloud.xcan.angus.core.spring.locale;
 
 
 import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_LOCALE;
+import static cloud.xcan.angus.spec.SpecConstant.LOCALE_EXPLICIT_REQUEST_ATTR;
+import static cloud.xcan.angus.spec.experimental.BizConstant.Header.LANG;
+import static cloud.xcan.angus.spec.http.HttpRequestHeader.Accept_Language;
 
+import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,54 +19,54 @@ import org.springframework.web.servlet.LocaleResolver;
 
 /**
  * Multi-source locale resolver - Resolves language from query parameters, cookies, and request
- * headers
+ * headers.
  * <p>
- * Priority order: Query parameters > Cookie > Request headers > Default locale
+ * Priority: query ({@code lang|locale|language}) &gt; cookie ({@code USER_LANG|APP_LANG}) &gt;
+ * header ({@code X-Lang}) &gt; {@code Accept-Language} (RFC 4647 {@code q} weights) &gt; system
+ * default ({@link cloud.xcan.angus.spec.SpecConstant#DEFAULT_LOCALE}, derived from
+ * {@code BizConstant.DEFAULT_LANGUAGE}).
+ * <p>
+ * Sets {@link cloud.xcan.angus.spec.SpecConstant#LOCALE_EXPLICIT_REQUEST_ATTR} to indicate whether
+ * the locale came from the request (not the system default).
  */
 public class MultiSourceLocaleResolver implements LocaleResolver {
 
-  // Supported query parameter names
   private static final List<String> LANG_PARAM_NAMES = Arrays.asList("lang", "locale", "language");
 
-  // Supported cookie names
   private static final List<String> LANG_COOKIE_NAMES = Arrays.asList("USER_LANG", "APP_LANG");
 
-  // Supported header names
-  private static final List<String> LANG_HEADER_NAMES = Arrays.asList("X-Lang", "Accept-Language");
-
-  // Default locale (configurable)
   private Locale defaultLocale = DEFAULT_LOCALE;
 
   @Override
   public Locale resolveLocale(HttpServletRequest request) {
-    // 1. Try to get from query parameters
     Optional<String> paramLang = LANG_PARAM_NAMES.stream()
         .map(request::getParameter)
         .filter(StringUtils::hasText)
         .findFirst();
-
     if (paramLang.isPresent()) {
-      return parseLocale(paramLang.get());
+      return markExplicit(request, SupportedLanguage.of(paramLang.get()).toLocale());
     }
 
-    // 2. Try to get from cookies
     Optional<String> cookieLang = LANG_COOKIE_NAMES.stream()
         .map(name -> getCookieValue(request, name))
         .filter(StringUtils::hasText)
         .findFirst();
-
     if (cookieLang.isPresent()) {
-      return parseLocale(cookieLang.get());
+      return markExplicit(request, SupportedLanguage.of(cookieLang.get()).toLocale());
     }
 
-    // 3. Try to get from request headers
-    Optional<String> headerLang = LANG_HEADER_NAMES.stream()
-        .map(request::getHeader)
-        .filter(StringUtils::hasText)
-        .findFirst();
+    String xLang = request.getHeader(LANG);
+    if (StringUtils.hasText(xLang)) {
+      return markExplicit(request, SupportedLanguage.of(xLang).toLocale());
+    }
 
-    // 4. Use default locale
-    return headerLang.map(this::parseHeaderLocale).orElseGet(() -> defaultLocale);
+    String acceptLanguage = request.getHeader(Accept_Language.getValue());
+    if (StringUtils.hasText(acceptLanguage)) {
+      return markExplicit(request, SupportedLanguage.lookupFromAcceptLanguage(acceptLanguage));
+    }
+
+    request.setAttribute(LOCALE_EXPLICIT_REQUEST_ATTR, Boolean.FALSE);
+    return defaultLocale;
   }
 
   @Override
@@ -71,7 +75,15 @@ public class MultiSourceLocaleResolver implements LocaleResolver {
         "MultiSourceLocaleResolver does not multitenancy dynamic locale setting");
   }
 
-  // Get value from cookie
+  public static boolean isExplicitLocale(HttpServletRequest request) {
+    return Boolean.TRUE.equals(request.getAttribute(LOCALE_EXPLICIT_REQUEST_ATTR));
+  }
+
+  private static Locale markExplicit(HttpServletRequest request, Locale locale) {
+    request.setAttribute(LOCALE_EXPLICIT_REQUEST_ATTR, Boolean.TRUE);
+    return locale;
+  }
+
   private String getCookieValue(HttpServletRequest request, String name) {
     return Optional.ofNullable(request.getCookies())
         .flatMap(cookies -> Arrays.stream(cookies)
@@ -81,29 +93,6 @@ public class MultiSourceLocaleResolver implements LocaleResolver {
         .orElse(null);
   }
 
-  // Parse standard locale string (e.g., zh-CN, en_US)
-  private Locale parseLocale(String localeString) {
-    if (localeString.contains("_")) {
-      String[] parts = localeString.split("_");
-      return new Locale(parts[0], parts[1]);
-    } else if (localeString.contains("-")) {
-      String[] parts = localeString.split("-");
-      return new Locale(parts[0], parts[1]);
-    }
-    return new Locale(localeString);
-  }
-
-  // Special handling for Accept-Language header (e.g., "zh-CN,zh;q=0.9,en;q=0.8")
-  private Locale parseHeaderLocale(String headerValue) {
-    if (headerValue.contains(",")) {
-      // Take the first language option
-      String primaryLang = headerValue.split(",")[0].trim();
-      return parseLocale(primaryLang);
-    }
-    return parseLocale(headerValue);
-  }
-
-  // Configure default locale
   public void setDefaultLocale(Locale defaultLocale) {
     this.defaultLocale = defaultLocale;
   }

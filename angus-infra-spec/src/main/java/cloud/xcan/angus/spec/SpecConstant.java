@@ -1,6 +1,8 @@
 package cloud.xcan.angus.spec;
 
 import cloud.xcan.angus.api.obf.Str0;
+import cloud.xcan.angus.spec.experimental.BizConstant;
+import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -61,9 +63,15 @@ public interface SpecConstant {
   String LOCALE = new Str0(new long[]{0x6C262EE486783F16L, 0x68C0FF44905CACB5L})
       .toString() /* => "locale" */;
   /**
-   * Default locale: zh-CN, allowable values: zh-CN,en
+   * Default {@link Locale}, derived from {@link BizConstant#DEFAULT_LANGUAGE} via
+   * {@link SupportedLanguage#defaultLanguage()}. Do not hardcode a separate default.
    */
-  Locale DEFAULT_LOCALE = Locale.ENGLISH;
+  Locale DEFAULT_LOCALE = SupportedLanguage.defaultLanguage().toLocale();
+  /**
+   * Request attribute set by MultiSourceLocaleResolver: {@link Boolean#TRUE} when locale came from
+   * query / cookie / {@code X-Lang} / {@code Accept-Language} (not system default).
+   */
+  String LOCALE_EXPLICIT_REQUEST_ATTR = "cloud.xcan.angus.locale.explicit";
   /**
    * TimeZone key
    */

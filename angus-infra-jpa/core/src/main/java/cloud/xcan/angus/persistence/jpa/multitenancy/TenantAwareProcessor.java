@@ -2,6 +2,7 @@ package cloud.xcan.angus.persistence.jpa.multitenancy;
 
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.getOptTenantId;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isMultiTenantCtrl;
+import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 import static java.util.Objects.nonNull;
 
@@ -15,7 +16,7 @@ public class TenantAwareProcessor {
     Long previousOptTenantId = getOptTenantId();
     try {
       if (wasMultiTenantCtrl) {
-        PrincipalContext.get().setMultiTenantCtrl(false);
+        setMultiTenantCtrl(false);
         if (nonNull(currentTenantId)) {
           PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
         }
@@ -23,7 +24,7 @@ public class TenantAwareProcessor {
       runnable.run();
     } finally {
       if (wasMultiTenantCtrl) {
-        PrincipalContext.get().setMultiTenantCtrl(true);
+        setMultiTenantCtrl(true);
         if (nonNull(currentTenantId)) {
           PrincipalContext.get().setOptTenantId(previousOptTenantId);
         }
@@ -36,7 +37,7 @@ public class TenantAwareProcessor {
     Long previousOptTenantId = getOptTenantId();
     try {
       if (wasMultiTenantCtrl) {
-        PrincipalContext.get().setMultiTenantCtrl(false);
+        setMultiTenantCtrl(false);
         if (nonNull(currentTenantId)) {
           PrincipalContext.get().setOptTenantId(OWNER_TENANT_ID);
         }
@@ -44,7 +45,7 @@ public class TenantAwareProcessor {
       return supplier.get();
     } finally {
       if (wasMultiTenantCtrl) {
-        PrincipalContext.get().setMultiTenantCtrl(true);
+        setMultiTenantCtrl(true);
         if (nonNull(currentTenantId)) {
           PrincipalContext.get().setOptTenantId(previousOptTenantId);
         }

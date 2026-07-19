@@ -6,11 +6,10 @@ import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isOpClient;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.isUserAction;
 import static cloud.xcan.angus.core.utils.PrincipalContextUtils.setMultiTenantCtrl;
 import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
+import static cloud.xcan.angus.spec.principal.PrincipalContext.getTenantId;
 
 import cloud.xcan.angus.remote.message.AbstractResultMessageException;
 import cloud.xcan.angus.remote.message.http.ResourceExisted;
-import cloud.xcan.angus.spec.principal.Principal;
-import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -54,19 +53,19 @@ public abstract class BizTemplate<T> {
     this.multiTenantCtrl = multiTenantCtrl;
     this.autoCtrlWhenOpClient = autoCtrlWhenOpClient && isOpClient();
     this.requiredToPolicy = requiredTOPolicy;
-    Principal principal = PrincipalContext.get();
 
     if (!multiTenantCtrl) {
       // Disable multi-tenancy control: Users must manually manage multi-tenant data isolation, including adding tenant ID conditions in SQL statements.
-      principal.setMultiTenantCtrl(false);
+      // 必须走 setMultiTenantCtrl，以便同步关闭当前 Session 上已 enable 的 Hibernate Tenant Filter。
+      setMultiTenantCtrl(false);
     } else if (!isOpClient() ||
-        (isUserAction() && !OWNER_TENANT_ID.equals(principal.getTenantId()))) {
+        (isUserAction() && !OWNER_TENANT_ID.equals(getTenantId()))) {
       // Force enable multi-tenancy control: Multi-tenancy control is mandatory for non-operation client and tenant.
-      principal.setMultiTenantCtrl(true);
+      setMultiTenantCtrl(true);
     } else {
       // When the operation client doesn't specify a tenant, multi-tenancy control is disabled to allow querying data across all tenants.
       if (this.autoCtrlWhenOpClient) {
-        principal.setMultiTenantCtrl(hasOriginalOptTenantId());
+        setMultiTenantCtrl(hasOriginalOptTenantId());
       }
     }
   }

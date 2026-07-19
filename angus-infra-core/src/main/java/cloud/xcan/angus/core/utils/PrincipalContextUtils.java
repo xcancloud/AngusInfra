@@ -23,6 +23,7 @@ import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -105,8 +106,26 @@ public class PrincipalContextUtils {
     return principal.isMultiTenantCtrl();
   }
 
+  /**
+   * 多租户开关变更后的可选回调（由 JPA 模块注册，用于同步 Hibernate Session Filter）。
+   * 仅改 Principal 标志不会关闭事务入口时已 enable 的 Filter，必须再 syncSession。
+   */
+  private static volatile Consumer<Boolean> multiTenantCtrlSessionSync;
+
+  public static void setMultiTenantCtrlSessionSync(Consumer<Boolean> sessionSync) {
+    multiTenantCtrlSessionSync = sessionSync;
+  }
+
   public static void setMultiTenantCtrl(boolean multiTenantCtrl) {
     PrincipalContext.get().setMultiTenantCtrl(multiTenantCtrl);
+    Consumer<Boolean> sessionSync = multiTenantCtrlSessionSync;
+    if (sessionSync != null) {
+      try {
+        sessionSync.accept(multiTenantCtrl);
+      } catch (RuntimeException ignored) {
+        // 无活动持久化上下文时忽略（如事务外调用）
+      }
+    }
   }
 
   /**

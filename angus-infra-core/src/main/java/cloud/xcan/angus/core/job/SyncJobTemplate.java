@@ -1,9 +1,9 @@
 package cloud.xcan.angus.core.job;
 
 import cloud.xcan.angus.core.utils.AppEnvUtils;
+import cloud.xcan.angus.core.utils.PrincipalContextUtils;
 import cloud.xcan.angus.spec.annotations.DoInFuture;
 import cloud.xcan.angus.spec.experimental.DistributedLock;
-import cloud.xcan.angus.spec.principal.Principal;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -29,8 +29,8 @@ public class SyncJobTemplate implements JobTemplate {
 
     String reqId = UUID.randomUUID().toString();
     try {
-      Principal principal = PrincipalContext.create();
-      principal.setMultiTenantCtrl(false);
+      PrincipalContext.create();
+      PrincipalContextUtils.setMultiTenantCtrl(false);
 
       boolean tryLock = distributedLock.tryLock(lockKey, reqId, timeout, unit);
       if (!tryLock) {

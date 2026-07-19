@@ -42,23 +42,23 @@ public enum SupportedLanguage implements Value<String> {
   }
 
   public static Locale safeLocale(Locale locale) {
-    if (contain(locale.toString())) {
+    if (locale != null && contain(locale.toString())) {
       return locale;
     }
-    return Locale.SIMPLIFIED_CHINESE;
+    return defaultLanguage().toLocale();
   }
 
   public static SupportedLanguage safeLanguage(Locale locale) {
-    if (contain(locale.toString())) {
+    if (locale != null && contain(locale.toString())) {
       return SupportedLanguage.valueOf(locale.toString());
     }
-    return SupportedLanguage.zh_CN;
+    return defaultLanguage();
   }
 
   public static SupportedLanguage safeLanguage(String language) {
     if (contain(language)) {
       return SupportedLanguage.valueOf(language);
     }
-    return SupportedLanguage.zh_CN;
+    return defaultLanguage();
   }
 }

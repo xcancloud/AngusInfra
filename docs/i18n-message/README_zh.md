@@ -137,7 +137,7 @@ public interface I18nMessage {
 | 配置项 | 默认值 | 说明 |
 |--------|--------|------|
 | `enabled` | `true` | Resolver / Aspect 总开关 |
-| `default-locale` | `zh_CN` | 应用默认语言（`SupportedLanguage` 枚举名） |
+| `default-locale` | `en`（同 `BizConstant.DEFAULT_LANGUAGE`） | 应用默认语言（`SupportedLanguage` 枚举名） |
 | `skip-default-locale` | `true` | 为 `true` 时，请求 Locale 等于默认语言则 `@MessageJoin` 跳过（VO 已是默认文案）。若 VO 存的是 key、任何语言都要解析，设为 `false` |
 | `cache.maximum-size` | `2048` | Caffeine 最大条目数（按 `type`） |
 | `cache.expire-after-write-minutes` | `30` | 写入后过期 |
@@ -149,7 +149,7 @@ angus:
   i18n:
     message:
       enabled: true
-      default-locale: zh_CN
+      default-locale: en
       skip-default-locale: true
       cache:
         enabled: true
@@ -306,7 +306,7 @@ i18nMessageResolver.evictAll();      // 全部
 
 1. 精确标签：`zh_CN`
 2. 仅语言：`zh`（若与上不同）
-3. 配置项 `angus.i18n.message.default-locale`（如 `zh_CN`）
+3. 配置项 `angus.i18n.message.default-locale`（如 `en`）
 4. 调用方 `fallback`，否则原始 `messageKey`
 
 当前 `SupportedLanguage`：`zh_CN`、`en`。入库的 `language` 建议与枚举名完全一致。

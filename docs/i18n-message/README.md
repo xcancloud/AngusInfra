@@ -139,7 +139,7 @@ Prefix: `angus.i18n.message`
 | Property | Default | Description |
 |----------|---------|-------------|
 | `enabled` | `true` | Master switch for resolver + aspect beans |
-| `default-locale` | `zh_CN` | Application default locale (`SupportedLanguage` name) |
+| `default-locale` | `en` (same as `BizConstant.DEFAULT_LANGUAGE`) | Application default locale (`SupportedLanguage` name) |
 | `skip-default-locale` | `true` | When `true`, `@MessageJoin` skips work if request locale equals default (VO already holds default text). Set `false` when VO fields hold keys and must always resolve. |
 | `cache.maximum-size` | `2048` | Max Caffeine entries (keyed by `type`) |
 | `cache.expire-after-write-minutes` | `30` | Expire after write |
@@ -151,7 +151,7 @@ angus:
   i18n:
     message:
       enabled: true
-      default-locale: zh_CN
+      default-locale: en
       skip-default-locale: true
       cache:
         enabled: true
@@ -310,7 +310,7 @@ Candidate order for locale `zh_CN`:
 
 1. Exact tag: `zh_CN`
 2. Language only: `zh` (if distinct)
-3. Configured `angus.i18n.message.default-locale` (e.g. `zh_CN`)
+3. Configured `angus.i18n.message.default-locale` (e.g. `en`)
 4. Caller `fallback` argument, else original `messageKey`
 
 `SupportedLanguage` values today: `zh_CN`, `en`. Prefer storing `language` exactly as those enum names.

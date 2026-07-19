@@ -24,7 +24,7 @@ public interface BizConstant {
   String PRODUCT_PROVIDE = "CN=XCan Cloud @_@ https://www.xcan.cloud";
   String PRODUCT_ISSUER = "CN=XCan Cloud";
 
-  String DEFAULT_LANGUAGE = "zh_CN";
+  String DEFAULT_LANGUAGE = "en";
 
   String TENANT_ID_DB_KEY = "tenant_id";
 

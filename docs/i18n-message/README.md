@@ -246,6 +246,8 @@ Rules:
 - Empty `type` on a field → still throws (configuration error).
 - Inherited fields are scanned (`getAllFields`).
 - Mixed element types in one collection are not supported (same as `NameJoin`).
+- **Tree VOs** (e.g. menu `children`): the aspect flattens same-type nested nodes before filling, so child nodes are translated too.
+- If the VO has `permission.menuName`, it is kept in sync when `name` is filled.
 
 ### 5.5 Seed data example
 

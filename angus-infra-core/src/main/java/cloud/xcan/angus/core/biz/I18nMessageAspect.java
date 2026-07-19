@@ -9,8 +9,11 @@ import static java.util.Objects.nonNull;
 import cloud.xcan.angus.remote.MessageJoinField;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,17 +97,55 @@ public class I18nMessageAspect extends AbstractJoinAspect {
       return;
     }
 
-    Map<String, MessageJoinField> joinFields = findAndCacheJoinInfo(voArray[0]);
+    // Flatten nested same-type trees (e.g. menu.children) so child nodes are also filled
+    Object[] flatVos = flattenSameTypeTree(voArray);
+    Map<String, MessageJoinField> joinFields = findAndCacheJoinInfo(flatVos[0]);
     if (isEmpty(joinFields)) {
       // No annotated fields — no-op (safe for mistakenly annotated methods)
       return;
     }
 
-    Class<?> firstClass = voArray[0].getClass();
+    Class<?> firstClass = flatVos[0].getClass();
     for (Entry<String, MessageJoinField> entry : joinFields.entrySet()) {
       String fieldName = entry.getKey();
       MessageJoinField joinMeta = entry.getValue();
-      fillField(voArray, firstClass, fieldName, joinMeta, locale);
+      fillField(flatVos, firstClass, fieldName, joinMeta, locale);
+    }
+  }
+
+  /**
+   * Collect root VOs and nested collection elements of the same runtime class (tree nodes).
+   */
+  private static Object[] flattenSameTypeTree(Object[] roots) throws IllegalAccessException {
+    Class<?> type = roots[0].getClass();
+    List<Object> flat = new ArrayList<>();
+    Set<Object> visited = new HashSet<>();
+    for (Object root : roots) {
+      collectSameTypeNodes(root, type, flat, visited);
+    }
+    return flat.toArray();
+  }
+
+  private static void collectSameTypeNodes(Object node, Class<?> type, List<Object> flat,
+      Set<Object> visited) throws IllegalAccessException {
+    if (node == null || !type.isAssignableFrom(node.getClass()) || !visited.add(node)) {
+      return;
+    }
+    flat.add(node);
+    for (Field field : FieldUtils.getAllFields(node.getClass())) {
+      if (!Collection.class.isAssignableFrom(field.getType())) {
+        continue;
+      }
+      field.setAccessible(true);
+      Collection<?> children = (Collection<?>) field.get(node);
+      if (isEmpty(children)) {
+        continue;
+      }
+      for (Object child : children) {
+        if (child != null && type.isAssignableFrom(child.getClass())) {
+          collectSameTypeNodes(child, type, flat, visited);
+        }
+      }
     }
   }
 
@@ -142,7 +183,30 @@ public class I18nMessageAspect extends AbstractJoinAspect {
       String text = resolved.get(keyValue.toString());
       if (isNotEmpty(text)) {
         targetField.set(vo, text);
+        syncPermissionMenuName(vo, voClass, fieldName, text);
       }
+    }
+  }
+
+  /**
+   * Keep nested {@code permission.menuName} in sync when menu {@code name} is translated.
+   */
+  private static void syncPermissionMenuName(Object vo, Class<?> voClass, String fieldName,
+      String text) throws IllegalAccessException {
+    if (!"name".equals(fieldName)) {
+      return;
+    }
+    Field permissionField = FieldUtils.getField(voClass, "permission", true);
+    if (permissionField == null) {
+      return;
+    }
+    Object permission = permissionField.get(vo);
+    if (permission == null) {
+      return;
+    }
+    Field menuNameField = FieldUtils.getField(permission.getClass(), "menuName", true);
+    if (menuNameField != null) {
+      menuNameField.set(permission, text);
     }
   }
 

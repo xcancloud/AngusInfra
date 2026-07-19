@@ -243,6 +243,8 @@ public PageResult<RoleVo> list(RoleFindDto dto) {
 - 字段 `type` 为空 → 仍抛异常（配置错误）。
 - 扫描含父类字段（`getAllFields`）。
 - 同一集合内元素类型须一致（与 `NameJoin` 相同）。
+- **树形 VO**（如菜单 `children`）：Aspect 会扁平化同类型嵌套节点后再填充，子节点同样生效。
+- 若 VO 含 `permission.menuName`，在填充 `name` 时会同步更新该字段。
 
 ### 5.5 种子数据示例
 

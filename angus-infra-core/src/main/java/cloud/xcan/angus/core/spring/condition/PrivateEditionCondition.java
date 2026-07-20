@@ -14,7 +14,7 @@ public class PrivateEditionCondition implements Condition {
   public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
     String editionType = context.getEnvironment().getProperty("info.app.editionType");
     Assert.assertNotEmpty(editionType, "editionType config is required");
-    return EditionType.DATACENTER.getValue().equalsIgnoreCase(editionType)
+    return EditionType.TEAM.getValue().equalsIgnoreCase(editionType)
         || EditionType.ENTERPRISE.getValue().equalsIgnoreCase(editionType)
         || EditionType.COMMUNITY.getValue().equalsIgnoreCase(editionType);
   }

@@ -216,13 +216,13 @@
       <modules/>
       <dependencies/>
     </profile>
-    <!-- Deploy only datacenter edition -->
+    <!-- Deploy only team edition -->
     <profile>
-      <id>edition.datacenter</id>
+      <id>edition.team</id>
       <properties>
         <profile.active>priv</profile.active>
-        <editionType>DATACENTER</editionType>
-        <editionName>Datacenter</editionName>
+        <editionType>TEAM</editionType>
+        <editionName>Team</editionName>
       </properties>
       <modules/>
       <dependencies/>

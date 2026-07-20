@@ -48,11 +48,11 @@ public class ApplicationInfo {
   }
 
   public boolean isPrivateEdition() {
-    return isDatacenterEdition() || isEnterpriseEdition() || isCommunityEdition();
+    return isTeamEdition() || isEnterpriseEdition() || isCommunityEdition();
   }
 
-  public boolean isDatacenterEdition() {
-    return isEdition(EditionType.DATACENTER);
+  public boolean isTeamEdition() {
+    return isEdition(EditionType.TEAM);
   }
 
   public boolean isEnterpriseEdition() {

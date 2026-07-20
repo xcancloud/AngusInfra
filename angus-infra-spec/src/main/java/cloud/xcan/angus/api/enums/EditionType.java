@@ -7,7 +7,7 @@ import cloud.xcan.angus.spec.experimental.Value;
  *
  * <pre>
  * - CLOUD_SERVICE (Cloud Service Edition)
- * - DATACENTER (Data Center Edition)
+ * - TEAM (Team Edition)
  * - ENTERPRISE(Enterprise Edition)
  * - COMMUNITY (Community Edition)
  * - GENERIC(Generic Edition) - Not Supported
@@ -18,7 +18,7 @@ public enum EditionType implements Value<String> {
   CLOUD_SERVICE,
   COMMUNITY,
   ENTERPRISE,
-  DATACENTER
+  TEAM
   /*, GENERIC*/;
 
   @Override
@@ -30,8 +30,8 @@ public enum EditionType implements Value<String> {
     return this.equals(CLOUD_SERVICE);
   }
 
-  public boolean isDatacenter() {
-    return this.equals(DATACENTER);
+  public boolean isTeam() {
+    return this.equals(TEAM);
   }
 
   public boolean isEnterprise() {
@@ -43,7 +43,7 @@ public enum EditionType implements Value<String> {
   }
 
   public boolean isPrivatization() {
-    return isDatacenter() || isEnterprise() || isCommunity();
+    return isTeam() || isEnterprise() || isCommunity();
   }
 
   public boolean isPrivatizationFree() {

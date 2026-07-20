@@ -183,8 +183,8 @@ public abstract class AbstractSearchRepository<T> implements CustomBaseRepositor
             mode = getSearchMode();
           }
           // TODO:: Support fuzzy query of multiple values
-          // SELECT * FROM store_goods xc WHERE MATCH (xc.NAME,xc.CODE,xc.introduction,xc.information,xc.apply_edition_type) AGAINST ('COMMUNITY DATACENTER' IN BOOLEAN MODE);
-          // SELECT * FROM store_goods xc WHERE xc.apply_edition_type like "%COMMUNITY%" OR xc.apply_edition_type like "%DATACENTER%"
+          // SELECT * FROM store_goods xc WHERE MATCH (xc.NAME,xc.CODE,xc.introduction,xc.information,xc.apply_edition_type) AGAINST ('COMMUNITY TEAM' IN BOOLEAN MODE);
+          // SELECT * FROM store_goods xc WHERE xc.apply_edition_type like "%COMMUNITY%" OR xc.apply_edition_type like "%TEAM%"
           if (mode.equals(SearchMode.MATCH)) { // @DoInFuture("根据 Datasource 类型拼接全文检索sql")
             // Fix: Unknown column 'hahah' in 'where clause'
             // MATCH(xc.name) AGAINST (hahah IN BOOLEAN MODE) -> MATCH(xc.name) AGAINST ('hahah' IN BOOLEAN MODE)

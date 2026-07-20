@@ -656,8 +656,8 @@ public class PrincipalContextUtils {
     return getApplicationInfo().isPrivateEdition();
   }
 
-  public static boolean isDatacenterEdition() {
-    return getApplicationInfo().isDatacenterEdition();
+  public static boolean isTeamEdition() {
+    return getApplicationInfo().isTeamEdition();
   }
 
   public static boolean isEnterpriseEdition() {

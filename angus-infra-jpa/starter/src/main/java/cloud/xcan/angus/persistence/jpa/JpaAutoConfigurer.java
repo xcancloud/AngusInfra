@@ -1,8 +1,5 @@
 package cloud.xcan.angus.persistence.jpa;
 
-
-import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
-
 import cloud.xcan.angus.core.spring.condition.MySqlEnvCondition;
 import cloud.xcan.angus.core.spring.condition.PostgresEnvCondition;
 import cloud.xcan.angus.persistence.config.DataSourceExtraProperties;
@@ -114,7 +111,7 @@ public class JpaAutoConfigurer {
       DataSourceProperties dataSourceProperties) {
     ResourceDatabasePopulator rdp = new ResourceDatabasePopulator();
     List<String> schemaScripts = dataSourceProperties.getSchema();
-    if (isNotEmpty(schemaScripts)) {
+    if (!CollectionUtils.isEmpty(schemaScripts)) {
       for (String sql : schemaScripts) {
         rdp.addScript(new ClassPathResource(sql));
       }

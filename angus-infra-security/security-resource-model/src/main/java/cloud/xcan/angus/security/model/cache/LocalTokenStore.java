@@ -1,7 +1,8 @@
 package cloud.xcan.angus.security.model.cache;
 
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * In-memory (local) token store using volatile fields for thread-safe single-instance caching.
@@ -14,8 +15,9 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  * @since 2025-03-22
  */
-@Slf4j
 public class LocalTokenStore implements TokenStore {
+
+  private static final Logger log = LoggerFactory.getLogger(LocalTokenStore.class);
 
   private volatile String cachedToken;
   private volatile long cachedTokenTime = 0;

@@ -1,7 +1,8 @@
 package cloud.xcan.angus.security.model.cache;
 
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Distributed token store backed by an {@code IDistributedCache} implementation.
@@ -16,8 +17,9 @@ import lombok.extern.slf4j.Slf4j;
  * @version 1.0
  * @since 2025-03-22
  */
-@Slf4j
 public class DistributedTokenStore implements TokenStore {
+
+  private static final Logger log = LoggerFactory.getLogger(DistributedTokenStore.class);
 
   /**
    * We accept Object to avoid a hard compile-time dependency on the cache module. At runtime the

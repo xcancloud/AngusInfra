@@ -48,6 +48,8 @@ import static org.springframework.web.context.request.RequestContextHolder.getRe
 
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
+import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyService;
+import cloud.xcan.angus.spec.principal.UserTokenAuthorityContext;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URL;
@@ -55,9 +57,11 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.TypeDescriptor;
+import org.springframework.lang.Nullable;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -92,20 +96,28 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
 
   private final OAuth2AuthorizationService authorizationService;
 
+  @Nullable
+  private final JdbcUserAuthoritiesLazyService authoritiesLazyService;
+
   /**
    * Constructs an {@code CustomOAuth2TokenIntrospectionAuthenticationProvider} using the provided
    * parameters.
-   *
-   * @param registeredClientRepository the jpa of registered clients
-   * @param authorizationService       the authorization service
    */
   public CustomOAuth2TokenIntrospectionAuthenticationProvider(
       RegisteredClientRepository registeredClientRepository,
       OAuth2AuthorizationService authorizationService) {
+    this(registeredClientRepository, authorizationService, null);
+  }
+
+  public CustomOAuth2TokenIntrospectionAuthenticationProvider(
+      RegisteredClientRepository registeredClientRepository,
+      OAuth2AuthorizationService authorizationService,
+      @Nullable JdbcUserAuthoritiesLazyService authoritiesLazyService) {
     Assert.notNull(registeredClientRepository, "registeredClientRepository cannot be null");
     Assert.notNull(authorizationService, "authorizationService cannot be null");
     this.registeredClientRepository = registeredClientRepository;
     this.authorizationService = authorizationService;
+    this.authoritiesLazyService = authoritiesLazyService;
   }
 
   @Override
@@ -122,7 +134,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
       if (log.isTraceEnabled()) {
         log.trace("Did not authenticate token introspection request since token was not found");
       }
-      // Return the authentication request when token not found
       return tokenIntrospectionAuthentication;
     }
 
@@ -167,7 +178,7 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     return OAuth2TokenIntrospectionAuthenticationToken.class.isAssignableFrom(authentication);
   }
 
-  private static OAuth2TokenIntrospection withActiveTokenClaims(
+  private OAuth2TokenIntrospection withActiveTokenClaims(
       OAuth2Authorization authorization, OAuth2Authorization.Token<OAuth2Token> authorizedToken,
       RegisteredClient authorizedClient) {
 
@@ -199,16 +210,13 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
 
     if (grantType.equals(AuthorizationGrantType.PASSWORD)) {
       Object principal = authorization.getAttribute(Principal.class.getName());
-      if (principal != null) {
-        if (principal instanceof UsernamePasswordAuthenticationToken) {
-          CustomOAuth2User user = (CustomOAuth2User)
-              ((UsernamePasswordAuthenticationToken) principal).getPrincipal();
-          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
-              toUserPrincipalClaim(user, authorization.getAttributes()));
-          if (isNotEmpty(user.getAuthorities())) {
-            tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, user.getAuthorities()
-                .stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet()));
-          }
+      if (principal instanceof UsernamePasswordAuthenticationToken authenticationToken) {
+        CustomOAuth2User user = (CustomOAuth2User) authenticationToken.getPrincipal();
+        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
+            toUserPrincipalClaim(user, authorization.getAttributes()));
+        Set<String> permissions = resolvePermissions(user, authorization.getAttributes());
+        if (isNotEmpty(permissions)) {
+          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, permissions);
         }
       }
     } else if (grantType.equals(AuthorizationGrantType.CLIENT_CREDENTIALS)) {
@@ -216,6 +224,37 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
           (CustomOAuth2RegisteredClient) authorizedClient));
     }
     return tokenClaims.build();
+  }
+
+  /**
+   * Prefer realtime reload via {@link JdbcUserAuthoritiesLazyService}; fall back to login snapshot.
+   */
+  private Set<String> resolvePermissions(CustomOAuth2User user, Map<String, Object> attributes) {
+    String userTokenName = nonNull(attributes) && attributes.containsKey(CUSTOM_ACCESS_TOKEN_NAME)
+        ? attributes.get(CUSTOM_ACCESS_TOKEN_NAME).toString() : null;
+    if (authoritiesLazyService != null) {
+      try {
+        if (isNotEmpty(userTokenName)) {
+          UserTokenAuthorityContext.setTokenName(userTokenName);
+        }
+        Set<GrantedAuthority> reloaded = authoritiesLazyService.lazyUserAuthorities(user);
+        if (isNotEmpty(reloaded)) {
+          return reloaded.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
+        }
+        return Set.of();
+      } catch (Exception ex) {
+        log.warn("Realtime authority reload failed, fallback to token snapshot: {}",
+            ex.getMessage());
+      } finally {
+        UserTokenAuthorityContext.clear();
+      }
+    }
+    if (isNotEmpty(user.getAuthorities())) {
+      return user.getAuthorities().stream()
+          .map(GrantedAuthority::getAuthority)
+          .collect(Collectors.toSet());
+    }
+    return Set.of();
   }
 
   private static Map<String, Object> toUserPrincipalClaim(CustomOAuth2User user,
@@ -233,21 +272,15 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     claims.put(INTROSPECTION_CLAIM_NAMES_FIRST_NAME, user.getFirstName());
     claims.put(INTROSPECTION_CLAIM_NAMES_LAST_NAME, user.getLastName());
     claims.put(INTROSPECTION_CLAIM_NAMES_FULL_NAME, nullSafe(userTokenName, user.getFullName()));
-    //claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_STRENGTH, user.getPasswordStrength());
     claims.put(INTROSPECTION_CLAIM_NAMES_SYS_ADMIN, user.isSysAdmin());
     claims.put(INTROSPECTION_CLAIM_NAMES_PHONE, user.getPhone());
     claims.put(INTROSPECTION_CLAIM_NAMES_EMAIL, user.getEmail());
-    //claims.put(INTROSPECTION_CLAIM_NAMES_MAIN_DEPT_ID, user.getMainDeptId());
     claims.put(INTROSPECTION_CLAIM_NAMES_PASSWORD_EXPIRED_DATE, user.getPasswordExpiredDate());
     claims.put(INTROSPECTION_CLAIM_NAMES_LAST_MODIFIED_PASSWORD_DATE,
         user.getLastModifiedPasswordDate());
     claims.put(INTROSPECTION_CLAIM_NAMES_EXPIRED_DATE, user.getExpiredDate());
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, user.getTenantId());
     claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_NAME, user.getTenantName());
-    //claims.put(INTROSPECTION_CLAIM_NAMES_TENANT_REAL_NAME_STATUS, user.getTenantRealNameStatus());
-    //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, user.getClientId());
-    //claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE, user.getClientSource());
-    //claims.put(INTROSPECTION_CLAIM_NAMES_DIRECTORY_ID, user.getDirectoryId());
     claims.put(INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE, user.getDefaultLanguage());
     claims.put(INTROSPECTION_CLAIM_NAMES_IS_USER_TOKEN, nonNull(userTokenName));
 
@@ -257,8 +290,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
       claims.put(INTROSPECTION_CLAIM_NAMES_ROOT_REQUEST_id, requestId);
       claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT,
           stringSafe(getRequestStringAttribute(requestId, USER_AGENT)));
-      //claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_INFO,
-      //  stringSafe(getRequestStringAttribute(requestId, DEVICE_ID_IN_QUERY)));
       claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR,
           stringSafe(getRequestStringAttribute(requestId, REMOTE_ADDR_IN_QUERY)));
     }
@@ -267,7 +298,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
 
   private static Map<String, Object> toClientPrincipalClaim(CustomOAuth2RegisteredClient client) {
     Map<String, Object> claims = new HashMap<>();
-    //claims.put(INTROSPECTION_CLAIM_NAMES_ID, client.getId());
     claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, client.getClientId());
     claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_NAME, client.getClientName());
     claims.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID_ISSUED_AT, client.getClientIdIssuedAt());
@@ -283,7 +313,6 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
 
     HttpServletRequest request = ((ServletRequestAttributes) getRequestAttributes()).getRequest();
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_AGENT, request.getHeader(User_Agent.getValue()));
-    //claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_DEVICE_INFO, request.getHeader(AUTH_DEVICE_ID));
     claims.put(INTROSPECTION_CLAIM_NAMES_REQUEST_REMOTE_ADDR, request.getRemoteAddr());
     return claims;
   }

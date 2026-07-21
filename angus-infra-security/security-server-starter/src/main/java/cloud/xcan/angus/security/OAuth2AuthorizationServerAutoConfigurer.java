@@ -87,7 +87,9 @@ public class OAuth2AuthorizationServerAutoConfigurer {
       AuthorizationServerSettings authorizationServerSettings,
       AuthenticationManager authenticationManager, CorsConfigurationSource oauth2CorsConfiguration,
       JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService,
-      ObjectMapper objectMapper) throws Exception {
+      ObjectMapper objectMapper,
+      @Autowired(required = false) JdbcUserAuthoritiesLazyService authoritiesLazyService)
+      throws Exception {
     // @formatter:off
 
     OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator = getOAuth2TokenGenerator(http);
@@ -129,7 +131,9 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                 // oauth2-authorization-server/src/test/java/org/springframework/security/oauth2/server/authorization/config/annotation/web/configurers/OAuth2TokenIntrospectionTests.java
                 .tokenIntrospectionEndpoint(tokenIntrospectionEndpoint -> tokenIntrospectionEndpoint // Enable Introspection
                     .introspectionRequestConverter(new OAuth2TokenIntrospectionAuthenticationConverter())
-                    .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(registeredClientRepository, jdbcOAuth2AuthorizationService))
+                    .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(
+                        registeredClientRepository, jdbcOAuth2AuthorizationService,
+                        authoritiesLazyService))
                     //.introspectionResponseHandler(new OAuth2AccessTokenResponseAuthenticationSuccessHandler())
                     //.errorResponseHandler(new CustomOAuth2ErrorAuthenticationFailureHandler())
                 )

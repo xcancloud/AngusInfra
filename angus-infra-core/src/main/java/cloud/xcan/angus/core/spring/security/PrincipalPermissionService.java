@@ -6,6 +6,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.OWNER_TENANT_ID;
 
 import cloud.xcan.angus.core.spring.boot.ApplicationInfo;
 import cloud.xcan.angus.core.utils.PrincipalContextUtils;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
 import java.util.Objects;
 
 /**
@@ -18,22 +19,22 @@ import java.util.Objects;
 public class PrincipalPermissionService {
 
   public boolean hasAuthority(String authority) {
-    return PrincipalContextUtils.isTenantSysAdmin()
+    return tenantAdminAuthorityBypass()
         || PrincipalContextUtils.hasAuthority(authority);
   }
 
   public boolean hasAnyAuthority(String... authorities) {
-    return PrincipalContextUtils.isTenantSysAdmin()
+    return tenantAdminAuthorityBypass()
         || PrincipalContextUtils.hasAnyAuthority(authorities);
   }
 
   public boolean hasPolicy(String policy) {
-    return PrincipalContextUtils.isTenantSysAdmin()
+    return tenantAdminAuthorityBypass()
         || PrincipalContextUtils.hasPolicy(policy);
   }
 
   public boolean hasAnyPolicy(String... policies) {
-    return PrincipalContextUtils.isTenantSysAdmin()
+    return tenantAdminAuthorityBypass()
         || PrincipalContextUtils.hasAnyPolicy(policies);
   }
 
@@ -89,5 +90,19 @@ public class PrincipalPermissionService {
     ApplicationInfo app = getApplicationInfo();
     return app.isPrivateEdition()
         || (app.isCloudServiceEdition() && Objects.equals(getOptTenantId(), ownerTenantId));
+  }
+
+  /**
+   * 会话租户管理员短路全权限；PAT（{@code isUserToken}）必须按令牌 permissions 校验。
+   */
+  private boolean tenantAdminAuthorityBypass() {
+    if (!PrincipalContextUtils.isTenantSysAdmin()) {
+      return false;
+    }
+    try {
+      return !PrincipalContext.get().isUserToken();
+    } catch (Exception e) {
+      return true;
+    }
   }
 }

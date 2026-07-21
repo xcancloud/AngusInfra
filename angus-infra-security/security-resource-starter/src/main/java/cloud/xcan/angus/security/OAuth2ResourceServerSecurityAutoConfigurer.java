@@ -108,6 +108,7 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
   }
 
   @Bean
+  @ConditionalOnMissingBean(AccessDeniedHandler.class)
   public AccessDeniedHandler accessDeniedHandler(ObjectMapper objectMapper) {
     return new CustomAccessDeniedHandler(objectMapper);
   }

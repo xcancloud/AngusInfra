@@ -60,11 +60,13 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
   public SecurityFilterChain resourceServerSecurityFilterChain(HttpSecurity http,
       BearerTokenResolver bearerTokenResolver, AccessDeniedHandler accessDeniedHandler,
       AuthenticationEntryPoint authenticationEntryPoint,
-      OpaqueTokenIntrospector opaqueTokenIntrospector, ObjectMapper objectMapper) throws Exception {
+      OpaqueTokenIntrospector opaqueTokenIntrospector, ObjectMapper objectMapper,
+      ResourceServerSecurityProperties resourceServerSecurityProperties) throws Exception {
     http.authorizeHttpRequests(authorize -> authorize
             .requestMatchers(AUTH_RESOURCES).authenticated()
             .anyRequest().permitAll())
-        .addFilterAfter(new HoldPrincipalFilter(objectMapper), AuthorizationFilter.class)
+        .addFilterAfter(new HoldPrincipalFilter(objectMapper, resourceServerSecurityProperties),
+            AuthorizationFilter.class)
         .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
             .bearerTokenResolver(bearerTokenResolver)
             .accessDeniedHandler(accessDeniedHandler)

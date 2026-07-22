@@ -1,5 +1,7 @@
 package cloud.xcan.angus.security.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -13,6 +15,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@code Referer} headers. The default is therefore {@code false} (the RFC-recommended secure
  * default); services that still rely on query-parameter tokens (e.g. legacy browser download /
  * preview links) opt back in by setting it to {@code true}.</p>
+ *
+ * <p><b>{@code allowedClientIds}.</b> Portal client boundary for this resource server. When
+ * non-empty, tokens issued to platform portals ({@code xcan_tp} / {@code xcan_op}) are rejected
+ * unless the token's {@code client_id} is listed here. Non-portal service clients
+ * ({@code client_credentials}) are never gated by this list. Empty (default) disables the check
+ * for backward compatibility — production apps should always set it to match
+ * {@code gm_application.client_id}.</p>
  */
 @ConfigurationProperties(prefix = "angus.security.resource")
 public class ResourceServerSecurityProperties {
@@ -24,11 +33,25 @@ public class ResourceServerSecurityProperties {
    */
   private boolean allowUriQueryToken = false;
 
+  /**
+   * Portal clients allowed to call this service's authenticated APIs (typically {@code xcan_tp}
+   * and/or {@code xcan_op}). Empty disables cross-client enforcement.
+   */
+  private List<String> allowedClientIds = new ArrayList<>();
+
   public boolean isAllowUriQueryToken() {
     return allowUriQueryToken;
   }
 
   public void setAllowUriQueryToken(boolean allowUriQueryToken) {
     this.allowUriQueryToken = allowUriQueryToken;
+  }
+
+  public List<String> getAllowedClientIds() {
+    return allowedClientIds;
+  }
+
+  public void setAllowedClientIds(List<String> allowedClientIds) {
+    this.allowedClientIds = allowedClientIds != null ? allowedClientIds : new ArrayList<>();
   }
 }

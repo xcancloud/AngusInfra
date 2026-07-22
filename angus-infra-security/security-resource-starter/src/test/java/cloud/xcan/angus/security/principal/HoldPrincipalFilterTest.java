@@ -10,8 +10,11 @@ import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLA
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_TENANT_ID;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_USERNAME;
 import static cloud.xcan.angus.spec.SpecConstant.LOCALE_EXPLICIT_REQUEST_ATTR;
+import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_OPERATION_PLATFORM_CODE;
+import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import cloud.xcan.angus.security.web.ResourceServerSecurityProperties;
 import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
 import cloud.xcan.angus.spec.locale.SupportedLanguage;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
@@ -19,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
@@ -84,11 +88,16 @@ class HoldPrincipalFilterTest {
 
   private static BearerTokenAuthentication userBearer(String grantTypeValue, long userId,
       long tenantId) {
-    return userBearer(grantTypeValue, userId, tenantId, null);
+    return userBearer(grantTypeValue, userId, tenantId, null, "test-client");
   }
 
   private static BearerTokenAuthentication userBearer(String grantTypeValue, long userId,
       long tenantId, String defaultLanguage) {
+    return userBearer(grantTypeValue, userId, tenantId, defaultLanguage, "test-client");
+  }
+
+  private static BearerTokenAuthentication userBearer(String grantTypeValue, long userId,
+      long tenantId, String defaultLanguage, String clientId) {
     Map<String, Object> principalClaim = new HashMap<>();
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_TENANT_ID, tenantId);
     principalClaim.put(INTROSPECTION_CLAIM_NAMES_USERNAME, "lxl");
@@ -100,7 +109,7 @@ class HoldPrincipalFilterTest {
     }
 
     Map<String, Object> attributes = new HashMap<>();
-    attributes.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, "test-client");
+    attributes.put(INTROSPECTION_CLAIM_NAMES_CLIENT_ID, clientId);
     attributes.put(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE, grantTypeValue);
     attributes.put(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, principalClaim);
 
@@ -111,6 +120,12 @@ class HoldPrincipalFilterTest {
         Instant.now(), Instant.now().plusSeconds(3600));
     return new BearerTokenAuthentication(principal, token,
         AuthorityUtils.createAuthorityList("SCOPE_repo"));
+  }
+
+  private static HoldPrincipalFilter filterAllowing(String... clientIds) {
+    ResourceServerSecurityProperties props = new ResourceServerSecurityProperties();
+    props.setAllowedClientIds(List.of(clientIds));
+    return new HoldPrincipalFilter(new ObjectMapper(), props);
   }
 
   private static MockHttpServletRequest req(String method, String path) {
@@ -252,5 +267,63 @@ class HoldPrincipalFilterTest {
 
     assertThat(chain.called).isTrue();
     assertThat(chain.defaultLanguage).isEqualTo(SupportedLanguage.en);
+  }
+
+  @Test
+  void apiPath_tenantPortalToken_onOpOnlyApp_isForbidden() throws Exception {
+    HoldPrincipalFilter opOnly = filterAllowing(XCAN_OPERATION_PLATFORM_CODE);
+    SecurityContextHolder.getContext().setAuthentication(
+        userBearer("password", 1L, 1L, null, XCAN_TENANT_PLATFORM_CODE));
+    MockHttpServletRequest req = req("GET", "/api/v1/apps");
+    MockHttpServletResponse resp = new MockHttpServletResponse();
+    RecordingChain chain = new RecordingChain();
+
+    opOnly.doFilter(req, resp, chain);
+
+    assertThat(chain.called).isFalse();
+    assertThat(resp.getStatus()).isEqualTo(403);
+  }
+
+  @Test
+  void apiPath_opPortalToken_onOpOnlyApp_isAllowed() throws Exception {
+    HoldPrincipalFilter opOnly = filterAllowing(XCAN_OPERATION_PLATFORM_CODE);
+    SecurityContextHolder.getContext().setAuthentication(
+        userBearer("password", 1L, 1L, null, XCAN_OPERATION_PLATFORM_CODE));
+    MockHttpServletRequest req = req("GET", "/api/v1/apps");
+    RecordingChain chain = new RecordingChain();
+
+    opOnly.doFilter(req, new MockHttpServletResponse(), chain);
+
+    assertThat(chain.called).isTrue();
+    assertThat(chain.authPassed).isTrue();
+  }
+
+  @Test
+  void innerapiPath_tenantPortalToken_onOpOnlyApp_isNotGated() throws Exception {
+    // Service /innerapi stays open; portal boundary only applies to /api/** and /view/**.
+    HoldPrincipalFilter opOnly = filterAllowing(XCAN_OPERATION_PLATFORM_CODE);
+    SecurityContextHolder.getContext().setAuthentication(
+        userBearer("password", 1L, 1L, null, XCAN_TENANT_PLATFORM_CODE));
+    MockHttpServletRequest req = req("GET", "/innerapi/v1/apps");
+    RecordingChain chain = new RecordingChain();
+
+    opOnly.doFilter(req, new MockHttpServletResponse(), chain);
+
+    assertThat(chain.called).isTrue();
+    assertThat(chain.authPassed).isTrue();
+  }
+
+  @Test
+  void apiPath_serviceClient_onOpOnlyApp_isNotGated() throws Exception {
+    HoldPrincipalFilter opOnly = filterAllowing(XCAN_OPERATION_PLATFORM_CODE);
+    SecurityContextHolder.getContext().setAuthentication(
+        userBearer("password", 1L, 1L, null, "angus-insight"));
+    MockHttpServletRequest req = req("GET", "/api/v1/apps");
+    RecordingChain chain = new RecordingChain();
+
+    opOnly.doFilter(req, new MockHttpServletResponse(), chain);
+
+    assertThat(chain.called).isTrue();
+    assertThat(chain.authPassed).isTrue();
   }
 }

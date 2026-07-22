@@ -5,8 +5,10 @@ import static cloud.xcan.angus.remote.ApiConstant.ECode.PROTOCOL_ERROR_CODE;
 import static cloud.xcan.angus.remote.ApiConstant.EXT_EKEY_NAME;
 import static cloud.xcan.angus.remote.message.SysException.M.PRINCIPAL_MISSING;
 import static cloud.xcan.angus.remote.message.SysException.M.PRINCIPAL_MISSING_KEY;
+import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_CROSS_CLIENT_ACCESS_T;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.DENIED_OP_TENANT_ACCESS_T;
 import static cloud.xcan.angus.remote.message.http.Forbidden.M.FATAL_EXIT_KEY;
+import static cloud.xcan.angus.remote.message.http.Forbidden.M.INSUFFICIENT_PERMISSIONS_KEY;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_NAME;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_CLIENT_SOURCE;
 import static cloud.xcan.angus.security.model.SecurityConstant.INTROSPECTION_CLAIM_NAMES_DEFAULT_LANGUAGE;
@@ -26,6 +28,7 @@ import static cloud.xcan.angus.spec.SpecConstant.DEFAULT_ENCODING;
 import static cloud.xcan.angus.spec.SpecConstant.LOCALE_EXPLICIT_REQUEST_ATTR;
 import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.BEARER_TOKEN_TYPE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.ACCESS_TOKEN;
+import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_OPERATION_PLATFORM_CODE;
 import static cloud.xcan.angus.spec.experimental.BizConstant.XCAN_TENANT_PLATFORM_CODE;
 import static cloud.xcan.angus.spec.principal.Principal.DEFAULT_USER_ID;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
@@ -40,6 +43,7 @@ import cloud.xcan.angus.remote.ApiResult;
 import cloud.xcan.angus.remote.message.SysException;
 import cloud.xcan.angus.security.handler.CustomAuthenticationEntryPoint;
 import cloud.xcan.angus.security.introspection.CustomOpaqueTokenIntrospector;
+import cloud.xcan.angus.security.web.ResourceServerSecurityProperties;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.locale.MessageHolder;
 import cloud.xcan.angus.spec.locale.SdfLocaleHolder;
@@ -54,6 +58,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -81,6 +86,8 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
   private static ObjectMapper objectMapper;
 
+  private final ResourceServerSecurityProperties properties;
+
   private final static AntPathRequestMatcher[] AUTH_API_MATCHERS = new AntPathRequestMatcher[]{
       new AntPathRequestMatcher("/api/**"),
       new AntPathRequestMatcher("/innerapi/**"),
@@ -88,8 +95,20 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
       new AntPathRequestMatcher("/openapi/**")
   };
 
+  /** Paths where portal client boundary is enforced (user-facing APIs / views only). */
+  private final static AntPathRequestMatcher[] CLIENT_BOUNDARY_MATCHERS = new AntPathRequestMatcher[]{
+      new AntPathRequestMatcher("/api/**"),
+      new AntPathRequestMatcher("/view/**")
+  };
+
   public HoldPrincipalFilter(ObjectMapper objectMapper) {
+    this(objectMapper, new ResourceServerSecurityProperties());
+  }
+
+  public HoldPrincipalFilter(ObjectMapper objectMapper,
+      ResourceServerSecurityProperties properties) {
     HoldPrincipalFilter.objectMapper = objectMapper;
+    this.properties = properties != null ? properties : new ResourceServerSecurityProperties();
   }
 
   @Override
@@ -150,6 +169,11 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
 
       // Only allow the operating platform to access other tenants.
       if (checkMultiTenantAccess(principal, response)) {
+        return;
+      }
+
+      // Reject portal tokens (xcan_tp / xcan_op) that are not listed for this resource server.
+      if (checkClientBoundary(request, principal, response)) {
         return;
       }
 
@@ -374,6 +398,46 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
     return false;
   }
 
+  /**
+   * Enforce portal client boundary configured via
+   * {@code angus.security.resource.allowed-client-ids}.
+   *
+   * <p>Only {@code /api/**} and {@code /view/**} are gated. {@code /innerapi/**} /
+   * {@code /openapi/**} stay open for service clients. Non-portal clients (service
+   * {@code client_credentials}) are never blocked. Empty allow-list disables the check.</p>
+   *
+   * @return {@code true} when the request was rejected
+   */
+  private boolean checkClientBoundary(HttpServletRequest request, Principal principal,
+      HttpServletResponse response) throws ServletException {
+    List<String> allowed = properties.getAllowedClientIds();
+    if (isEmpty(allowed)) {
+      return false;
+    }
+    boolean matched = false;
+    for (AntPathRequestMatcher matcher : CLIENT_BOUNDARY_MATCHERS) {
+      if (matcher.matches(request)) {
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      return false;
+    }
+    String clientId = principal.getClientId();
+    if (!isPlatformPortalClient(clientId)) {
+      return false;
+    }
+    if (allowed.contains(clientId)) {
+      return false;
+    }
+    log.warn("Cross-client access denied: user={}, clientId={}, uri={}, allowed={}",
+        principal.getUserId(), clientId, request.getRequestURI(), allowed);
+    writeApiResult(response, SC_FORBIDDEN, DENIED_CROSS_CLIENT_ACCESS_T,
+        INSUFFICIENT_PERMISSIONS_KEY, new Object[]{clientId});
+    return true;
+  }
+
   public static boolean isTenantClientOpMultiTenant(Principal principal) {
     return isTenantClient(principal) && nonNull(principal.getOptTenantId())
         /* Fix: 1=1 */ && !principal.getOptTenantId().equals(principal.getTenantId());
@@ -384,6 +448,11 @@ public class HoldPrincipalFilter extends OncePerRequestFilter {
    */
   public static boolean isTenantClient(Principal principal) {
     return XCAN_TENANT_PLATFORM_CODE.equals(principal.getClientId());
+  }
+
+  public static boolean isPlatformPortalClient(String clientId) {
+    return XCAN_TENANT_PLATFORM_CODE.equals(clientId)
+        || XCAN_OPERATION_PLATFORM_CODE.equals(clientId);
   }
 
   public static void writeApiResult(HttpServletResponse response, int status, String message,

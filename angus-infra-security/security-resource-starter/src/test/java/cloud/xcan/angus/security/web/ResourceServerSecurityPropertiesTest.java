@@ -29,6 +29,18 @@ class ResourceServerSecurityPropertiesTest {
   }
 
   @Test
+  void allowedClientIds_defaultsToEmpty_disablesBoundary() {
+    assertThat(new ResourceServerSecurityProperties().getAllowedClientIds()).isEmpty();
+  }
+
+  @Test
+  void allowedClientIds_isMutable() {
+    ResourceServerSecurityProperties props = new ResourceServerSecurityProperties();
+    props.setAllowedClientIds(java.util.List.of("xcan_op"));
+    assertThat(props.getAllowedClientIds()).containsExactly("xcan_op");
+  }
+
+  @Test
   void whenDisabled_uriQueryTokenIsIgnored() {
     DefaultBearerTokenResolver resolver = resolverFor(false);
 

@@ -19,22 +19,22 @@ import java.util.Objects;
 public class PrincipalPermissionService {
 
   public boolean hasAuthority(String authority) {
-    return tenantAdminAuthorityBypass()
+    return sysAdminAuthorityBypass()
         || PrincipalContextUtils.hasAuthority(authority);
   }
 
   public boolean hasAnyAuthority(String... authorities) {
-    return tenantAdminAuthorityBypass()
+    return sysAdminAuthorityBypass()
         || PrincipalContextUtils.hasAnyAuthority(authorities);
   }
 
   public boolean hasPolicy(String policy) {
-    return tenantAdminAuthorityBypass()
+    return sysAdminAuthorityBypass()
         || PrincipalContextUtils.hasPolicy(policy);
   }
 
   public boolean hasAnyPolicy(String... policies) {
-    return tenantAdminAuthorityBypass()
+    return sysAdminAuthorityBypass()
         || PrincipalContextUtils.hasAnyPolicy(policies);
   }
 
@@ -93,10 +93,13 @@ public class PrincipalPermissionService {
   }
 
   /**
-   * 会话租户管理员短路全权限；PAT（{@code isUserToken}）必须按令牌 permissions 校验。
+   * 会话系统管理员短路全权限（覆盖租户端 xcan_tp 与运营端 xcan_op）。
+   * <p>此前仅 {@code isTenantSysAdmin()}（要求 clientId=xcan_tp），导致拥有者租户管理员
+   * 经运营端登录访问 OP 应用（如 AngusInsight）时 {@code @PPS.hasAuthority} 全部 403。
+   * PAT（{@code isUserToken}）仍必须按令牌 permissions 校验。
    */
-  private boolean tenantAdminAuthorityBypass() {
-    if (!PrincipalContextUtils.isTenantSysAdmin()) {
+  private boolean sysAdminAuthorityBypass() {
+    if (!PrincipalContextUtils.isSysAdmin()) {
       return false;
     }
     try {

@@ -113,6 +113,9 @@ public class Forbidden extends AbstractResultMessageException {
     String FATAL_EXIT = "xcm.fatal.exit";
     String INVALID_ACCESS_DEVICE_ID = "xcm.invalid.access.device.id.t";
     String DENIED_OP_TENANT_ACCESS_T = "xcm.denied.op.tenant.access.t";
+    /** Cross portal client access denied (e.g. xcan_tp token calling an xcan_op-only app). */
+    String DENIED_CROSS_CLIENT_ACCESS = "xcm.denied.cross.client.access";
+    String DENIED_CROSS_CLIENT_ACCESS_T = "xcm.denied.cross.client.access.t";
 
     /////// default /////////////////////////
     String FORBIDDEN_KEY = "forbidden";

@@ -9,7 +9,6 @@ import cloud.xcan.angus.api.enums.DeviceType;
 import cloud.xcan.angus.api.pojo.DeviceInfo;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 
 class DeviceInfoExtractorUtilsTest {
@@ -49,11 +48,9 @@ class DeviceInfoExtractorUtilsTest {
   }
 
   @Test
-  void generateTemporaryDeviceId_stableForSameSessionAndIp() {
+  void generateTemporaryDeviceId_stableForSameUserAgentAndIp() {
     HttpServletRequest req = mock(HttpServletRequest.class);
-    HttpSession session = mock(HttpSession.class);
-    when(req.getSession()).thenReturn(session);
-    when(session.getId()).thenReturn("sid");
+    when(req.getHeader(Header.USER_AGENT)).thenReturn("Mozilla/5.0 Chrome/91");
     when(req.getHeader("X-Forwarded-For")).thenReturn(null);
     when(req.getRemoteAddr()).thenReturn("127.0.0.1");
 

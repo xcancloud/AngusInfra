@@ -33,25 +33,31 @@ public class DeviceInfoExtractorUtils {
    * 提取设备ID（支持多种方式）
    */
   public static String extractDeviceId(HttpServletRequest request) {
-    // 1. 从请求头获取
+    // 1. 从请求头获取（标准：X-Device-Id）
     String deviceId = request.getHeader(AUTH_DEVICE_ID);
     if (StringUtils.hasText(deviceId)) {
       return deviceId;
     }
 
-    // 2. 从自定义header获取
+    // 2. 兼容历史前端请求头
+    deviceId = request.getHeader("XC-Auth-Device-Id");
+    if (StringUtils.hasText(deviceId)) {
+      return deviceId;
+    }
+
+    // 3. 从自定义 header 获取
     deviceId = request.getHeader("Device-Id");
     if (StringUtils.hasText(deviceId)) {
       return deviceId;
     }
 
-    // 3. 从参数获取
+    // 4. 从参数获取
     deviceId = request.getParameter("deviceId");
     if (StringUtils.hasText(deviceId)) {
       return deviceId;
     }
 
-    // 4. 生成临时设备ID（如果业务允许）
+    // 5. 生成临时设备ID（如果业务允许）
     return generateTemporaryDeviceId(request);
   }
 
@@ -139,12 +145,13 @@ public class DeviceInfoExtractorUtils {
   }
 
   /**
-   * 生成临时设备ID（基于会话和IP）
+   * 生成临时设备ID（基于 User-Agent + IP，跨会话尽量稳定）
    */
   public static String generateTemporaryDeviceId(HttpServletRequest request) {
-    String sessionId = request.getSession().getId();
+    String userAgent = request.getHeader(USER_AGENT);
     String ip = getClientIp(request);
-    return DigestUtils.md5DigestAsHex((sessionId + ip).getBytes()).substring(0, 16);
+    String seed = (userAgent == null ? "" : userAgent) + "|" + (ip == null ? "" : ip);
+    return DigestUtils.md5DigestAsHex(seed.getBytes()).substring(0, 16);
   }
 
   public static String getClientIp(HttpServletRequest request) {

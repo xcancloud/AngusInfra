@@ -137,11 +137,6 @@ public class GlobalHoldFilter implements Filter {
 
       setResponseHeader(response, principal);
 
-      Long userId = principal.getUserId();
-      if (userId != null) {
-        USER_REQUEST_TIME.put(userId, LocalDateTime.now());
-      }
-
       MDC.put(AuthKey.REQUEST_ID, principal.getRequestId());
 
       PrincipalContext.set(principal);
@@ -152,6 +147,14 @@ public class GlobalHoldFilter implements Filter {
       }
 
       filterChain.doFilter(mutableRequest, servletResponse);
+
+      // 在线心跳须在鉴权链（HoldPrincipalFilter）填充 userId 之后记录。
+      // 鉴权前 principal.userId 通常为空，提前 put 会导致 UserOnlineSyncJob 永远无数据。
+      Long userId = principal.getUserId();
+      // 排除未鉴权默认值 Principal.DEFAULT_USER_ID(-1)
+      if (userId != null && userId > 0) {
+        USER_REQUEST_TIME.put(userId, LocalDateTime.now());
+      }
 
     } finally {
       PrincipalContext.remove();

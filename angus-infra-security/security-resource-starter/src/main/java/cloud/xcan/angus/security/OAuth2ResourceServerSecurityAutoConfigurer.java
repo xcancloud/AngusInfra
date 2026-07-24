@@ -115,7 +115,12 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
     return new CustomAccessDeniedHandler(objectMapper);
   }
 
+  /**
+   * Remote HTTP introspector. Skipped when the authorization server registers a local
+   * {@link OpaqueTokenIntrospector} (e.g. GM in-process introspect).
+   */
   @Bean
+  @ConditionalOnMissingBean(OpaqueTokenIntrospector.class)
   public OpaqueTokenIntrospector opaqueTokenIntrospector(
       OAuth2ResourceServerProperties auth2ResourceServerProperties,
       ResourceServerSecurityProperties resourceServerSecurityProperties) {

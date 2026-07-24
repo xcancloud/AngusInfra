@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cloud.xcan.angus.security.OAuth2AuthorizationServerAutoConfigurer
+  cloud.xcan.angus.security.OAuth2AuthorizationServerAutoConfigurer,\
+  cloud.xcan.angus.security.LocalOpaqueTokenIntrospectorAutoConfigurer

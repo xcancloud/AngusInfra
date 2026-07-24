@@ -46,10 +46,12 @@ public class ResourceServerSecurityProperties {
   private boolean introspectCacheEnabled = true;
 
   /**
-   * TTL for introspection result cache entries (seconds). Default {@code 60}. Permission /
-   * revocation changes may take up to this long to be visible on resource servers.
+   * TTL for introspection result cache entries (seconds). Default {@code 300}.
+   * <p>Logout on GM removes the authorization row and invalidates the <em>local</em> GM cache;
+   * other resource services may still accept a previously cached active principal until this TTL
+   * elapses (or until their process restarts).
    */
-  private int introspectCacheTtlSeconds = 60;
+  private int introspectCacheTtlSeconds = 300;
 
   /**
    * Maximum number of cached introspection principals. Default {@code 10000}.

@@ -130,9 +130,9 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     OAuth2ClientAuthenticationToken clientPrincipal
         = getAuthenticatedClientElseThrowInvalidClient(tokenIntrospectionAuthentication);
 
-    OAuth2Authorization authorization = this.authorizationService
-        .findByToken(tokenIntrospectionAuthentication.getToken(), null);
-    if (authorization == null) {
+    OAuth2TokenIntrospection tokenClaims = introspectLocally(
+        tokenIntrospectionAuthentication.getToken());
+    if (tokenClaims == null) {
       if (log.isTraceEnabled()) {
         log.trace("Did not authenticate token introspection request since token was not found");
       }
@@ -140,39 +140,35 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     }
 
     if (log.isTraceEnabled()) {
-      log.trace("Retrieved authorization with token");
-    }
-
-    OAuth2Authorization.Token<OAuth2Token> authorizedToken = authorization
-        .getToken(tokenIntrospectionAuthentication.getToken());
-    if (authorizedToken == null) {
-      if (log.isTraceEnabled()) {
-        log.trace("Did not introspect token since authorized token resolved to null");
-      }
-      return new OAuth2TokenIntrospectionAuthenticationToken(
-          tokenIntrospectionAuthentication.getToken(),
-          clientPrincipal, OAuth2TokenIntrospection.builder().build());
-    }
-    if (!authorizedToken.isActive()) {
-      if (log.isTraceEnabled()) {
-        log.trace("Did not introspect token since not active");
-      }
-      return new OAuth2TokenIntrospectionAuthenticationToken(
-          tokenIntrospectionAuthentication.getToken(),
-          clientPrincipal, OAuth2TokenIntrospection.builder().build());
-    }
-
-    RegisteredClient authorizedClient = this.registeredClientRepository
-        .findByClientId(authorization.getRegisteredClientId());
-    OAuth2TokenIntrospection tokenClaims = withActiveTokenClaims(authorization,
-        authorizedToken, authorizedClient);
-
-    if (log.isTraceEnabled()) {
       log.trace("Authenticated token introspection request");
     }
 
     return new OAuth2TokenIntrospectionAuthenticationToken(
-        authorizedToken.getToken().getTokenValue(), clientPrincipal, tokenClaims);
+        tokenIntrospectionAuthentication.getToken(), clientPrincipal, tokenClaims);
+  }
+
+  /**
+   * In-process introspection without client authentication (used by local OpaqueTokenIntrospector
+   * on the authorization server to avoid a self-HTTP round-trip).
+   *
+   * @return active claims, inactive (empty) claims when token exists but is not active, or
+   * {@code null} when the token is unknown
+   */
+  @Nullable
+  public OAuth2TokenIntrospection introspectLocally(String token) {
+    OAuth2Authorization authorization = this.authorizationService.findByToken(token, null);
+    if (authorization == null) {
+      return null;
+    }
+
+    OAuth2Authorization.Token<OAuth2Token> authorizedToken = authorization.getToken(token);
+    if (authorizedToken == null || !authorizedToken.isActive()) {
+      return OAuth2TokenIntrospection.builder().build();
+    }
+
+    RegisteredClient authorizedClient = this.registeredClientRepository
+        .findByClientId(authorization.getRegisteredClientId());
+    return withActiveTokenClaims(authorization, authorizedToken, authorizedClient);
   }
 
   @Override

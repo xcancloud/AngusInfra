@@ -55,8 +55,8 @@ import org.springframework.web.client.RestTemplate;
  *
  * @see SpringOpaqueTokenIntrospector
  */
-public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
-
+public class CustomOpaqueTokenIntrospector
+    implements OpaqueTokenIntrospector, IntrospectionCacheInvalidator {
 
   public static final String INTROSPECTION_CLAIM_NAMES_SCOPE = "permissions";
 
@@ -126,6 +126,15 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
         .maximumSize(maximumSize)
         .expireAfterWrite(ttlSeconds, TimeUnit.SECONDS)
         .build();
+  }
+
+  @Override
+  public void invalidateToken(String token) {
+    Cache<String, OAuth2AuthenticatedPrincipal> cache = this.resultCache;
+    if (cache == null || token == null || token.isEmpty()) {
+      return;
+    }
+    cache.invalidate(sha256Hex(token));
   }
 
   private Converter<String, RequestEntity<?>> defaultRequestEntityConverter(URI introspectionUri) {

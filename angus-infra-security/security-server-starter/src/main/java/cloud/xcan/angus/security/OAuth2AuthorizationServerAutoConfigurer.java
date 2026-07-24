@@ -88,7 +88,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
       AuthenticationManager authenticationManager, CorsConfigurationSource oauth2CorsConfiguration,
       JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService,
       ObjectMapper objectMapper,
-      @Autowired(required = false) JdbcUserAuthoritiesLazyService authoritiesLazyService)
+      CustomOAuth2TokenIntrospectionAuthenticationProvider tokenIntrospectionAuthenticationProvider)
       throws Exception {
     // @formatter:off
 
@@ -131,9 +131,7 @@ public class OAuth2AuthorizationServerAutoConfigurer {
                 // oauth2-authorization-server/src/test/java/org/springframework/security/oauth2/server/authorization/config/annotation/web/configurers/OAuth2TokenIntrospectionTests.java
                 .tokenIntrospectionEndpoint(tokenIntrospectionEndpoint -> tokenIntrospectionEndpoint // Enable Introspection
                     .introspectionRequestConverter(new OAuth2TokenIntrospectionAuthenticationConverter())
-                    .authenticationProvider(new CustomOAuth2TokenIntrospectionAuthenticationProvider(
-                        registeredClientRepository, jdbcOAuth2AuthorizationService,
-                        authoritiesLazyService))
+                    .authenticationProvider(tokenIntrospectionAuthenticationProvider)
                     //.introspectionResponseHandler(new OAuth2AccessTokenResponseAuthenticationSuccessHandler())
                     //.errorResponseHandler(new CustomOAuth2ErrorAuthenticationFailureHandler())
                 )
@@ -157,6 +155,16 @@ public class OAuth2AuthorizationServerAutoConfigurer {
         exceptions.authenticationEntryPoint(new CustomBearerTokenAuthenticationEntryPoint(objectMapper)));
     // @formatter:on
     return http.build();
+  }
+
+  @Bean
+  @ConditionalOnMissingBean
+  public CustomOAuth2TokenIntrospectionAuthenticationProvider tokenIntrospectionAuthenticationProvider(
+      CustomOAuth2ClientRepository registeredClientRepository,
+      JdbcOAuth2AuthorizationService jdbcOAuth2AuthorizationService,
+      @Autowired(required = false) JdbcUserAuthoritiesLazyService authoritiesLazyService) {
+    return new CustomOAuth2TokenIntrospectionAuthenticationProvider(
+        registeredClientRepository, jdbcOAuth2AuthorizationService, authoritiesLazyService);
   }
 
   @Bean

@@ -26,6 +26,11 @@
       <artifactId>xcan-angusinfra.security-resource-model</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>cloud.xcan.angus</groupId>
+      <artifactId>xcan-angusinfra.security-resource-starter</artifactId>
+    </dependency>
+
     <!-- Spring Boot Starter Security -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -36,6 +41,12 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-oauth2-authorization-server</artifactId>
+    </dependency>
+
+    <!-- OpaqueTokenIntrospector for in-process local introspection on AS+RS co-located apps (GM) -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
     </dependency>
 
     <!-- Spring Security OAuth2 Client -> Configuring Rest resource server Oauth2 client is not required -->

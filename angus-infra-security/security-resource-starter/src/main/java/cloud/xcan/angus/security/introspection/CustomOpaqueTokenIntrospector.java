@@ -4,15 +4,22 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.AuthKey.AUTHORITY_S
 
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
 import cloud.xcan.angus.spec.principal.PrincipalContext;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HexFormat;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -65,6 +72,12 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
   private Converter<OAuth2TokenIntrospectionClaimAccessor, ? extends OAuth2AuthenticatedPrincipal> authenticationConverter = this::defaultAuthenticationConverter;
 
   /**
+   * Short-TTL cache of successful introspection results keyed by SHA-256(token). Null when
+   * disabled.
+   */
+  private Cache<String, OAuth2AuthenticatedPrincipal> resultCache;
+
+  /**
    * Creates a {@code OpaqueTokenAuthenticationProvider} with the provided parameters
    *
    * @param introspectionUri The introspection endpoint uri
@@ -97,6 +110,24 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     this.restOperations = restOperations;
   }
 
+  /**
+   * Enables or disables the in-process introspection result cache.
+   *
+   * @param enabled      whether caching is enabled
+   * @param ttlSeconds   expire-after-write TTL (seconds); values {@code <= 0} disable the cache
+   * @param maximumSize  maximum cache entries
+   */
+  public void setResultCache(boolean enabled, int ttlSeconds, long maximumSize) {
+    if (!enabled || ttlSeconds <= 0 || maximumSize <= 0) {
+      this.resultCache = null;
+      return;
+    }
+    this.resultCache = Caffeine.newBuilder()
+        .maximumSize(maximumSize)
+        .expireAfterWrite(ttlSeconds, TimeUnit.SECONDS)
+        .build();
+  }
+
   private Converter<String, RequestEntity<?>> defaultRequestEntityConverter(URI introspectionUri) {
     return (token) -> {
       HttpHeaders headers = requestHeaders();
@@ -120,6 +151,28 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
 
   @Override
   public OAuth2AuthenticatedPrincipal introspect(String token) {
+    String cacheKey = null;
+    Cache<String, OAuth2AuthenticatedPrincipal> cache = this.resultCache;
+    if (cache != null) {
+      cacheKey = sha256Hex(token);
+      OAuth2AuthenticatedPrincipal cached = cache.getIfPresent(cacheKey);
+      if (cached != null) {
+        if (isPrincipalExpired(cached)) {
+          cache.invalidate(cacheKey);
+        } else {
+          return cached;
+        }
+      }
+    }
+
+    OAuth2AuthenticatedPrincipal principal = doIntrospect(token);
+    if (cache != null && cacheKey != null && principal != null) {
+      cache.put(cacheKey, principal);
+    }
+    return principal;
+  }
+
+  private OAuth2AuthenticatedPrincipal doIntrospect(String token) {
     RequestEntity<?> requestEntity = this.requestEntityConverter.convert(token);
     if (requestEntity == null) {
       throw new OAuth2IntrospectionException("requestEntityConverter returned a null entity");
@@ -128,6 +181,24 @@ public class CustomOpaqueTokenIntrospector implements OpaqueTokenIntrospector {
     Map<String, Object> claims = adaptToNimbusResponse(responseEntity);
     OAuth2TokenIntrospectionClaimAccessor accessor = convertClaimsSet(claims);
     return this.authenticationConverter.convert(accessor);
+  }
+
+  private static boolean isPrincipalExpired(OAuth2AuthenticatedPrincipal principal) {
+    Object exp = principal.getAttribute(OAuth2TokenIntrospectionClaimNames.EXP);
+    if (exp instanceof Instant instant) {
+      return Instant.now().isAfter(instant);
+    }
+    return false;
+  }
+
+  private static String sha256Hex(String token) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      return HexFormat.of().formatHex(digest.digest(token.getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException ex) {
+      // SHA-256 is required by the JRE; fall back to identity hash if unavailable
+      return Integer.toHexString(token.hashCode());
+    }
   }
 
   /**

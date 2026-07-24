@@ -39,6 +39,23 @@ public class ResourceServerSecurityProperties {
    */
   private List<String> allowedClientIds = new ArrayList<>();
 
+  /**
+   * Whether to cache successful opaque-token introspection results in-process. Default
+   * {@code true}; set {@code false} to force a remote introspect on every request.
+   */
+  private boolean introspectCacheEnabled = true;
+
+  /**
+   * TTL for introspection result cache entries (seconds). Default {@code 60}. Permission /
+   * revocation changes may take up to this long to be visible on resource servers.
+   */
+  private int introspectCacheTtlSeconds = 60;
+
+  /**
+   * Maximum number of cached introspection principals. Default {@code 10000}.
+   */
+  private long introspectCacheMaximumSize = 10_000L;
+
   public boolean isAllowUriQueryToken() {
     return allowUriQueryToken;
   }
@@ -53,5 +70,29 @@ public class ResourceServerSecurityProperties {
 
   public void setAllowedClientIds(List<String> allowedClientIds) {
     this.allowedClientIds = allowedClientIds != null ? allowedClientIds : new ArrayList<>();
+  }
+
+  public boolean isIntrospectCacheEnabled() {
+    return introspectCacheEnabled;
+  }
+
+  public void setIntrospectCacheEnabled(boolean introspectCacheEnabled) {
+    this.introspectCacheEnabled = introspectCacheEnabled;
+  }
+
+  public int getIntrospectCacheTtlSeconds() {
+    return introspectCacheTtlSeconds;
+  }
+
+  public void setIntrospectCacheTtlSeconds(int introspectCacheTtlSeconds) {
+    this.introspectCacheTtlSeconds = introspectCacheTtlSeconds;
+  }
+
+  public long getIntrospectCacheMaximumSize() {
+    return introspectCacheMaximumSize;
+  }
+
+  public void setIntrospectCacheMaximumSize(long introspectCacheMaximumSize) {
+    this.introspectCacheMaximumSize = introspectCacheMaximumSize;
   }
 }

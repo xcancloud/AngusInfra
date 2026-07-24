@@ -40,6 +40,7 @@ import static cloud.xcan.angus.spec.experimental.BizConstant.Header.REMOTE_ADDR_
 import static cloud.xcan.angus.spec.experimental.BizConstant.Header.USER_AGENT;
 import static cloud.xcan.angus.spec.http.HttpRequestHeader.User_Agent;
 import static cloud.xcan.angus.spec.principal.PrincipalContext.getRequestStringAttribute;
+import static cloud.xcan.angus.spec.utils.ObjectUtils.isEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.isNotEmpty;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.nullSafe;
 import static cloud.xcan.angus.spec.utils.ObjectUtils.stringSafe;
@@ -49,8 +50,9 @@ import static org.springframework.web.context.request.RequestContextHolder.getRe
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
 import cloud.xcan.angus.security.model.CustomOAuth2User;
 import cloud.xcan.angus.security.repository.JdbcUserAuthoritiesLazyService;
-import cloud.xcan.angus.spec.principal.UserTokenAuthorityContext;
 import cloud.xcan.angus.spec.experimental.BizConstant.Header;
+import cloud.xcan.angus.spec.principal.PrincipalContext;
+import cloud.xcan.angus.spec.principal.UserTokenAuthorityContext;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URL;
 import java.security.Principal;
@@ -208,16 +210,22 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
     AuthorizationGrantType grantType = authorization.getAuthorizationGrantType();
     tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_GRANT_TYPE, grantType.getValue());
 
-    if (grantType.equals(AuthorizationGrantType.PASSWORD)) {
-      Object principal = authorization.getAttribute(Principal.class.getName());
-      if (principal instanceof UsernamePasswordAuthenticationToken authenticationToken) {
-        CustomOAuth2User user = (CustomOAuth2User) authenticationToken.getPrincipal();
-        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
-            toUserPrincipalClaim(user, authorization.getAttributes()));
-        Set<String> permissions = resolvePermissions(user, authorization.getAttributes());
-        if (isNotEmpty(permissions)) {
-          tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, permissions);
-        }
+    // password / sms / email 等用户令牌：属性中保存的是用户 Authentication
+    Object principalAttr = authorization.getAttribute(Principal.class.getName());
+    if (principalAttr instanceof UsernamePasswordAuthenticationToken authenticationToken
+        && authenticationToken.getPrincipal() instanceof CustomOAuth2User user) {
+      tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL,
+          toUserPrincipalClaim(user, authorization.getAttributes()));
+      // 必须用被检 token 的 client_id（如 xcan_tp），不能用 introspect 客户端本身，
+      // 否则 ApplicationClientScope 会滤空角色导致 permissions 缺失 → 业务接口全 403
+      String accessClientId = nonNull(authorizedClient) ? authorizedClient.getClientId() : null;
+      if (isEmpty(accessClientId)) {
+        accessClientId = user.getClientId();
+      }
+      Set<String> permissions = resolvePermissions(
+          user, authorization.getAttributes(), accessClientId);
+      if (isNotEmpty(permissions)) {
+        tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PERMISSION, permissions);
       }
     } else if (grantType.equals(AuthorizationGrantType.CLIENT_CREDENTIALS)) {
       tokenClaims.claim(INTROSPECTION_CLAIM_NAMES_PRINCIPAL, toClientPrincipalClaim(
@@ -228,24 +236,36 @@ public final class CustomOAuth2TokenIntrospectionAuthenticationProvider
 
   /**
    * Prefer realtime reload via {@link JdbcUserAuthoritiesLazyService}; fall back to login snapshot.
+   * <p>Introspect 请求本身由 {@code client-credentials-introspect-client} 发起，算权前需临时把
+   * {@link PrincipalContext} 的 clientId 切到被检 token 的访问端，供 {@code filterByAccessClient} 使用。
    */
-  private Set<String> resolvePermissions(CustomOAuth2User user, Map<String, Object> attributes) {
+  private Set<String> resolvePermissions(CustomOAuth2User user, Map<String, Object> attributes,
+      String accessClientId) {
     String userTokenName = nonNull(attributes) && attributes.containsKey(CUSTOM_ACCESS_TOKEN_NAME)
         ? attributes.get(CUSTOM_ACCESS_TOKEN_NAME).toString() : null;
     if (authoritiesLazyService != null) {
+      cloud.xcan.angus.spec.principal.Principal scopePrincipal =
+          PrincipalContext.createIfAbsent();
+      String previousClientId = scopePrincipal.getClientId();
       try {
         if (isNotEmpty(userTokenName)) {
           UserTokenAuthorityContext.setTokenName(userTokenName);
+        }
+        if (isNotEmpty(accessClientId)) {
+          scopePrincipal.setClientId(accessClientId);
         }
         Set<GrantedAuthority> reloaded = authoritiesLazyService.lazyUserAuthorities(user);
         if (isNotEmpty(reloaded)) {
           return reloaded.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         }
-        return Set.of();
+        log.warn(
+            "Realtime authority reload returned empty for userId={}, accessClientId={}, fallback to token snapshot",
+            user.getId(), accessClientId);
       } catch (Exception ex) {
         log.warn("Realtime authority reload failed, fallback to token snapshot: {}",
             ex.getMessage());
       } finally {
+        scopePrincipal.setClientId(previousClientId);
         UserTokenAuthorityContext.clear();
       }
     }

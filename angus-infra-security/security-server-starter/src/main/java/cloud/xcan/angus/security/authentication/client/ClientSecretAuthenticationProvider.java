@@ -1,8 +1,15 @@
 package cloud.xcan.angus.security.authentication.client;
 
 import cloud.xcan.angus.security.client.CustomOAuth2RegisteredClient;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.log.LogMessage;
@@ -52,6 +59,16 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
   private final CodeVerifierAuthenticator codeVerifierAuthenticator;
 
   private PasswordEncoder passwordEncoder;
+
+  /**
+   * Short-lived cache of successfully verified {@code (clientId, secretDigest)} pairs. Avoids
+   * repeating expensive {@link PasswordEncoder#matches} (e.g. BCrypt) on every introspect /
+   * token request for the same client credentials.
+   */
+  private final Cache<String, Boolean> verifiedClientSecrets = Caffeine.newBuilder()
+      .maximumSize(256)
+      .expireAfterWrite(5, TimeUnit.MINUTES)
+      .build();
 
   /**
    * Constructs a {@code ClientSecretAuthenticationProvider} using the provided parameters.
@@ -112,26 +129,34 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
     }
 
     String clientSecret = clientAuthentication.getCredentials().toString();
+    String verifiedCacheKey = registeredClient.getId() + ":" + sha256Hex(clientSecret)
+        + ":" + sha256Hex(registeredClient.getClientSecret());
+    boolean secretAlreadyVerified = Boolean.TRUE.equals(
+        this.verifiedClientSecrets.getIfPresent(verifiedCacheKey));
 
-    // When generating user or system access tokens using encrypted client secret internally
-    if (clientSecret.startsWith("{") && !clientSecret.equals(registeredClient.getClientSecret())) {
-      if (this.logger.isDebugEnabled()) {
-        this.logger.debug(LogMessage.format(
-            "Invalid request: client_secret does not match" + " for registered client '%s'",
-            registeredClient.getId()));
+    if (!secretAlreadyVerified) {
+      // When generating user or system access tokens using encrypted client secret internally
+      if (clientSecret.startsWith("{")
+          && !clientSecret.equals(registeredClient.getClientSecret())) {
+        if (this.logger.isDebugEnabled()) {
+          this.logger.debug(LogMessage.format(
+              "Invalid request: client_secret does not match" + " for registered client '%s'",
+              registeredClient.getId()));
+        }
+        throwInvalidClient(OAuth2ParameterNames.CLIENT_SECRET);
       }
-      throwInvalidClient(OAuth2ParameterNames.CLIENT_SECRET);
-    }
 
-    // When generating access tokens using not encrypted client secret by user
-    if (!clientSecret.startsWith("{")
-        && !this.passwordEncoder.matches(clientSecret, registeredClient.getClientSecret())) {
-      if (this.logger.isDebugEnabled()) {
-        this.logger.debug(LogMessage.format(
-            "Invalid request: client_secret does not match" + " for registered client '%s'",
-            registeredClient.getId()));
+      // When generating access tokens using not encrypted client secret by user
+      if (!clientSecret.startsWith("{")
+          && !this.passwordEncoder.matches(clientSecret, registeredClient.getClientSecret())) {
+        if (this.logger.isDebugEnabled()) {
+          this.logger.debug(LogMessage.format(
+              "Invalid request: client_secret does not match" + " for registered client '%s'",
+              registeredClient.getId()));
+        }
+        throwInvalidClient(OAuth2ParameterNames.CLIENT_SECRET);
       }
-      throwInvalidClient(OAuth2ParameterNames.CLIENT_SECRET);
+      this.verifiedClientSecrets.put(verifiedCacheKey, Boolean.TRUE);
     }
 
     if (registeredClient.getClientSecretExpiresAt() != null
@@ -146,6 +171,7 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
           .build();
       // Will there be any security vulnerability ???
       this.registeredClientRepository.save(registeredClient);
+      this.verifiedClientSecrets.invalidateAll();
     }
 
     if (this.logger.isTraceEnabled()) {
@@ -174,6 +200,18 @@ public final class ClientSecretAuthenticationProvider implements AuthenticationP
     OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.INVALID_CLIENT,
         "Client authentication failed: " + parameterName, ERROR_URI);
     throw new OAuth2AuthenticationException(error);
+  }
+
+  private static String sha256Hex(String value) {
+    if (value == null) {
+      return "";
+    }
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      return HexFormat.of().formatHex(digest.digest(value.getBytes(StandardCharsets.UTF_8)));
+    } catch (NoSuchAlgorithmException ex) {
+      return Integer.toHexString(value.hashCode());
+    }
   }
 
 }

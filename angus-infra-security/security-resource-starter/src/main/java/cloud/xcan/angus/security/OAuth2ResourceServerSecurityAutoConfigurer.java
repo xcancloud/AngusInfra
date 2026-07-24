@@ -117,12 +117,18 @@ public class OAuth2ResourceServerSecurityAutoConfigurer {
 
   @Bean
   public OpaqueTokenIntrospector opaqueTokenIntrospector(
-      OAuth2ResourceServerProperties auth2ResourceServerProperties) {
-    return new CustomOpaqueTokenIntrospector(
+      OAuth2ResourceServerProperties auth2ResourceServerProperties,
+      ResourceServerSecurityProperties resourceServerSecurityProperties) {
+    CustomOpaqueTokenIntrospector introspector = new CustomOpaqueTokenIntrospector(
         auth2ResourceServerProperties.getOpaquetoken().getIntrospectionUri(),
         auth2ResourceServerProperties.getOpaquetoken().getClientId(),
         auth2ResourceServerProperties.getOpaquetoken().getClientSecret()
     );
+    introspector.setResultCache(
+        resourceServerSecurityProperties.isIntrospectCacheEnabled(),
+        resourceServerSecurityProperties.getIntrospectCacheTtlSeconds(),
+        resourceServerSecurityProperties.getIntrospectCacheMaximumSize());
+    return introspector;
   }
 
 }

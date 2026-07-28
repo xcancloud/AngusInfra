@@ -89,8 +89,10 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
 
     String path = request.getRequestURI();
     // Note: Only API logs are recorded. Inner calls and static resource requests are not logged.
+    // /api/v1/notifications：各应用轮询/推送高频，忽略接口日志以免刷屏。
     if (path.startsWith("/api/v1/auth/user") || path.startsWith("/api/v1/auth/client")
         || path.startsWith("/api/v1/systemlog") || path.startsWith("/api/v1/log")
+        || path.startsWith("/api/v1/notifications")
         || (!path.startsWith("/api/") && !path.startsWith("/openapi/"))) {
       filterChain.doFilter(request, response);
       return;
@@ -147,12 +149,9 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
       for (Enumeration<?> headerValues = wrapper.getHeaders(headerName);
           headerValues.hasMoreElements(); ) {
         String headerValue = (String) headerValues.nextElement();
-        if (Header.AUTHORIZATION.equals(headerName)) {
-          // Desensitization authentication token
-          // @see cloud.xcan.angus.api.commonlink.AASConstant.DEFAULT_TOKEN_SALT_LENGTH = 32;
-          String[] takenFrames = headerValue.split("\\.");
-          headerValue = takenFrames.length == 3 ? takenFrames[0] + ".********."
-              + takenFrames[2] : headerValue;
+        // 请求头 Authorization 一律脱敏（Basic / Bearer opaque / JWT）；header 名大小写不敏感
+        if (Header.AUTHORIZATION.equalsIgnoreCase(headerName)) {
+          headerValue = maskAuthorization(headerValue);
         }
         headers.add(headerName, headerValue);
         if (headersLevel) {
@@ -343,6 +342,39 @@ public class ApiLogFilter extends OncePerRequestFilter implements AppBeanReady {
     }
     String accept = request.getHeader(HttpHeaders.ACCEPT);
     return accept != null && accept.contains("text/event-stream");
+  }
+
+  /**
+   * 脱敏 Authorization：保留认证 scheme，凭证仅保留 JWT 头/签名段或整体替换为 {@code ********}。
+   *
+   * <ul>
+   *   <li>{@code Bearer eyJ..xxx.sig} → {@code Bearer eyJ..********.sig}</li>
+   *   <li>{@code Bearer opaque-token} → {@code Bearer ********}</li>
+   *   <li>{@code Basic base64(user:pass)} → {@code Basic ********}</li>
+   * </ul>
+   */
+  static String maskAuthorization(String headerValue) {
+    if (headerValue == null || headerValue.isBlank()) {
+      return headerValue;
+    }
+    String trimmed = headerValue.trim();
+    int space = trimmed.indexOf(' ');
+    if (space <= 0 || space >= trimmed.length() - 1) {
+      return "********";
+    }
+    String scheme = trimmed.substring(0, space);
+    String credential = trimmed.substring(space + 1).trim();
+    if (credential.isEmpty()) {
+      return scheme + " ********";
+    }
+    // JWT：header.payload.signature — 保留头与签名，遮盖 payload（含 sub 等声明）
+    String[] jwtParts = credential.split("\\.");
+    if (jwtParts.length == 3
+        && !jwtParts[0].isEmpty()
+        && !jwtParts[2].isEmpty()) {
+      return scheme + " " + jwtParts[0] + ".********." + jwtParts[2];
+    }
+    return scheme + " ********";
   }
 }
 

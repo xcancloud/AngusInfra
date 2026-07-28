@@ -214,7 +214,9 @@ public class TokenCacheManager {
     if (clientSecret == null) {
       clientSecret = EnvHelper.getString(InnerApiAuthProperties.CLIENT_SECRET_ENV_PROPERTY_LEGACY);
       if (clientSecret == null) {
-        clientId = EnvHelper.getString(OAUTH2_INTROSPECT_CLIENT_SECRET);
+        // Fallback to introspect client secret (same registered client carries inner_api_trust).
+        // Bugfix: previously assigned to clientId, leaving clientSecret null and always failing.
+        clientSecret = EnvHelper.getString(OAUTH2_INTROSPECT_CLIENT_SECRET);
       }
     }
 

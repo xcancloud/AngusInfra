@@ -27,7 +27,11 @@ public class TenantListener {
     if (!principal.isMultiTenantCtrl() || !decideMultiTenantCtrlByApiType(principal)) {
       return;
     }
-    entity.setTenantId(getOptTenantId(principal));
+    Long tenantId = getOptTenantId(principal);
+    // 勿用 null 覆盖实体已显式设置的 tenantId（如 OAuth 发令后上下文丢失场景）
+    if (tenantId != null) {
+      entity.setTenantId(tenantId);
+    }
   }
 
 }
